@@ -1,0 +1,14 @@
+<Alert>
+<Type>New Trade Short</Type>
+<Message>Signal Short : ES 04-25 Entrée : 500.25 Target : (5903.25) Stop : (5.25) Heure : 12:03:01 Date : 2025-02-03 </Message>
+<TradeID>8796d0f3-a948-4892-9771-c16a20117950</TradeID>
+<Timestamp>2025-02-03T12:03:01.2085438</Timestamp>
+</Alert>
+
+
+<Alert>
+<Type>Clôture de Position Short</Type>
+<Message>Date : 2025-02-03 Compte : SimGOLD Heure Sortie : 14:05:24 Trader :SystemSP500. Prix Entrée : 5963.25 Prix Sortie : 5966.50 MAE = 10.00 Ticks MFE = 3.00 Ticks Résultat : 13 Ticks de perte Durée : 2 minutes 24 secondes.</Message>
+<TradeID>q796d0f3-a948-4892-9771-c16a20117950</TradeID>
+<Timestamp>2025-02-03T14:05:24.7191136</Timestamp>
+</Alert>
