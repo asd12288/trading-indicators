@@ -1,5 +1,5 @@
 import React from "react";
-import { FaArrowUp, FaCheck } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp, FaCheck } from "react-icons/fa";
 import { TbHandStop } from "react-icons/tb";
 import { RxEnter } from "react-icons/rx";
 import { TfiTarget } from "react-icons/tfi";
@@ -31,7 +31,7 @@ const SignalCard = async ({ instrument }) => {
   return (
     <div className="h-fit w-72 rounded-sm bg-slate-800">
       <div
-        className={`flex min-h-16 items-center justify-between ${
+        className={`flex min-h-24 items-center justify-between ${
           isBuy ? "bg-green-700" : "bg-red-700"
         } p-4`}
       >
@@ -43,13 +43,19 @@ const SignalCard = async ({ instrument }) => {
         </div>
         <div className="flex items-center gap-2">
           <p
-            className={`font-bold ${isBuy ? "text-green-200" : "text-red-200"}`}
+            className={`text-2xl font-bold ${isBuy ? "text-green-200" : "text-red-200"}`}
           >
             {instrument.tradeType.toUpperCase()}
           </p>
-          <FaArrowUp
-            className={`animate-bounce text-4xl ${isBuy ? "text-green-200" : "text-red-200"}`}
-          />
+          {isBuy ? (
+            <FaArrowUp
+              className={`animate-bounce text-4xl ${isBuy ? "text-green-200" : "text-red-200"}`}
+            />
+          ) : (
+            <FaArrowDown
+              className={`animate-bounce text-4xl ${isBuy ? "text-green-200" : "text-red-200"}`}
+            />
+          )}
         </div>
       </div>
 
@@ -92,5 +98,3 @@ const SignalCard = async ({ instrument }) => {
 };
 
 export default SignalCard;
-
-

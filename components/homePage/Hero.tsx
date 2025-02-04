@@ -10,11 +10,11 @@ const Hero = () => {
     <section className="h-screen">
       <div className="md:mt-15 flex h-full flex-col items-center justify-center p-2 md:flex-row md:items-center md:justify-around md:p-8">
         <div className="w-full p-2 md:p-8 lg:w-3/5">
-          <p>⭐⭐⭐⭐⭐</p>
+          <p className="text-center md:text-left">⭐⭐⭐⭐⭐</p>
           <p className="mb-3 text-center font-thin md:text-left">
             More then 1000+ traders
           </p>
-          <h1 className="leading-2 text-center text-4xl font-bold text-green-50 md:text-left md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl ">
+          <h1 className="leading-2 text-center text-4xl font-bold text-green-50 md:text-left md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl">
             Trade Smarter with Real-Time <br />
             <span className="text-green-300">Trading Signals</span>
           </h1>

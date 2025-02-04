@@ -7,7 +7,7 @@ import { FormattedTime } from "./FormattedTime";
 
 const FufilledSignalCard = ({ instrument, isBuy, orderEnd }) => {
   return (
-    <div className="h-fit w-72 rounded-sm bg-slate-900">
+    <div className="min-h-24 w-72 rounded-sm bg-slate-900">
       <div
         className={`flex items-center justify-between ${
           isBuy ? "bg-green-950" : "bg-red-950"
@@ -23,7 +23,11 @@ const FufilledSignalCard = ({ instrument, isBuy, orderEnd }) => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <h3 className="text-2xl font-medium">FUFIELD</h3>
+          <h3
+            className={`text-2xl font-semibold ${isBuy ? "text-green-100" : "text-red-100"}`}
+          >
+            FUFIELD
+          </h3>
         </div>
       </div>
 

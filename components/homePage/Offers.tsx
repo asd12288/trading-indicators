@@ -1,17 +1,11 @@
 import React, { Suspense } from "react";
-import supabase from "@/utils/supabase";
-import { get } from "http";
 import { getLatestByInstrument } from "@/app/lib/utils";
 import SignalCard from "../SignalCard";
 import LoaderCards from "../smallComponents/LoaderCards";
 
 const Offers = async () => {
-  const instrument = await getLatestByInstrument();
+  const { filtered: filteredInstruments } = await getLatestByInstrument();
 
-  const filterdInstruments = Object.values(instrument).filter((instrument) => {
-    const { instrument: instrumentName } = instrument;
-    return ["NASDAX", "DAX", "S&P500"].includes(instrumentName);
-  });
 
   return (
     <section className="flex flex-col items-center md:mt-10">
@@ -25,7 +19,7 @@ const Offers = async () => {
 
       <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         <Suspense fallback={<LoaderCards />}>
-          {filterdInstruments.map((ins) => (
+          {filteredInstruments.map((ins) => (
             <SignalCard instrument={ins} key={ins.instrument} />
           ))}
         </Suspense>

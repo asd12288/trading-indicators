@@ -6,6 +6,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+
+interface Instrument {
+  instrument: string;
+  orderTime: string;
+  [key: string]: any;
+}
+
 export const getLatestByInstrument = async () => {
   const { data: rows, error } = await supabase
     .from("indicators_order_start")
@@ -13,14 +20,11 @@ export const getLatestByInstrument = async () => {
 
   if (error || !rows) {
     throw new Error("Error loading signals");
-    console.log("Error loading signals");
   }
 
-  return rows.reduce(
-    (
-      acc: { [key: string]: { instrument: string; orderTime: string } },
-      row: any,
-    ) => {
+  // First get latest by instrument
+  const latestByInstrument = rows.reduce(
+    (acc: { [key: string]: Instrument }, row: Instrument) => {
       const current = acc[row.instrument];
       if (
         !current ||
@@ -31,6 +35,16 @@ export const getLatestByInstrument = async () => {
       }
       return acc;
     },
-    {} as { [key: string]: { instrument: string; orderTime: string } },
+    {},
   );
+
+  // Then filter for specific instruments
+  const filteredInstruments = Object.values(latestByInstrument).filter(
+    (instrument) => ["NASDAX", "DAX", "S&P500"].includes(instrument.instrument),
+  );
+
+  return {
+    all: latestByInstrument,
+    filtered: filteredInstruments,
+  };
 };
