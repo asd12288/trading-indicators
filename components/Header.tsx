@@ -4,7 +4,7 @@ import UserAvatar from "./UserAvatar";
 
 function Header() {
   return (
-    <div className="w-full absolute z-50">
+    <div className="w-full absolute z-50 hidden md:block">
       <ul className="flex justify-between p-8 text-lg font-medium items-center">
         <li>
           <Link href="/">
