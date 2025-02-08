@@ -1,43 +1,73 @@
-import React from "react";
-import SigninGoogle from "./SigninGoogle";
-import SigninFacebook from "./SigninFacebook";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { emailLogin, signup } from "@/app/login/actions";
 import Link from "next/link";
+import { OAuthButtons } from "./OauthSignin";
 
-function LoginForm() {
+export function LoginForm({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"form">) {
   return (
-    <div>
-      <h3 className="mb-2 text-sm">Sign in with</h3>
-      <div className="flex gap-4">
-        <SigninGoogle />
-        <SigninFacebook />
+    <form className={cn("flex flex-col gap-6", className)} {...props}>
+      <div className="flex flex-col items-center gap-2 text-center">
+        <h1 className="text-2xl font-bold">Login to your account</h1>
+        <p className="text-balance text-sm text-neutral-500 dark:text-neutral-400">
+          Enter your email below to login to your account
+        </p>
       </div>
-      <div className="border-t border-gray-300 my-4"></div>
-      <h3 className="text-sm mb-2">Or continue with email address</h3>
-      <form className="flex flex-col gap-4">
-        <input
-          type="email"
-          placeholder="Email address"
-          className="p-2 border border-gray-300 rounded-md placeholder:text-slate-500 text-slate-800"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="p-2 border border-gray-300 rounded-md placeholder:text-slate-500 text-slate-800"
-        />
-        <Link href="/forgot-password">
-          <p className="text-xs font-thin hover:text-slate-300">
-            Forgot your password?
-          </p>
+      <div className="grid gap-6">
+        <div className="grid gap-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            name="email"
+            placeholder="m@example.com"
+            required
+          />
+        </div>
+        <div className="grid gap-2">
+          <div className="flex items-center">
+            <Label htmlFor="password">Password</Label>
+            <a
+              href="#"
+              className="ml-auto text-sm underline-offset-4 hover:underline"
+            >
+              Forgot your password?
+            </a>
+          </div>
+          <Input id="password" type="password" name="password" required />
+        </div>
+        <Button
+          type="submit"
+          className="w-full bg-green-800 text-green-50 hover:bg-green-950"
+          formAction={emailLogin}
+        >
+          Login
+        </Button>
+        <Button
+          type="submit"
+          className="w-full bg-green-800 text-green-50 hover:bg-green-950"
+          formAction={signup}
+        >
+          Signup
+        </Button>
+        <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-neutral-200 dark:after:border-neutral-800">
+          <span className="relative z-10 bg-white px-2 text-neutral-500 dark:bg-neutral-950 dark:text-neutral-400">
+            Or continue with
+          </span>
+        </div>
+        <OAuthButtons />
+      </div>
+      <div className="text-center text-sm">
+        Don&apos;t have an account?{""}
+        <Link href="/signup" className="underline underline-offset-4">
+          Sign up
         </Link>
-        <button className="bg-green-500 text-white p-2 rounded-sm">
-          Sign in
-        </button>
-      </form>
-      <p className="text-xs mt-4 text-center">
-        <Link href="/signup">You dont have an account yet ?</Link>
-      </p>
-    </div>
+      </div>
+    </form>
   );
 }
-
-export default LoginForm;

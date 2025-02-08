@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import SignupForm from "@/components/SignupForm";
 import Link from "next/link";
 import login from "@/public/login.png";
 
@@ -23,7 +22,6 @@ function page() {
         </div>
         <div className="flex flex-col justify-center items-center w-full md:mt-0 mt-20 p-8">
           <h2 className="text-5xl font-medium mb-5 text-left">Sign Up</h2>
-          <SignupForm />
         </div>
       </div>
     </>

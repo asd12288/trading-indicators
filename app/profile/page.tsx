@@ -1,15 +1,15 @@
-import { auth } from "@/auth";
 import Image from "next/image";
-import { redirect } from "next/navigation";
 import React from "react";
 import avatar from "@/public/avatar.png";
+import { createClient } from "@/database/supabase/server";
 
 async function page() {
-  const session = await auth();
+  const supabase = await createClient();
 
-  if (!session) {
-    redirect("/login");
-  }
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
 
   return (
     <div className="flex h-screen flex-col items-center justify-start gap-5">
@@ -28,19 +28,11 @@ async function page() {
         <form action="">
           <div className="mt-5">
             <p className="mb-2 text-sm">Full name</p>
-            <input
-              type="text"
-              className="w-full px-2 py-2 text-slate-950"
-              defaultValue={session?.user.name}
-            />
+            <input type="text" className="w-full px-2 py-2 text-slate-950" />
           </div>
           <div className="mt-5">
             <p className="mb-2 text-sm">Email</p>
-            <input
-              type="email"
-              className="w-full px-2 py-2 text-slate-950"
-              defaultValue={session?.user.email}
-            />
+            <input type="email" className="w-full px-2 py-2 text-slate-950" />
           </div>
           <button className="text-light mt-6 rounded-md bg-green-700 px-3 py-3 text-sm transition-all hover:bg-green-800">
             Save changes

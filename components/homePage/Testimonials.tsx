@@ -1,7 +1,7 @@
 import React from "react";
-import supabase from "@/utils/supabase";
 import TestimonialCard from "./TestimonialCard";
 import Carousel from "../Carousel";
+import supabase from "@/database/supabase/supabase";
 
 const Testimonials = async () => {
   const { data: testmonials, error } = await supabase

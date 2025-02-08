@@ -1,24 +1,31 @@
+import { logout } from "@/app/login/actions";
+import { createClient } from "@/database/supabase/server";
 import Link from "next/link";
 import React from "react";
-import UserAvatar from "./UserAvatar";
 
-function Header() {
+async function Header() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
-    <div className="w-full absolute z-50 hidden md:block">
-      <ul className="flex justify-between p-8 text-lg font-medium items-center">
+    <div className="z-50 hidden w-full md:block">
+      <ul className="flex items-center justify-between p-8 text-lg font-medium">
         <li>
           <Link href="/">
-            <h2 className="font-medium text-3xl">Logo</h2>
+            <h2 className="text-3xl font-medium">Logo</h2>
           </Link>
         </li>
 
-        <div className="flex gap-12 items-center">
-          <li className=" hover:text-slate-300">
+        <div className="flex items-center gap-12">
+          <li className="hover:text-slate-300">
             <Link
-              href="/indicators"
-              className="hover:text-slate-300 flex items-center gap-2"
+              href="/signals"
+              className="flex items-center gap-2 hover:text-slate-300"
             >
-              <p>Indicators</p>
+              <p>Signals</p>
             </Link>
           </li>
 
@@ -27,12 +34,27 @@ function Header() {
               Blog
             </Link>
           </li>
-        </div>
+          {user === null ? (
+            <li>
+              <Link href="/login" className="hover:text-slate-300">
+                <button>Login</button>
+              </Link>
+            </li>
+          ) : (
+            <>
+              <li>
+                <Link href="/profile" className="hover:text-slate-300">
+                  Profile
+                </Link>
+              </li>
 
-        <div>
-          <li>
-            <UserAvatar />
-          </li>
+              <li>
+                <form action={logout}>
+                  <button>Logout</button>
+                </form>
+              </li>
+            </>
+          )}
         </div>
       </ul>
     </div>

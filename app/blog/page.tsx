@@ -1,5 +1,5 @@
 import BlogList from "@/components/BlogList";
-import supabase from "@/utils/supabase";
+import supabase from "@/database/supabase/supabase";
 
 async function page() {
   const { data, error } = await supabase.from("blogs").select("*");

@@ -1,11 +1,12 @@
-import React, { Suspense } from "react";
-import { getLatestByInstrument } from "@/app/lib/utils";
-import SignalCard from "../SignalCard";
-import LoaderCards from "../smallComponents/LoaderCards";
+import supabase from "@/utils/supabase";
+import SignalCard from "../SignalCard/SignalCard";
 
 const Offers = async () => {
-  const { filtered: filteredInstruments } = await getLatestByInstrument();
-
+  const { data: instrument } = await supabase
+    .from("scalpersnasdaq_trades")
+    .select("*")
+    .order("entry_time", { ascending: false })
+    .limit(1);
 
   return (
     <section className="flex flex-col items-center md:mt-10">
@@ -18,11 +19,7 @@ const Offers = async () => {
       </h3>
 
       <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-        <Suspense fallback={<LoaderCards />}>
-          {filteredInstruments.map((ins) => (
-            <SignalCard instrument={ins} key={ins.instrument} />
-          ))}
-        </Suspense>
+        <SignalCard instrument={instrument} />
       </div>
       <h4 className="mt-8 px-8 text-center text-2xl font-medium">
         With our real-time alerts, you’ll never miss a trading opportunity

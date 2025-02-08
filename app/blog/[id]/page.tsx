@@ -1,5 +1,5 @@
 import Blog from "@/components/Blog";
-import supabase from "@/utils/supabase";
+import supabase from "@/database/supabase/supabase";
 import React from "react";
 
 async function page({ params }: { params: { id: string } }) {
