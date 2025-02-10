@@ -9,6 +9,7 @@ import { toast } from "@/hooks/use-toast";
 interface SignalToolProps {
   signalId: string;
   userId: string;
+  text?: "regular" | "small";
   defaultPrefs: {
     notifications: boolean;
     volume: boolean;
@@ -16,7 +17,12 @@ interface SignalToolProps {
   };
 }
 
-function SignalTool({ signalId, userId, defaultPrefs }: SignalToolProps) {
+function SignalTool({
+  signalId,
+  userId,
+  defaultPrefs,
+  text = "regular",
+}: SignalToolProps) {
   const [notifications, setNotifications] = useState(
     defaultPrefs.notifications,
   );
@@ -84,29 +90,24 @@ function SignalTool({ signalId, userId, defaultPrefs }: SignalToolProps) {
     });
   }
 
+  const size = text === "small" ? "text-xl" : "text-4xl";
+
   return (
     <div className="flex items-center space-x-4 border-l-2 pl-4">
-      <h4 className="text-xl font-medium">Signal Settings:</h4>
       {notifications ? (
-        <IoIosNotifications
-          className="text-4xl"
-          onClick={handleNotifications}
-        />
+        <IoIosNotifications className={size} onClick={handleNotifications} />
       ) : (
-        <IoIosNotificationsOff
-          className="text-4xl"
-          onClick={handleNotifications}
-        />
+        <IoIosNotificationsOff className={size} onClick={handleNotifications} />
       )}
       {volume ? (
-        <FaVolumeUp className="text-4xl" onClick={handleVolume} />
+        <FaVolumeUp className={size} onClick={handleVolume} />
       ) : (
-        <FaVolumeMute className="text-4xl" onClick={handleVolume} />
+        <FaVolumeMute className={size} onClick={handleVolume} />
       )}
       {favorite ? (
-        <MdFavorite className="text-4xl" onClick={handleFavorite} />
+        <MdFavorite className={size} onClick={handleFavorite} />
       ) : (
-        <MdFavoriteBorder className="text-4xl" onClick={handleFavorite} />
+        <MdFavoriteBorder className={size} onClick={handleFavorite} />
       )}
     </div>
   );

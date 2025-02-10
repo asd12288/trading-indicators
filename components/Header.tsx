@@ -1,7 +1,6 @@
-import { logout } from "@/app/login/actions";
 import { createClient } from "@/database/supabase/server";
 import Link from "next/link";
-import React from "react";
+import LogoutBtn from "./LogoutBtn";
 
 async function Header() {
   const supabase = await createClient();
@@ -37,7 +36,9 @@ async function Header() {
           {user === null ? (
             <li>
               <Link href="/login" className="hover:text-slate-300">
-                <button>Login</button>
+                <button className="flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 hover:bg-slate-900">
+                  Login
+                </button>
               </Link>
             </li>
           ) : (
@@ -49,9 +50,7 @@ async function Header() {
               </li>
 
               <li>
-                <form action={logout}>
-                  <button>Logout</button>
-                </form>
+                <LogoutBtn />
               </li>
             </>
           )}

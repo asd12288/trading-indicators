@@ -19,20 +19,20 @@ async function page() {
     .select("preferences")
     .eq("id", user.id);
 
-  if (!profiles) {
-    return null;
-  }
-
-  const prefrences = profiles[0].preferences;
-
-  const favouriteSignals = Object.keys(prefrences).filter(
-    (signal) => prefrences[signal].favorite,
-  );
-
   if (error) {
     console.error("Error fetching profiles:", error);
     return null;
   }
+
+  if (!profiles || profiles.length === 0) {
+    return null;
+  }
+
+  const prefrences = profiles[0].preferences ?? {};
+
+  const favouriteSignals = Object.keys(prefrences).filter(
+    (signal) => prefrences[signal].favorite,
+  );
 
   if (!signals) {
     return <div>No signals found</div>;

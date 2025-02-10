@@ -18,7 +18,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     redirect("/login");
   }
 
-  const signalId = params.id;
+  const signalId = decodeURIComponent(params.id);
   const userId = user.id;
 
   const { data: profile } = await supabase
@@ -40,11 +40,14 @@ export default async function Page({ params }: { params: { id: string } }) {
         <h2 className="relative mb-2 text-left text-4xl">
           Signal: <span className="font-semibold">{signalId}</span>
         </h2>
-        <SignalTool
-          signalId={signalId}
-          userId={userId}
-          defaultPrefs={defaultPrefs}
-        />
+        <div className="flex items-center gap-4">
+          <h4 className="text-xl font-medium">Signal Settings:</h4>
+          <SignalTool
+            signalId={signalId}
+            userId={userId}
+            defaultPrefs={defaultPrefs}
+          />
+        </div>
       </div>
 
       <div className="mt-4 grid grid-cols-1 items-center gap-4 bg-slate-950 md:grid-cols-2 lg:grid-cols-3">

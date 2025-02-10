@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { saveSignalPreferences } from "@/app/signals/[id]/actions";
+import { saveSignalPreferences } from "@/app/(root)/signals/[id]/actions";
 
 export async function POST(req: NextRequest) {
   try {
