@@ -23,7 +23,7 @@ const RunningSignalCard = ({ instrument, isBuy }) => {
   );
 
   return (
-    <div className="h-[28rem] w-72 rounded-full bg-slate-800">
+    <div className="h-[26rem] w-72 bg-slate-800">
       <div
         className={`flex min-h-24 items-center justify-between ${
           isBuy ? "bg-green-700" : "bg-red-700"

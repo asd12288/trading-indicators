@@ -53,7 +53,10 @@ async function page() {
       {favouriteSignals.length > 0 && (
         <>
           <h2 className="mt-4 text-2xl font-medium">My Signals</h2>
-          <FavoriteSignals favouriteSignals={favouriteSignals} />
+          <FavoriteSignals
+            favouriteSignals={favouriteSignals}
+            prefrences={prefrences}
+          />
           <div className="mb-2 w-full border-2 border-slate-400"></div>
         </>
       )}
@@ -61,7 +64,7 @@ async function page() {
       <div className="grid grid-cols-3 gap-8">
         {signals.map((signal) => (
           <Link key={signal.id} href={`/signals/${signal.name}`}>
-            <SignalCard signalPassed={signal.name} />
+            <SignalCard signalPassed={signal.name} prefrences={prefrences} />
           </Link>
         ))}
       </div>

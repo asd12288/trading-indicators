@@ -8,7 +8,14 @@ import SignalTable from "@/components/SignalTable";
 import Link from "next/link";
 import React from "react";
 
-export default async function Page({ params }: { params: { id: string } }) {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const signalId = decodeURIComponent(id);
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -18,7 +25,6 @@ export default async function Page({ params }: { params: { id: string } }) {
     redirect("/login");
   }
 
-  const signalId = decodeURIComponent(params.id);
   const userId = user.id;
 
   const { data: profile } = await supabase

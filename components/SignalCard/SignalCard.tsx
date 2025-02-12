@@ -4,11 +4,15 @@ import { useEffect, useState } from "react";
 import RunningSignalCard from "./RunningSignalCard";
 import LoaderCards from "../loaders/LoaderCards";
 import FufilledSignalCard from "./FufilledSignalCard";
-import { toast } from "@/hooks/use-toast";
 import supabase from "@/database/supabase/supabase";
+import { notifyUser, soundNotification } from "@/lib/notification";
 
-const SignalCard = ({ signalPassed }) => {
+const SignalCard = ({ signalPassed, prefrences }) => {
   const [signal, setSignal] = useState(null);
+
+  const pref = prefrences || {};
+  const notifications = pref[signalPassed]?.notifications || false;
+  const soundOn = pref[signalPassed]?.volume || false;
 
   // 1. On mount: fetch the latest record from your table
   useEffect(() => {
@@ -31,21 +35,28 @@ const SignalCard = ({ signalPassed }) => {
 
     fetchLatestSignal();
 
-    // 2. Set up subscription for changes:
+    // Card changes when a new signal is added
     const subscription = supabase
       .channel("custom-all-channel")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: signalPassed },
-        (payload) => {
-          if (payload.new) {
-            setSignal(payload.new);
+        async (payload) => {
+          const { data, error } = await supabase
+            .from(signalPassed)
+            .select("*")
+            .order("entry_time", { ascending: false })
+            .limit(1);
 
-            // if the user enabled notifications, show a toast
-            toast({
-              title: `New signal ${payload?.new?.instrument_name}`,
-              description: `${payload.new.exit_price === null ? `A new signal has Started added, Entry Price: ${payload.new.entry_price}` : `A signal has been closed with Exit Price: ${payload.new.exit_price}`}`,
-            });
+          if (error) {
+            console.error("Error fetching latest signal:", error);
+            return;
+          }
+          if (data && data.length > 0) {
+            setSignal(data[0]);
+
+            if (notifications) notifyUser(payload);
+            if (soundOn) soundNotification(payload);
           }
         },
       )
@@ -54,7 +65,7 @@ const SignalCard = ({ signalPassed }) => {
     return () => {
       supabase.removeChannel(subscription);
     };
-  }, [signalPassed]);
+  }, [signalPassed, notifications, soundOn]);
 
   // If we haven't fetched the initial row yet, render a loading placeholder
   if (!signal) {

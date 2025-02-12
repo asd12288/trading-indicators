@@ -2,7 +2,7 @@ import React from "react";
 import SignalCard from "./SignalCard/SignalCard";
 import Link from "next/link";
 
-const FavoriteSignals = ({ favouriteSignals }) => {
+const FavoriteSignals = ({ favouriteSignals, prefrences }) => {
   const cols =
     favouriteSignals.length === 1
       ? "grid-cols-1"
@@ -14,7 +14,7 @@ const FavoriteSignals = ({ favouriteSignals }) => {
     <div className={`grid ${cols} gap-8`}>
       {favouriteSignals.map((signal) => (
         <Link key={signal} href={`/signals/${signal}`}>
-          <SignalCard key={signal} signalPassed={signal} />
+          <SignalCard key={signal} signalPassed={signal} prefrences={prefrences}/>
         </Link>
       ))}
     </div>

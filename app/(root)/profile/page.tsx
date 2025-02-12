@@ -11,7 +11,7 @@ async function page() {
 
   const { data: profile, error } = await supabase
     .from("profiles")
-    .select("preferences")
+    .select("*")
     .eq("id", user?.id);
 
   return (

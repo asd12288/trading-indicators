@@ -18,6 +18,13 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
   const adjustedExitTime = new Date(
     exitTimeInUserTimezone.getTime() - 2 * 60 * 60 * 1000,
   );
+
+  // Calculate how long ago the trade finished
+  const timeAgo = formatDistanceToNow(adjustedExitTime, {
+    addSuffix: true,
+    includeSeconds: true,
+  });
+
   return (
     <div className="h-[26rem] w-72 rounded-lg bg-slate-900">
       <div
@@ -31,8 +38,9 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
             <span> - {trade_side}</span>
           </h3>
           <p className="text-xs">
-            Finished:<br />
-            {formatDistanceToNow(adjustedExitTime, { addSuffix: true, })}
+            Finished:
+            <br />
+            {timeAgo}
           </p>
         </div>
         <div className="flex items-center gap-2">

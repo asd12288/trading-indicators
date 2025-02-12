@@ -23,19 +23,22 @@ function SignalTool({
   defaultPrefs,
   text = "regular",
 }: SignalToolProps) {
-  const [notifications, setNotifications] = useState(
-    defaultPrefs.notifications,
-  );
+  const [notifications, setNotifications] = useState(defaultPrefs.notifications);
   const [volume, setVolume] = useState(defaultPrefs.volume);
   const [favorite, setFavorite] = useState(defaultPrefs.favorite);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   async function updatePreferences(
     notificationsValue: boolean,
     volumeValue: boolean,
     favoriteValue: boolean,
+    originalValues: { notifications: boolean; volume: boolean; favorite: boolean }
   ) {
+    if (isUpdating) return;
+    
+    setIsUpdating(true);
     try {
-      await fetch("/api/preferences", {
+      const response = await fetch("/api/preferences", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -46,69 +49,95 @@ function SignalTool({
           favorite: favoriteValue,
         }),
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to update preferences');
+      }
+
     } catch (err) {
       console.error("Error updating preferences:", err);
+      setNotifications(originalValues.notifications);
+      setVolume(originalValues.volume);
+      setFavorite(originalValues.favorite);
+      
+      toast({
+        title: "Error",
+        description: "Failed to update preferences. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
     }
   }
 
-  function handleNotifications() {
+  async function handleNotifications() {
+    if (isUpdating) return;
+    const originalValues = { notifications, volume, favorite };
     const newNotificationsValue = !notifications;
     setNotifications(newNotificationsValue);
-    updatePreferences(newNotificationsValue, volume, favorite);
-    toast({
-      title: newNotificationsValue
-        ? "Notifications Enabled"
-        : "Notifications Disabled",
-      description: newNotificationsValue
-        ? `You will now receive notifications for ${signalId} `
-        : `You will no longer receive notifications for ${signalId}`,
-    });
+    
+    await updatePreferences(newNotificationsValue, volume, favorite, originalValues);
   }
 
-  function handleVolume() {
+  async function handleVolume() {
+    if (isUpdating) return;
+    const originalValues = { notifications, volume, favorite };
     const newVolumeValue = !volume;
     setVolume(newVolumeValue);
-    updatePreferences(notifications, newVolumeValue, favorite);
-    toast({
-      title: newVolumeValue
-        ? `Volume Enabled for ${signalId}`
-        : `Volume Disabled ${signalId}`,
-      description: newVolumeValue
-        ? `You will now receive volume for ${signalId}`
-        : `You will no longer receive volume for ${signalId}`,
-    });
+
+    // if (newVolumeValue) {
+    //   const audio = new Audio("/audio/sound_on.mp3");
+    //   audio.play();
+    // }
+
+    await updatePreferences(notifications, newVolumeValue, favorite, originalValues);
   }
 
-  function handleFavorite() {
+  async function handleFavorite() {
+    if (isUpdating) return;
+    const originalValues = { notifications, volume, favorite };
     const newFavoriteValue = !favorite;
     setFavorite(newFavoriteValue);
-    updatePreferences(notifications, volume, newFavoriteValue);
-    toast({
-      title: newFavoriteValue
-        ? `${signalId} Added to Favorites`
-        : `${signalId} Removed from Favorites`,
-    });
+    
+    await updatePreferences(notifications, volume, newFavoriteValue, originalValues);
   }
 
   const size = text === "small" ? "text-xl" : "text-4xl";
 
   return (
     <div className="flex items-center space-x-4 border-l-2 pl-4">
-      {notifications ? (
-        <IoIosNotifications className={size} onClick={handleNotifications} />
-      ) : (
-        <IoIosNotificationsOff className={size} onClick={handleNotifications} />
-      )}
-      {volume ? (
-        <FaVolumeUp className={size} onClick={handleVolume} />
-      ) : (
-        <FaVolumeMute className={size} onClick={handleVolume} />
-      )}
-      {favorite ? (
-        <MdFavorite className={size} onClick={handleFavorite} />
-      ) : (
-        <MdFavoriteBorder className={size} onClick={handleFavorite} />
-      )}
+      <button 
+        disabled={isUpdating}
+        onClick={handleNotifications}
+      >
+        {notifications ? (
+          <IoIosNotifications className={size} />
+        ) : (
+          <IoIosNotificationsOff className={size} />
+        )}
+      </button>
+      
+      <button 
+        disabled={isUpdating}
+        onClick={handleVolume}
+      >
+        {volume ? (
+          <FaVolumeUp className={size} />
+        ) : (
+          <FaVolumeMute className={size} />
+        )}
+      </button>
+      
+      <button 
+        disabled={isUpdating}
+        onClick={handleFavorite}
+      >
+        {favorite ? (
+          <MdFavorite className={size} />
+        ) : (
+          <MdFavoriteBorder className={size} />
+        )}
+      </button>
     </div>
   );
 }

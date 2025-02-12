@@ -31,6 +31,12 @@ const SignalTable = ({ signalPassed }) => {
     fetchLatestSignals();
   }, [signalPassed]);
 
+  if (signals?.length === 0) {
+    return (
+      <div className="text-slate-100">No signals found for the last 3 days</div>
+    );
+  }
+
   if (!signals) {
     return <TableSignalsLoader />;
   }

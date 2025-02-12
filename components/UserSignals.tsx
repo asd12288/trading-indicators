@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   Table,
@@ -10,9 +12,17 @@ import {
 import SignalTool from "./SignalCard/SignalTool";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { deleteSignal } from "@/app/(root)/profile/actions";
+import { useRouter } from "next/navigation";
 
 const UserSignals = ({ user, profile }) => {
   const userPreferences = profile?.[0].preferences || {};
+  const router = useRouter();
+
+  async function handleDelete(signal: string) {
+    await deleteSignal(signal, user.id);
+    router.refresh();
+  }
 
   if (!userPreferences || Object.keys(userPreferences).length === 0)
     return (
@@ -25,26 +35,32 @@ const UserSignals = ({ user, profile }) => {
     );
 
   return (
-    <div>
-      <Table>
+    <div className="w-full">
+      <Table className="w-[45rem]">
         <TableHeader>
           <TableRow>
             <TableHead>Signal</TableHead>
 
             <TableHead>Actions</TableHead>
+            <TableHead>Remove from dashboard</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {Object.keys(userPreferences).map((signal) => {
-            const { volume, favorite, notifications } = userPreferences[signal];
+            const { volume, favorite, notifications } = userPreferences[
+              signal
+            ] as { volume: boolean; favorite: boolean; notifications: boolean };
             return (
               <TableRow key={signal}>
-                <Link href={`/signals/${signal}`}>
-                  <TableCell>{decodeURIComponent(signal)}</TableCell>
-                </Link>
+                <TableCell>
+                  <Link href={`/signals/${signal}`}>
+                    {decodeURIComponent(signal)}
+                  </Link>
+                </TableCell>
 
                 <TableCell>
                   <SignalTool
+                    key={`${signal}-${JSON.stringify(userPreferences[signal])}`}
                     signalId={signal}
                     userId={user?.id}
                     defaultPrefs={{ notifications, volume, favorite }}
@@ -52,7 +68,7 @@ const UserSignals = ({ user, profile }) => {
                   />
                 </TableCell>
                 <TableCell>
-                  <Button>Delete</Button>
+                  <Button onClick={() => handleDelete(signal)}>Remove</Button>
                 </TableCell>
               </TableRow>
             );

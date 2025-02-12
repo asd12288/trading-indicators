@@ -1,13 +1,16 @@
 import React from "react";
+import { Metadata } from "next";
 
 export async function generateMetadata({
   params,
 }: {
   params: { id: string };
 }): Promise<Metadata> {
+  const decodedId = decodeURIComponent(params.id);
+
   return {
-    title: `Fast Signals - ${params.id}`,
-    description: `Get the best signals for your trades (ID: ${params.id})`,
+    title: `Fast Signals - ${decodedId}`,
+    description: `Get the best signals for your trades (ID: ${decodedId})`,
   };
 }
 
