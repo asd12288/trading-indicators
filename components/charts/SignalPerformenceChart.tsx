@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React, { useEffect, useState } from "react";
 import {
@@ -12,37 +12,21 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { format } from "date-fns";
-import supabase from "@/database/supabase/supabase";
 
-const PerformanceChart = ({ signalPassed }) => {
+const PerformanceChart = ({ allSignal }) => {
   const [chartData, setChartData] = useState<any[] | null>(null);
 
   useEffect(() => {
-    const fetchPerformanceData = async () => {
-      const { data, error } = await supabase
-        .from(signalPassed)
-        .select(
-          "entry_time, entry_price, exit_price, trade_side, trade_duration",
-        );
-
-      if (error || !data) {
-        console.error("Error fetching performance data:", error);
-        return;
-      }
-      // Convert strings to numbers where needed and keep trade_side as string
-      const formattedData = data.map((trade: any) => ({
-        entry_time: trade.entry_time,
-        entry_price: Number(trade.entry_price),
-        exit_price: Number(trade.exit_price),
-        trade_side: trade.trade_side,
-        trade_duration: trade.trade_duration,
-      }));
-
-      setChartData(formattedData);
-    };
-
-    fetchPerformanceData();
-  }, [signalPassed]);
+    // Convert strings to numbers as needed and keep trade_side intact
+    const formattedData = allSignal.map((trade: any) => ({
+      entry_time: trade.entry_time,
+      entry_price: Number(trade.entry_price),
+      exit_price: Number(trade.exit_price),
+      trade_side: trade.trade_side,
+      trade_duration: trade.trade_duration,
+    }));
+    setChartData(formattedData);
+  }, [allSignal]);
 
   if (!chartData) {
     return (
@@ -61,7 +45,6 @@ const PerformanceChart = ({ signalPassed }) => {
           margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-          {/* Use a formatter to show only dd/MM */}
           <XAxis
             dataKey="entry_time"
             stroke="#cbd5e1"
@@ -72,7 +55,7 @@ const PerformanceChart = ({ signalPassed }) => {
           <YAxis stroke="#cbd5e1" scale="log" domain={["auto", "auto"]} />
           <Tooltip
             wrapperClassName="bg-slate-700 text-slate-100 p-2 rounded"
-            content={({ active, payload, label }) => {
+            content={({ active, payload }) => {
               if (!active || !payload || !payload.length) {
                 return null;
               }

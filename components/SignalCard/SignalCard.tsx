@@ -7,79 +7,54 @@ import FufilledSignalCard from "./FufilledSignalCard";
 import supabase from "@/database/supabase/supabase";
 import { notifyUser, soundNotification } from "@/lib/notification";
 
-const SignalCard = ({ signalPassed, prefrences }) => {
-  const [signal, setSignal] = useState(null);
+const SignalCard = ({ signalPassed, preferences }) => {
+  const [signal, setSignal] = useState(signalPassed);
+  const pref = preferences || {};
 
-  const pref = prefrences || {};
-  const notifications = pref[signalPassed]?.notifications || false;
-  const soundOn = pref[signalPassed]?.volume || false;
+  // Adjust these keys as needed to match your preferences object
+  const notifications =
+    pref[signalPassed.instrument_name]?.notifications || false;
+  const soundOn = pref[signalPassed.instrument_name]?.volume || false;
 
-  // 1. On mount: fetch the latest record from your table
   useEffect(() => {
-    const fetchLatestSignal = async () => {
-      const { data, error } = await supabase
-        .from(signalPassed)
-        .select("*")
-        .order("entry_time", { ascending: false }) // or whichever column
-        .limit(1);
-
-      if (error) {
-        console.error("Error fetching latest signal:", error);
-        return;
-      }
-
-      if (data && data.length > 0) {
-        setSignal(data[0]);
-      }
-    };
-
-    fetchLatestSignal();
-
-    // Card changes when a new signal is added
-    const subscription = supabase
-      .channel("custom-all-channel")
+    const channel = supabase
+      .channel("custom-update-channel")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: signalPassed },
-        async (payload) => {
-          const { data, error } = await supabase
-            .from(signalPassed)
-            .select("*")
-            .order("entry_time", { ascending: false })
-            .limit(1);
-
-          if (error) {
-            console.error("Error fetching latest signal:", error);
-            return;
-          }
-          if (data && data.length > 0) {
-            setSignal(data[0]);
-
-            if (notifications) notifyUser(payload);
-            if (soundOn) soundNotification(payload);
+        { event: "UPDATE", schema: "public", table: "all_signals" },
+        (payload) => {
+          console.log("Change received!", payload);
+          // Check if the updated row is the one we're displaying
+          if (payload.new.id === signalPassed.id) {
+            setSignal(payload.new);
+            if (notifications) {
+              notifyUser("Signal updated!");
+            }
+            // if (soundOn) {
+            //   soundNotification();
+            // }
           }
         },
       )
       .subscribe();
 
+    // Cleanup the subscription on unmount
     return () => {
-      supabase.removeChannel(subscription);
+      supabase.removeChannel(channel);
     };
   }, [signalPassed, notifications, soundOn]);
 
-  // If we haven't fetched the initial row yet, render a loading placeholder
   if (!signal) {
     return <LoaderCards />;
   }
 
-  const { exit_price, trade_side } = signal;
-  const isBuy = trade_side === "Long";
+  const isBuy = signal.trade_side === "Long" ? true : false;
 
-  if (exit_price !== null) {
-    return <FufilledSignalCard instrument={signal} isBuy={isBuy} />;
-  } else {
+  if (signal.exit_price === null) {
     return <RunningSignalCard instrument={signal} isBuy={isBuy} />;
   }
+
+  return <FufilledSignalCard instrument={signal} isBuy={isBuy} />;
 };
 
 export default SignalCard;

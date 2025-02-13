@@ -5,39 +5,16 @@ import SignalTableRow from "./SignalTableRow";
 import TableSignalsLoader from "./loaders/TableSignalsLoader";
 import supabase from "@/database/supabase/supabase";
 
-const SignalTable = ({ signalPassed }) => {
-  const [signals, setSignals] = useState(null);
+const SignalTable = ({ allSignal }) => {
+  console.log(allSignal);
 
-  useEffect(() => {
-    const fetchLatestSignals = async () => {
-      const threeDaysAgo = new Date(
-        Date.now() - 3 * 24 * 60 * 60 * 1000,
-      ).toISOString();
-      const { data, error } = await supabase
-        .from(signalPassed)
-        .select("*")
-        .gte("entry_time", threeDaysAgo)
-        .order("entry_time", { ascending: false });
-
-      if (error) {
-        console.error("Error fetching signals from last 3 days:", error);
-        return null;
-      }
-
-      if (data && data.length > 0) {
-        setSignals(data);
-      }
-    };
-    fetchLatestSignals();
-  }, [signalPassed]);
-
-  if (signals?.length === 0) {
+  if (allSignal?.length === 0) {
     return (
       <div className="text-slate-100">No signals found for the last 3 days</div>
     );
   }
 
-  if (!signals) {
+  if (!allSignal) {
     return <TableSignalsLoader />;
   }
 
@@ -64,7 +41,7 @@ const SignalTable = ({ signalPassed }) => {
           </tr>
         </thead>
         <tbody>
-          {signals?.map((signal) => (
+          {allSignal?.map((signal) => (
             <SignalTableRow key={signal.client_trade_id} signal={signal} />
           ))}
         </tbody>

@@ -1,47 +1,36 @@
-'use client'
+"use client";
 
-import supabase from "@/database/supabase/supabase";
 import React, { useEffect, useState } from "react";
-
 import {
   PieChart,
   Pie,
   Cell,
   Tooltip,
   Legend,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from "recharts";
 
 const COLORS = ["#22c55e", "#ef4444"]; // matching the green/red scheme
 
-const SignalWinRateChart = ({ signalPassed }) => {
+const SignalWinRateChart = ({ allSignals }) => {
   const [chartData, setChartData] = useState<any[] | null>(null);
 
   useEffect(() => {
-    const fetchAndComputeTicks = async () => {
-      const { data, error } = await supabase.from(signalPassed).select("*");
+    if (!allSignals || !Array.isArray(allSignals)) return;
 
-      if (error || !data) {
-        console.error("Error fetching signals:", error);
-        return;
-      }
+    const totalPositiveTicks = allSignals
+      .filter((sig) => sig.result_ticks > 0)
+      .reduce((acc, sig) => acc + sig.result_ticks, 0);
 
-      const totalPositiveTicks = data
-        .filter((sig) => sig.result_ticks > 0)
-        .reduce((acc, sig) => acc + sig.result_ticks, 0);
+    const totalNegativeTicks = allSignals
+      .filter((sig) => sig.result_ticks < 0)
+      .reduce((acc, sig) => acc + Math.abs(sig.result_ticks), 0);
 
-      const totalNegativeTicks = data
-        .filter((sig) => sig.result_ticks < 0)
-        .reduce((acc, sig) => acc + Math.abs(sig.result_ticks), 0);
-
-      setChartData([
-        { name: "Positive Ticks", value: totalPositiveTicks },
-        { name: "Negative Ticks", value: totalNegativeTicks }
-      ]);
-    };
-
-    fetchAndComputeTicks();
-  }, [signalPassed]);
+    setChartData([
+      { name: "Positive Ticks", value: totalPositiveTicks },
+      { name: "Negative Ticks", value: totalNegativeTicks },
+    ]);
+  }, [allSignals]);
 
   if (!chartData) {
     return (
@@ -72,9 +61,7 @@ const SignalWinRateChart = ({ signalPassed }) => {
               />
             ))}
           </Pie>
-          <Tooltip
-            wrapperClassName="bg-slate-700 text-slate-100 p-2 rounded"
-          />
+          <Tooltip wrapperClassName="bg-slate-700 text-slate-100 p-2 rounded" />
           <Legend wrapperStyle={{ color: "#cbd5e1" }} />
         </PieChart>
       </ResponsiveContainer>

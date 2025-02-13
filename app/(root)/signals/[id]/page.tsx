@@ -7,7 +7,7 @@ import SignalCard from "@/components/SignalCard/SignalCard";
 import SignalTable from "@/components/SignalTable";
 import Link from "next/link";
 import React from "react";
-import { ArrowBigLeft, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export default async function Page({
   params,
@@ -16,7 +16,6 @@ export default async function Page({
 }) {
   const { id } = await params;
   const signalId = decodeURIComponent(id);
-
   const supabase = await createClient();
   const {
     data: { user },
@@ -28,14 +27,38 @@ export default async function Page({
 
   const userId = user.id;
 
-  const { data: profile } = await supabase
+  const { data } = await supabase
     .from("profiles")
     .select("preferences")
     .eq("id", userId)
     .single();
 
-  const defaultPrefs = (profile?.preferences &&
-    profile.preferences[signalId]) || {
+  const { preferences } = data;
+
+  const { data: lastSignal, error: lastSignalError } = await supabase
+    .from("all_signals")
+    .select("*")
+    .eq("instrument_name", signalId)
+    .order("entry_time", { ascending: false })
+    .limit(1)
+    .single();
+
+  if (lastSignalError) {
+    console.error("Error fetching signal:", lastSignalError);
+  }
+
+  const { data: allSignals, error: allSignalError } = await supabase
+    .from("all_signals")
+    .select("*")
+    .eq("instrument_name", signalId)
+    .order("entry_time", { ascending: false })
+    .limit(50);
+
+  if (allSignalError) {
+    console.error("Error fetching signal:", allSignalError);
+  }
+
+  const defaultPrefs = (preferences && preferences[signalId]) || {
     notifications: false,
     volume: false,
     favorite: false,
@@ -68,21 +91,21 @@ export default async function Page({
           <h2 className="mb-4 text-xl font-semibold text-slate-100">
             Trade card - Live
           </h2>
-          <SignalCard signalPassed={signalId} />
+          <SignalCard signalPassed={lastSignal} preferences={preferences} />
         </div>
         <div className="col-span-2">
           <div className="flex h-full w-full flex-col items-center rounded-2xl bg-slate-800 p-4 shadow-lg">
             <h2 className="mb-4 text-xl font-semibold text-slate-100">
               Orders of the last 3 days
             </h2>
-            <SignalTable signalPassed={signalId} />
+            <SignalTable allSignal={allSignals} />
           </div>
         </div>
         <div className="col-span-1">
-          <SignalWinRateChart signalPassed={signalId} />
+          <SignalWinRateChart allSignals={allSignals} />
         </div>
         <div className="col-span-2">
-          <SignalPerformenceChart signalPassed={signalId} />
+          <SignalPerformenceChart allSignal={allSignals} />
         </div>
       </div>
       <h3 className="mt-4 text-slate-400 hover:underline">
