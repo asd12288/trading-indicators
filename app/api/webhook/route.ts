@@ -1,6 +1,7 @@
+import { createClient } from "@/database/supabase/server";
 import { getPaddleInstance } from "@/utils/paddle/get-paddle-instance";
 import { ProcessWebhook } from "@/utils/paddle/process-webhook";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const webhookProcessor = new ProcessWebhook();
 
@@ -9,7 +10,6 @@ export async function POST(request: NextRequest) {
   const rawRequestBody = await request.text();
   const privateKey = process.env.WEBHOOK_PADDLE_SECRET_KEY || "";
 
-  
   let status, eventName;
 
   try {
@@ -28,7 +28,12 @@ export async function POST(request: NextRequest) {
       }
     } else {
       status = 400;
-      console.log("Missing signature or request body. Signature:", signature, "Request Body:", rawRequestBody);
+      console.log(
+        "Missing signature or request body. Signature:",
+        signature,
+        "Request Body:",
+        rawRequestBody,
+      );
     }
   } catch (e) {
     status = 500;

@@ -7,6 +7,7 @@ import {
   SubscriptionCreatedEvent,
   SubscriptionUpdatedEvent,
   SubscriptionActivatedEvent,
+  SubscriptionCanceledEvent,
 } from "@paddle/paddle-node-sdk";
 
 export class ProcessWebhook {
@@ -20,6 +21,9 @@ export class ProcessWebhook {
       case EventName.CustomerCreated:
       case EventName.CustomerUpdated:
         await this.updateCustomerData(eventData);
+        break;
+      case EventName.SubscriptionCanceled:
+        await this.handleSubscriptionCanceled(eventData);
         break;
     }
   }
@@ -38,20 +42,12 @@ export class ProcessWebhook {
       if (!userId) {
         throw new Error("User ID not found in subscription data");
       }
+
       const { data: planUpdateData, error: planUpdateError } = await supabase
         .from("profiles")
-        .update({ plan: "pro" })
-        .eq("id", userId);
-
-      if (planUpdateError) {
-        console.error("Error updating user plan:", planUpdateError);
-      } else {
-        console.log("User plan updated to pro:", planUpdateData);
-      }
-      const response = await supabase
-        .from("profiles")
-        .upsert({
+        .update({
           id: userId,
+          plan: "pro",
           subscription_id: eventData.data.id,
           subscription_status: eventData.data.status,
           price_id: eventData.data.items[0].price?.id ?? "",
@@ -59,8 +55,13 @@ export class ProcessWebhook {
           scheduled_change: eventData.data.scheduledChange?.effectiveAt,
           customer_id: eventData.data.customerId,
         })
-        .select();
-      console.log(response);
+        .eq("id", userId);
+
+      if (planUpdateError) {
+        console.error("Error updating user plan:", planUpdateError);
+      } else {
+        console.log("User plan updated to pro:", planUpdateData);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -83,4 +84,26 @@ export class ProcessWebhook {
       console.error(e);
     }
   }
+
+  private async handleSubscriptionCanceled(eventData: SubscriptionCanceledEvent) {
+    try {
+      const supabase = await createClient();
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          plan: "free",
+          subscription_status: "canceled",
+          scheduled_change: null,
+        })
+        .eq("subscription_id", eventData.data.id);
+
+      if (error) {
+        console.error("Error updating profile on cancellation:", error);
+      }
+    } catch (e) {
+      console.error("Error handling subscription cancellation:", e);
+    }
+  }
 }
+
+

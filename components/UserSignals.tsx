@@ -16,7 +16,7 @@ import { deleteSignal } from "@/app/(root)/profile/actions";
 import { useRouter } from "next/navigation";
 
 const UserSignals = ({ user, profile }) => {
-  const userPreferences = profile?.[0].preferences || {};
+  const userPreferences = profile?.preferences || {};
   const router = useRouter();
 
   async function handleDelete(signal: string) {

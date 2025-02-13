@@ -44,10 +44,11 @@ const Hero = () => {
         </div>
         <div className="w- md:w-2/5 md:p-9">
           <Image
-            className="hidden h-auto w-full lg:block"
+            className="hidden lg:block"
             src={hero}
             width={600}
             height={800}
+            quality={100}
             alt="hero-image"
           />
         </div>

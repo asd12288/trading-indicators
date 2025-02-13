@@ -7,6 +7,7 @@ import SignalCard from "@/components/SignalCard/SignalCard";
 import SignalTable from "@/components/SignalTable";
 import Link from "next/link";
 import React from "react";
+import { ArrowBigLeft, ArrowLeft } from "lucide-react";
 
 export default async function Page({
   params,
@@ -42,6 +43,12 @@ export default async function Page({
 
   return (
     <div className="mb-8 flex flex-col p-12">
+      <Link href="/signals">
+        <div className="flex cursor-pointer items-center gap-4 hover:text-slate-400">
+          <ArrowLeft size={24} />
+          <p className="my-2 text-xl">All Signals</p>
+        </div>
+      </Link>
       <div className="flex w-full flex-col items-center gap-4 rounded-xl bg-slate-800 p-4 md:flex-row md:items-center md:justify-between">
         <h2 className="relative mb-2 text-left text-4xl">
           Signal: <span className="font-semibold">{signalId}</span>

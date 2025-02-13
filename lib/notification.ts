@@ -11,11 +11,11 @@ export const notifyUser = (payload: any) => {
   });
 };
 
-export const soundNotification = (paylaod) => {
+export const soundNotification = (payload) => {
   const audioStart = new Audio("audio/newSignal.mp3");
   const audioEnd = new Audio("audio/endSignal.mp3");
 
-  if (paylaod.new.exit_price === null) {
+  if (payload.new.exit_price === null) {
     audioStart.play();
   } else {
     audioEnd.play();

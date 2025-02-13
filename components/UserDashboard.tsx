@@ -1,7 +1,7 @@
 "use client";
 import { User2Icon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { BsBookmarkStar } from "react-icons/bs";
 import { GoGraph } from "react-icons/go";
 import { RiLockPasswordLine } from "react-icons/ri";
@@ -9,15 +9,26 @@ import ProfileCard from "./ProfileCard";
 import ResetPasswordForm from "./ResetPasswordForm";
 import UpgradeAccount from "./UpgradeAccount";
 import UserSignals from "./UserSignals";
+import ManageAccount from "./ManageAccount";
 
 const UserDashboard = ({ user, profile }) => {
+  const searchParams = useSearchParams();
   const [tab, setTab] = useState<string>("profile");
   const router = useRouter();
+
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (tabParam) {
+      setTab(tabParam);
+    }
+  }, [searchParams]);
 
   const handleTabChange = (newTab: string) => {
     setTab(newTab);
     router.refresh();
   };
+
+  const isPro = profile?.plan === "pro";
 
   return (
     <div className="flex h-[600px] w-[1200px] rounded-md bg-slate-800">
@@ -25,27 +36,37 @@ const UserDashboard = ({ user, profile }) => {
         <aside className="h-full w-64 border-r border-slate-700 p-12 pl-6">
           <nav>
             <ul className="space-y-6 text-lg">
-              <li className="flex items-center gap-2">
+              <li className="flex items-center gap-2 rounded-lg px-4 py-2">
                 <User2Icon />
                 <button onClick={() => handleTabChange("profile")}>
                   My Profile
                 </button>
               </li>
-              <li className="flex items-center gap-2">
+              <li className="flex items-center gap-2 rounded-lg px-4 py-2">
                 <RiLockPasswordLine className="text-2xl" />
 
                 <button onClick={() => handleTabChange("password")}>
                   Password{" "}
                 </button>
               </li>
-              <li className="flex items-center gap-2">
-                <BsBookmarkStar />
 
-                <button onClick={() => handleTabChange("upgrade")}>
-                  Upgrade to pro
-                </button>
-              </li>
-              <li className="flex items-center gap-2">
+              {isPro ? (
+                <li className="flex items-center gap-2 rounded-lg px-4 py-2">
+                  <BsBookmarkStar />
+                  <button onClick={() => handleTabChange("manage")}>
+                    Manage Account{" "}
+                  </button>
+                </li>
+              ) : (
+                <li className="flex items-center gap-2 rounded-lg px-4 py-2">
+                  <BsBookmarkStar />
+                  <button onClick={() => handleTabChange("upgrade")}>
+                    Pro Account{" "}
+                  </button>
+                </li>
+              )}
+
+              <li className="flex items-center gap-2 rounded-lg px-4 py-2">
                 <GoGraph />
 
                 <button onClick={() => handleTabChange("my-signals")}>
@@ -62,6 +83,7 @@ const UserDashboard = ({ user, profile }) => {
           {tab === "profile" && <ProfileCard user={user} profile={profile} />}
           {tab === "upgrade" && <UpgradeAccount />}
           {tab === "password" && <ResetPasswordForm />}
+          {tab === "manage" && <ManageAccount profile={profile} />}
           {tab === "my-signals" && (
             <UserSignals user={user} profile={profile} />
           )}

@@ -27,7 +27,7 @@ const ProfileCard = ({ user, profile }: ProfileCardProps) => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { username, avatarUrl, plan, email } = profile[0] || {};
+  const { username, avatarUrl, plan, email } = profile || {};
   const userId = user.id;
 
   const handleSubmit = async (formData: FormData) => {
@@ -111,7 +111,7 @@ const ProfileCard = ({ user, profile }: ProfileCardProps) => {
             </p>
 
             {plan === "free" ? (
-              <Link href="/">
+              <Link href="/profile?tab=upgrade">
                 <p className="rounded-lg bg-green-700 px-3 py-2 font-semibold hover:bg-green-800">
                   Upgrade to pro
                 </p>

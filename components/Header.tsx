@@ -1,6 +1,8 @@
 import { createClient } from "@/database/supabase/server";
 import Link from "next/link";
 import LogoutBtn from "./LogoutBtn";
+import UpgradeButton from "./UpgradeButton";
+import Image from "next/image";
 
 async function Header() {
   const supabase = await createClient();
@@ -9,12 +11,22 @@ async function Header() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user?.id)
+    .single();
+
+  if (error) {
+    console.error(error);
+  }
+
   return (
     <div className="z-50 hidden w-full md:block">
       <ul className="flex items-center justify-between p-8 text-lg font-medium">
         <li>
           <Link href="/">
-            <h2 className="text-3xl font-medium">Logo</h2>
+            <Image src="/logo.png" alt="logo" width={200} height={100} />
           </Link>
         </li>
 
@@ -34,13 +46,15 @@ async function Header() {
             </Link>
           </li>
           {user === null ? (
-            <li>
-              <Link href="/login" className="hover:text-slate-300">
-                <button className="flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 hover:bg-slate-900">
-                  Login
-                </button>
-              </Link>
-            </li>
+            <>
+              <li>
+                <Link href="/login" className="hover:text-slate-300">
+                  <button className="flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 hover:bg-slate-900">
+                    Login
+                  </button>
+                </Link>
+              </li>
+            </>
           ) : (
             <>
               <li>
@@ -48,6 +62,8 @@ async function Header() {
                   Profile
                 </Link>
               </li>
+
+              <UpgradeButton profile={profile} />
 
               <li>
                 <LogoutBtn />

@@ -7,7 +7,7 @@ const page = async () => {
   const { data } = await supabase.auth.getUser();
 
   return (
-    <div>
+    <div className="flex h-screen flex-col items-center justify-center p-12">
       <Checkout userEmail={data.user?.email} userId={data.user?.id} />
     </div>
   );

@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <section className="bottom absolute flex w-full items-center justify-between bg-slate-900 p-8 text-white">
       <div>
-        <h4 className="text-3xl font-semibold">Logo</h4>
+        <h4 className="text-3xl font-semibold">World Trade Signals</h4>
         <p className="text-thin mt-3">
           © 2025 Company Co. All rights reserved.
         </p>

@@ -12,7 +12,8 @@ async function page() {
   const { data: profile, error } = await supabase
     .from("profiles")
     .select("*")
-    .eq("id", user?.id);
+    .eq("id", user?.id)
+    .single();
 
   return (
     <div className="flex flex-col items-center justify-center p-12">
