@@ -16,6 +16,8 @@ const SignalCard = ({ signalPassed, preferences }) => {
     pref[signalPassed.instrument_name]?.notifications || false;
   const soundOn = pref[signalPassed.instrument_name]?.volume || false;
 
+  console.log(soundOn);
+
   useEffect(() => {
     const channel = supabase
       .channel("custom-update-channel")
@@ -28,11 +30,11 @@ const SignalCard = ({ signalPassed, preferences }) => {
           if (payload.new.id === signalPassed.id) {
             setSignal(payload.new);
             if (notifications) {
-              notifyUser("Signal updated!");
+              notifyUser(payload);
             }
-            // if (soundOn) {
-            //   soundNotification();
-            // }
+            if (soundOn) {
+              soundNotification(payload);
+            }
           }
         },
       )

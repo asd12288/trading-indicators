@@ -11,7 +11,7 @@ export const notifyUser = (payload: any) => {
   });
 };
 
-export const soundNotification = (payload) => {
+export const soundNotification = (payload: any) => {
   const audioStart = new Audio("audio/newSignal.mp3");
   const audioEnd = new Audio("audio/endSignal.mp3");
 

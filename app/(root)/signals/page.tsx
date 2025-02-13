@@ -83,9 +83,9 @@ async function page() {
       )}
 
       <div className="grid grid-cols-3 gap-8">
-        {latestSignals.map((signal) => (
+        {latestSignals.map((signal, index) => (
           <Link
-            key={signal.instrument_name}
+            key={signal.id ?? `${signal.instrument_name}-${index}`}
             href={`/signals/${encodeURIComponent(signal.instrument_name)}`}
           >
             <SignalCard signalPassed={signal} preferences={preferences} />
