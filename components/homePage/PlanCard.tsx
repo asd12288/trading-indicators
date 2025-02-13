@@ -24,7 +24,7 @@ const PlanCard = ({ title, price, benefits, icon, size = "regular" }) => {
             <Benefit benefit={benefit} key={index} />
           ))}
         </div>
-        <Link href="/checkout?priceId=pri_01jkxw8zjnvbkr2ehd3h900z8f">
+        <Link href="/checkout/priceId=pri_01jkxw8zjnvbkr2ehd3h900z8f">
           <button className="mt-4 w-full rounded-xl bg-green-800 px-4 py-2 text-sm hover:bg-green-900">
             Upgrade to pro account
           </button>
@@ -45,7 +45,7 @@ const PlanCard = ({ title, price, benefits, icon, size = "regular" }) => {
         </p>
       </div>
       <Link
-        href="/checkout?priceId=pri_01jkxw8zjnvbkr2ehd3h900z8f"
+        href="/checkout/priceId=pri_01jkxw8zjnvbkr2ehd3h900z8f"
         className="w-full"
       >
         <button className="mt-4 w-full rounded-full bg-green-600 p-3 text-lg text-green-50 transition-all hover:bg-green-700">

@@ -9,9 +9,9 @@ const UpgradeAccount = () => {
       <h1 className="text-center text-3xl font-semibold">
         Upgrade your account
       </h1>
-      <Plans size="small" />
+      <Plans  size="small" />
     </div>
-  )
+  );
 };
 
 export default UpgradeAccount;
