@@ -7,7 +7,7 @@ import Link from "next/link";
 const PlanCard = ({ title, price, benefits, icon, size = "regular" }) => {
   if (size === "small") {
     return (
-      <div className="w-52 mx-6">
+      <div className="mx-6 w-52">
         <div className="flex items-center gap-4">
           <h3 className="text-2xl">{icon}</h3>
           <h3 className="text-xl font-medium">{title}</h3>
@@ -19,13 +19,15 @@ const PlanCard = ({ title, price, benefits, icon, size = "regular" }) => {
           </p>
         </div>
 
-        <div className="text-sm mt-2 space-y-2">
+        <div className="mt-2 space-y-2 text-sm">
           {Object.values(benefits).map((benefit, index) => (
-            <Benefit benefit={benefit} key={index}  />
+            <Benefit benefit={benefit} key={index} />
           ))}
         </div>
-        <Link href="/payment">
-          <button className="mt-4 w-full bg-green-800 hover:bg-green-900 px-4 py-2 text-sm rounded-xl">Upgrade to pro account</button>
+        <Link href="/checkout?priceId=pri_01jkxw8zjnvbkr2ehd3h900z8f">
+          <button className="mt-4 w-full rounded-xl bg-green-800 px-4 py-2 text-sm hover:bg-green-900">
+            Upgrade to pro account
+          </button>
         </Link>
       </div>
     );
@@ -42,7 +44,10 @@ const PlanCard = ({ title, price, benefits, icon, size = "regular" }) => {
           20% discount
         </p>
       </div>
-      <Link href="/signup" className="w-full">
+      <Link
+        href="/checkout?priceId=pri_01jkxw8zjnvbkr2ehd3h900z8f"
+        className="w-full"
+      >
         <button className="mt-4 w-full rounded-full bg-green-600 p-3 text-lg text-green-50 transition-all hover:bg-green-700">
           Upgrade to pro account
         </button>

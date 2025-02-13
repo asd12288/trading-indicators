@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/database/supabase/server";
-import { z } from "zod";
 
 export async function sendResetPasswordEmail(prev, formData) {
   const supabase = await createClient();

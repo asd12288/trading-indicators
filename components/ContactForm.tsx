@@ -1,5 +1,3 @@
-import Form from "next/form";
-import React from "react";
 
 const ContactForm = () => {
   return (

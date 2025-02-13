@@ -106,7 +106,7 @@ export async function oAuthSignIn(provider: Provider) {
 
 export async function resetPassword(email: string) {
   const supabase = await createClient();
-  const { error } = await supabase.auth.api.resetPasswordForEmail(email);
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
 
   if (error) {
     return { error: error.message };
