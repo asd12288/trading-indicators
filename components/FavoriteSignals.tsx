@@ -16,10 +16,10 @@ const FavoriteSignals = ({ favouriteSignals, preferences }) => {
       <div className={`grid ${cols} gap-8`}>
         {favouriteSignals.map((signal) => (
           <Link
-            key={signal.id}
+            key={signal.client_trade_id}
             href={`/signals/${encodeURIComponent(signal.instrument_name)}`}
           >
-            <SignalCard signalPassed={signal} preferences={preferences} key={signal.id} />
+            <SignalCard signalPassed={signal} preferences={preferences} />
           </Link>
         ))}
       </div>
