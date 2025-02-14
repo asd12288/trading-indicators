@@ -11,16 +11,20 @@ const FavoriteSignals = ({ favouriteSignals, preferences }) => {
         : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
 
   return (
-    <div className={`grid ${cols} gap-8`}>
-      {favouriteSignals.map((signal) => (
-        <Link
-          key={signal.id}
-          href={`/signals/${encodeURIComponent(signal.instrument_name)}`}
-        >
-          <SignalCard signalPassed={signal} preferences={preferences} />
-        </Link>
-      ))}
-    </div>
+    <>
+      <h2 className="mt-4 text-2xl font-medium">My Signals</h2>
+      <div className={`grid ${cols} gap-8`}>
+        {favouriteSignals.map((signal) => (
+          <Link
+            key={signal.id}
+            href={`/signals/${encodeURIComponent(signal.instrument_name)}`}
+          >
+            <SignalCard signalPassed={signal} preferences={preferences} key={signal.id} />
+          </Link>
+        ))}
+      </div>
+      <div className="mb-2 w-full border-2 border-slate-400"></div>
+    </>
   );
 };
 

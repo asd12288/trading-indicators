@@ -1,8 +1,8 @@
-import React from "react";
+import React, { ReactNode } from "react";
 
 export const revalidate = 1;
 
-const layout = ({ children }) => {
+const layout = ({ children }: { children: ReactNode }) => {
   return <div>{children}</div>;
 };
 

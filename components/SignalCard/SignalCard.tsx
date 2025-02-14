@@ -11,7 +11,6 @@ const SignalCard = ({ signalPassed, preferences }) => {
   const [signal, setSignal] = useState(signalPassed);
   const pref = preferences || {};
 
-  // Adjust these keys as needed to match your preferences object
   const notifications =
     pref[signalPassed.instrument_name]?.notifications || false;
   const soundOn = pref[signalPassed.instrument_name]?.volume || false;

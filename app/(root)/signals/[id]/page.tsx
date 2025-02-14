@@ -1,4 +1,4 @@
-import { createClient } from "@/database/supabase/server";
+import { fetchSignalDetailData } from "@/lib/fetchSignalsData";
 import { redirect } from "next/navigation";
 import SignalTool from "@/components/SignalCard/SignalTool";
 import SignalPerformenceChart from "@/components/charts/SignalPerformenceChart";
@@ -9,55 +9,12 @@ import Link from "next/link";
 import React from "react";
 import { ArrowLeft } from "lucide-react";
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const signalId = decodeURIComponent(id);
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export default async function Page({ params }: { params: { id: string } }) {
+  const signalId = decodeURIComponent(params.id);
+  const { lastSignal, allSignals, preferences, user } =
+    await fetchSignalDetailData(signalId);
 
-  if (!user) {
-    redirect("/login");
-  }
-
-  const userId = user.id;
-
-  const { data } = await supabase
-    .from("profiles")
-    .select("preferences")
-    .eq("id", userId)
-    .single();
-
-  const { preferences } = data;
-
-  const { data: lastSignal, error: lastSignalError } = await supabase
-    .from("all_signals")
-    .select("*")
-    .eq("instrument_name", signalId)
-    .order("entry_time", { ascending: false })
-    .limit(1)
-    .single();
-
-  if (lastSignalError) {
-    console.error("Error fetching signal:", lastSignalError);
-  }
-
-  const { data: allSignals, error: allSignalError } = await supabase
-    .from("all_signals")
-    .select("*")
-    .eq("instrument_name", signalId)
-    .order("entry_time", { ascending: false })
-    .limit(50);
-
-  if (allSignalError) {
-    console.error("Error fetching signal:", allSignalError);
-  }
-
+  // Setup default preferences for current signal (if not set)
   const defaultPrefs = (preferences && preferences[signalId]) || {
     notifications: false,
     volume: false,
@@ -72,6 +29,7 @@ export default async function Page({
           <p className="my-2 text-xl">All Signals</p>
         </div>
       </Link>
+
       <div className="flex w-full flex-col items-center gap-4 rounded-xl bg-slate-800 p-4 md:flex-row md:items-center md:justify-between">
         <h2 className="relative mb-2 text-left text-4xl">
           Signal: <span className="font-semibold">{signalId}</span>
@@ -80,7 +38,7 @@ export default async function Page({
           <h4 className="text-xl font-medium">Signal Settings:</h4>
           <SignalTool
             signalId={signalId}
-            userId={userId}
+            userId={user.id}
             defaultPrefs={defaultPrefs}
           />
         </div>
@@ -109,7 +67,7 @@ export default async function Page({
         </div>
       </div>
       <h3 className="mt-4 text-slate-400 hover:underline">
-        <Link href="/signals">All Signals..</Link>
+        <Link href="/signals">All Signals...</Link>
       </h3>
     </div>
   );
