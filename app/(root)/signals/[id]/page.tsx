@@ -1,13 +1,11 @@
-import { fetchSignalDetailData } from "@/lib/fetchSignalsData";
-import { redirect } from "next/navigation";
-import SignalTool from "@/components/SignalCard/SignalTool";
 import SignalPerformenceChart from "@/components/charts/SignalPerformenceChart";
 import SignalWinRateChart from "@/components/charts/SignalWinRateChart";
 import SignalCard from "@/components/SignalCard/SignalCard";
+import SignalTool from "@/components/SignalCard/SignalTool";
 import SignalTable from "@/components/SignalTable";
-import Link from "next/link";
-import React from "react";
+import { fetchSignalDetailData } from "@/lib/fetchSignalsData";
 import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const signalId = decodeURIComponent(params.id);

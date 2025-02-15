@@ -4,8 +4,11 @@ import { HiArrowRight } from "react-icons/hi";
 import hero from "../../public/hero.png";
 import Link from "next/link";
 import Stats from "../Stats";
+import { fetchSignalsData } from "@/lib/fetchSignalsData";
 
-const Hero = () => {
+const Hero = async () => {
+  const { totalInstruments } = await fetchSignalsData();
+
   return (
     <section className="h-screen">
       <div className="flex h-full flex-col items-center justify-center md:flex-row md:items-center md:justify-around md:p-8">
@@ -38,7 +41,7 @@ const Hero = () => {
 
           <div className="mt-12 flex justify-center gap-12 md:grid md:grid-cols-3 md:gap-4 lg:w-2/3 lg:justify-between lg:gap-20">
             <Stats text="Users" num="1000" symbol="+" />
-            <Stats text="Signals" num="100" symbol="+" />
+            <Stats text="Signals" num={totalInstruments} symbol="+" />
             <Stats text="Win Rate" num="90" symbol="%" />
           </div>
         </div>

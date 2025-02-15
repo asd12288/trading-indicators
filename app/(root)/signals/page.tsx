@@ -1,19 +1,20 @@
-import FavoriteSignals from "@/components/FavoriteSignals";
-import SignalCard from "@/components/SignalCard/SignalCard";
 import SignalsList from "@/components/SignalCard/SignalsList";
-import { fetchSignalsData } from "@/lib/fetchSignalsData";
-import Link from "next/link";
+import { createClient } from "@/database/supabase/server";
+import { profile } from "console";
+
+export const revalidate = 0;
 
 async function page() {
-  let signalsData;
-  try {
-    signalsData = await fetchSignalsData();
-  } catch (error) {
-    console.error("Error fetching signals:", error);
-    return <div>Error fetching signals</div>;
-  }
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const { latestSignals, favouriteSignals, preferences } = signalsData;
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
 
   return (
     <>
@@ -26,11 +27,7 @@ async function page() {
           <span className="hover:underline">check our guide</span> for better
           understanding
         </p>
-        <SignalsList
-          favouriteSignals={favouriteSignals}
-          latestSignals={latestSignals}
-          preferences={preferences}
-        />
+        <SignalsList profile={profile} />
       </div>
     </>
   );

@@ -1,69 +1,56 @@
 "use client";
 
-import supabaseClient from "@/database/supabase/supabase";
-import { useEffect, useState } from "react";
-import FavoriteSignals from "../FavoriteSignals";
+import useSignals from "@/hooks/useSignals";
+import LoaderCards from "../loaders/LoaderCards";
 import SignalCard from "./SignalCard";
 import Link from "next/link";
+import FavoriteSignals from "../FavoriteSignals";
 
-const SignalsList = ({ latestSignals, favouriteSignals, preferences }) => {
-  const [signals, setSignals] = useState(latestSignals);
+const SignalsList = ({ profile }) => {
+  const { signals, isLoading } = useSignals();
 
-  useEffect(() => {
-    // 1) Set up a subscription to watch for changes in `all_signals` table.
-    const channel = supabaseClient
-      .channel("all-signals-changes")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "all_signals" },
-        (payload) => {
-          console.log("Change received!", payload);
+  const favouriteInstruments = Object.entries(profile.preferences)
+    .filter(([_, data]) => data.favorite === true)
+    .map(([instrument]) => instrument);
 
-          // We have an updated or inserted row in `payload.new`.
-          const updatedRow = payload.new;
+  // Filter the signals based on favorite instruments
+  const favouriteSignals = signals.filter((signal) =>
+    favouriteInstruments.includes(signal.instrument_name),
+  );
 
-          // 2) Update local state so the UI re-renders with new data.
-          setSignals((current) => {
-            // See if the updated row (by `id`) already exists
-            const index = current.findIndex((s) => s.id === updatedRow.id);
 
-            if (index === -1) {
-              // If row doesn't exist, it was likely a new INSERT -> add it
-              return [...current, updatedRow];
-            } else {
-              // If row already exists, replace that row with the updated row
-              const newArr = [...current];
-              newArr[index] = updatedRow;
-              return newArr;
-            }
-          });
-        },
-      )
-      .subscribe();
-
-    // Cleanup on unmount
-    return () => {
-      supabaseClient.removeChannel(channel);
-    };
-  }, []);
   return (
-    <div className="mb-8 flex flex-col items-center space-y-6">
-      {favouriteSignals.length > 0 && (
-        <FavoriteSignals
-          favouriteSignals={favouriteSignals}
-          preferences={preferences}
-        />
+    <div>
+      {isLoading ? (
+        <LoaderCards />
+      ) : (
+        <>
+          {favouriteInstruments.length > 0 && (
+            <FavoriteSignals
+              favouriteSignals={favouriteSignals}
+              preferences={profile.preferences}
+            />
+          )}
+
+          <div className="grid grid-cols-3 gap-8">
+            {signals.map((signal: any, index: number) => (
+              <Link
+                key={
+                  signal.trade_client_id
+                    ? `${signal.trade_client_id}-${signal.instrument_name}-${index}`
+                    : `${signal.instrument_name}-${index}`
+                }
+                href={`/signals/${signal.instrument_name}`}
+              >
+                <SignalCard
+                  signalPassed={signal}
+                  preferences={profile.preferences}
+                />
+              </Link>
+            ))}
+          </div>
+        </>
       )}
-      <div className="grid grid-cols-3 gap-8">
-        {signals.map((signal) => (
-          <Link
-            key={signal.client_trade_id}
-            href={`/signals/${encodeURIComponent(signal.instrument_name)}`}
-          >
-            <SignalCard signalPassed={signal} preferences={preferences} />
-          </Link>
-        ))}
-      </div>
     </div>
   );
 };

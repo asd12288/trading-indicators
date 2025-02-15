@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     }
 
     const cancelResult = await paddle.subscriptions.cancel(subscriptionId, {
-      effectiveFrom: "immediately",
+      effectiveFrom: "next_billing_period",
     });
 
     if (cancelResult) {

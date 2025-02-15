@@ -28,6 +28,8 @@ export async function fetchSignalsData() {
   }
   const latestSignals = [...latestByInstrument.values()];
 
+  const totalInstruments = latestSignals.length;
+
   // Fetch profile preferences
   const { data, error } = await supabase
     .from("profiles")
@@ -48,7 +50,7 @@ export async function fetchSignalsData() {
     favouriteSignalNames.includes(signal.instrument_name),
   );
 
-  return { latestSignals, favouriteSignals, preferences };
+  return { latestSignals, favouriteSignals, preferences, totalInstruments };
 }
 
 export async function fetchSignalDetailData(signalId: string) {

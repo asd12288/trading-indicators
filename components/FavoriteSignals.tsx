@@ -12,7 +12,7 @@ const FavoriteSignals = ({ favouriteSignals, preferences }) => {
 
   return (
     <>
-      <h2 className="mt-4 text-2xl font-medium">My Signals</h2>
+      <h2 className="my-4 text-center text-2xl font-medium">My Signals</h2>
       <div className={`grid ${cols} gap-8`}>
         {favouriteSignals.map((signal) => (
           <Link
@@ -23,7 +23,7 @@ const FavoriteSignals = ({ favouriteSignals, preferences }) => {
           </Link>
         ))}
       </div>
-      <div className="mb-2 w-full border-2 border-slate-400"></div>
+      <div className="w-full my-8 border-2 border-slate-400"></div>
     </>
   );
 };

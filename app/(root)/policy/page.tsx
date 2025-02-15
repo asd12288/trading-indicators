@@ -1,53 +1,46 @@
 import React from "react";
 
-const page = () => {
+const PrivacyPolicy = () => {
   return (
-    <div className="flex flex-col items-center justify-center p-4">
-      <div className="space-y-6">
-        <h1 className="text-4xl font-semibold">Terms of Service</h1>
-        <p className="text-sm">
+    <div className="min-h-screen  text-slate-200 py-12 px-6 md:px-16">
+      <div className="max-w-4xl mx-auto bg-slate-800 p-8 rounded-xl shadow-lg">
+        <h1 className="text-4xl font-semibold text-slate-100 mb-6">Privacy Policy</h1>
+        <p className="text-sm text-slate-300">
           <strong>Effective Date:</strong> 2025-01-01
         </p>
-        <h2 className="text-2xl font-medium underline">
-          1. Use of Our Services
-        </h2>
-        <ul className="space-y-6">
-          <li className="text-sm">
-            You must be at least 18 years old or have parental consent to use
-            our services.
-          </li>
-          <li className="text-sm">
-            You agree not to misuse our services or engage in any illegal
-            activity.
-          </li>
-          <li className="text-sm">
-            We reserve the right to suspend or terminate your access if you
-            violate these terms.
-          </li>
-        </ul>
-        <h2 className="text-2xl font-medium underline">
-          2. Intellectual Property
-        </h2>
-        <p>
-          All content, logos, and materials on this website are owned by
-          worldtradesignals and may not be used without permission.
+        
+        <h2 className="text-2xl font-semibold text-slate-100 mt-6 underline">1. Information We Collect</h2>
+        <p className="text-slate-300 mt-2">
+          We collect information that you provide directly to us, such as when you sign up, contact support, or use our services. This may include personal details like your name, email address, and transaction history.
         </p>
-        <h2 className="text-2xl font-medium underline">
-          3. Limitation of Liability
-        </h2>
-        <p>
-          We are not liable for any direct, indirect, incidental, or
-          consequential damages arising from your use of our website.
+        
+        <h2 className="text-2xl font-semibold text-slate-100 mt-6 underline">2. How We Use Your Information</h2>
+        <p className="text-slate-300 mt-2">
+          We use your information to provide, improve, and personalize our services. This includes processing transactions, sending notifications, and enhancing user experience.
         </p>
-        <h2 className="text-2xl font-medium underline">4. Changes to Terms</h2>
-        <p>
-          We reserve the right to update these terms at any time. Continued use
-          of our services after changes means you accept the new terms.
+        
+        <h2 className="text-2xl font-semibold text-slate-100 mt-6 underline">3. Data Sharing & Security</h2>
+        <p className="text-slate-300 mt-2">
+          We do not sell your personal information. We may share data with trusted partners for operational purposes, but we ensure appropriate security measures are in place to protect your privacy.
         </p>
-        <p>For any questions, contact us at contact@worldtradesignals.com</p>
+        
+        <h2 className="text-2xl font-semibold text-slate-100 mt-6 underline">4. Your Rights & Choices</h2>
+        <p className="text-slate-300 mt-2">
+          You have the right to access, modify, or request deletion of your personal data. You may also opt-out of certain data processing activities by contacting us.
+        </p>
+        
+        <h2 className="text-2xl font-semibold text-slate-100 mt-6 underline">5. Changes to This Policy</h2>
+        <p className="text-slate-300 mt-2">
+          We reserve the right to update this privacy policy at any time. We will notify users of significant changes through our platform.
+        </p>
+        
+        <h2 className="text-2xl font-semibold text-slate-100 mt-6 underline">6. Contact Information</h2>
+        <p className="text-slate-300 mt-2">
+          If you have any questions about this privacy policy, contact us at <a href="mailto:privacy@worldtradesignals.com" className="text-blue-400 underline">privacy@worldtradesignals.com</a>.
+        </p>
       </div>
     </div>
   );
 };
 
-export default page;
+export default PrivacyPolicy;

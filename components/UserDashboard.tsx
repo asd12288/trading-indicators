@@ -54,7 +54,7 @@ const UserDashboard = ({ user, profile }) => {
                 <li className="flex items-center gap-2 rounded-lg px-4 py-2">
                   <BsBookmarkStar />
                   <button onClick={() => handleTabChange("manage")}>
-                    Manage Account{" "}
+                    Subscription
                   </button>
                 </li>
               ) : (
@@ -78,7 +78,7 @@ const UserDashboard = ({ user, profile }) => {
         </aside>
       </div>
 
-      <div className="flex w-full flex-col items-center gap-4 p-12">
+      <div className="flex w-full flex-col items-center justify-center gap-4 p-12">
         <div className="flex flex-col items-center">
           {tab === "profile" && <ProfileCard user={user} profile={profile} />}
           {tab === "upgrade" && <UpgradeAccount />}

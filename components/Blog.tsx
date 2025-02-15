@@ -12,13 +12,15 @@ interface BlogProps {
 
 function Blog({ blog }: BlogProps) {
   return (
-    <div className="flex flex-col items-center justify-center mt-10 px-20">
-      <div className="w-max">
-        <Image src={blog.imageUrl} alt="blog image" width={800} height={800} />
+    <div className="min-h-screen  text-slate-200 py-12 px-6 md:px-16 flex flex-col items-center">
+      <div className="max-w-3xl w-full bg-slate-800 p-6 md:p-10 rounded-xl shadow-lg">
+        <div className="w-full h-64 md:h-80 relative rounded-lg overflow-hidden">
+          <Image src={blog.imageUrl} alt="Blog image" layout="fill" objectFit="cover" className="rounded-lg" />
+        </div>
+        <h1 className="text-4xl font-bold text-slate-100 mt-6 text-center">{blog.title}</h1>
+        <div className="border-t border-slate-600 my-4"></div>
+        <p className="text-slate-300 text-lg leading-relaxed">{blog.content}</p>
       </div>
-      <h1 className="text-5xl my-5 font-semibold">{blog.title}</h1>
-      <div className="border-t border-gray-300 my-4"></div>
-      <p className="">{blog.content}</p>
     </div>
   );
 }

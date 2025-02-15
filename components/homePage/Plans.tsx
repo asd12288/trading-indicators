@@ -2,7 +2,7 @@ import Link from "next/link";
 import React from "react";
 import PlanCard from "./PlanCard";
 
-const Plans = ({ size = "regular",  }) => {
+const Plans = ({ size = "regular" }) => {
   return (
     <section className="flex flex-col items-center justify-center space-y-8">
       <div className="itens-center mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">

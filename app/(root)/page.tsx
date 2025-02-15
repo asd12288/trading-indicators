@@ -21,7 +21,7 @@ function page() {
       </section>
 
       <section className="p-2">
-        <h2 className="text-5xl font-semibold">Plans</h2>
+        <h2 className="text-center text-5xl font-semibold">Plans</h2>
         <p className="mt-4 text-center text-2xl font-light">
           Weve got a plan perfect just for you
         </p>
