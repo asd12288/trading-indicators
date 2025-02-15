@@ -1,6 +1,5 @@
 "use client";
 
-import useSignals from "@/hooks/useSignals";
 import LoaderCards from "../loaders/LoaderCards";
 import FufilledSignalCard from "./FufilledSignalCard";
 import RunningSignalCard from "./RunningSignalCard";
