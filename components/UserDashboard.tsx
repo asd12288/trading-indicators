@@ -10,11 +10,14 @@ import ResetPasswordForm from "./ResetPasswordForm";
 import UpgradeAccount from "./UpgradeAccount";
 import UserSignals from "./UserSignals";
 import ManageAccount from "./ManageAccount";
+import useProfile from "@/hooks/useProfile";
 
-const UserDashboard = ({ user, profile }) => {
+const UserDashboard = ({ user }) => {
   const searchParams = useSearchParams();
   const [tab, setTab] = useState<string>("profile");
   const router = useRouter();
+
+  const { profile, isLoading } = useProfile(user?.id);
 
   useEffect(() => {
     const tabParam = searchParams.get("tab");
@@ -28,6 +31,10 @@ const UserDashboard = ({ user, profile }) => {
     router.refresh();
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  
   const isPro = profile?.plan === "pro";
 
   return (

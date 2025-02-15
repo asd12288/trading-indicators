@@ -17,7 +17,7 @@ const SignalLayout = ({ id, userId }) => {
 
   // Show loading state while data is being fetched
   if (isLoading || loadingInstrumentData || !profile) {
-    return <div>Loading...</div>;
+    return <div></div>;
   }
 
   // Ensure profile and preferences exist with default values

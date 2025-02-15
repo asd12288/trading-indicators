@@ -75,11 +75,15 @@ function SignalTool({
     }
   }
 
-  async function handleNotifications() {
+  async function handleNotifications(signalId: string) {
     if (isUpdating) return;
     const originalValues = { notifications, volume, favorite };
     const newNotificationsValue = !notifications;
     setNotifications(newNotificationsValue);
+    toast({
+      title: `Notification  ${newNotificationsValue ? "enabled" : "disabled"}`,
+      description: `the notification for the signal ${signalId} will now be  ${newNotificationsValue ? "enabled" : "disabled"}`,
+    });
 
     await updatePreferences(
       newNotificationsValue,
@@ -89,16 +93,15 @@ function SignalTool({
     );
   }
 
-  async function handleVolume() {
+  async function handleVolume(signalId: string) {
     if (isUpdating) return;
     const originalValues = { notifications, volume, favorite };
     const newVolumeValue = !volume;
     setVolume(newVolumeValue);
-
-    // if (newVolumeValue) {
-    //   const audio = new Audio("/audio/sound_on.mp3");
-    //   audio.play();
-    // }
+    toast({
+      title: `Volume  ${newVolumeValue ? "enabled" : "disabled"}`,
+      description: `The alert sound for the signal ${signalId} will now be  ${newVolumeValue ? "enabled" : "disabled"}`,
+    });
 
     await updatePreferences(
       notifications,
@@ -108,11 +111,15 @@ function SignalTool({
     );
   }
 
-  async function handleFavorite() {
+  async function handleFavorite(signalId: string) {
     if (isUpdating) return;
     const originalValues = { notifications, volume, favorite };
     const newFavoriteValue = !favorite;
     setFavorite(newFavoriteValue);
+    toast({
+      title: `newFavoriteValue ${signalId} added to favorites`,
+      description: `The signal ${signalId} will now be  ${newFavoriteValue ? "enabled" : "disabled"}`,
+    });
 
     await updatePreferences(
       notifications,
@@ -126,7 +133,10 @@ function SignalTool({
 
   return (
     <div className="flex items-center space-x-4 border-l-2 pl-4">
-      <button disabled={isUpdating} onClick={handleNotifications}>
+      <button
+        disabled={isUpdating}
+        onClick={() => handleNotifications(signalId)}
+      >
         {notifications ? (
           <IoIosNotifications className={size} />
         ) : (
@@ -134,7 +144,7 @@ function SignalTool({
         )}
       </button>
 
-      <button disabled={isUpdating} onClick={handleVolume}>
+      <button disabled={isUpdating} onClick={() => handleVolume(signalId)}>
         {volume ? (
           <FaVolumeUp className={size} />
         ) : (
@@ -142,7 +152,7 @@ function SignalTool({
         )}
       </button>
 
-      <button disabled={isUpdating} onClick={handleFavorite}>
+      <button disabled={isUpdating} onClick={() => handleFavorite(signalId)}>
         {favorite ? (
           <MdFavorite className={size} />
         ) : (

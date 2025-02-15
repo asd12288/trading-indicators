@@ -4,10 +4,12 @@ import LoaderCards from "../loaders/LoaderCards";
 import FufilledSignalCard from "./FufilledSignalCard";
 import RunningSignalCard from "./RunningSignalCard";
 
-const SignalCard = ({ signalPassed }) => {
+const SignalCard = ({ signalPassed, preferences }) => {
   if (!signalPassed) {
     return <LoaderCards />;
   }
+
+  
 
   const isBuy = signalPassed.trade_side === "Long" ? true : false;
 

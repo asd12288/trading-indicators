@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { saveSignalPreferences } from "@/app/(root)/signals/[id]/actions";
+import { toast } from "@/hooks/use-toast";
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,6 +13,7 @@ export async function POST(req: NextRequest) {
       volume,
       favorite,
     });
+
     return NextResponse.json({ success: !!result });
   } catch (error) {
     console.error(error);

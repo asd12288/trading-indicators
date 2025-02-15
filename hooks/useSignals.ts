@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import supabaseClient from "@/database/supabase/supabase.js";
+import { notifyUser, soundNotification } from "@/lib/notification";
 
-const useSignals = () => {
+const useSignals = (preferences = {}) => {
   const [signals, setSignals] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -29,7 +30,6 @@ const useSignals = () => {
           return acc;
         }, {}),
       );
-
       setSignals(latestSignals);
     }
     setIsLoading(false);
@@ -45,7 +45,21 @@ const useSignals = () => {
         { event: "*", schema: "public", table: "all_signals" },
         (payload) => {
           console.log("Change received!", payload);
-          fetchData(); // Refetch data on change
+
+          // Check if user has notifications or volume turned on for this instrument
+          const instrumentName = payload.new.instrument_name;
+          const userPrefs = preferences[instrumentName] || {};
+
+          if (userPrefs.notifications) {
+            notifyUser(payload);
+          }
+
+          if (userPrefs.volume) {
+            soundNotification(payload);
+          }
+
+          // Re-fetch the data
+          fetchData();
         },
       )
       .subscribe();
@@ -53,7 +67,7 @@ const useSignals = () => {
     return () => {
       supabaseClient.removeChannel(subscription);
     };
-  }, []);
+  }, [preferences]);
 
   return { signals, isLoading };
 };

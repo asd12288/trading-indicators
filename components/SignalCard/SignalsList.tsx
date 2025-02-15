@@ -8,16 +8,18 @@ import FavoriteSignals from "../FavoriteSignals";
 import useProfile from "@/hooks/useProfile";
 
 const SignalsList = ({ userId }) => {
-  const { signals, isLoading } = useSignals();
   const { isLoading: isLoadingProfile, profile } = useProfile(userId);
+  // Ensure a default object so we're not passing undefined
+  const preferences = profile?.preferences || {};
+
+  // Pass preferences into the hook
+  const { signals, isLoading } = useSignals(preferences);
 
   if (isLoading || isLoadingProfile) {
     return <LoaderCards />;
   }
 
-  // Add null checks and default values
-  const preferences = profile?.preferences || {};
-
+  // Filter favorites for example
   const favoritePreferences = Object.entries(preferences)
     .filter(([_, value]) => value?.favorite)
     .reduce((acc, [key, value]) => {
@@ -26,9 +28,8 @@ const SignalsList = ({ userId }) => {
     }, {});
 
   const favouriteInstruments = Object.keys(favoritePreferences);
-
   const favouriteSignals = signals.filter((signal) =>
-    favouriteInstruments.includes(signal.instrument_name),
+    favouriteInstruments.includes(signal.instrument_name)
   );
 
   return (
