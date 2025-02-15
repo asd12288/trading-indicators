@@ -15,19 +15,25 @@ const SignalLayout = ({ id, userId }) => {
   const { instrumentData, isLoading: loadingInstrumentData } =
     useInstrumentData(id);
 
-  if (isLoading || loadingInstrumentData) {
+  // Show loading state while data is being fetched
+  if (isLoading || loadingInstrumentData || !profile) {
     return <div>Loading...</div>;
   }
 
-  const defaultPrefs = profile.preferences?.[id] || {
+  // Ensure profile and preferences exist with default values
+  const preferences = profile?.preferences || {};
+  const defaultPrefs = preferences[id] || {
     notifications: false,
     volume: false,
     favorite: false,
   };
 
-  const lastSignal = instrumentData[0];
+  const lastSignal = instrumentData?.[0] || null;
 
-  // profile prefrence =  profile.preferences[id]
+  // Add null check for rendering
+  if (!lastSignal) {
+    return <div>No signal data available</div>;
+  }
 
   return (
     <div className="mb-8 flex flex-col p-12">
