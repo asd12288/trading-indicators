@@ -5,19 +5,29 @@ import LoaderCards from "../loaders/LoaderCards";
 import SignalCard from "./SignalCard";
 import Link from "next/link";
 import FavoriteSignals from "../FavoriteSignals";
+import useProfile from "@/hooks/useProfile";
 
-const SignalsList = ({ profile }) => {
+const SignalsList = ({ userId }) => {
   const { signals, isLoading } = useSignals();
 
-  const favouriteInstruments = Object.entries(profile.preferences)
-    .filter(([_, data]) => data.favorite === true)
-    .map(([instrument]) => instrument);
+  const { isLoading: isLoadingProfile, profile } = useProfile(userId);
 
-  // Filter the signals based on favorite instruments
+  if (isLoadingProfile) {
+    return <LoaderCards />;
+  }
+
+  const favoritePreferences = Object.entries(profile.preferences || {})
+    .filter(([key, value]) => value.favorite)
+    .reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {});
+
+  const favouriteInstruments = Object.keys(favoritePreferences);
+
   const favouriteSignals = signals.filter((signal) =>
     favouriteInstruments.includes(signal.instrument_name),
   );
-
 
   return (
     <div>

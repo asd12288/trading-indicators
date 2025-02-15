@@ -1,15 +1,15 @@
 "use client";
 
 import { Environments, initializePaddle, Paddle } from "@paddle/paddle-js";
-import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-interface PathParams {
-  priceId: string;
-  [key: string]: string | string[];
-}
-
-function Checkout({ userEmail, userId }) {
+const Checkout = ({
+  userEmail,
+  userId,
+}: {
+  userEmail: string;
+  userId: string;
+}) => {
   // const { priceId } = useParams<PathParams>();
   const [paddle, setPaddle] = useState<Paddle>();
   const [checkoutData, setCheckoutData] = useState();
@@ -42,12 +42,19 @@ function Checkout({ userEmail, userId }) {
           setPaddle(paddle);
           paddle.Checkout.open({
             items: [{ priceId: priceId, quantity: 1 }],
-            customData: { email: userEmail, userId: userId }
+            customData: { email: userEmail, userId: userId },
           });
         }
       });
     }
   }, [paddle?.Initialize, priceId]);
-}
+
+  return (
+    <div>
+      <h1>Checkout</h1>
+      <pre>{JSON.stringify(checkoutData, null, 2)}</pre>
+    </div>
+  );
+};
 
 export default Checkout;

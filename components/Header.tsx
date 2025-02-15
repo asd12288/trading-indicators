@@ -4,21 +4,28 @@ import LogoutBtn from "./LogoutBtn";
 import UpgradeButton from "./UpgradeButton";
 import Image from "next/image";
 
-async function Header() {
+export default async function Header() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Get the authenticated user
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+  const user = authData?.user || null; // Ensure user is either an object or null
 
-  const { data: profile, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user?.id)
-    .single();
+  let profile = null;
 
-  if (error) {
-    console.error(error);
+  // Only query profile if user exists
+  if (user) {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    if (error) {
+      console.error("Error fetching profile:", error);
+    } else {
+      profile = data;
+    }
   }
 
   return (
@@ -45,17 +52,8 @@ async function Header() {
               Blog
             </Link>
           </li>
-          {user === null ? (
-            <>
-              <li>
-                <Link href="/login" className="hover:text-slate-300">
-                  <button className="flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 hover:bg-slate-900">
-                    Login
-                  </button>
-                </Link>
-              </li>
-            </>
-          ) : (
+
+          {user ? (
             <>
               <li>
                 <Link href="/profile" className="hover:text-slate-300">
@@ -69,11 +67,17 @@ async function Header() {
                 <LogoutBtn />
               </li>
             </>
+          ) : (
+            <li>
+              <Link href="/login" className="hover:text-slate-300">
+                <button className="flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 hover:bg-slate-900">
+                  Login
+                </button>
+              </Link>
+            </li>
           )}
         </div>
       </ul>
     </div>
   );
 }
-
-export default Header;

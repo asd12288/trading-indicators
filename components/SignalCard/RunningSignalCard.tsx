@@ -16,14 +16,11 @@ const RunningSignalCard = ({ instrument, isBuy }) => {
     stop_loss_price,
   } = instrument;
 
- 
   const exitTimeInUserTimezone = parseISO(entry_time);
 
   const adjustedExitTime = new Date(
     exitTimeInUserTimezone.getTime() - 2 * 60 * 60 * 1000,
   );
-
-  
 
   return (
     <div className="h-[26rem] w-72 bg-slate-800">
