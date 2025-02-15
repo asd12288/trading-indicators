@@ -1,8 +1,10 @@
 import Blog from "@/components/Blog";
-import supabase from "@/database/supabase/supabase";
+import { createClient } from "@/database/supabase/server";
 import React from "react";
 
 async function page({ params }: { params: { id: string } }) {
+  const supabase = await createClient();
+
   const { id } = params;
 
   const { data: blog, error } = await supabase
