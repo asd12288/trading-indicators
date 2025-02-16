@@ -1,30 +1,28 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Edit, MoreHorizontal } from "lucide-react";
-import { Button } from "../ui/button";
-import { format } from "date-fns";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle
 } from "@/components/ui/dialog";
-import EditSignalFrom from "./EditSignalFrom";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import supabaseClient from "@/database/supabase/supabase";
+import { toast } from "@/hooks/use-toast";
+import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 import ConfirmDialog from "../ConfirmDialog";
-import { toast } from "@/hooks/use-toast";
+import { Button } from "../ui/button";
+import EditSignalFrom from "./EditSignalFrom";
 
 export type Signal = {
   instrument_name: string;
@@ -145,7 +143,7 @@ export const signalTableColumns: ColumnDef<Signal>[] = [
       const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
 
       async function handleDelete() {
-        const { data, error } = await supabaseClient
+        const { error } = await supabaseClient
           .from("all_signals")
           .delete()
           .eq("client_trade_id", signalId);

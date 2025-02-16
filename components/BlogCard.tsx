@@ -19,7 +19,7 @@ function BlogCard({ blog }) {
         </Link>
         <div className="p-5">
           <h5 className="mb-2 text-xl font-semibold text-slate-100">
-            {blog.title}
+            {blog.title.slice(0, 50)}...
           </h5>
           <p className="mb-4 text-sm text-slate-300">{blog.subTitle}</p>
           <Link href={`/blog/${blog.id}`}>

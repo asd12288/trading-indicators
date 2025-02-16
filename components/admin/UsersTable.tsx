@@ -6,7 +6,7 @@ import { userTableColumns } from "@/components/admin/UserTableColumns";
 export default function UsersPage({ users }) {
   return (
     <div>
-      <DataTable columns={userTableColumns} data={users} />
+      <DataTable columns={userTableColumns} data={users} type='users' />
     </div>
   );
 }

@@ -23,11 +23,22 @@ import {
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import AddPostForm from "./AddPostForm";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  type?: 'signals' | 'users' | 'posts'; // Make type optional with specific values
 }
+
 
 export function DataTable<TData, TValue>({
   columns,
@@ -36,6 +47,8 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [open, setOpen] = useState(false);
+
   const table = useReactTable({
     data,
     columns,
@@ -54,7 +67,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <>
-      {type === "signals" ? (
+      {type === "signals" && (
         <div className="flex items-center py-4">
           <Input
             placeholder="Search signals..."
@@ -71,7 +84,8 @@ export function DataTable<TData, TValue>({
             className="max-w-sm"
           />
         </div>
-      ) : (
+      )}
+      {type === "users" && (
         <div className="flex items-center py-4">
           <Input
             placeholder="Search emails..."
@@ -82,6 +96,20 @@ export function DataTable<TData, TValue>({
             className="max-w-sm"
           />
         </div>
+      )}
+
+      {type === "posts" && (
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button className="mb-4">Create Post</Button>
+          </DialogTrigger>
+          <DialogContent className="w-full max-w-4xl bg-slate-800 p-8">
+            <DialogHeader>
+              <DialogTitle>Create Post</DialogTitle>
+            </DialogHeader>
+            <AddPostForm onSuccess={() => setOpen(false)} />
+          </DialogContent>
+        </Dialog>
       )}
 
       <div className="rounded-md">

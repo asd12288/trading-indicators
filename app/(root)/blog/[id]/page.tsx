@@ -16,7 +16,7 @@ async function page({ params }: { params: { id: string } }) {
   if (error) return <h1>Error loading blog</h1>;
 
   return (
-    <div className="mt-32">
+    <div >
       <Blog blog={blog} />
     </div>
   );

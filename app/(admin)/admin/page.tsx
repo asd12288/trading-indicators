@@ -1,15 +1,30 @@
+import BlogTable from "@/components/admin/BlogTable";
 import SignalsTable from "@/components/admin/SignalsTable";
 import UsersTable from "@/components/admin/UsersTable";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createClient } from "@/database/supabase/server";
 import { TabsContent } from "@radix-ui/react-tabs";
-import { Sign } from "crypto";
 
 const page = async () => {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+
+  if (!user || profile.role !== "admin") {
+    return <h1 className="text-center text-2xl font-semibold">Unauthorized</h1>;
+  }
 
   const { data: users } = await supabase.from("profiles").select("*");
   const { data: signals } = await supabase.from("all_signals").select("*");
+  const { data: posts } = await supabase.from("blogs").select("*");
 
   return (
     <div className="min-h-min">
@@ -31,7 +46,9 @@ const page = async () => {
               <SignalsTable signals={signals} />
             </TabsContent>
 
-            <TabsContent value="signals">Signals</TabsContent>
+            <TabsContent value="blogs">
+              <BlogTable posts={posts} />
+            </TabsContent>
           </Tabs>
         </div>
       </div>
