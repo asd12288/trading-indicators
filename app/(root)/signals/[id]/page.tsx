@@ -29,9 +29,11 @@ export default async function Page({ params }: { params: { id: string } }) {
   }
 
   return (
-    <SignalLayout
-      id={params.id}
-      userId={user.id} // Remove optional chaining here
-    />
+    <div className="mt-32">
+      <SignalLayout
+        id={params.id}
+        userId={user.id} // Remove optional chaining here
+      />
+    </div>
   );
 }

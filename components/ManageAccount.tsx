@@ -1,13 +1,14 @@
 "use client";
-import React, { useState } from "react";
-import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
-import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
-import { ToastAction } from "./ui/toast";
+import { format } from "date-fns";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import ConfirmDialog from "./ConfirmDialog";
+import { Button } from "./ui/button";
 
 const ManageAccount = ({ profile }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -28,63 +29,69 @@ const ManageAccount = ({ profile }) => {
         throw new Error("Failed to cancel subscription");
       }
       toast({
-        title: "success",
+        title: "Success",
         description: "Subscription cancelled successfully",
       });
-
       router.refresh();
     } catch (error) {
       console.error("Error cancelling subscription:", error);
-      alert("Failed to cancel subscription. Please try again.");
+      toast({
+        title: "Error",
+        description: "Failed to cancel subscription, please contact support",
+      });
     } finally {
       setIsLoading(false);
+      setAlertOpen(false);
     }
   };
 
-  const handleCancelSubscription = async () => {
-    toast({
-      title: "Are you sure?",
-      description: "you are about to cancel your subscription",
-      action: (
-        <ToastAction
-          onClick={handleCancelConfirmSubscription}
-          altText="Confirm cancellation"
-        >
-          Yes
-        </ToastAction>
-      ),
-    });
-  };
-
   return (
-    <div className="flex flex-col items-center justify-center gap-4">
+    <div className="flex flex-col items-center justify-center gap-4 text-lg">
       <div className="flex flex-col justify-center gap-4">
-        <h3>my Plan: Pro</h3>
+        <h3>My Plan: Pro</h3>
         <p>
-          Plan Status: <span>{profile.subscription_status}</span>
+          Plan Status:{" "}
+          <span className="font-medium">{profile.subscription_status}</span>
         </p>
         <p>
           Member since:{" "}
-          <span>{format(new Date(profile.created_at), "dd/MM/yyyy")}</span>
+          <span className="font-medium">
+            {format(new Date(profile.created_at), "dd/MM/yyyy")}
+          </span>
         </p>
 
         {profile.scheduled_change && (
           <p>
             End of subscription:{" "}
-            {format(new Date(profile.scheduled_change), "dd/MM/yyyy")}
+            <span className="font-medium">
+              {format(new Date(profile.scheduled_change), "dd/MM/yyyy")}
+            </span>
           </p>
         )}
 
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
           <Button
             className="bg-red-900 hover:bg-red-950"
-            onClick={handleCancelSubscription}
-            disabled={isLoading}
+            onClick={() => setAlertOpen(true)}
+            disabled={isLoading || profile.scheduled_change}
           >
             {isLoading ? "Cancelling..." : "Cancel Plan"}
-          </Button>{" "}
+          </Button>
+          <p className="text-sm font-extralight">
+            {profile.scheduled_change
+              ? "You have canceled your plan already"
+              : ""}
+          </p>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={alertOpen}
+        onOpenChange={setAlertOpen}
+        title="Cancel Subscription"
+        description="Are you sure you want to cancel your subscription?"
+        onConfirm={handleCancelConfirmSubscription}
+      />
     </div>
   );
 };

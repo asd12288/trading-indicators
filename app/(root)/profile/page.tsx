@@ -13,8 +13,6 @@ export default async function Page() {
     return redirect("/login");
   }
 
-
-
   return (
     <div className="flex flex-col items-center justify-center p-12">
       <h2 className="mb-4 text-4xl font-semibold">My Profile</h2>

@@ -16,7 +16,7 @@ async function page() {
 
   return (
     <>
-      <div className="mb-8 flex flex-col items-center space-y-6">
+      <div className="mb-8 flex flex-col items-center space-y-6 ">
         <h2 className="mt-8 border-b-2 text-5xl font-bold">
           Latest Signals per Instrument
         </h2>

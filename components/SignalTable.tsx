@@ -6,7 +6,6 @@ import TableSignalsLoader from "./loaders/TableSignalsLoader";
 import supabase from "@/database/supabase/supabase";
 
 const SignalTable = ({ allSignal }) => {
-  console.log(allSignal);
 
   if (allSignal?.length === 0) {
     return (

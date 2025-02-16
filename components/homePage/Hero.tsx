@@ -5,11 +5,11 @@ import hero from "../../public/hero.png";
 import Link from "next/link";
 import Stats from "../Stats";
 
-const Hero =  () => {
+const Hero = () => {
   return (
-    <section className="h-screen">
+    <section>
       <div className="flex h-full flex-col items-center justify-center md:flex-row md:items-center md:justify-around md:p-8">
-        <div className="w-full p-2 md:p-8 lg:w-3/5">
+        <div className="mb-24 w-full p-2 md:p-8 lg:w-3/5">
           <p className="text-center md:text-left">⭐⭐⭐⭐⭐</p>
           <p className="mb-3 text-center font-thin md:text-left">
             More then 1000+ traders

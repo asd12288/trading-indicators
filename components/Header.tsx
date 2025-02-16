@@ -29,7 +29,7 @@ export default async function Header() {
   }
 
   return (
-    <div className="z-50 hidden w-full md:block">
+    <div className="relative top-0 z-50 hidden w-full md:block">
       <ul className="flex items-center justify-between p-8 text-lg font-medium">
         <li>
           <Link href="/">
@@ -52,6 +52,14 @@ export default async function Header() {
               Blog
             </Link>
           </li>
+
+          {profile?.role === "admin" && (
+            <li>
+              <Link href="/admin" className="hover:text-slate-300">
+                Admin
+              </Link>
+            </li>
+          )}
 
           {user ? (
             <>

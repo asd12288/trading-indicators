@@ -26,6 +26,8 @@ function SignalTool({
   const [notifications, setNotifications] = useState(
     defaultPrefs.notifications,
   );
+
+  
   const [volume, setVolume] = useState(defaultPrefs.volume);
   const [favorite, setFavorite] = useState(defaultPrefs.favorite);
   const [isUpdating, setIsUpdating] = useState(false);

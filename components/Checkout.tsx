@@ -50,9 +50,8 @@ const Checkout = ({
   }, [paddle?.Initialize, priceId]);
 
   return (
-    <div>
+    <div className="min-h-min">
       <h1>Checkout</h1>
-      <pre>{JSON.stringify(checkoutData, null, 2)}</pre>
     </div>
   );
 };

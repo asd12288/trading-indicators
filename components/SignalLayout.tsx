@@ -28,6 +28,7 @@ const SignalLayout = ({ id, userId }) => {
     favorite: false,
   };
 
+
   const lastSignal = instrumentData?.[0] || null;
 
   // Add null check for rendering
