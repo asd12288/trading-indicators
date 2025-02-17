@@ -29,14 +29,11 @@ export default function RootLayout({
         <main>{children}</main>
         <Toaster />
         <Footer />
-        <script
+        <Script
+          src="https://telegram.org/js/telegram-widget.js?7"
+          strategy="afterInteractive"
           async
-          src="https://telegram.org/js/telegram-widget.js?22"
-          data-telegram-login="World_Trade_Signals_Bot"
-          data-size="large"
-          data-onauth="onTelegramAuth(user)"
-          data-request-access="write"
-        ></script>
+        />
       </body>
     </html>
   );
