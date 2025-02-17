@@ -8,7 +8,7 @@ import {
 } from "@/lib/notification";
 import { useEffect, useState } from "react";
 
-const useSignals = (preferences = {}, userId) => {
+const useSignals = (preferences = {}) => {
   const [signals, setSignals] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 

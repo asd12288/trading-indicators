@@ -13,7 +13,7 @@ const SignalsList = ({ userId }) => {
   const preferences = profile?.preferences || {};
 
   // Pass preferences into the hook
-  const { signals, isLoading } = useSignals(preferences, userId);
+  const { signals, isLoading } = useSignals(preferences);
 
   if (isLoading || isLoadingProfile) {
     return <LoaderCards />;
@@ -34,14 +34,12 @@ const SignalsList = ({ userId }) => {
 
   return (
     <div>
-   
-        {favouriteInstruments.length > 0 && (
-          <FavoriteSignals
-            favouriteSignals={favouriteSignals}
-            preferences={preferences}
-          />
-        )}
-      
+      {favouriteInstruments.length > 0 && (
+        <FavoriteSignals
+          favouriteSignals={favouriteSignals}
+          preferences={preferences}
+        />
+      )}
 
       <div className="grid grid-cols-3 gap-8">
         {signals.map((signal: any, index: number) => (
