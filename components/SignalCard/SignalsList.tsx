@@ -13,7 +13,7 @@ const SignalsList = ({ userId }) => {
   const preferences = profile?.preferences || {};
 
   // Pass preferences into the hook
-  const { signals, isLoading } = useSignals(preferences);
+  const { signals, isLoading } = useSignals(preferences, userId);
 
   if (isLoading || isLoadingProfile) {
     return <LoaderCards />;

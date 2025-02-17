@@ -1,5 +1,5 @@
 "use client";
-import { User2Icon } from "lucide-react";
+import { AlertCircleIcon, Bell, User2Icon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BsBookmarkStar } from "react-icons/bs";
@@ -35,7 +35,7 @@ const UserDashboard = ({ user }) => {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-  
+
   const isPro = profile?.plan === "pro";
 
   return (
@@ -81,6 +81,13 @@ const UserDashboard = ({ user }) => {
                   My Signals
                 </button>
               </li>
+              <li className="flex items-center gap-2 rounded-lg px-4 py-2">
+                <Bell />
+
+                <button onClick={() => handleTabChange("notification")}>
+                  Notification
+                </button>
+              </li>
             </ul>
           </nav>
         </aside>
@@ -88,7 +95,6 @@ const UserDashboard = ({ user }) => {
 
       <div className="flex w-full flex-col items-center justify-center gap-4 p-12">
         <div className="flex flex-col items-center">
-        <TelegramAuth userId={user?.id} />
           {tab === "profile" && <ProfileCard user={user} profile={profile} />}
           {tab === "upgrade" && <UpgradeAccount />}
           {tab === "password" && <ResetPasswordForm />}
@@ -96,6 +102,7 @@ const UserDashboard = ({ user }) => {
           {tab === "my-signals" && (
             <UserSignals user={user} profile={profile} />
           )}
+          {tab === "notification" && <TelegramAuth profile={profile} userId={user?.id} />}
         </div>
       </div>
     </div>

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ConfirmDialog from "./ConfirmDialog";
 import { Button } from "./ui/button";
-import TelegramAuth from "./TelegramAuth";
 
 const ManageAccount = ({ profile }) => {
   const [isLoading, setIsLoading] = useState(false);

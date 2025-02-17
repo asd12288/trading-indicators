@@ -1,7 +1,6 @@
-import { createClient } from "@/database/supabase/server";
 import { getPaddleInstance } from "@/utils/paddle/get-paddle-instance";
 import { ProcessWebhook } from "@/utils/paddle/process-webhook";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 const webhookProcessor = new ProcessWebhook();
 

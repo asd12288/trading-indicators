@@ -1,15 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import supabaseClient from "@/database/supabase/supabase.js";
 import {
   notifyUser,
   sendTelegramMessage,
   soundNotification,
 } from "@/lib/notification";
-import { send } from "process";
+import { useEffect, useState } from "react";
 
-const useSignals = (preferences = {}) => {
+const useSignals = (preferences = {}, userId) => {
   const [signals, setSignals] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -57,7 +56,7 @@ const useSignals = (preferences = {}) => {
 
           if (userPrefs.notifications) {
             notifyUser(payload);
-            sendTelegramMessage(payload);
+            sendTelegramMessage(payload, userId);
           }
 
           if (userPrefs.volume) {
