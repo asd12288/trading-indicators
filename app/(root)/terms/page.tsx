@@ -74,6 +74,45 @@ const TermsAndConditions = () => {
           contact us at support@worldtradesignals.com.
         </p>
       </div>
+      
+      {/* Refund Policy */}
+      <div className="mx-auto mt-12 max-w-4xl rounded-xl bg-slate-800 p-8 shadow-lg">
+        <h1 className="mb-6 text-3xl font-bold text-slate-100">Refund Policy</h1>
+        
+        <h2 className="mt-6 text-2xl font-semibold text-slate-100">
+          1. No Refunds Policy
+        </h2>
+        <p className="mt-2 text-slate-300">
+          All purchases made on World Trade Signals are final. Due to the nature
+          of digital products and services, we do not offer refunds or exchanges.
+        </p>
+        
+        <h2 className="mt-6 text-2xl font-semibold text-slate-100">
+          2. Exceptions
+        </h2>
+        <p className="mt-2 text-slate-300">
+          Refunds may be issued in rare cases where there has been a billing
+          error, or if the service has not been delivered as described. Any
+          requests for exceptions must be submitted within 7 days of purchase.
+        </p>
+        
+        <h2 className="mt-6 text-2xl font-semibold text-slate-100">
+          3. How to Request a Refund
+        </h2>
+        <p className="mt-2 text-slate-300">
+          To request a refund (if applicable), please contact us at
+          support@worldtradesignals.com with your transaction details and
+          reason for the request.
+        </p>
+        
+        <h2 className="mt-6 text-2xl font-semibold text-slate-100">
+          4. Processing Time
+        </h2>
+        <p className="mt-2 text-slate-300">
+          If a refund is approved, it will be processed within 5-10 business
+          days. Refunds will be credited back to the original payment method.
+        </p>
+      </div>
     </div>
   );
 };
