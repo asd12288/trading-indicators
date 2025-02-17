@@ -29,11 +29,6 @@ export default function RootLayout({
         <main>{children}</main>
         <Toaster />
         <Footer />
-        <Script
-          src="https://telegram.org/js/telegram-widget.js?7"
-          strategy="afterInteractive"
-          async
-        />
       </body>
     </html>
   );

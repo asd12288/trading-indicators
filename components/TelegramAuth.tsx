@@ -1,4 +1,3 @@
-// filepath: /c:/Users/ilanc/Desktop/indicators/components/TelegramAuth.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -9,6 +8,7 @@ export default function TelegramAuth({ userId }: { userId: string }) {
   const [telegramChatId, setTelegramChatId] = useState("");
 
   useEffect(() => {
+    // Attach the global callback function for Telegram response
     (window as any).onTelegramAuth = async (user: any) => {
       try {
         const chatId = user?.id?.toString() || "";
@@ -41,15 +41,16 @@ export default function TelegramAuth({ userId }: { userId: string }) {
         <p>Your Telegram Chat ID: {telegramChatId}</p>
       ) : (
         <>
-          {/* Container for the Telegram widget */}
+          {/* Container for the Telegram login widget */}
           <div
+            id="telegram-container"
             className="telegram-login"
             data-telegram-login="World_Trade_Signals_Bot"
             data-size="large"
             data-onauth="onTelegramAuth(user)"
             data-request-access="write"
           ></div>
-          {/* Script tag placed right after the container */}
+          {/* Load the Telegram widget script */}
           <Script
             src="https://telegram.org/js/telegram-widget.js?7"
             strategy="afterInteractive"
