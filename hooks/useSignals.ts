@@ -56,7 +56,7 @@ const useSignals = (preferences = {}, userId) => {
 
           if (userPrefs.notifications) {
             notifyUser(payload);
-            sendTelegramMessage(payload, userId);
+            sendTelegramMessage(payload);
           }
 
           if (userPrefs.volume) {
