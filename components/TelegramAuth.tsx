@@ -1,20 +1,17 @@
+// filepath: /c:/Users/ilanc/Desktop/indicators/components/TelegramAuth.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import supabaseClient from "@/database/supabase/supabase";
-import Script from "next/script";
 
 export default function TelegramAuth({ userId }: { userId: string }) {
   const [telegramChatId, setTelegramChatId] = useState("");
 
   useEffect(() => {
-    // Attach the callback function to window
+    // Attach the global callback function
     (window as any).onTelegramAuth = async (user: any) => {
       try {
-        // user object contains info like { id, first_name, username, ... }
         const chatId = user?.id?.toString() || "";
-
-        // Save the chatId in your database
         if (chatId) {
           const { error } = await supabaseClient
             .from("profiles")
@@ -40,13 +37,17 @@ export default function TelegramAuth({ userId }: { userId: string }) {
   return (
     <div>
       <h2>Connect Your Telegram</h2>
-
       {telegramChatId ? (
         <p>Your Telegram Chat ID: {telegramChatId}</p>
       ) : (
-        <>
-          <p>Use the Telegram button above to authenticate.</p>
-        </>
+        // This div is the container for the Telegram login widget
+        <div
+          className="telegram-login"
+          data-telegram-login="World_Trade_Signals_Bot"
+          data-size="large"
+          data-onauth="onTelegramAuth(user)"
+          data-request-access="write"
+        ></div>
       )}
     </div>
   );
