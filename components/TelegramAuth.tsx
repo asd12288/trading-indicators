@@ -3,12 +3,12 @@
 
 import { useEffect, useState } from "react";
 import supabaseClient from "@/database/supabase/supabase";
+import Script from "next/script";
 
 export default function TelegramAuth({ userId }: { userId: string }) {
   const [telegramChatId, setTelegramChatId] = useState("");
 
   useEffect(() => {
-    // Attach the global callback function
     (window as any).onTelegramAuth = async (user: any) => {
       try {
         const chatId = user?.id?.toString() || "";
@@ -40,14 +40,22 @@ export default function TelegramAuth({ userId }: { userId: string }) {
       {telegramChatId ? (
         <p>Your Telegram Chat ID: {telegramChatId}</p>
       ) : (
-        // This div is the container for the Telegram login widget
-        <div
-          className="telegram-login"
-          data-telegram-login="World_Trade_Signals_Bot"
-          data-size="large"
-          data-onauth="onTelegramAuth(user)"
-          data-request-access="write"
-        ></div>
+        <>
+          {/* Container for the Telegram widget */}
+          <div
+            className="telegram-login"
+            data-telegram-login="World_Trade_Signals_Bot"
+            data-size="large"
+            data-onauth="onTelegramAuth(user)"
+            data-request-access="write"
+          ></div>
+          {/* Script tag placed right after the container */}
+          <Script
+            src="https://telegram.org/js/telegram-widget.js?7"
+            strategy="afterInteractive"
+            async
+          />
+        </>
       )}
     </div>
   );
