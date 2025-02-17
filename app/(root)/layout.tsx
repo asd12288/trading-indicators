@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import { Poppins } from "next/font/google";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
+import Script from "next/script";
 
 const poppins = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -22,11 +23,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head></head>
       <body className={`${poppins.className} antialiased`}>
         <Header />
         <main>{children}</main>
         <Toaster />
         <Footer />
+        <Script
+          src="https://telegram.org/js/telegram-widget.js?7"
+          strategy="afterInteractive"
+          data-telegram-login="World_Trade_Signals_Bot"
+          data-size="large"
+          data-onauth="onTelegramAuth(user)"
+          data-request-access="write"
+          async
+        />
       </body>
     </html>
   );

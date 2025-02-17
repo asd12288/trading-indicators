@@ -17,7 +17,6 @@ const page = async () => {
     .eq("id", user.id)
     .single();
 
-
   if (!user || profile.role !== "admin") {
     return <h1 className="text-center text-2xl font-semibold">Unauthorized</h1>;
   }

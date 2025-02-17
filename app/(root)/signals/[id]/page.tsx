@@ -29,10 +29,10 @@ export default async function Page({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="mt-32">
+    <div>
       <SignalLayout
         id={params.id}
-        userId={user.id} // Remove optional chaining here
+        userId={user.id}
       />
     </div>
   );

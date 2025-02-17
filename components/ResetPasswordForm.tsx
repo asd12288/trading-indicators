@@ -53,6 +53,8 @@ const ResetPasswordForm = () => {
 
   return (
     <div className="w-96 max-w-96 space-y-6 bg-slate-800 p-8 text-slate-50">
+      <h3 className="mb-2 text-2xl font-semibold">Reset your Password</h3>
+
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <Label

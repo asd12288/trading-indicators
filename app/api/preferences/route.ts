@@ -1,6 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
 import { saveSignalPreferences } from "@/app/(root)/signals/[id]/actions";
-import { toast } from "@/hooks/use-toast";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {

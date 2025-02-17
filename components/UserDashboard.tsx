@@ -11,6 +11,7 @@ import UpgradeAccount from "./UpgradeAccount";
 import UserSignals from "./UserSignals";
 import ManageAccount from "./ManageAccount";
 import useProfile from "@/hooks/useProfile";
+import TelegramAuth from "./TelegramAuth";
 
 const UserDashboard = ({ user }) => {
   const searchParams = useSearchParams();
@@ -87,6 +88,7 @@ const UserDashboard = ({ user }) => {
 
       <div className="flex w-full flex-col items-center justify-center gap-4 p-12">
         <div className="flex flex-col items-center">
+        <TelegramAuth userId={user?.id} />
           {tab === "profile" && <ProfileCard user={user} profile={profile} />}
           {tab === "upgrade" && <UpgradeAccount />}
           {tab === "password" && <ResetPasswordForm />}

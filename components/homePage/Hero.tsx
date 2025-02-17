@@ -37,9 +37,9 @@ const Hero = () => {
           </div>
 
           <div className="mt-12 flex justify-center gap-12 md:grid md:grid-cols-3 md:gap-4 lg:w-2/3 lg:justify-between lg:gap-20">
-            <Stats text="Users" num="1000" symbol="+" />
-            <Stats text="Signals" num="21" symbol="+" />
-            <Stats text="Win Rate" num="90" symbol="%" />
+            <Stats text="Users" num="1000" symbol="+" duration={3} />
+            <Stats text="Signals" num="21" symbol="+" duration={2} />
+            <Stats text="Win Rate" num="90" symbol="%" duration={4} />
           </div>
         </div>
         <div className="w- md:w-2/5 md:p-9">

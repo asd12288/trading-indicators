@@ -29,17 +29,19 @@ const SignalsList = ({ userId }) => {
 
   const favouriteInstruments = Object.keys(favoritePreferences);
   const favouriteSignals = signals.filter((signal) =>
-    favouriteInstruments.includes(signal.instrument_name)
+    favouriteInstruments.includes(signal.instrument_name),
   );
 
   return (
     <div>
-      {favouriteInstruments.length > 0 && (
-        <FavoriteSignals
-          favouriteSignals={favouriteSignals}
-          preferences={preferences}
-        />
-      )}
+   
+        {favouriteInstruments.length > 0 && (
+          <FavoriteSignals
+            favouriteSignals={favouriteSignals}
+            preferences={preferences}
+          />
+        )}
+      
 
       <div className="grid grid-cols-3 gap-8">
         {signals.map((signal: any, index: number) => (

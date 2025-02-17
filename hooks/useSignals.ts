@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import supabaseClient from "@/database/supabase/supabase.js";
-import { notifyUser, soundNotification } from "@/lib/notification";
+import {
+  notifyUser,
+  sendTelegramMessage,
+  soundNotification,
+} from "@/lib/notification";
+import { send } from "process";
 
 const useSignals = (preferences = {}) => {
   const [signals, setSignals] = useState([]);
@@ -52,6 +57,7 @@ const useSignals = (preferences = {}) => {
 
           if (userPrefs.notifications) {
             notifyUser(payload);
+            sendTelegramMessage(payload);
           }
 
           if (userPrefs.volume) {

@@ -19,6 +19,6 @@ export async function sendResetPasswordEmail(prev, formData) {
   }
 
   return {
-    success: "Email sent please check your inbox",
+    success: "If user exist with this email, a password reset link will be sent to their email.",
   };
 }
