@@ -1,63 +1,32 @@
 "use client";
+import React from "react";
 
-import { useEffect, useState } from "react";
-import supabaseClient from "@/database/supabase/supabase";
-import Script from "next/script";
+const TelegramAuth = ({ userId }) => {
+  // Replace with your actual Bot username from BotFather
+  const TELEGRAM_BOT_USERNAME = "World_Trade_Signals_Bot";
 
-export default function TelegramAuth({ userId }: { userId: string }) {
-  const [telegramChatId, setTelegramChatId] = useState("");
-
-  useEffect(() => {
-    // Attach the global callback function for Telegram response
-    (window as any).onTelegramAuth = async (user: any) => {
-      try {
-        const chatId = user?.id?.toString() || "";
-        if (chatId) {
-          const { error } = await supabaseClient
-            .from("profiles")
-            .update({ telegram_chat_id: chatId })
-            .eq("id", userId);
-
-          if (error) {
-            console.error("Error saving Telegram Chat ID:", error);
-            alert("Failed to save Telegram Chat ID.");
-          } else {
-            setTelegramChatId(chatId);
-            alert("Telegram connected successfully!");
-          }
-        } else {
-          alert("Failed to authenticate with Telegram.");
-        }
-      } catch (err) {
-        console.error("onTelegramAuth Error:", err);
-      }
-    };
-  }, [userId]);
+  const handleTelegramConnect = () => {
+    // This link opens Telegram chat with your bot, passing the user’s ID to /start
+    window.open(
+      `https://t.me/${TELEGRAM_BOT_USERNAME}?start=${userId}`,
+      "_blank",
+    );
+  };
 
   return (
-    <div>
-      <h2>Connect Your Telegram</h2>
-      {telegramChatId ? (
-        <p>Your Telegram Chat ID: {telegramChatId}</p>
-      ) : (
-        <>
-          {/* Container for the Telegram login widget */}
-          <div
-            id="telegram-container"
-            className="telegram-login"
-            data-telegram-login="World_Trade_Signals_Bot"
-            data-size="large"
-            data-onauth="onTelegramAuth(user)"
-            data-request-access="write"
-          ></div>
-          {/* Load the Telegram widget script */}
-          <Script
-            src="https://telegram.org/js/telegram-widget.js?7"
-            strategy="afterInteractive"
-            async
-          />
-        </>
-      )}
+    <div className="mb-4 flex flex-col items-center">
+      <button
+        onClick={handleTelegramConnect}
+        className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+      >
+        Connect Telegram
+      </button>
+      <p className="mt-2 text-sm text-gray-400">
+        Click to open Telegram and start the bot. This will link your chat to
+        your account.
+      </p>
     </div>
   );
-}
+};
+
+export default TelegramAuth;
