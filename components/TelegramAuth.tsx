@@ -4,6 +4,7 @@ import { initializeAudio } from "@/lib/notification";
 
 interface TelegramAuthProps {
   userId: string;
+  profile: { telegram_chat_id?: string };
 }
 
 const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {

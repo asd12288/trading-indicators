@@ -38,38 +38,20 @@ export const soundNotification = (payload) => {
   }
 };
 
-export const sendTelegramMessage = async (payload, userId?: string) => {
+export const sendTelegramMessage = async (payload) => {
   try {
-    // If no userId provided, try to get current user
-    if (!userId) {
-      const {
-        data: { user },
-        error: userError,
-      } = await supabaseClient.auth.getUser();
-      if (userError || !user) {
-        console.error("No authenticated user found");
-        return;
-      }
-      userId = user.id;
-    }
-
-    console.log("user", userId);
-    console.log("payload", payload);
-
-    // Fetch the user's Telegram Chat ID from Supabase
-    const { data, error } = await supabaseClient
+    // Fetch all users
+    const { data: users, error: usersError } = await supabaseClient
       .from("profiles")
-      .select("telegram_chat_id")
-      .eq("id", userId)
-      .single();
+      .select("id, telegram_chat_id, preferences");
 
-    if (error) {
-      console.error("Supabase error:", error);
+    if (usersError) {
+      console.error("Error fetching users:", usersError);
       return;
     }
 
-    if (!data?.telegram_chat_id) {
-      console.log("User has not connected Telegram yet");
+    if (!users || users.length === 0) {
+      console.log("No users found");
       return;
     }
 
@@ -79,33 +61,56 @@ export const sendTelegramMessage = async (payload, userId?: string) => {
       return;
     }
 
-    const TELEGRAM_CHAT_ID = data.telegram_chat_id; // Get user-specific chat ID
+    const instrumentName = payload.new.instrument_name;
+    const message = `🚀 *New Signal Alert*\n\n📌 *Instrument:* ${instrumentName}\n💰 *Entry Price:* ${payload.new.entry_price}\n🕒 *Time:* ${payload.new.entry_time}`;
 
-    const message = `🚀 *New Signal Alert*\n\n📌 *Instrument:* ${payload.new.instrument_name}\n💰 *Entry Price:* ${payload.new.entry_price}\n🕒 *Time:* ${payload.new.entry_time}`;
+    // Iterate through the list of users and send the Telegram message to each user who has enabled notifications for the instrument
+    for (const user of users) {
+      const preferences = user.preferences || {};
+      const instrumentPreferences = preferences[instrumentName];
 
-    const response = await fetch(
-      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+      if (!instrumentPreferences || !instrumentPreferences.notifications) {
+        console.log(
+          `User ${user.id} has not enabled notifications for ${instrumentName}`,
+        );
+        continue;
+      }
+
+      if (!user.telegram_chat_id) {
+        console.log(`User ${user.id} has not connected Telegram`);
+        continue;
+      }
+
+      const response = await fetch(
+        `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            chat_id: user.telegram_chat_id,
+            text: message,
+            parse_mode: "Markdown",
+          }),
         },
-        body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
-          text: message,
-          parse_mode: "Markdown",
-        }),
-      },
-    );
+      );
 
-    if (!response.ok) {
-      throw new Error(`Telegram API error: ${response.statusText}`);
-    }
-
-    const result = await response.json();
-    if (!result.ok) {
-      console.error("Failed to send Telegram message:", result.description);
+      if (!response.ok) {
+        console.error(
+          `Failed to send Telegram message to user ${user.id}:`,
+          response.statusText,
+        );
+      } else {
+        const result = await response.json();
+        if (!result.ok) {
+          console.error(
+            `Failed to send Telegram message to user ${user.id}:`,
+            result.description,
+          );
+        }
+      }
     }
   } catch (error) {
     console.error("Error sending Telegram message:", error);
