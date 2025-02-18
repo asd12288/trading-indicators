@@ -26,7 +26,7 @@ const SignalLayout = ({ id, userId }) => {
   }
 
   return (
-    <div className="mb-8 flex flex-col p-12">
+    <div className="mb-8 flex flex-col p-2 md:p-12">
       <Link href="/signals">
         <div className="flex cursor-pointer items-center gap-4 hover:text-slate-400">
           <ArrowLeft size={24} />
@@ -36,7 +36,7 @@ const SignalLayout = ({ id, userId }) => {
 
       <div className="flex w-full flex-col items-center gap-4 rounded-xl bg-slate-800 p-4 md:flex-row md:items-center md:justify-between">
         <h2 className="relative mb-2 text-left text-2xl md:text-4xl">
-          Signal: <span className="font-semibold">{id}</span>
+          Signal: <span className="font-medium md:font-semibold">{id}</span>
         </h2>
         <div className="flex items-center gap-4">
           <h4 className="text-xl font-medium">Signal Settings:</h4>
@@ -53,13 +53,13 @@ const SignalLayout = ({ id, userId }) => {
         </div>
         <div className="col-span-2">
           <div className="hidden h-full w-full flex-col items-center rounded-2xl bg-slate-800 p-4 shadow-lg md:block">
-            <h2 className="mb-4 text-xl font-semibold text-slate-100">
+            <h2 className="md:mb-4 text-xl font-semibold text-slate-100">
               Orders of the last 3 days
             </h2>
             <SignalTable allSignal={instrumentData} />
           </div>
         </div>
-        <div className="col-span-1">
+        <div className="col-span-1 w-full">
           <SignalWinRateChart allSignals={instrumentData} />
         </div>
         <div className="col-span-2">

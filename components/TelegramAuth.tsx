@@ -62,7 +62,7 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
   }
 
   return (
-    <div className="mb-4 flex flex-col items-center space-y-4">
+    <div className="mb-4 flex flex-col items-center space-y-4 text-center">
       <h2 className="text-2xl font-semibold">Telegram Notifications</h2>
       {!telegramActive ? (
         <>

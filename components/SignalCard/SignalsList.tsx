@@ -35,7 +35,7 @@ const SignalsList = ({ userId }: { userId: string }) => {
   const limitedSignals = !isPro ? signals.slice(0, 5) : signals;
 
   return (
-    <div className="rounded-lg bg-slate-800 p-0 md:p-8">
+    <div className="rounded-lg bg-slate-800 p-0 md:p-8 mt-3">
       {isPro && favouriteSignals.length > 0 && (
         <FavoriteSignals favouriteSignals={favouriteSignals} />
       )}

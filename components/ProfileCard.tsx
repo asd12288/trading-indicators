@@ -66,9 +66,11 @@ const ProfileCard = ({ user, profile }: ProfileCardProps) => {
   };
 
   return (
-    <div className="mt-10 w-96">
+    <div className="mt-10 md:w-96">
       <form action={handleSubmit}>
-        <h1 className="mb-4 text-3xl font-semibold">My Profile - {username}</h1>
+        <h1 className="mb-4 text-xl font-semibold md:text-3xl">
+          My Profile - {username}
+        </h1>
         <div className="flex flex-col gap-6">
           <div className="flex items-center justify-start gap-4">
             <Image

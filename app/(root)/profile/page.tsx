@@ -14,8 +14,8 @@ export default async function Page() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center p-12">
-      <h2 className="mb-4 text-4xl font-semibold">My Profile</h2>
+    <div className="flex flex-col items-center justify-center md:p-12 p-2">
+      <h2 className="mb-4 text-2xl font-semibold md:text-4xl">My Profile</h2>
       <UserDashboard user={user} />
     </div>
   );

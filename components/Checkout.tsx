@@ -23,7 +23,7 @@ const Checkout = ({ userEmail, userId }: CheckoutProps) => {
   }, [paddle, priceId, userEmail, userId]);
 
   return (
-    <div className="min-h-min">
+    <div className="flex justify-center items-center h-screen">
       <h1 className="text-4xl">Redirecting to Checkout...</h1>
     </div>
   );

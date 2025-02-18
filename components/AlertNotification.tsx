@@ -30,7 +30,7 @@ const AlertNotification = ({ userId }) => {
   return (
     <div className="">
       <Link href="/alerts"></Link>
-      <h4 className="animate-pulse text-center md:text-xl md:font-semibold font-medium">
+      <h4 className="animate-pulse text-center text-sm md:text-xl md:font-semibold">
         Alert: Potential{" "}
         <span
           className={`${trade_direction === "LONG" ? "text-green-500" : "text-red-500"}`}

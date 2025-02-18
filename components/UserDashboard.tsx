@@ -44,7 +44,7 @@ const UserDashboard = ({ user }) => {
      * 2) "mx-auto" centers the dashboard; you can add "max-w-screen-lg"
      *    or something similar if you want to limit the max width.
      */
-    <div className="mx-auto flex flex-col rounded-md bg-slate-800 md:h-[600px] md:w-[1200px] md:flex-row">
+    <div className=" flex flex-col rounded-md bg-slate-800 md:h-[600px] md:w-[1200px] w-full md:flex-row mb-4">
       {/* Sidebar / Aside */}
       <aside className="flex w-full flex-col justify-center border-b border-slate-700 p-6 md:w-64 md:border-b-0 md:border-r md:p-12 md:pl-6">
         <nav>

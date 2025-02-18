@@ -17,8 +17,8 @@ export default async function LoginPage() {
   }
 
   return (
-    <section>
-      <div className="col-span-2 my-10 flex flex-col items-center justify-center p-2">
+    <section className="flex flex-col items-center justify-center max-h-screen">
+      <div className="col-span-2 md:my-10 flex flex-col items-center justify-center p-2">
         <Link href="/">
           <div className="mb-4 flex items-center gap-2">
             <FaArrowLeft className="text-lg" />
