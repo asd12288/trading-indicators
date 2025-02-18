@@ -4,7 +4,6 @@ import SignalTableRow from "./SignalTableRow";
 import TableSignalsLoader from "./loaders/TableSignalsLoader";
 
 const SignalTable = ({ allSignal }) => {
-
   if (allSignal?.length === 0) {
     return (
       <div className="text-slate-100">No signals found for the last 3 days</div>
@@ -16,7 +15,7 @@ const SignalTable = ({ allSignal }) => {
   }
 
   return (
-    <div className="relative h-[28rem] overflow-y-auto rounded-sm text-slate-100">
+    <div className="relative hidden h-[28rem] overflow-y-auto rounded-sm text-slate-100 md:block">
       <table className="w-full table-auto p-4 text-left text-sm">
         <thead className="text-sx sticky top-0 h-16 bg-slate-700 uppercase">
           <tr>

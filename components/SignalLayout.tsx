@@ -35,7 +35,7 @@ const SignalLayout = ({ id, userId }) => {
       </Link>
 
       <div className="flex w-full flex-col items-center gap-4 rounded-xl bg-slate-800 p-4 md:flex-row md:items-center md:justify-between">
-        <h2 className="relative mb-2 text-left text-4xl">
+        <h2 className="relative mb-2 text-left text-2xl md:text-4xl">
           Signal: <span className="font-semibold">{id}</span>
         </h2>
         <div className="flex items-center gap-4">
@@ -44,7 +44,7 @@ const SignalLayout = ({ id, userId }) => {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 items-center gap-4 bg-slate-950 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-4 flex flex-col items-center gap-4 bg-slate-950 md:grid md:grid-cols-3">
         <div className="flex h-full w-full flex-col items-center rounded-2xl bg-slate-800 p-6 shadow-lg">
           <h2 className="mb-4 text-xl font-semibold text-slate-100">
             Trade card - Live
@@ -52,7 +52,7 @@ const SignalLayout = ({ id, userId }) => {
           <SignalCard signalPassed={lastSignal} />
         </div>
         <div className="col-span-2">
-          <div className="flex h-full w-full flex-col items-center rounded-2xl bg-slate-800 p-4 shadow-lg">
+          <div className="hidden h-full w-full flex-col items-center rounded-2xl bg-slate-800 p-4 shadow-lg md:block">
             <h2 className="mb-4 text-xl font-semibold text-slate-100">
               Orders of the last 3 days
             </h2>

@@ -52,9 +52,10 @@ const SignalsList = ({ userId }: { userId: string }) => {
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-8 rounded-lg bg-slate-800 p-8">
+      <div className="md:grid-col-2 grid gap-8 rounded-lg bg-slate-800 p-8 lg:grid-cols-3">
         {limitedSignals.map((signal: any, index: number) => (
           <Link
+            className="flex justify-center"
             key={`${signal.instrument_name}-${index}`}
             href={`/signals/${signal.instrument_name}`}
           >

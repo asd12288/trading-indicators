@@ -11,9 +11,11 @@ async function page() {
 
   return (
     <div className="">
-      <h1 className="my-5 text-center text-5xl font-semibold">Blogs</h1>
+      <h1 className="my-5 text-center text-3xl font-semibold md:text-5xl">
+        Blogs
+      </h1>
       <div className="my-4 w-full border-t"></div>
-      <div className="px-32">
+      <div className="md:px-32">
         <BlogList blogs={data} />
       </div>
     </div>

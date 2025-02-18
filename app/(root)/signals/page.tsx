@@ -17,7 +17,7 @@ async function page() {
 
   return (
     <>
-      <div className="mb-8 flex flex-col items-center space-y-6">
+      <div className="mb-8 flex flex-col items-center space-y-4 md:space-y-6">
         <div className="rounded-lg bg-slate-800 p-8">
           <div className="flex w-full items-baseline justify-between">
             <h2 className="text-3xl font-medium">Latest Signals</h2>
