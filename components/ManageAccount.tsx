@@ -92,7 +92,6 @@ const ManageAccount = ({ profile }) => {
         description="Are you sure you want to cancel your subscription?"
         onConfirm={handleCancelConfirmSubscription}
       />
-     
     </div>
   );
 };

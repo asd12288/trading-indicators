@@ -34,20 +34,14 @@ const AlertNotification = ({ userId }) => {
     <div className="mt-2">
       <Link href="/alerts">
         <div className="flex items-center justify-center gap-2">
-          <h3 className="font-semibold">Instrument Watch Alert: </h3>
+          <h3 className="font-semibold">Alerts Upcoming Signals</h3>
           <FaRegLightbulb className="text-xl" />
         </div>
       </Link>
-      <div className="mt-2 flex animate-pulse items-center justify-center gap-4 text-xl font-semibold">
-        <p className="animate-none text-sm">Possible Trade on:</p>
-        <p>{instrument_name}</p>
-        <p>
-          <span>{price}</span>
-        </p>
-        <p>({format(time, "MM-dd HH:mm")})</p>
-        <p>{trade_direction}</p>
-        <p className="font-normal">{message}</p>
-      </div>
+      <h4 className="mt-2 animate-pulse text-center text-xl font-semibold">
+        Alert: Potential {trade_direction} on {instrument_name} - {price} Stay
+        vigilant ({(time && format(new Date(time), "dd/MM/yyyy")) || "N/A"})
+      </h4>
     </div>
   );
 };

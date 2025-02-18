@@ -6,16 +6,17 @@ import SignalCard from "./SignalCard";
 import Link from "next/link";
 import FavoriteSignals from "../FavoriteSignals";
 import usePreferences from "@/hooks/usePreferences";
+import useProfile from "@/hooks/useProfile";
 
-const SignalsList = ({ userId }) => {
-  // Get preferences directly from usePreferences
+const SignalsList = ({ userId }: { userId: string }) => {
   const {
     preferences,
     isLoading: isLoadingPrefs,
     error,
+    favorites,
   } = usePreferences(userId);
 
-  // Use your signals hook
+  const { isPro } = useProfile(userId);
   const { signals, isLoading: isLoadingSignals } = useSignals(preferences);
 
   if (isLoadingSignals || isLoadingPrefs) {
@@ -26,25 +27,35 @@ const SignalsList = ({ userId }) => {
     return <div className="text-red-400">Error: {error}</div>;
   }
 
-  // Filter favorites
-  const favoriteInstruments = Object.entries(preferences)
-    .filter(([_, val]) => val?.favorite)
-    .map(([instrument]) => instrument);
-
   const favouriteSignals = signals.filter((signal) =>
-    favoriteInstruments.includes(signal.instrument_name),
+    favorites.includes(signal.instrument_name),
   );
+
+  // If not Pro, limit the signals to the first 5 items
+  const limitedSignals = !isPro ? signals.slice(0, 5) : signals;
 
   return (
     <div className="rounded-lg bg-slate-800 p-8">
-      {favouriteSignals.length > 0 && (
+      {isPro && favouriteSignals.length > 0 && (
         <FavoriteSignals favouriteSignals={favouriteSignals} />
       )}
 
+      {/* Non-pro users: show upgrade message and button */}
+      {!isPro && (
+        <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
+          <p className="text-center text-gray-400">
+            Upgrade to view all signals and add favorites.
+          </p>
+          <Link href="/profile?tab=upgrade">
+            <button className="rounded-lg bg-green-800 p-2">Upgrade now</button>
+          </Link>
+        </div>
+      )}
+
       <div className="grid grid-cols-3 gap-8 rounded-lg bg-slate-800 p-8">
-        {signals.map((signal: any) => (
+        {limitedSignals.map((signal: any, index: number) => (
           <Link
-            key={signal.instrument_name}
+            key={`${signal.instrument_name}-${index}`}
             href={`/signals/${signal.instrument_name}`}
           >
             <SignalCard signalPassed={signal} />

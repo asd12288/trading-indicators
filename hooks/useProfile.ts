@@ -51,7 +51,9 @@ const useProfile = (userId: string) => {
     fetchProfile();
   }, [userId]);
 
-  return { profile, isLoading };
+  const isPro = profile?.plan === "pro";
+
+  return { profile, isLoading, isPro };
 };
 
 export default useProfile;

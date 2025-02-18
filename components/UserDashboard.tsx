@@ -55,12 +55,21 @@ const UserDashboard = ({ user }) => {
               </li>
 
               {isPro ? (
-                <li className="flex items-center gap-2 rounded-lg px-4 py-2">
-                  <FaRegMoneyBill1 />
-                  <button onClick={() => handleTabChange("manage")}>
-                    Subscription
-                  </button>
-                </li>
+                <>
+                  <li className="flex items-center gap-2 rounded-lg px-4 py-2">
+                    <FaRegMoneyBill1 />
+                    <button onClick={() => handleTabChange("manage")}>
+                      Subscription
+                    </button>
+                  </li>
+                  <li className="flex items-center gap-2 rounded-lg px-4 py-2">
+                    <FaBell />
+
+                    <button onClick={() => handleTabChange("notification")}>
+                      Notification
+                    </button>
+                  </li>
+                </>
               ) : (
                 <li className="flex items-center gap-2 rounded-lg px-4 py-2">
                   <FaRegMoneyBill1 />
@@ -77,13 +86,6 @@ const UserDashboard = ({ user }) => {
                   My Signals
                 </button>
               </li> */}
-              <li className="flex items-center gap-2 rounded-lg px-4 py-2">
-                <FaBell />
-
-                <button onClick={() => handleTabChange("notification")}>
-                  Notification
-                </button>
-              </li>
             </ul>
           </nav>
         </aside>
