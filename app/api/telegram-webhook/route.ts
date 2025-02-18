@@ -1,6 +1,6 @@
 // app/api/telegram-webhook/route.js
 import { NextResponse } from "next/server";
-import supabaseClient from "@/database/supabase/supabase"; // wherever your Supabase client is
+import supabaseClient from "@/database/supabase/supabase"; 
 
 export async function POST(request) {
   try {

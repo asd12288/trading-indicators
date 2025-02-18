@@ -1,4 +1,5 @@
 import supabaseClient from "@/database/supabase/supabase";
+import { format } from "date-fns";
 import { NextResponse } from "next/server";
 // IMPORTANT: use a "server-side" Supabase client instance.
 // If you’ve set this up differently in your project, import accordingly.
@@ -7,13 +8,6 @@ export async function POST(request) {
   try {
     // 1. Read the payload (the "NEW" row) from Supabase
     const row = await request.json();
-    // row will contain something like:
-    // {
-    //   instrument_name: "...",
-    //   entry_price: ...,
-    //   exit_price: ...,
-    //   ...etc
-    // }
 
     // 2. Fetch all users from "profiles"
     const { data: users, error: usersError } = await supabaseClient
@@ -51,15 +45,28 @@ export async function POST(request) {
     //    Adapt this logic based on whether exit_price is null or not
     const instrumentName = row.instrument_name;
     const entryPrice = row.entry_price;
+    const takeProfit = row.take_profit;
     const exitPrice = row.exit_price;
-    const time = row.entry_time;
+    const tradeType = row.trade_side === "long" ? "Buy" : "Sell";
+    const entryTime = format(row.entry_time, "MM-dd HH:mm");
+    const exitTime = format(row.exit_time, "MM-dd HH:mm");
+    const duration = row.trade_duration;
 
     // Example message
     const message =
       exitPrice === null
-        ? `🚀 *New Signal Alert*\n\n📌 *Instrument:* ${instrumentName}\n💰 *Entry Price:* ${entryPrice}\n🕒 *Time:* ${time}`
-        : `📌 *Instrument:* ${instrumentName}\n✅ *Signal Closed*\n💸 *Exit Price:* ${exitPrice}`;
-
+        ? `🚀 *New Signal Alert*
+  
+  📌 *Type:* ${tradeType}
+  📈 *Instrument:* ${instrumentName}
+  💰 *Entry Price:* ${entryPrice}
+  🕒 *Entry Time:* ${entryTime}
+  🎯 *Take Profit:* ${takeProfit}`
+        : `📌 *Instrument:* ${instrumentName}
+  ✅ *Signal Closed*
+  💸 *Exit Price:* ${exitPrice}
+  🕒 *Exit Time:* ${exitTime}
+  ⏱ *Trade Duration:* ${duration}`;
     // 5. Iterate through the list of users and send Telegram messages
     for (const user of users) {
       const userPreferences = user.preferences || {};
