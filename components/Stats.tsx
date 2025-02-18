@@ -8,14 +8,17 @@ const Stats = ({ num, text, symbol = "", duration }) => {
   const rounded = useTransform(() => Math.round(count.get()));
 
   useEffect(() => {
-    const controls = animate(count, number, { duration: duration, ease: "easeOut" });
+    const controls = animate(count, number, {
+      duration: duration,
+      ease: "easeOut",
+    });
     return () => controls.stop();
   }, []);
 
   return (
     <div>
-      <div className="flex items-baseline ">
-        <motion.pre className="text-center text-2xl font-semibold md:text-left md:text-3xl lg:text-4xl xl:text-5xl">
+      <div className="flex items-baseline">
+        <motion.pre className="text-center font-sans text-2xl font-bold md:text-left md:text-3xl lg:text-4xl xl:text-5xl">
           {rounded}
         </motion.pre>
         <p className="text-3xl font-bold">{symbol}</p>

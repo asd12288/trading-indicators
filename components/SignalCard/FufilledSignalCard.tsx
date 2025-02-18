@@ -1,6 +1,7 @@
 import { format, formatDistanceToNow, parseISO } from "date-fns";
 import { FaLock, FaTrophy } from "react-icons/fa";
 import { RxEnter, RxExit } from "react-icons/rx";
+import { motion } from "framer-motion";
 
 const FufilledSignalCard = ({ instrument, isBuy }) => {
   const {
@@ -26,7 +27,10 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
   });
 
   return (
-    <div className="h-[26rem] w-72 rounded-lg bg-slate-900">
+    <motion.div
+      whileHover={{ scale: 1.015, transition: { duration: 0.2 } }}
+      className="h-[26rem] w-72 rounded-lg bg-slate-900"
+    >
       <div
         className={`flex items-center justify-between ${
           isBuy ? "bg-green-950" : "bg-red-950"
@@ -90,7 +94,7 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
       <p className="p-2 text-center">
         Started at: {format(parseISO(exit_time), "MM/dd -  HH:mm")}
       </p>
-    </div>
+    </motion.div>
   );
 };
 

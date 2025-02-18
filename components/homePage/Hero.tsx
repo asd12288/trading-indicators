@@ -16,7 +16,7 @@ const Hero = () => {
           </p>
           <h1 className="leading-2 text-center text-4xl font-bold text-green-50 md:text-left md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl">
             Trade Smarter with Real-Time <br />
-            <span className="text-green-300">Trading Signals</span>
+            <span className="text-green-400">Trading Signals</span>
           </h1>
           <h2 className="text-md mt-8 text-center font-light text-gray-300 md:pr-10 md:text-left lg:text-xl">
             Join our community of traders leveraging expert analysis to stay

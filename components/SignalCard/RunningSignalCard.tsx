@@ -4,6 +4,7 @@ import { FaArrowDown, FaArrowUp, FaCheck } from "react-icons/fa";
 import { RxEnter } from "react-icons/rx";
 import { TbHandStop } from "react-icons/tb";
 import { TfiTarget } from "react-icons/tfi";
+import { motion } from "framer-motion";
 
 const RunningSignalCard = ({ instrument, isBuy }) => {
   const {
@@ -23,7 +24,10 @@ const RunningSignalCard = ({ instrument, isBuy }) => {
   );
 
   return (
-    <div className="h-[26rem] w-72 bg-slate-900">
+    <motion.div
+      whileHover={{ scale: 1.015, transition: { duration: 0.2 } }}
+      className="h-[26rem] w-72 bg-slate-900"
+    >
       <div
         className={`flex min-h-24 items-center justify-between ${
           isBuy ? "bg-green-700" : "bg-red-700"
@@ -89,7 +93,7 @@ const RunningSignalCard = ({ instrument, isBuy }) => {
       <p className="p-2 text-center">
         Started at: {format(parseISO(entry_time), "MM/dd -  HH:mm")}
       </p>
-    </div>
+    </motion.div>
   );
 };
 

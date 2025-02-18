@@ -35,3 +35,10 @@
     color: #fff;
   }
 }
+
+.gradient-text {
+  background: linear-gradient(to right, #052016, #6e0101, #072b0a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
