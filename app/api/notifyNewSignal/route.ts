@@ -45,7 +45,7 @@ export async function POST(request) {
     //    Adapt this logic based on whether exit_price is null or not
     const instrumentName = row.instrument_name;
     const entryPrice = row.entry_price;
-    const takeProfit = row.take_profit;
+    const takeProfit = row.take_profit_price;
     const exitPrice = row.exit_price;
     const tradeType = row.trade_side === "long" ? "Buy" : "Sell";
     const entryTime = format(row.entry_time, "MM-dd HH:mm");

@@ -1,6 +1,9 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { initializeAudio } from "@/lib/notification";
+import { Button } from "./ui/button";
+import supabaseClient from "@/database/supabase/supabase";
+import { toast } from "@/hooks/use-toast";
 
 interface TelegramAuthProps {
   userId: string;
@@ -8,9 +11,12 @@ interface TelegramAuthProps {
 }
 
 const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
-  const TELEGRAM_BOT_USERNAME = "World_Trade_Signals_Bot";
+  const [telegramActive, setTelegramActive] = useState(
+    profile?.telegram_chat_id,
+  );
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  const isTelegramConnected = profile?.telegram_chat_id;
+  const TELEGRAM_BOT_USERNAME = "World_Trade_Signals_Bot";
 
   const handleTelegramConnect = () => {
     // Initialize audio on user interaction
@@ -25,26 +31,63 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
       `https://t.me/${TELEGRAM_BOT_USERNAME}?start=${userId}`,
       "_blank",
     );
+
+    if (profile?.telegram_chat_id) {
+      setTelegramActive(true);
+    }
   };
+
+  async function handleRemoveTelegram() {
+    try {
+      setIsLoaded(true);
+      const { data, error } = await supabaseClient
+        .from("profiles")
+        .update({ telegram_chat_id: null })
+        .eq("id", userId);
+
+      toast({
+        title: "success",
+        description: "Telegram removed",
+      });
+      setTelegramActive(false);
+    } catch (error) {
+      console.error("Error removing Telegram", error);
+      toast({
+        title: "error",
+        description: "Error removing Telegram",
+      });
+    } finally {
+      setIsLoaded(false);
+    }
+  }
 
   return (
     <div className="mb-4 flex flex-col items-center space-y-4">
       <h2 className="text-2xl font-semibold">Telegram Notifications</h2>
-      {!isTelegramConnected ? (
+      {!telegramActive ? (
         <>
-          <button
+          <Button
             onClick={handleTelegramConnect}
             className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
           >
             Connect Telegram
-          </button>
+          </Button>
           <p className="mt-2 text-sm text-gray-400">
             Click to open Telegram and start the bot. This will link your chat
             to your account.
           </p>
         </>
       ) : (
-        <p className="text-green-600">Telegram connected</p>
+        <>
+          <p className="text-green-600">Telegram connected</p>
+          <Button
+            onClick={handleRemoveTelegram}
+            className="bg-red-900 hover:bg-red-950"
+            disabled={isLoaded}
+          >
+            Remove Telegram
+          </Button>
+        </>
       )}
     </div>
   );

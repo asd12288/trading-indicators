@@ -23,7 +23,7 @@ const RunningSignalCard = ({ instrument, isBuy }) => {
   );
 
   return (
-    <div className="h-[26rem] w-72 bg-slate-800">
+    <div className="h-[26rem] w-72 bg-slate-900">
       <div
         className={`flex min-h-24 items-center justify-between ${
           isBuy ? "bg-green-700" : "bg-red-700"
@@ -55,11 +55,11 @@ const RunningSignalCard = ({ instrument, isBuy }) => {
         </div>
       </div>
       <div className="flex justify-between border-b-2 border-slate-500 p-4">
-        <p>Status:</p>
+        <p className="">Status:</p>
 
-        <div className="flex items-center gap-2">
+        <div className="flex animate-pulse items-center gap-2">
           <FaCheck />
-          <p>{exit_price ? "No Activiated" : "Running"}</p>
+          <p className="">{exit_price ? "No Activiated" : "Running"}</p>
         </div>
       </div>
       <div className="flex justify-between border-b-2 border-slate-500 p-4">

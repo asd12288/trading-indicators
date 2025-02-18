@@ -1,3 +1,4 @@
+import AlertNotification from "@/components/AlertNotification";
 import SignalsList from "@/components/SignalCard/SignalsList";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "next/navigation";
@@ -16,16 +17,20 @@ async function page() {
 
   return (
     <>
-      <div className="mb-8 flex flex-col items-center space-y-6 ">
-        <h2 className="mt-8 border-b-2 text-5xl font-bold">
-          Latest Signals per Instrument
-        </h2>
-        <p>
-          New to the platform?{" "}
-          <span className="hover:underline">check our guide</span> for better
-          understanding
-        </p>
-        <SignalsList userId={user.id} />
+      <div className="mb-8 flex flex-col items-center space-y-6">
+        <div className="rounded-lg bg-slate-800 p-8">
+          <div className="flex w-full items-baseline justify-between">
+            <h2 className="text-3xl font-medium">Latest Signals</h2>
+            <p className="text-2xl text-gray-400">
+              Signals Status:{" "}
+              <span className="animate-pulse text-2xl text-slate-50">Live</span>
+            </p>
+          </div>
+          <div className="mt-3 rounded-lg bg-gray-700 p-2">
+            <AlertNotification userId={user.id} />
+          </div>
+          <SignalsList userId={user.id} />
+        </div>
       </div>
     </>
   );

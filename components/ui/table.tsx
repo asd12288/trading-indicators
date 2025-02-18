@@ -58,7 +58,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors data-[state=selected]:bg-neutral-100  dark:data-[state=selected]:bg-neutral-800",
+      "border-b transition-colors data-[state=selected]:bg-neutral-100 dark:data-[state=selected]:bg-neutral-800",
       className,
     )}
     {...props}
@@ -103,7 +103,7 @@ const TableCaption = React.forwardRef<
   <caption
     ref={ref}
     className={cn(
-      "mt-4  text-sm text-neutral-500 dark:text-neutral-400",
+      "mt-4 text-sm text-neutral-500 dark:text-neutral-400",
       className,
     )}
     {...props}

@@ -30,10 +30,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
   return (
     <div>
-      <SignalLayout
-        id={params.id}
-        userId={user.id}
-      />
+      <SignalLayout id={params.id} userId={user.id} />
     </div>
   );
 }

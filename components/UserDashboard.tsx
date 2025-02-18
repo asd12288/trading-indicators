@@ -1,17 +1,13 @@
 "use client";
-import { AlertCircleIcon, Bell, User2Icon } from "lucide-react";
+import useProfile from "@/hooks/useProfile";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { BsBookmarkStar } from "react-icons/bs";
-import { GoGraph } from "react-icons/go";
-import { RiLockPasswordLine } from "react-icons/ri";
+import { FaBell, FaCircleUser, FaLock, FaRegMoneyBill1 } from "react-icons/fa6";
+import ManageAccount from "./ManageAccount";
 import ProfileCard from "./ProfileCard";
 import ResetPasswordForm from "./ResetPasswordForm";
-import UpgradeAccount from "./UpgradeAccount";
-import UserSignals from "./UserSignals";
-import ManageAccount from "./ManageAccount";
-import useProfile from "@/hooks/useProfile";
 import TelegramAuth from "./TelegramAuth";
+import UpgradeAccount from "./UpgradeAccount";
 
 const UserDashboard = ({ user }) => {
   const searchParams = useSearchParams();
@@ -45,13 +41,13 @@ const UserDashboard = ({ user }) => {
           <nav>
             <ul className="space-y-6 text-lg">
               <li className="flex items-center gap-2 rounded-lg px-4 py-2">
-                <User2Icon />
+                <FaCircleUser />
                 <button onClick={() => handleTabChange("profile")}>
                   My Profile
                 </button>
               </li>
               <li className="flex items-center gap-2 rounded-lg px-4 py-2">
-                <RiLockPasswordLine className="text-2xl" />
+                <FaLock />
 
                 <button onClick={() => handleTabChange("password")}>
                   Password{" "}
@@ -60,29 +56,29 @@ const UserDashboard = ({ user }) => {
 
               {isPro ? (
                 <li className="flex items-center gap-2 rounded-lg px-4 py-2">
-                  <BsBookmarkStar />
+                  <FaRegMoneyBill1 />
                   <button onClick={() => handleTabChange("manage")}>
                     Subscription
                   </button>
                 </li>
               ) : (
                 <li className="flex items-center gap-2 rounded-lg px-4 py-2">
-                  <BsBookmarkStar />
+                  <FaRegMoneyBill1 />
                   <button onClick={() => handleTabChange("upgrade")}>
                     Pro Account{" "}
                   </button>
                 </li>
               )}
 
-              <li className="flex items-center gap-2 rounded-lg px-4 py-2">
+              {/* <li className="flex items-center gap-2 rounded-lg px-4 py-2">
                 <GoGraph />
 
                 <button onClick={() => handleTabChange("my-signals")}>
                   My Signals
                 </button>
-              </li>
+              </li> */}
               <li className="flex items-center gap-2 rounded-lg px-4 py-2">
-                <Bell />
+                <FaBell />
 
                 <button onClick={() => handleTabChange("notification")}>
                   Notification
@@ -99,10 +95,12 @@ const UserDashboard = ({ user }) => {
           {tab === "upgrade" && <UpgradeAccount />}
           {tab === "password" && <ResetPasswordForm />}
           {tab === "manage" && <ManageAccount profile={profile} />}
-          {tab === "my-signals" && (
+          {/* {tab === "my-signals" && (
             <UserSignals user={user} profile={profile} />
+          )} */}
+          {tab === "notification" && (
+            <TelegramAuth profile={profile} userId={user?.id} />
           )}
-          {tab === "notification" && <TelegramAuth profile={profile} userId={user?.id} />}
         </div>
       </div>
     </div>

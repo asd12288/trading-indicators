@@ -36,9 +36,8 @@ import AddPostForm from "./AddPostForm";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  type?: 'signals' | 'users' | 'posts'; // Make type optional with specific values
+  type?: "signals" | "users" | "posts" | "alerts"; // Make type optional with specific values
 }
-
 
 export function DataTable<TData, TValue>({
   columns,
@@ -112,8 +111,8 @@ export function DataTable<TData, TValue>({
         </Dialog>
       )}
 
-      <div className="rounded-md">
-        <Table>
+      <div>
+        <Table className="">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

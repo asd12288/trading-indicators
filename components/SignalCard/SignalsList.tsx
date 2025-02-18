@@ -5,49 +5,49 @@ import LoaderCards from "../loaders/LoaderCards";
 import SignalCard from "./SignalCard";
 import Link from "next/link";
 import FavoriteSignals from "../FavoriteSignals";
-import useProfile from "@/hooks/useProfile";
+import usePreferences from "@/hooks/usePreferences";
 
 const SignalsList = ({ userId }) => {
-  const { isLoading: isLoadingProfile, profile } = useProfile(userId);
-  // Ensure a default object so we're not passing undefined
-  const preferences = profile?.preferences || {};
+  // Get preferences directly from usePreferences
+  const {
+    preferences,
+    isLoading: isLoadingPrefs,
+    error,
+  } = usePreferences(userId);
 
-  // Pass preferences into the hook
-  const { signals, isLoading } = useSignals(preferences);
+  // Use your signals hook
+  const { signals, isLoading: isLoadingSignals } = useSignals(preferences);
 
-  if (isLoading || isLoadingProfile) {
+  if (isLoadingSignals || isLoadingPrefs) {
     return <LoaderCards />;
   }
 
-  // Filter favorites for example
-  const favoritePreferences = Object.entries(preferences)
-    .filter(([_, value]) => value?.favorite)
-    .reduce((acc, [key, value]) => {
-      acc[key] = value;
-      return acc;
-    }, {});
+  if (error) {
+    return <div className="text-red-400">Error: {error}</div>;
+  }
 
-  const favouriteInstruments = Object.keys(favoritePreferences);
+  // Filter favorites
+  const favoriteInstruments = Object.entries(preferences)
+    .filter(([_, val]) => val?.favorite)
+    .map(([instrument]) => instrument);
+
   const favouriteSignals = signals.filter((signal) =>
-    favouriteInstruments.includes(signal.instrument_name),
+    favoriteInstruments.includes(signal.instrument_name),
   );
 
   return (
-    <div>
-      {favouriteInstruments.length > 0 && (
-        <FavoriteSignals
-          favouriteSignals={favouriteSignals}
-          preferences={preferences}
-        />
+    <div className="rounded-lg bg-slate-800 p-8">
+      {favouriteSignals.length > 0 && (
+        <FavoriteSignals favouriteSignals={favouriteSignals} />
       )}
 
-      <div className="grid grid-cols-3 gap-8">
-        {signals.map((signal: any, index: number) => (
+      <div className="grid grid-cols-3 gap-8 rounded-lg bg-slate-800 p-8">
+        {signals.map((signal: any) => (
           <Link
-            key={`${signal.instrument_name}-${index}`}
+            key={signal.instrument_name}
             href={`/signals/${signal.instrument_name}`}
           >
-            <SignalCard signalPassed={signal} preferences={preferences} />
+            <SignalCard signalPassed={signal} />
           </Link>
         ))}
       </div>

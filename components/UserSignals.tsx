@@ -24,6 +24,7 @@ const UserSignals = ({ user, profile }) => {
     router.refresh();
   }
 
+
   if (!userPreferences || Object.keys(userPreferences).length === 0)
     return (
       <div className="flex flex-col items-center gap-4">
