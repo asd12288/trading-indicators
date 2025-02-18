@@ -5,40 +5,40 @@ import usePreferences from "@/hooks/usePreferences";
 import useProfile from "@/hooks/useProfile";
 import { format } from "date-fns";
 import Link from "next/link";
-import { FaRegLightbulb } from "react-icons/fa6";
 
 const AlertNotification = ({ userId }) => {
   const { alerts, isLoading } = useAlerts();
   const { notificationsOn } = usePreferences(userId);
   const { isPro } = useProfile(userId);
 
-  const notificationUserOn = alerts.filter((alert) => {
-    return notificationsOn.includes(alert.instrument_name);
-  });
-
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (!notificationUserOn || notificationUserOn.length === 0) {
+  const alertsToDisplay = isPro
+    ? alerts.filter((alert) => notificationsOn.includes(alert.instrument_name))
+    : alerts;
+
+  if (!alertsToDisplay || alertsToDisplay.length === 0) {
     return <div className="text-center">No alerts available</div>;
   }
 
-  const lastAlert = isPro ? notificationUserOn[0] : alerts[0];
+  const lastAlert = alertsToDisplay[0];
 
   const { instrument_name, price, time, trade_direction } = lastAlert;
 
   return (
     <div className="mt-2">
-      <Link href="/alerts">
-        <div className="flex items-center justify-center gap-2">
-          <h3 className="font-semibold">Alerts Upcoming Signals</h3>
-          <FaRegLightbulb className="text-xl" />
-        </div>
-      </Link>
+      <Link href="/alerts"></Link>
       <h4 className="mt-2 animate-pulse text-center text-xl font-semibold">
-        Alert: Potential {trade_direction} on {instrument_name} - {price} Stay
-        vigilant ({(time && format(new Date(time), "dd/MM/yyyy")) || "N/A"})
+        Alert: Potential{" "}
+        <span
+          className={`${trade_direction === "LONG" ? "text-green-500" : "text-red-500"}`}
+        >
+          {trade_direction}
+        </span>{" "}
+        on {instrument_name} - {price} Stay vigilant (
+        {(time && format(new Date(time), "dd/MM hh:mm")) || "N/A"})
       </h4>
     </div>
   );
