@@ -16,13 +16,15 @@ function page() {
         <Offers />
       </section> */}
 
-      <section className="p-20">
+      <section className="md:p-20">
         <Service />
       </section>
 
       <section className="p-2">
-        <h2 className="text-center text-5xl font-semibold">Plans</h2>
-        <p className="mt-4 text-center text-2xl font-light">
+        <h2 className="text-center text-3xl font-semibold md:text-5xl">
+          Plans
+        </h2>
+        <p className="mt-4 text-center text-xl font-light md:text-2xl">
           Weve got a plan perfect just for you
         </p>
         <Plans />

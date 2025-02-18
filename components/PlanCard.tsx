@@ -5,13 +5,13 @@ import Link from "next/link";
 const PlanCard = () => {
   return (
     <div className="space-y-6 rounded-lg bg-slate-800 p-8">
-      <h3 className="text-4xl font-medium">Premium Plan</h3>
+      <h3 className="text-2xl font-medium md:text-4xl">Premium Plan</h3>
       <div className="flex items-baseline gap-2">
-        <h4 className="text-5xl font-semibold">65$</h4>
-        <p>Per month</p>
+        <h4 className="text-4xl font-semibold md:text-5xl">65$</h4>
+        <p className="text-sm md:text-lg">Per month</p>
       </div>
       <p className="text-sm text-gray-400">Billed monthly</p>
-      <ul className="space-y-4">
+      <ul className="tmd:text-lg space-y-4 text-sm">
         <Benefit benefit="Access to all signals" />
         <Benefit benefit="Analysis of all the instruments" />
         <Benefit benefit="Telegram notifications" />
