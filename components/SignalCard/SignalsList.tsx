@@ -35,7 +35,7 @@ const SignalsList = ({ userId }: { userId: string }) => {
   const limitedSignals = !isPro ? signals.slice(0, 5) : signals;
 
   return (
-    <div className="rounded-lg bg-slate-800 p-8">
+    <div className="rounded-lg bg-slate-800 p-0 md:p-8">
       {isPro && favouriteSignals.length > 0 && (
         <FavoriteSignals favouriteSignals={favouriteSignals} />
       )}
@@ -52,7 +52,7 @@ const SignalsList = ({ userId }: { userId: string }) => {
         </div>
       )}
 
-      <div className="md:grid-col-2 grid gap-8 rounded-lg bg-slate-800 p-8 lg:grid-cols-3">
+      <div className="md:grid-col-2 grid md:gap-8 gap-4 rounded-lg bg-slate-800 md:p-8 lg:grid-cols-3">
         {limitedSignals.map((signal: any, index: number) => (
           <Link
             className="flex justify-center"

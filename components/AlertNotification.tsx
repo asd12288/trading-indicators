@@ -28,9 +28,9 @@ const AlertNotification = ({ userId }) => {
   const { instrument_name, price, time, trade_direction } = lastAlert;
 
   return (
-    <div className="mt-2">
+    <div className="">
       <Link href="/alerts"></Link>
-      <h4 className="mt-2 animate-pulse text-center text-xl font-semibold">
+      <h4 className="animate-pulse text-center md:text-xl md:font-semibold font-medium">
         Alert: Potential{" "}
         <span
           className={`${trade_direction === "LONG" ? "text-green-500" : "text-red-500"}`}
