@@ -52,8 +52,9 @@ const useProfile = (userId: string) => {
   }, [userId]);
 
   const isPro = profile?.plan === "pro";
+  const isAdmin = profile?.role === "admin";
 
-  return { profile, isLoading, isPro };
+  return { profile, isLoading, isPro, isAdmin };
 };
 
 export default useProfile;

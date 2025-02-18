@@ -3,7 +3,7 @@
 import supabaseClient from "@/database/supabase/supabase";
 import { useEffect, useState } from "react";
 
-const useAlerts = (preferences = {}) => {
+const useAlerts = () => {
   const [alerts, setAlerts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 

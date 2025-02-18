@@ -2,6 +2,7 @@
 
 import useAlerts from "@/hooks/useAlerts";
 import usePreferences from "@/hooks/usePreferences";
+import useProfile from "@/hooks/useProfile";
 import { format } from "date-fns";
 import Link from "next/link";
 import { FaRegLightbulb } from "react-icons/fa6";
@@ -9,6 +10,7 @@ import { FaRegLightbulb } from "react-icons/fa6";
 const AlertNotification = ({ userId }) => {
   const { alerts, isLoading } = useAlerts();
   const { notificationsOn } = usePreferences(userId);
+  const { isPro } = useProfile(userId);
 
   const notificationUserOn = alerts.filter((alert) => {
     return notificationsOn.includes(alert.instrument_name);
@@ -22,13 +24,9 @@ const AlertNotification = ({ userId }) => {
     return <div className="text-center">No alerts available</div>;
   }
 
-  const {
-    instrument_name,
-    price,
-    time,
-    trade_direction,
-    message = "",
-  } = notificationUserOn[0];
+  const lastAlert = isPro ? notificationUserOn[0] : alerts[0];
+
+  const { instrument_name, price, time, trade_direction } = lastAlert;
 
   return (
     <div className="mt-2">

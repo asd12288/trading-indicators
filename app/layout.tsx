@@ -1,13 +1,14 @@
 import { UserProvider } from "@/providers/UserProvider";
+import { PaddleProvider } from "@/utils/paddle/PaddleContaxt";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
         <UserProvider>
-          {/* ...existing layout content... */}
-          {children}
-          {/* ...existing layout content... */}
+          <PaddleProvider>
+            {children}
+          </PaddleProvider>
         </UserProvider>
       </body>
     </html>

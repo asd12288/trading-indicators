@@ -1,57 +1,30 @@
 "use client";
 
-import { Environments, initializePaddle, Paddle } from "@paddle/paddle-js";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { usePaddle } from "@/utils/paddle/PaddleContaxt";
 
-const Checkout = ({
-  userEmail,
-  userId,
-}: {
+interface CheckoutProps {
   userEmail: string;
   userId: string;
-}) => {
-  // const { priceId } = useParams<PathParams>();
-  const [paddle, setPaddle] = useState<Paddle>();
-  const [checkoutData, setCheckoutData] = useState();
+}
 
+const Checkout = ({ userEmail, userId }: CheckoutProps) => {
+  const paddle = usePaddle();
+  // Replace with your actual priceId or retrieve it dynamically if needed
   const priceId = "pri_01jkxw8zjnvbkr2ehd3h900z8f";
 
-  const handleCheckoutEvents = (event) => {
-    setCheckoutData(event);
-  };
-
   useEffect(() => {
-    if (
-      !paddle?.Initialize &&
-      process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN &&
-      (process.env.NEXT_PUBLIC_PADDLE_ENV as Environments)
-    ) {
-      initializePaddle({
-        token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
-        environment: process.env.NEXT_PUBLIC_PADDLE_ENV as Environments,
-        eventCallback: (e) => {
-          if (e.data && e.name) {
-            handleCheckoutEvents(e.data);
-          }
-        },
-        checkout: {
-          settings: { successUrl: "/checkout/success" },
-        },
-      }).then(async (paddle) => {
-        if (paddle && priceId) {
-          setPaddle(paddle);
-          paddle.Checkout.open({
-            items: [{ priceId: priceId, quantity: 1 }],
-            customData: { email: userEmail, userId: userId },
-          });
-        }
+    if (paddle && priceId) {
+      paddle.Checkout.open({
+        items: [{ priceId, quantity: 1 }],
+        customData: { email: userEmail, userId },
       });
     }
-  }, [paddle?.Initialize, priceId]);
+  }, [paddle, priceId, userEmail, userId]);
 
   return (
     <div className="min-h-min">
-      <h1>Checkout</h1>
+      <h1 className="text-4xl">Redirecting to Checkout...</h1>
     </div>
   );
 };

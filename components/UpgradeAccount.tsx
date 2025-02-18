@@ -1,9 +1,18 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Benefit from "./smallComponents/Benefit";
-import Plans from "./homePage/Plans";
-import { Button } from "./ui/button";
+import Link from "next/link";
+import { loadPaddle } from "@paddle/paddle-js";
 
 const UpgradeAccount = () => {
+  const [checkoutUrl, setCheckoutUrl] = useState("");
+
+  // useEffect(() => {
+  //   const fetchProduct = async () => {
+  //     const Paddle = await loadPaddle()
+  //   }
+
   return (
     <div className="flex flex-col items-center justify-center">
       <h1 className="text-center text-3xl font-semibold">
@@ -29,9 +38,11 @@ const UpgradeAccount = () => {
           <Benefit benefit="Alerts on upcomming trades" />
           <Benefit benefit="Custom signals prefrences" />
         </ul>
-        <button className="mt-2 w-80 rounded-lg bg-green-800 px-2 py-2">
-          Upgrade my account
-        </button>
+        <Link href="checkout/pri_01jkxw8zjnvbkr2ehd3h900z8f">
+          <button className="mt-2 w-80 rounded-lg bg-green-800 px-2 py-2">
+            Upgrade my account
+          </button>
+        </Link>
       </div>
     </div>
   );

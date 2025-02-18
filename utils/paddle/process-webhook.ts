@@ -85,7 +85,9 @@ export class ProcessWebhook {
     }
   }
 
-  private async handleSubscriptionCanceled(eventData: SubscriptionCanceledEvent) {
+  private async handleSubscriptionCanceled(
+    eventData: SubscriptionCanceledEvent,
+  ) {
     try {
       const supabase = await createClient();
       const { error } = await supabase
@@ -105,5 +107,3 @@ export class ProcessWebhook {
     }
   }
 }
-
-
