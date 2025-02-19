@@ -1,8 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-// filepath: /c:/Users/ilanc/Desktop/indicators/components/admin/SignalsMonitoring.tsx
+import { useSignalsStatus } from "@/hooks/useSignalsStatus";
 
-export default function SignalsMonitoring({ signalsStatus }) {
+export default function SignalsMonitoring() {
+  const { signalsStatus, loading, error } = useSignalsStatus();
   const [tick, setTick] = useState(0);
 
   // Re-render periodically to re-check times
@@ -10,6 +11,9 @@ export default function SignalsMonitoring({ signalsStatus }) {
     const interval = setInterval(() => setTick((t) => t + 1), 60_000);
     return () => clearInterval(interval);
   }, []);
+
+  if (loading) return <p>Loading signals...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   const uniqueSignals = Object.values(
     signalsStatus.reduce((acc, signal) => {
@@ -30,9 +34,10 @@ export default function SignalsMonitoring({ signalsStatus }) {
       <div className="grid gap-4 p-4 md:grid-cols-3 lg:grid-cols-4">
         {uniqueSignals.map((signal) => {
           const signalTime = new Date(signal.time);
+          // Remove 2 hours from the signal time
           signalTime.setHours(signalTime.getHours() - 2);
           const now = new Date();
-          const threeMinutes = 3 * 60 * 1000;
+          const threeMinutes = 5 * 60 * 1000;
           const isActive = now.getTime() - signalTime.getTime() < threeMinutes;
           return (
             <div
