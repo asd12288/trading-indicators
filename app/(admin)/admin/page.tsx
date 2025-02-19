@@ -1,4 +1,5 @@
 import BlogTable from "@/components/admin/BlogTable";
+import SignalsMonitoring from "@/components/admin/SignalsMonitoring";
 import SignalsTable from "@/components/admin/SignalsTable";
 import UsersTable from "@/components/admin/UsersTable";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,6 +25,10 @@ const page = async () => {
   const { data: users } = await supabase.from("profiles").select("*");
   const { data: signals } = await supabase.from("all_signals").select("*");
   const { data: posts } = await supabase.from("blogs").select("*");
+  const { data: signalsStatus } = await supabase
+    .from("status_alert")
+    .select("*")
+    .limit(1000);
 
   return (
     <div className="min-h-min">
@@ -35,6 +40,7 @@ const page = async () => {
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="signals">Signals</TabsTrigger>
               <TabsTrigger value="blogs">Blogs</TabsTrigger>
+              <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
             </TabsList>
 
             <TabsContent value="users">
@@ -47,6 +53,10 @@ const page = async () => {
 
             <TabsContent value="blogs">
               <BlogTable posts={posts} />
+            </TabsContent>
+
+            <TabsContent value="monitoring">
+              <SignalsMonitoring signalsStatus={signalsStatus} />
             </TabsContent>
           </Tabs>
         </div>

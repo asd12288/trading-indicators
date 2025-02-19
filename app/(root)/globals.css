@@ -36,9 +36,18 @@
   }
 }
 
-.gradient-text {
-  background: linear-gradient(to right, #052016, #6e0101, #072b0a);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+@layer utilities {
+  .card-wrapper {
+    @apply relative overflow-hidden rounded-lg bg-gradient-to-br from-slate-900 to-slate-800 p-6;
+  }
+
+  .card-wrapper::before {
+    background: conic-gradient(#000014 0deg, #3a3a3a 0deg, transparent 80deg);
+
+    @apply animate-border-spin absolute left-[-25%] top-[-25%] h-[150%] w-[150%] content-[''];
+  }
+
+  .card-content {
+    @apply absolute left-[1px] top-[1px] h-[calc(100%-2px)] w-[calc(100%-2px)] rounded-2xl bg-slate-800 bg-slate-900 bg-gradient-to-b;
+  }
 }

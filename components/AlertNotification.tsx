@@ -19,11 +19,21 @@ const AlertNotification = ({ userId }) => {
     ? alerts.filter((alert) => notificationsOn.includes(alert.instrument_name))
     : alerts;
 
-  if (!alertsToDisplay || alertsToDisplay.length === 0) {
+  if (!alertsToDisplay || (alertsToDisplay.length === 0 && !isPro)) {
     return <div className="text-center">No alerts available</div>;
   }
 
+  if (!alertsToDisplay || (alertsToDisplay.length === 0 && isPro)) {
+    return (
+      <div className="text-center">
+        No alerts available. Turn on notifications on signals to get alerts
+      </div>
+    );
+  }
+
   const lastAlert = alertsToDisplay[0];
+
+  console.log(lastAlert);
 
   const { instrument_name, price, time, trade_direction } = lastAlert;
 
@@ -31,14 +41,14 @@ const AlertNotification = ({ userId }) => {
     <div className="">
       <Link href="/alerts"></Link>
       <h4 className="animate-pulse text-center text-sm md:text-xl md:font-semibold">
-        Alert: Potential{" "}
+        ({(time && format(new Date(time), "dd/MM hh:mm")) || "N/A"}) - Alert:
+        Potential{" "}
         <span
-          className={`${trade_direction === "LONG" ? "text-green-500" : "text-red-500"}`}
+          className={` ${trade_direction === "LONG" ? "text-green-500" : "text-red-500"}`}
         >
           {trade_direction}
         </span>{" "}
-        on {instrument_name} - {price} Stay vigilant (
-        {(time && format(new Date(time), "dd/MM hh:mm")) || "N/A"})
+        Opportunity on {instrument_name} - Level {price}. Stay vigilant.
       </h4>
     </div>
   );
