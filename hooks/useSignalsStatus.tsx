@@ -12,6 +12,7 @@ export function useSignalsStatus() {
         const { data, error } = await supabaseClient
           .from("status_alert")
           .select("*")
+          .order("time", { ascending: false })
           .limit(1000);
 
         setSignalsStatus(data);

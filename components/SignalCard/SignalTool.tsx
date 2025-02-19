@@ -173,6 +173,7 @@ import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 import React from "react";
 import { toast } from "@/hooks/use-toast";
 import usePreferences from "@/hooks/usePreferences";
+import SignalToolTooltip from "./SignalToolTooltip";
 
 interface SignalToolProps {
   signalId: string;
@@ -225,29 +226,39 @@ function SignalTool({ signalId, userId }: SignalToolProps) {
     <div className="flex items-center space-x-4 border-l-2 pl-4">
       {!isLoading && (
         <>
-          <button onClick={handleNotifications}>
-            {notifications ? (
-              <IoIosNotifications className="text-4xl" />
-            ) : (
-              <IoIosNotificationsOff className="text-4xl" />
-            )}
-          </button>
+          <SignalToolTooltip
+            text={"Get notification on Telegram and on the platform"}
+          >
+            <button onClick={handleNotifications}>
+              {notifications ? (
+                <IoIosNotifications className="text-4xl" />
+              ) : (
+                <IoIosNotificationsOff className="text-4xl" />
+              )}
+            </button>
+          </SignalToolTooltip>
 
-          <button onClick={handleVolume}>
-            {volume ? (
-              <FaVolumeUp className="text-4xl" />
-            ) : (
-              <FaVolumeMute className="text-4xl" />
-            )}
-          </button>
+          <SignalToolTooltip
+            text={"Enable or disable the sound for this signal"}
+          >
+            <button onClick={handleVolume}>
+              {volume ? (
+                <FaVolumeUp className="text-4xl" />
+              ) : (
+                <FaVolumeMute className="text-4xl" />
+              )}
+            </button>
+          </SignalToolTooltip>
 
-          <button onClick={handleFavorite}>
-            {favorite ? (
-              <MdFavorite className="text-4xl" />
-            ) : (
-              <MdFavoriteBorder className="text-4xl" />
-            )}
-          </button>
+          <SignalToolTooltip text={"Add this signal to your favorites list"}>
+            <button onClick={handleFavorite}>
+              {favorite ? (
+                <MdFavorite className="text-4xl" />
+              ) : (
+                <MdFavoriteBorder className="text-4xl" />
+              )}
+            </button>
+          </SignalToolTooltip>
         </>
       )}
       {isLoading && <div></div>}

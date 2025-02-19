@@ -2,7 +2,6 @@ import AlertNotification from "@/components/AlertNotification";
 import SignalsList from "@/components/SignalCard/SignalsList";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "next/navigation";
-import { motion } from "framer-motion";
 
 async function page() {
   const supabase = await createClient();
@@ -11,7 +10,6 @@ async function page() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // If there's an error or user is missing, redirect to login
   if (!user) {
     redirect("/login");
   }

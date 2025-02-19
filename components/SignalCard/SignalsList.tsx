@@ -7,7 +7,6 @@ import Link from "next/link";
 import FavoriteSignals from "../FavoriteSignals";
 import usePreferences from "@/hooks/usePreferences";
 import useProfile from "@/hooks/useProfile";
-import SignalContextMenu from "./SignalContextMenu";
 
 const SignalsList = ({ userId }: { userId: string }) => {
   const {

@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { initializeAudio } from "@/lib/notification";
 import { Button } from "./ui/button";
 import supabaseClient from "@/database/supabase/supabase";
 import { toast } from "@/hooks/use-toast";
@@ -20,7 +19,6 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
 
   const handleTelegramConnect = () => {
     // Initialize audio on user interaction
-    initializeAudio();
 
     if (!userId) {
       console.error("No user ID available");

@@ -25,10 +25,6 @@ const page = async () => {
   const { data: users } = await supabase.from("profiles").select("*");
   const { data: signals } = await supabase.from("all_signals").select("*");
   const { data: posts } = await supabase.from("blogs").select("*");
-  const { data: signalsStatus } = await supabase
-    .from("status_alert")
-    .select("*")
-    .limit(1000);
 
   return (
     <div className="min-h-min">
@@ -56,7 +52,7 @@ const page = async () => {
             </TabsContent>
 
             <TabsContent value="monitoring">
-              <SignalsMonitoring signalsStatus={signalsStatus} />
+              <SignalsMonitoring />
             </TabsContent>
           </Tabs>
         </div>

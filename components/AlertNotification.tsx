@@ -1,6 +1,7 @@
 "use client";
 
 import useAlerts from "@/hooks/useAlerts";
+import { useClients } from "@/hooks/useClients";
 import usePreferences from "@/hooks/usePreferences";
 import useProfile from "@/hooks/useProfile";
 import { format } from "date-fns";

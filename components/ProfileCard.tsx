@@ -9,6 +9,7 @@ import { Label } from "./ui/label";
 import { updateEmail, updateAvatar } from "@/app/(root)/profile/actions";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
+import { useClients } from "@/hooks/useClients";
 
 interface ProfileCardProps {
   user: {
@@ -29,6 +30,10 @@ const ProfileCard = ({ user, profile }: ProfileCardProps) => {
 
   const { username, avatarUrl, plan, email } = profile || {};
   const userId = user.id;
+
+  const { clients } = useClients();
+
+  console.log(clients);
 
   const handleSubmit = async (formData: FormData) => {
     const result = await updateEmail(userId, user, formData);
