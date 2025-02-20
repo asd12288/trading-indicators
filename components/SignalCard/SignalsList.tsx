@@ -31,10 +31,7 @@ const SignalsList = ({ userId }: SignalsListProps) => {
   const { signals, isLoading: isLoadingSignals } = useSignals(preferences);
   const { isPro } = useProfile(userId);
 
-  // Typed search
   const [searchedSignal, setSearchedSignal] = useState("");
-
-  // Which category is currently selected in the <Select>
   const [selectedCategory, setSelectedCategory] = useState("all");
 
   // 1) Filter signals by the typed search and the top-level category
@@ -96,7 +93,7 @@ const SignalsList = ({ userId }: SignalsListProps) => {
       )}
 
       {isPro && (
-        <div className="flex flex-col items-center gap-8 p-4 md:flex-row md:justify-between">
+        <div className="flex flex-col items-center gap-8 px-8 md:flex-row md:justify-between">
           <Input
             placeholder="Search for signals..."
             value={searchedSignal}

@@ -12,16 +12,14 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
     result_ticks,
     trade_duration,
     exit_time,
+    mae,
+    mfe,
   } = instrument;
 
   const exitTimeInUserTimezone = parseISO(exit_time);
 
-  const adjustedExitTime = new Date(
-    exitTimeInUserTimezone.getTime() - 2 * 60 * 60 * 1000,
-  );
-
   // Calculate how long ago the trade finished
-  const timeAgo = formatDistanceToNow(adjustedExitTime, {
+  const timeAgo = formatDistanceToNow(exitTimeInUserTimezone, {
     addSuffix: true,
     includeSeconds: true,
   });
@@ -82,10 +80,13 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
       </div>
 
       <div className="flex justify-between border-b-2 border-slate-500 p-4">
-        <p>Gain (Ticks)</p>
         <div className="flex items-center gap-2">
-          <FaTrophy />
-          <p className="text-lg font-medium">{result_ticks}</p>
+          <p>MAE:</p>
+          <p className="text-lg font-medium">{mae.toFixed(0)}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <p>MFE:</p>
+          <p className="text-lg font-medium">{mfe.toFixed(0)}</p>
         </div>
       </div>
 

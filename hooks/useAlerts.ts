@@ -7,6 +7,8 @@ const useAlerts = () => {
   const [alerts, setAlerts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const pingSound = new Audio("/audio/ping.mp3");
+
   const fetchData = async () => {
     const { data, error } = await supabaseClient
       .from("signals_alert")
@@ -30,8 +32,8 @@ const useAlerts = () => {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "signals_alert" },
         (payload) => {
-          console.log("Change received!", payload);
           fetchData();
+          pingSound.play();
         },
       )
       .subscribe();

@@ -1,11 +1,9 @@
 "use client";
 
 import useAlerts from "@/hooks/useAlerts";
-import React from "react";
+import Link from "next/link";
 import { DataTable } from "./admin/DataTable";
 import { alertTableColumns } from "./alertTableColumns";
-import Link from "next/link";
-import usePreferences from "@/hooks/usePreferences";
 
 const AlertsTable = ({ userId }) => {
   const { alerts, isLoading } = useAlerts();
