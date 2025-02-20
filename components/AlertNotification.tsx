@@ -16,11 +16,9 @@ const AlertNotification = ({ userId }) => {
     return <div>Loading...</div>;
   }
 
-  // const alertsToDisplay = isPro
-  //   ? alerts.filter((alert) => notificationsOn.includes(alert.instrument_name))
-  //   : alerts;
-
-  const alertsToDisplay = alerts;
+  const alertsToDisplay = isPro
+    ? alerts.filter((alert) => notificationsOn.includes(alert.instrument_name))
+    : alerts;
 
   if (!alertsToDisplay || (alertsToDisplay.length === 0 && !isPro)) {
     return <div className="text-center">No alerts available</div>;
@@ -35,7 +33,6 @@ const AlertNotification = ({ userId }) => {
   }
 
   const lastAlert = alertsToDisplay[0];
-
 
   const { instrument_name, price, time, trade_direction } = lastAlert;
 
