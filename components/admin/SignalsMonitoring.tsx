@@ -45,13 +45,18 @@ export default function SignalsMonitoring() {
           return (
             <div
               key={signal.id}
-              className={`rounded border text-slate-50 ${isStandBy ? "bg-blue-950" : isActive ? "bg-green-700" : "bg-red-700"} p-4 shadow-md`}
+              className={`rounded border text-slate-50 ${isStandBy ? "bg-blue-950" : isActive ? "bg-green-700" : "bg-red-700"} flex flex-col p-4 shadow-md`}
             >
-              <div className="flex justify-between">
+              <div className=" ">
                 <div className="flex flex-col justify-center">
-                  <p className="mb-2 text-2xl font-semibold">
-                    {signal.instrument_name}
-                  </p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="mb-2 text-2xl font-semibold">
+                      {signal.instrument_name}
+                    </p>
+                    <p className="text-lg uppercase font-medium">
+                      {signal.position_status}
+                    </p>
+                  </div>
                   <p className="mb-2 text-sm">
                     {format(signalTime.toLocaleString(), "MM-dd - hh:mm")}
                   </p>
