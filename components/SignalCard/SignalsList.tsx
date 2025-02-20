@@ -1,19 +1,12 @@
 "use client";
-
 import { useState, useMemo } from "react";
 import Link from "next/link";
-
-// Hooks
 import useSignals from "@/hooks/useSignals";
 import usePreferences from "@/hooks/usePreferences";
 import useProfile from "@/hooks/useProfile";
-
-// UI / Components
 import LoaderCards from "../loaders/LoaderCards";
 import SignalCard from "./SignalCard";
 import FavoriteSignals from "../FavoriteSignals";
-
-// Radix UI select & input
 import { Input } from "../ui/input";
 import {
   Select,
@@ -23,8 +16,6 @@ import {
   SelectItem,
 } from "../ui/select";
 import { CATEGORIES, instrumentCategoryMap } from "@/lib/instrumentCategories";
-
-// Import the category map & category list
 
 interface SignalsListProps {
   userId: string;
@@ -104,36 +95,37 @@ const SignalsList = ({ userId }: SignalsListProps) => {
         </div>
       )}
 
-      {/* Search and Category Filter */}
-      <div className="flex flex-col items-center gap-8 p-4 md:flex-row md:justify-between">
-        <Input
-          placeholder="Search for signals..."
-          value={searchedSignal}
-          onChange={(e) => setSearchedSignal(e.target.value)}
-          className="w-full md:w-[400px]"
-        />
-        <div className="w-full md:w-[200px]">
-          <Select
-            value={selectedCategory}
-            onValueChange={(value) => setSelectedCategory(value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Filter by category" />
-            </SelectTrigger>
-            <SelectContent className="bg-slate-800">
-              {CATEGORIES.map((cat) => (
-                <SelectItem
-                  key={cat.value}
-                  className="cursor-pointer hover:bg-slate-700"
-                  value={cat.value}
-                >
-                  {cat.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      {isPro && (
+        <div className="flex flex-col items-center gap-8 p-4 md:flex-row md:justify-between">
+          <Input
+            placeholder="Search for signals..."
+            value={searchedSignal}
+            onChange={(e) => setSearchedSignal(e.target.value)}
+            className="w-full md:w-[400px]"
+          />
+          <div className="w-full md:w-[200px]">
+            <Select
+              value={selectedCategory}
+              onValueChange={(value) => setSelectedCategory(value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Filter by category" />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-800">
+                {CATEGORIES.map((cat) => (
+                  <SelectItem
+                    key={cat.value}
+                    className="cursor-pointer hover:bg-slate-700"
+                    value={cat.value}
+                  >
+                    {cat.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-      </div>
+      )}
 
       {displaySignals && displaySignals.length === 0 && (
         <div className="flex flex-col items-center justify-center p-4 md:max-w-[1000px]">
