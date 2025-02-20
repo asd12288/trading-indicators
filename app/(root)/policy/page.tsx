@@ -36,7 +36,7 @@ const PrivacyPolicy = () => {
         
         <h2 className="text-2xl font-semibold text-slate-100 mt-6 underline">6. Contact Information</h2>
         <p className="text-slate-300 mt-2">
-          If you have any questions about this privacy policy, contact us at <a href="mailto:privacy@worldtradesignals.com" className="text-blue-400 underline">privacy@worldtradesignals.com</a>.
+          If you have any questions about this privacy policy, contact us at <a href="mailto:privacy@worldtradesignals.com" className="text-blue-400 underline">support@trader-map.com</a>.
         </p>
       </div>
     </div>

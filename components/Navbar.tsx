@@ -6,6 +6,7 @@ import LogoutBtn from "./LogoutBtn";
 import UpgradeButton from "./UpgradeButton";
 import { FaHamburger } from "react-icons/fa";
 import { RxHamburgerMenu } from "react-icons/rx";
+import { MapIcon } from "lucide-react";
 
 export default function Navbar({ user, profile }) {
   // State to handle mobile menu toggle
@@ -18,7 +19,10 @@ export default function Navbar({ user, profile }) {
         <ul className="flex items-center justify-between p-8 text-lg font-medium">
           <li>
             <Link href="/">
-              <Image src="/logo.png" alt="logo" width={200} height={100} />
+              <div className="flex items-center gap-2">
+                <h1 className="text-4xl font-semibold">Trader Map</h1>
+                <MapIcon height={35} width={35} />
+              </div>
             </Link>
           </li>
 
@@ -74,7 +78,10 @@ export default function Navbar({ user, profile }) {
       {/* Mobile Menu */}
       <div className="flex items-center justify-between p-4 lg:hidden">
         <Link href="/">
-          <Image src="/logo.png" alt="logo" width={140} height={70} />
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-semibold">Trader Map</h1>
+            <MapIcon height={25} width={25} />
+          </div>{" "}
         </Link>
 
         {/* Hamburger Button */}
@@ -89,7 +96,7 @@ export default function Navbar({ user, profile }) {
 
       {/* Slide-down mobile menu */}
       {isMobileOpen && (
-        <ul className="transtion flex flex-col mb-3 items-center gap-4 bg-slate-900 px-6 py-4 text-sm ease-in lg:hidden">
+        <ul className="transtion mb-3 flex flex-col items-center gap-4 bg-slate-900 px-6 py-4 text-sm ease-in lg:hidden">
           <li>
             <Link
               href="/signals"

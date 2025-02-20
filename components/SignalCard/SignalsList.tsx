@@ -93,7 +93,7 @@ const SignalsList = ({ userId }: SignalsListProps) => {
       )}
 
       {isPro && (
-        <div className="flex flex-col items-center gap-8 px-8 md:flex-row md:justify-between">
+        <div className="mb-5 flex flex-col items-center gap-8 px-8 md:flex-row md:justify-between">
           <Input
             placeholder="Search for signals..."
             value={searchedSignal}

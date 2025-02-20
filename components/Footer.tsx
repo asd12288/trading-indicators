@@ -6,10 +6,10 @@ const Footer = () => {
     <section className="relative bottom-0 flex w-full flex-col items-center justify-center bg-slate-900 p-8 text-center text-white md:flex-row md:justify-between md:text-left">
       <div>
         <h4 className="text-xl font-semibold md:text-3xl">
-          World Trade Signals
+         Trader Map 
         </h4>
         <p className="text-thin mt-3">
-          © 2025 WorldTradeSignals. All rights reserved.
+          © 2025 Trader-Map. All rights reserved.
         </p>
       </div>
 

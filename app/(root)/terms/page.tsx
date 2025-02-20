@@ -8,9 +8,8 @@ const TermsAndConditions = () => {
           Terms and Conditions
         </h1>
         <p className="mb-4 text-slate-300">
-          Welcome to World Trade Signals. By using our website, you agree to
-          comply with the following terms and conditions. Please read them
-          carefully.
+          Welcome to Trader-map. By using our website, you agree to comply with
+          the following terms and conditions. Please read them carefully.
         </p>
 
         <h2 className="mt-6 text-2xl font-semibold text-slate-100">
@@ -71,22 +70,24 @@ const TermsAndConditions = () => {
         </h2>
         <p className="mt-2 text-slate-300">
           If you have any questions about these Terms and Conditions, please
-          contact us at support@worldtradesignals.com.
+          contact us at support@trader-map.com.
         </p>
       </div>
-      
+
       {/* Refund Policy */}
       <div className="mx-auto mt-12 max-w-4xl rounded-xl bg-slate-800 p-8 shadow-lg">
-        <h1 className="mb-6 text-3xl font-bold text-slate-100">Refund Policy</h1>
-        
+        <h1 className="mb-6 text-3xl font-bold text-slate-100">
+          Refund Policy
+        </h1>
+
         <h2 className="mt-6 text-2xl font-semibold text-slate-100">
           1. No Refunds Policy
         </h2>
         <p className="mt-2 text-slate-300">
-          All purchases made on World Trade Signals are final. Due to the nature
-          of digital products and services, we do not offer refunds or exchanges.
+          All purchases made on Trader-map are final. Due to the nature of
+          digital products and services, we do not offer refunds or exchanges.
         </p>
-        
+
         <h2 className="mt-6 text-2xl font-semibold text-slate-100">
           2. Exceptions
         </h2>
@@ -95,16 +96,16 @@ const TermsAndConditions = () => {
           error, or if the service has not been delivered as described. Any
           requests for exceptions must be submitted within 7 days of purchase.
         </p>
-        
+
         <h2 className="mt-6 text-2xl font-semibold text-slate-100">
           3. How to Request a Refund
         </h2>
         <p className="mt-2 text-slate-300">
           To request a refund (if applicable), please contact us at
-          support@worldtradesignals.com with your transaction details and
-          reason for the request.
+          support@trader-map.com with your transaction details and reason for
+          the request.
         </p>
-        
+
         <h2 className="mt-6 text-2xl font-semibold text-slate-100">
           4. Processing Time
         </h2>
