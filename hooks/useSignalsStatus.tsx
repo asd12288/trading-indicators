@@ -17,7 +17,7 @@ export function useSignalsStatus() {
 
         setSignalsStatus(data);
       } catch (error: any) {
-        setError(error);
+        setError(error)
       } finally {
         setLoading(false);
       }

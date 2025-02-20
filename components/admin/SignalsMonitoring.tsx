@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSignalsStatus } from "@/hooks/useSignalsStatus";
+import { format } from "date-fns";
 
 export default function SignalsMonitoring() {
   const { signalsStatus, loading, error } = useSignalsStatus();
@@ -31,31 +32,37 @@ export default function SignalsMonitoring() {
   return (
     <div>
       <h2 className="mb-4 text-2xl font-bold">Status Monitoring</h2>
-      <div className="grid gap-4 p-4 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid gap-4 p-4 md:grid-cols-4 lg:grid-cols-6">
         {uniqueSignals.map((signal) => {
           const signalTime = new Date(signal.time);
           // Remove 2 hours from the signal time
           signalTime.setHours(signalTime.getHours() - 2);
           const now = new Date();
-          const threeMinutes = 5 * 60 * 1000;
-          const isActive = now.getTime() - signalTime.getTime() < threeMinutes;
+          const fiveMinutes = 5 * 60 * 1000;
+          const isActive = now.getTime() - signalTime.getTime() < fiveMinutes;
+          const isStandBy = isActive && signal.status === "STAND-BY";
+
           return (
             <div
               key={signal.id}
-              className={`rounded border text-slate-50 ${
-                isActive ? "bg-green-900" : "bg-red-900"
-              } p-4 shadow-md`}
+              className={`rounded border text-slate-50 ${isStandBy ? "bg-blue-950" : isActive ? "bg-green-700" : "bg-red-700"} p-4 shadow-md`}
             >
               <div className="flex justify-between">
                 <div className="flex flex-col justify-center">
                   <p className="mb-2 text-2xl font-semibold">
                     {signal.instrument_name}
                   </p>
-                  <p className="mb-2 text-sm">{signalTime.toLocaleString()}</p>
+                  <p className="mb-2 text-sm">
+                    {format(signalTime.toLocaleString(), "MM-dd - hh:mm")}
+                  </p>
                   <p className="text-sm">
                     Status:{" "}
-                    <span className="text-xl font-medium">
-                      {isActive ? signal.status : "Deactivated"}
+                    <span className="text-sm font-semibold">
+                      {isStandBy
+                        ? "Stand-By"
+                        : isActive
+                          ? signal.status
+                          : "Deactivated"}
                     </span>
                   </p>
                 </div>
