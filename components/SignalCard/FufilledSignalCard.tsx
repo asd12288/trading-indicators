@@ -18,8 +18,12 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
 
   const exitTimeInUserTimezone = parseISO(exit_time);
 
+  const adjustedExitTime = new Date(
+    exitTimeInUserTimezone.getTime() - 2 * 60 * 60 * 1000,
+  );
+
   // Calculate how long ago the trade finished
-  const timeAgo = formatDistanceToNow(exitTimeInUserTimezone, {
+  const timeAgo = formatDistanceToNow(adjustedExitTime, {
     addSuffix: true,
     includeSeconds: true,
   });
