@@ -41,7 +41,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
         <div className="flex items-center gap-4">
           <h4 className="text-sm font-medium md:text-xl">
             {isPro
-              ? "Signal Settings: "
+              ? "Signal Settings:"
               : "Upgrade to add notifications and favoriting"}
           </h4>
           <SignalTool signalId={id} userId={userId} isPro={isPro} />

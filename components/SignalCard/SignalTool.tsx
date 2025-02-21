@@ -232,9 +232,13 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
           >
             <button onClick={handleNotifications} disabled={!isPro}>
               {notifications ? (
-                <IoIosNotifications className="text-4xl" />
+                <IoIosNotifications
+                  className={`${!isPro ? "text-4xl text-slate-700" : "text-4xl"}`}
+                />
               ) : (
-                <IoIosNotificationsOff className="text-4xl" />
+                <IoIosNotificationsOff
+                  className={`${!isPro ? "text-4xl text-slate-700" : "text-4xl"}`}
+                />
               )}
             </button>
           </SignalToolTooltip>
@@ -244,9 +248,13 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
           >
             <button onClick={handleVolume} disabled={!isPro}>
               {volume ? (
-                <FaVolumeUp className="text-4xl" />
+                <FaVolumeUp
+                  className={`${!isPro ? "text-4xl text-slate-700" : "text-4xl"}`}
+                />
               ) : (
-                <FaVolumeMute className="text-4xl" />
+                <FaVolumeMute
+                  className={`${!isPro ? "text-4xl text-slate-700" : "text-4xl"}`}
+                />
               )}
             </button>
           </SignalToolTooltip>
@@ -254,9 +262,13 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
           <SignalToolTooltip text={"Add this signal to your favorites list"}>
             <button onClick={handleFavorite} disabled={!isPro}>
               {favorite ? (
-                <MdFavorite className="text-4xl" />
+                <MdFavorite
+                  className={`${!isPro ? "text-4xl text-slate-700" : "text-4xl"}`}
+                />
               ) : (
-                <MdFavoriteBorder className="text-4xl" />
+                <MdFavoriteBorder
+                  className={`${!isPro ? "text-4xl text-slate-700" : "text-4xl"}`}
+                />
               )}
             </button>
           </SignalToolTooltip>

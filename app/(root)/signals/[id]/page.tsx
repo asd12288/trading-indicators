@@ -39,7 +39,9 @@ export default async function Page({ params }: { params: { id: string } }) {
     redirect("/login");
   }
 
-  const isPro = profile?.role === "pro" ? true : false;
+  const isPro = profile?.plan === "pro" ? true : false;
+
+  console.log(isPro);
 
   return (
     <div>
