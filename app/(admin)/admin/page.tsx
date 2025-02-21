@@ -5,6 +5,7 @@ import UsersTable from "@/components/admin/UsersTable";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createClient } from "@/database/supabase/server";
 import { TabsContent } from "@radix-ui/react-tabs";
+import { redirect } from "next/navigation";
 
 const page = async () => {
   const supabase = await createClient();
@@ -18,14 +19,9 @@ const page = async () => {
     .eq("id", user.id)
     .single();
 
-  if (!user || profile.role !== "admin") {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
+  const isAdmin = profile?.role === "admin" ? true : false;
+
+  if (!isAdmin) redirect("/");
 
   const { data: users } = await supabase.from("profiles").select("*");
   const { data: signals } = await supabase.from("all_signals").select("*");

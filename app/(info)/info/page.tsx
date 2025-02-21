@@ -233,7 +233,7 @@ export default async function FeatureDocsPage() {
             <h4 className="animate-pulse text-center text-sm md:text-xl md:font-semibold">
               (10/21) 20:30 - Alert: Potential{" "}
               <span className="text-green-700">Long</span> Opportunity on NQ -
-              Level 10505. Stay vigilant.
+              Level 21992.75 Stay vigilant.
             </h4>
           </div>
         </section>
