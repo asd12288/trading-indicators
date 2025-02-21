@@ -10,7 +10,7 @@ import useProfile from "@/hooks/useProfile";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-const SignalLayout = ({ id, userId }) => {
+const SignalLayout = ({ id, userId, isPro }) => {
   const { isLoading, profile } = useProfile(userId);
   const { instrumentData, isLoading: loadingInstrumentData } =
     useInstrumentData(id);
@@ -39,8 +39,12 @@ const SignalLayout = ({ id, userId }) => {
           Signal: <span className="font-medium md:font-semibold">{id}</span>
         </h2>
         <div className="flex items-center gap-4">
-          <h4 className="text-xl font-medium">Signal Settings:</h4>
-          <SignalTool signalId={id} userId={userId} />
+          <h4 className="text-sm font-medium md:text-xl">
+            {isPro
+              ? "Signal Settings: "
+              : "Upgrade to add notifications and favoriting"}
+          </h4>
+          <SignalTool signalId={id} userId={userId} isPro={isPro} />
         </div>
       </div>
 
@@ -53,7 +57,7 @@ const SignalLayout = ({ id, userId }) => {
         </div>
         <div className="col-span-2">
           <div className="hidden h-full w-full flex-col items-center rounded-2xl bg-slate-800 p-4 shadow-lg md:block">
-            <h2 className="md:mb-4 text-xl font-semibold text-slate-100">
+            <h2 className="text-xl font-semibold text-slate-100 md:mb-4">
               Orders of the last 3 days
             </h2>
             <SignalTable allSignal={instrumentData} />

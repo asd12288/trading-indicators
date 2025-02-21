@@ -10,29 +10,31 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const COLORS = ["#22c55e", "#ef4444"]; // matching the green/red scheme
+const COLORS = ["#22c55e", "#8a2929"]; // matching the green/red scheme
 
 const SignalWinRateChart = ({ allSignals }) => {
-  const [chartData, setChartData] = useState<any[] | null>(null);
+  const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
     if (!allSignals || !Array.isArray(allSignals)) return;
 
-    const totalPositiveTicks = allSignals
-      .filter((sig) => sig.result_ticks > 0)
-      .reduce((acc, sig) => acc + sig.result_ticks, 0);
+    // Calculate total MFE for signals that have a positive MFE value
+    const totalMFE = allSignals
+      .filter((sig) => sig.mfe && sig.mfe > 0)
+      .reduce((acc, sig) => acc + sig.mfe, 0);
 
+    // Calculate total negative ticks (taking the absolute value)
     const totalNegativeTicks = allSignals
       .filter((sig) => sig.result_ticks < 0)
       .reduce((acc, sig) => acc + Math.abs(sig.result_ticks), 0);
 
     setChartData([
-      { name: "Positive Ticks", value: totalPositiveTicks },
+      { name: "MFE", value: Math.round(totalMFE) },
       { name: "Negative Ticks", value: totalNegativeTicks },
     ]);
   }, [allSignals]);
 
-  if (!chartData) {
+  if (!chartData || chartData.length === 0) {
     return (
       <div className="mt-4 text-center text-slate-400">Loading chart...</div>
     );
@@ -41,7 +43,7 @@ const SignalWinRateChart = ({ allSignals }) => {
   return (
     <div className="flex w-full flex-col items-center rounded-2xl bg-slate-800 p-6 shadow-lg">
       <h2 className="mb-4 text-xl font-semibold text-slate-100">
-        Trade Tick Distribution
+        MFE vs Negative Ticks
       </h2>
       <ResponsiveContainer width="100%" height={400}>
         <PieChart>

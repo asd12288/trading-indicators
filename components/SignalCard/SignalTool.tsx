@@ -179,9 +179,10 @@ interface SignalToolProps {
   signalId: string;
   userId: string;
   text?: "regular" | "small";
+  isPro?: boolean;
 }
 
-function SignalTool({ signalId, userId }: SignalToolProps) {
+function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
   const { preferences, updatePreference, isLoading } = usePreferences(userId);
 
   // Fallback to some default if no preferences exist for this signal yet
@@ -229,7 +230,7 @@ function SignalTool({ signalId, userId }: SignalToolProps) {
           <SignalToolTooltip
             text={"Get notification on Telegram and on the platform"}
           >
-            <button onClick={handleNotifications}>
+            <button onClick={handleNotifications} disabled={!isPro}>
               {notifications ? (
                 <IoIosNotifications className="text-4xl" />
               ) : (
@@ -241,7 +242,7 @@ function SignalTool({ signalId, userId }: SignalToolProps) {
           <SignalToolTooltip
             text={"Enable or disable the sound for this signal"}
           >
-            <button onClick={handleVolume}>
+            <button onClick={handleVolume} disabled={!isPro}>
               {volume ? (
                 <FaVolumeUp className="text-4xl" />
               ) : (
@@ -251,7 +252,7 @@ function SignalTool({ signalId, userId }: SignalToolProps) {
           </SignalToolTooltip>
 
           <SignalToolTooltip text={"Add this signal to your favorites list"}>
-            <button onClick={handleFavorite}>
+            <button onClick={handleFavorite} disabled={!isPro}>
               {favorite ? (
                 <MdFavorite className="text-4xl" />
               ) : (
