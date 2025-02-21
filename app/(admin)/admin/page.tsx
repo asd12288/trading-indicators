@@ -19,7 +19,12 @@ const page = async () => {
     .single();
 
   if (!user || profile.role !== "admin") {
-    return <h1 className="text-center text-2xl font-semibold">Unauthorized</h1>;
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
   }
 
   const { data: users } = await supabase.from("profiles").select("*");

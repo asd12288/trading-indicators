@@ -29,8 +29,7 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
   });
 
   return (
-    <motion.div
-      whileHover={{ scale: 1.015, transition: { duration: 0.2 } }}
+    <div
       className="h-[26rem] w-72 rounded-lg bg-slate-900"
     >
       <div
@@ -99,7 +98,7 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
       <p className="p-2 text-center">
         Started at: {format(parseISO(exit_time), "MM/dd -  HH:mm")}
       </p>
-    </motion.div>
+    </div>
   );
 };
 

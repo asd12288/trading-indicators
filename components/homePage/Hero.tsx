@@ -23,15 +23,17 @@ const Hero = () => {
             ahead in the Trade market
           </h2>
           <div className="mt-10 flex justify-center gap-4 md:justify-start">
-            <button className="rounded-full bg-slate-800 px-3 py-2 text-sm transition-all hover:bg-slate-900 md:px-4 md:py-3 md:font-medium lg:text-xl">
-              Learn more
-            </button>
             <Link href="/signup">
-              <button className="rounded-full bg-green-600 px-4 py-2 transition-all hover:bg-green-700 md:px-8 md:py-3 md:font-medium lg:text-xl">
+              <button className="rounded-full bg-green-700 px-4 py-2 transition-all hover:bg-green-700 md:px-8 md:py-3 md:font-medium lg:text-xl">
                 Join us{" "}
                 <span>
                   <HiArrowRight className="inline" />
                 </span>
+              </button>
+            </Link>
+            <Link href="/info">
+              <button className="px-3 py-2 text-xs underline transition-all md:px-4 md:py-3 md:font-medium lg:text-xl">
+                Learn more
               </button>
             </Link>
           </div>

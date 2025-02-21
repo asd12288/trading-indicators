@@ -1,7 +1,6 @@
 "use client";
 
 import useAlerts from "@/hooks/useAlerts";
-import { useClients } from "@/hooks/useClients";
 import usePreferences from "@/hooks/usePreferences";
 import useProfile from "@/hooks/useProfile";
 import { format } from "date-fns";
@@ -33,6 +32,20 @@ const AlertNotification = ({ userId }) => {
   }
 
   const lastAlert = alertsToDisplay[0];
+
+  if (lastAlert.time) {
+    const now = new Date();
+    const alertTime = new Date(lastAlert.time);
+    const minutesDiff = (now.getTime() - alertTime.getTime()) / (1000 * 60);
+
+    if (minutesDiff > 5) {
+      return <div className="text-center">No alerts available for now</div>;
+    }
+  }
+
+  if (!lastAlert || lastAlert === null) {
+    return <div className="text-center">No alerts available</div>;
+  }
 
   const { instrument_name, price, time, trade_direction } = lastAlert;
 

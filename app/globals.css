@@ -40,11 +40,10 @@
   .card-wrapper {
     @apply relative overflow-hidden rounded-lg bg-gradient-to-br from-slate-900 to-slate-800 p-6;
   }
-a
-  .card-wrapper::before {
+  a .card-wrapper::before {
     background: conic-gradient(#000014 0deg, #3a3a3a 0deg, transparent 80deg);
 
-    @apply animate-border-spin absolute left-[-25%] top-[-25%] h-[150%] w-[150%] content-[''];
+    @apply absolute left-[-25%] top-[-25%] h-[150%] w-[150%] animate-border-spin content-[''];
   }
 
   .card-content {

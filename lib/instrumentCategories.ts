@@ -90,3 +90,19 @@ export const CATEGORIES = [
   { label: "Forex (Spot Market)", value: "forex" },
   { label: "Cryptocurrencies", value: "crypto" },
 ];
+
+export const SUBCATEGORIESFUTURE = [
+  { label: "All", value: "all" },
+  { label: "Stock Index Futures", value: "stock_index_futures" },
+  { label: "Currency Futures", value: "currency_futures" },
+  { label: "Commodity Futures (Energy)", value: "commodity_futures_energy" },
+  {
+    label: "Commodity Futures (Precious Metals)",
+    value: "commodity_futures_precious_metals",
+  },
+  {
+    label: "Commodity Futures (Agricultural)",
+    value: "commodity_futures_agricultural",
+  },
+  { label: "Interest Rate Futures", value: "interest_rate_futures" },
+];

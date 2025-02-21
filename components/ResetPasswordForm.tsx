@@ -6,6 +6,7 @@ import React, { startTransition, useActionState, useState } from "react";
 import { z } from "zod";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { Button } from "./ui/button";
 
 const passwordSchema = z
   .object({
@@ -52,7 +53,7 @@ const ResetPasswordForm = () => {
   const { error, success } = state;
 
   return (
-    <div className="md:w-96 max-w-96 space-y-6 bg-slate-800 md:p-8 p-2 text-slate-50">
+    <div className="max-w-96 space-y-6 bg-slate-800 p-2 text-slate-50 md:w-96 md:p-8">
       <h3 className="mb-2 text-2xl font-semibold">Reset your Password</h3>
 
       <form onSubmit={handleSubmit}>
@@ -100,12 +101,9 @@ const ResetPasswordForm = () => {
           </div>
         </div>
         <div className="mt-4">
-          <button
-            type="submit"
-            className="rounded bg-green-700 px-4 py-2 font-bold text-white hover:bg-green-800"
-          >
+          <Button type="submit" className=" px-4 py-2">
             {isPending ? "Updating..." : "Reset Password"}
-          </button>
+          </Button>
           {clientError && <p className="text-red-500">{clientError}</p>}
           {success && <p className="text-green-500">{success}</p>}
           {error && <p className="text-red-500">{error}</p>}
