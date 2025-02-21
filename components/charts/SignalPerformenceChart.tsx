@@ -13,31 +13,77 @@ import {
 } from "recharts";
 import { format } from "date-fns";
 
-const PerformanceChart = ({ allSignal }) => {
-  const [chartData, setChartData] = useState<any[] | null>(null);
+const CumulativePotentialTicksChart = ({ allSignal }) => {
+  const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    // Convert strings to numbers as needed and keep trade_side intact
-    const formattedData = allSignal.map((trade: any) => ({
-      entry_time: trade.entry_time,
-      entry_price: Number(trade.entry_price),
-      exit_price: Number(trade.exit_price),
-      trade_side: trade.trade_side,
-      trade_duration: trade.trade_duration,
-    }));
-    setChartData(formattedData);
+    if (!allSignal || !allSignal.length) return;
+
+    // Sort trades by entry time to ensure proper cumulative calculation.
+    const sortedTrades = [...allSignal].sort(
+      (a, b) => new Date(a.entry_time) - new Date(b.entry_time)
+    );
+
+    let cumulativePotential = 0;
+    const data = sortedTrades.map((trade) => {
+      const entryPrice = Number(trade.entry_price);
+      const exitPrice = Number(trade.exit_price);
+      const side = trade.trade_side.toLowerCase();
+      let value = 0;
+
+      if (side === "short") {
+        if (entryPrice > exitPrice) {
+          // Winning short trade: use MFE potential.
+          value =
+            trade.mfe !== undefined
+              ? Number(trade.mfe)
+              : entryPrice - exitPrice;
+        } else {
+          // Losing short trade: use negative loss ticks.
+          value =
+            trade.loss !== undefined
+              ? -Number(trade.loss)
+              : -(exitPrice - entryPrice);
+        }
+      } else {
+        if (exitPrice > entryPrice) {
+          // Winning long trade: use MFE potential.
+          value =
+            trade.mfe !== undefined
+              ? Number(trade.mfe)
+              : exitPrice - entryPrice;
+        } else {
+          // Losing long trade: use negative loss ticks.
+          value =
+            trade.loss !== undefined
+              ? -Number(trade.loss)
+              : -(entryPrice - exitPrice);
+        }
+      }
+
+      cumulativePotential += value;
+
+      return {
+        date: trade.entry_time,
+        cumulativePotential: Number(cumulativePotential.toFixed(2)),
+      };
+    });
+
+    setChartData(data);
   }, [allSignal]);
 
-  if (!chartData) {
+  if (!chartData.length) {
     return (
-      <div className="mt-4 text-center text-slate-400">Loading chart...</div>
+      <div className="mt-4 text-center text-slate-400">
+        Loading chart...
+      </div>
     );
   }
 
   return (
-    <div className="flex w-full flex-col items-center rounded-2xl bg-slate-800 p-6 shadow-lg">
+    <div className="w-full rounded-2xl bg-slate-800 p-6 shadow-lg">
       <h2 className="mb-4 text-xl font-semibold text-slate-100">
-        Trade Price and Duration Over Time
+        Cumulative Potential Ticks
       </h2>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
@@ -46,47 +92,27 @@ const PerformanceChart = ({ allSignal }) => {
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
           <XAxis
-            dataKey="entry_time"
+            dataKey="date"
             stroke="#cbd5e1"
             tickFormatter={(dateString) =>
               format(new Date(dateString), "dd/MM")
             }
           />
-          <YAxis stroke="#cbd5e1" scale="log" domain={["auto", "auto"]} />
+          <YAxis stroke="#cbd5e1" />
           <Tooltip
             wrapperClassName="bg-slate-700 text-slate-100 p-2 rounded"
-            content={({ active, payload }) => {
-              if (!active || !payload || !payload.length) {
-                return null;
-              }
-              const item = payload[0].payload;
-              return (
-                <div className="rounded bg-slate-700 p-2">
-                  <p>Date: {format(new Date(item.entry_time), "dd/MM/yyyy")}</p>
-                  <p>Entry Price: {item.entry_price}</p>
-                  <p>Exit Price: {item.exit_price}</p>
-                  <p>Trade Side: {item.trade_side}</p>
-                  <p>Duration: {item.trade_duration}</p>
-                </div>
-              );
-            }}
+            labelFormatter={(label) =>
+              format(new Date(label), "dd/MM/yyyy")
+            }
           />
           <Legend wrapperStyle={{ color: "#cbd5e1" }} />
           <Line
             type="monotone"
-            dataKey="entry_price"
-            stroke="#22c55e"
+            dataKey="cumulativePotential"
+            name="Cumulative Potential Ticks"
+            stroke="#18d100"
             strokeWidth={2}
-            dot={{ r: 1, fill: "#22c55e" }}
-            name="Entry Price"
-          />
-          <Line
-            type="monotone"
-            dataKey="exit_price"
-            stroke="#ef4444"
-            strokeWidth={2}
-            dot={false}
-            name="Exit Price"
+            dot={{ r: 2, fill: "#3b82f6" }}
           />
         </LineChart>
       </ResponsiveContainer>
@@ -94,4 +120,4 @@ const PerformanceChart = ({ allSignal }) => {
   );
 };
 
-export default PerformanceChart;
+export default CumulativePotentialTicksChart;

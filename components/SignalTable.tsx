@@ -1,49 +1,170 @@
 "use client";
 
-import SignalTableRow from "./SignalTableRow";
-import TableSignalsLoader from "./loaders/TableSignalsLoader";
+import React, { useEffect, useState } from "react";
+import { format } from "date-fns";
 
-const SignalTable = ({ allSignal }) => {
-  if (allSignal?.length === 0) {
-    return (
-      <div className="text-slate-100">No signals found for the last 3 days</div>
+const PerformanceTableWithMFEAndLossTicks = ({ allSignal }) => {
+  const [tableData, setTableData] = useState([]);
+  const [summary, setSummary] = useState({
+    totalTrades: 0,
+    totalMFE: 0,
+    totalLoss: 0,
+    avgMFE: 0,
+    avgLoss: 0,
+  });
+
+  useEffect(() => {
+    if (!allSignal || !allSignal.length) return;
+
+    const formattedData = allSignal.map((trade) => {
+      const entryPrice = Number(trade.entry_price);
+      const exitPrice = Number(trade.exit_price);
+      const side = trade.trade_side.toLowerCase();
+
+      let mfeTicks = 0;
+      let lossTicks = 0;
+
+      if (side === "short") {
+        // For a short trade:
+        // - Favorable when price drops (entry > exit)
+        // - Loss when price goes up (exit > entry)
+        if (entryPrice > exitPrice) {
+          mfeTicks =
+            trade.mfe !== undefined
+              ? Number(trade.mfe)
+              : entryPrice - exitPrice;
+          lossTicks = trade.loss !== undefined ? Number(trade.loss) : 0;
+        } else {
+          mfeTicks = trade.mfe !== undefined ? Number(trade.mfe) : 0;
+          lossTicks =
+            trade.loss !== undefined
+              ? Number(trade.loss)
+              : exitPrice - entryPrice;
+        }
+      } else {
+        // For a long trade:
+        // - Favorable when price rises (exit > entry)
+        // - Loss when price falls (exit < entry)
+        if (exitPrice > entryPrice) {
+          mfeTicks =
+            trade.mfe !== undefined
+              ? Number(trade.mfe)
+              : exitPrice - entryPrice;
+          lossTicks = trade.loss !== undefined ? Number(trade.loss) : 0;
+        } else {
+          mfeTicks = trade.mfe !== undefined ? Number(trade.mfe) : 0;
+          lossTicks =
+            trade.loss !== undefined
+              ? Number(trade.loss)
+              : entryPrice - exitPrice;
+        }
+      }
+
+      return {
+        ...trade,
+        entry_price: entryPrice,
+        exit_price: exitPrice,
+        mfeTicks: Number(mfeTicks.toFixed(2)),
+        lossTicks: Number(lossTicks.toFixed(2)),
+      };
+    });
+
+    const totalTrades = formattedData.length;
+    const totalMFE = formattedData.reduce(
+      (acc, trade) => acc + trade.mfeTicks,
+      0,
     );
-  }
+    const totalLoss = formattedData.reduce(
+      (acc, trade) => acc + trade.lossTicks,
+      0,
+    );
+    const avgMFE = totalTrades ? totalMFE / totalTrades : 0;
+    const avgLoss = totalTrades ? totalLoss / totalTrades : 0;
 
-  if (!allSignal) {
-    return <TableSignalsLoader />;
-  }
+    setTableData(formattedData);
+    setSummary({
+      totalTrades,
+      totalMFE: Number(totalMFE.toFixed(2)),
+      totalLoss: Number(totalLoss.toFixed(2)),
+      avgMFE: Number(avgMFE.toFixed(2)),
+      avgLoss: Number(avgLoss.toFixed(2)),
+    });
+  }, [allSignal]);
 
   return (
-    <div className="relative hidden h-[28rem] overflow-y-auto rounded-sm text-slate-100 md:block">
-      <table className="w-full table-auto p-4 text-left text-sm">
-        <thead className="text-sx sticky top-0 h-16 bg-slate-700 uppercase">
-          <tr>
-            <th scope="col" className="px-6 py-3">
-              Long/Short
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Entry Price
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Exit Price
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Result in Ticks
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Trade Duration
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {allSignal?.map((signal) => (
-            <SignalTableRow key={signal.client_trade_id} signal={signal} />
-          ))}
-        </tbody>
-      </table>
+    <div className="w-full rounded-2xl bg-slate-800 p-6 shadow-lg">
+      <h2 className="mb-4 text-xl font-semibold text-slate-100">
+        Trade MFE & Loss Ticks Performance Summary
+      </h2>
+      <div className="mb-6 grid grid-cols-2 gap-4 text-slate-200">
+        <div>
+          <strong>Total Trades:</strong> {summary.totalTrades}
+        </div>
+        <div>
+          <strong>Total MFE Ticks:</strong> {summary.totalMFE}
+        </div>
+        <div>
+          <strong>Total Loss Ticks:</strong> {summary.totalLoss}
+        </div>
+        <div>
+          <strong>Average MFE Ticks:</strong> {summary.avgMFE}
+        </div>
+        <div>
+          <strong>Average Loss Ticks:</strong> {summary.avgLoss}
+        </div>
+      </div>
+      <div className="h-[500px] overflow-x-auto">
+        <table className="min-w-full divide-y divide-slate-600">
+          <thead className="sticky top-0 bg-slate-700">
+            <tr className="ovreflow-x-auto">
+              <th className="px-4 py-2 text-left text-slate-200">Date</th>
+              <th className="px-4 py-2 text-left text-slate-200">
+                Entry Price
+              </th>
+              <th className="px-4 py-2 text-left text-slate-200">Exit Price</th>
+              <th className="px-4 py-2 text-left text-slate-200">Trade Side</th>
+              <th className="px-4 py-2 text-left text-slate-200">Duration</th>
+              <th className="px-4 py-2 text-left text-slate-200">MFE Ticks</th>
+              <th className="px-4 py-2 text-left text-slate-200">Loss Ticks</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-700 bg-slate-800">
+            {tableData.map((trade, index) => (
+              <tr key={index}>
+                <td className="px-4 py-2 text-slate-200">
+                  {format(new Date(trade.entry_time), "dd/MM/yyyy")}
+                </td>
+                <td className="px-4 py-2 text-slate-200">
+                  {trade.entry_price}
+                </td>
+                <td className="px-4 py-2 text-slate-200">{trade.exit_price}</td>
+                <td className="px-4 py-2 capitalize text-slate-200">
+                  {trade.trade_side}
+                </td>
+                <td className="px-4 py-2 text-slate-200">
+                  {trade.trade_duration}
+                </td>
+                <td
+                  className={`px-4 py-2 ${
+                    trade.mfeTicks > 0 ? "text-green-400" : "text-slate-200"
+                  }`}
+                >
+                  {trade.mfeTicks > 0 ? trade.mfeTicks : "-"}
+                </td>
+                <td
+                  className={`px-4 py-2 ${
+                    trade.lossTicks > 0 ? "text-red-400" : "text-slate-200"
+                  }`}
+                >
+                  {trade.lossTicks > 0 ? trade.lossTicks : "-"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
 
-export default SignalTable;
+export default PerformanceTableWithMFEAndLossTicks;

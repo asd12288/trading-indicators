@@ -49,19 +49,16 @@ const SignalLayout = ({ id, userId, isPro }) => {
       </div>
 
       <div className="mt-4 flex flex-col items-center gap-4 bg-slate-950 md:grid md:grid-cols-3">
+        <div className="col-span-2">
+          <div className="hidden h-full w-full flex-col items-center rounded-2xl bg-slate-800 shadow-lg md:block">
+            <SignalTable allSignal={instrumentData} />
+          </div>
+        </div>
         <div className="flex h-full w-full flex-col items-center rounded-2xl bg-slate-800 p-6 shadow-lg">
           <h2 className="mb-4 text-xl font-semibold text-slate-100">
             Trade card - Live
           </h2>
           <SignalCard signalPassed={lastSignal} />
-        </div>
-        <div className="col-span-2">
-          <div className="hidden h-full w-full flex-col items-center rounded-2xl bg-slate-800 p-4 shadow-lg md:block">
-            <h2 className="text-xl font-semibold text-slate-100 md:mb-4">
-              Orders of the last 3 days
-            </h2>
-            <SignalTable allSignal={instrumentData} />
-          </div>
         </div>
         <div className="col-span-1 w-full">
           <SignalWinRateChart allSignals={instrumentData} />

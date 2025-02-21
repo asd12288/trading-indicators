@@ -78,14 +78,14 @@ const RunningSignalCard = ({ instrument, isBuy }) => {
           </div>
         </div>
         <div className="flex justify-between border-b-2 border-slate-500 p-4">
-          <p>Stop Price:</p>
+          <p>Invalidation</p>
           <div className="flex items-center gap-2">
             <TbHandStop />
             <p className="text-lg font-medium">{stop_loss_price}</p>
           </div>
         </div>
         <div className="flex justify-between border-b-2 border-slate-500 p-4">
-          <p>Target Price:</p>
+          <p>Objectif</p>
           <div className="flex items-center gap-2">
             <TfiTarget />
             <p className="text-lg font-medium">{take_profit_price}</p>
