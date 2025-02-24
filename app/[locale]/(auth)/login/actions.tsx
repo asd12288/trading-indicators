@@ -86,24 +86,32 @@ export async function logout() {
   redirect({ href: "/", locale: "en" });
 }
 
-export async function oAuthSignIn(provider: Provider) {
+export async function oAuthSignIn(provider: Provider, locale: string) {
   if (!provider) {
-    redirect("/error");
+    redirect({ href: "/error", locale });
   }
 
   const supabase = await createClient();
-  const redirectUrl = `${process.env.DEV_URL}/auth/callback`; // update as needed
+  const redirectUrl = `${process.env.DEV_URL}/${locale}/auth/callback`;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
-    options: { redirectTo: redirectUrl },
+    options: {
+      redirectTo: redirectUrl,
+      queryParams: {
+        locale,
+        next: `/signals`,
+      },
+    },
   });
 
   if (error) {
-    redirect("/login?message=Could not sign in with provider");
+    return redirect({
+      href: "/login",
+      locale,
+    });
   }
 
-  // If successful, redirect the user to the OAuth flow
   redirect(data.url);
 }
 

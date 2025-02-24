@@ -531,5 +531,14 @@
         "description": "Failed to cancel subscription, please contact support"
       }
     }
+  },
+  "OAuth": {
+    "providers": {
+      "google": "Login with Google"
+    },
+    "errors": {
+      "auth_error": "Authentication failed. Please try again.",
+      "provider_error": "Could not login with provider"
+    }
   }
 }
