@@ -1,8 +1,8 @@
 import useInstrumentInfo from "@/hooks/useInstrumentInfo";
 import React from "react";
 import { ExternalLink } from "lucide-react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 
 const InfoRow = ({ label, value }) => {
   return (
@@ -28,7 +28,7 @@ const SignalInfo = ({ instrumentName }) => {
             {instrumentInfo.instrument_name}
           </h2>
           <Link
-            href={instrumentInfo.external_link}
+            href={instrumentInfo.external_link || "#"}
             target="_blank"
             className="flex items-center gap-2 text-blue-400 hover:text-blue-300"
           >
