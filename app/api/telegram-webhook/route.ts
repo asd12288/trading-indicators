@@ -1,71 +1,90 @@
 // app/api/telegram-webhook/route.js
 import { NextResponse } from "next/server";
-import supabaseClient from "@/database/supabase/supabase"; 
+import supabaseClient from "@/database/supabase/supabase";
 
-export async function POST(request) {
+export async function POST(request: Request) {
+  const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+
+  if (!TELEGRAM_BOT_TOKEN) {
+    console.error("TELEGRAM_BOT_TOKEN is not set");
+    return NextResponse.json({ error: "Configuration error" }, { status: 500 });
+  }
+
   try {
-    // 1. Parse the incoming Telegram update from the request body
     const update = await request.json();
-    console.log("Received Telegram update:", update);
+    console.log("Webhook received update:", JSON.stringify(update, null, 2));
 
-    // The "message" object contains user commands, text, etc.
     const message = update.message;
     if (!message) {
+      console.log("No message in update");
       return NextResponse.json({ status: "no_message" }, { status: 200 });
     }
 
     const chatId = message.chat.id;
     const text = message.text || "";
+    console.log(`Received message: "${text}" from chat ID: ${chatId}`);
 
-    // 2. Check if this is a "/start" command with a userId param
-    // e.g., user might send "/start 12345" if they clicked t.me/YourBot?start=12345
     if (text.startsWith("/start")) {
-      const parts = text.split(" ");
-      const userId = parts[1]; // second token in "/start userId"
+      const userId = text.split(" ")[1];
 
       if (!userId) {
-        // no userId param
-        // Possibly just reply or do nothing
-        return NextResponse.json({ status: "no_user_param" }, { status: 200 });
+        console.log("No user ID provided with /start command");
+        await sendTelegramMessage(
+          chatId,
+          "Error: No user ID provided",
+          TELEGRAM_BOT_TOKEN,
+        );
+        return NextResponse.json({ status: "no_user_id" }, { status: 200 });
       }
 
-      // 3. Store the chatId in Supabase: link this Telegram chat to the user
-      const { data, error } = await supabaseClient
+      console.log(`Linking chat ID ${chatId} to user ID ${userId}`);
+
+      const { error: dbError } = await supabaseClient
         .from("profiles")
-        .update({ telegram_chat_id: chatId })
+        .update({ telegram_chat_id: chatId.toString() })
         .eq("id", userId);
 
-      if (error) {
-        console.error("Error updating supabase:", error);
-        // Optional: call sendMessage to Telegram user with an error
-        return NextResponse.json({ status: "error_updating" }, { status: 200 });
+      if (dbError) {
+        console.error("Database error:", dbError);
+        await sendTelegramMessage(
+          chatId,
+          "Error connecting account. Please try again.",
+          TELEGRAM_BOT_TOKEN,
+        );
+        return NextResponse.json({ error: dbError }, { status: 200 });
       }
 
-      // 4. Optionally send a "Connected!" message back to the user
-      //    We'll use the direct Telegram API fetch
-      const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-      await fetch(
-        `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: chatId,
-            text: "Your Telegram is now connected! You will receive notifications.",
-          }),
-        },
+      await sendTelegramMessage(
+        chatId,
+        "Successfully connected! You will now receive trading signals.",
+        TELEGRAM_BOT_TOKEN,
       );
 
-      // 5. Return 200 OK to Telegram
-      return NextResponse.json({ status: "ok" }, { status: 200 });
+      return NextResponse.json({ status: "success" }, { status: 200 });
     }
 
-    // If it's some other command or text:
-    // You could handle other commands or just do nothing
-    return NextResponse.json({ status: "ignored" }, { status: 200 });
+    return NextResponse.json(
+      { status: "command_not_handled" },
+      { status: 200 },
+    );
   } catch (error) {
-    console.error("Error handling update:", error);
-    // Return a 200 so Telegram doesn't keep retrying
-    return NextResponse.json({ status: "error" }, { status: 200 });
+    console.error("Webhook error:", error);
+    return NextResponse.json({ error: "Internal error" }, { status: 200 });
+  }
+}
+
+async function sendTelegramMessage(
+  chatId: number,
+  text: string,
+  token: string,
+) {
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text }),
+    });
+  } catch (error) {
+    console.error("Error sending Telegram message:", error);
   }
 }

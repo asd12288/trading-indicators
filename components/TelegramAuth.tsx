@@ -20,9 +20,12 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
   const TELEGRAM_BOT_USERNAME = "World_Trade_Signals_Bot";
 
   const handleTelegramConnect = () => {
-
     if (!userId) {
-      console.error("No user ID available");
+      toast({
+        title: "Error",
+        description: "No user ID available",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -31,9 +34,26 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
       "_blank",
     );
 
-    if (profile?.telegram_chat_id) {
-      setTelegramActive(true);
-    }
+    // Poll for telegram_chat_id updates
+    const checkInterval = setInterval(async () => {
+      const { data } = await supabaseClient
+        .from("profiles")
+        .select("telegram_chat_id")
+        .eq("id", userId)
+        .single();
+
+      if (data?.telegram_chat_id) {
+        setTelegramActive(true);
+        clearInterval(checkInterval);
+        toast({
+          title: "Success",
+          description: t("success"),
+        });
+      }
+    }, 2000);
+
+    // Clear interval after 2 minutes
+    setTimeout(() => clearInterval(checkInterval), 120000);
   };
 
   async function handleRemoveTelegram() {
