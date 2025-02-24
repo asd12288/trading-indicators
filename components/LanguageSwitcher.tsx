@@ -12,7 +12,8 @@ export default function LanguageSwitcher() {
   const languages = {
     en: "English",
     fr: "Français",
-    de: "Deutsch",
+    sp: "Español",
+    ru: "Русский",
   };
 
   return (

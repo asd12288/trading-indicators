@@ -363,67 +363,67 @@
   },
   "TermsAndConditions": {
     "title": "Termes et Conditions",
-    "welcome": "Bienvenue sur Trader Map. En utilisant notre site web, vous acceptez de vous conformer aux termes et conditions suivants. Veuillez les lire attentivement.",
+    "welcome": "Bienvenue sur Trader Map. En utilisant notre site web, vous acceptez de respecter les termes et conditions suivants. Veuillez les lire attentivement.",
     "sections": {
       "acceptance": {
         "title": "1. Acceptation des Termes",
-        "content": "En accédant à nos services et en les utilisant, vous acceptez d’être lié par ces Termes et Conditions. Si vous n’êtes pas d’accord, veuillez ne pas utiliser nos services."
+        "content": "En accédant à nos services et en les utilisant, vous acceptez d'être lié par ces Termes et Conditions. Si vous n'êtes pas d'accord, veuillez ne pas utiliser nos services."
       },
       "use": {
         "title": "2. Utilisation des Services",
-        "content": "Nos services sont destinés à des fins d’information uniquement. Nous ne fournissons pas de conseils financiers ou d’investissement, et les utilisateurs doivent faire preuve de prudence lorsqu’ils prennent des décisions de trading."
+        "content": "Nos services sont fournis à des fins d'information uniquement. Nous ne fournissons pas de conseils financiers ou d'investissement, et les utilisateurs doivent faire preuve de prudence lors de la prise de décisions de trading."
       },
       "account": {
-        "title": "3. Inscription et Sécurité du Compte",
-        "content": "Les utilisateurs doivent fournir des informations exactes et complètes lors de la création d’un compte. Vous êtes responsable de la confidentialité de vos identifiants de connexion et de toutes les activités effectuées sous votre compte."
+        "title": "3. Account Registration and Security",
+        "content": "Les utilisateurs doivent fournir des informations exactes et complètes lors de la création d'un compte. Vous êtes responsable de la confidentialité de vos identifiants de connexion et de toutes les activités effectuées sur votre compte."
       },
       "prohibited": {
         "title": "4. Activités Interdites",
-        "content": "Les utilisateurs s’engagent à ne pas s’engager dans des activités, notamment : - Utiliser notre plateforme à des fins frauduleuses. - Distribuer du contenu nuisible ou malveillant. - Violer les droits de propriété intellectuelle. - Pratiquer la collecte de données non autorisée."
+        "content": "Les utilisateurs s'engagent à ne pas se livrer à des activités, y compris mais sans s'y limiter : - L'utilisation de notre plateforme à des fins frauduleuses. - La distribution de contenus nuisibles ou malveillants. - La violation des droits de propriété intellectuelle. - Toute collecte de données non autorisée."
       },
       "payment": {
         "title": "5. Paiement et Abonnement",
-        "content": "Certaines fonctionnalités nécessitent un abonnement payant. Les paiements sont facturés mensuellement et doivent être effectués via des prestataires de paiement approuvés. Le non-paiement dans les délais peut entraîner la suspension ou la résiliation des services."
+        "content": "Certaines fonctionnalités nécessitent un abonnement payant. Les paiements sont facturés mensuellement et doivent être effectués via des prestataires de paiement approuvés. Tout défaut de paiement dans les délais peut entraîner la suspension ou la résiliation des services."
       },
       "termination": {
         "title": "6. Résiliation du Service",
-        "content": "Nous nous réservons le droit de résilier ou de suspendre l’accès à nos services à tout moment, sans préavis, en cas de violation de ces Termes et Conditions."
+        "content": "Nous nous réservons le droit de résilier ou de suspendre l'accès à nos services à tout moment, sans préavis, en cas de violation de ces Termes et Conditions."
       },
       "ip": {
         "title": "7. Propriété Intellectuelle",
-        "content": "Tout le contenu fourni sur ce site web, y compris les textes, graphiques, logos et logiciels, est la propriété de Trader Map et est protégé par les lois sur le droit d’auteur."
+        "content": "Tout le contenu fourni sur ce site, y compris le texte, les graphiques, les logos et les logiciels, est la propriété de Trader Map et est protégé par les lois sur le droit d'auteur."
       },
       "liability": {
         "title": "8. Limitation de Responsabilité",
-        "content": "Trader Map n’est pas responsable des pertes financières résultant de l’utilisation de nos services. Les utilisateurs doivent mener leurs propres recherches avant de prendre des décisions de trading."
+        "content": "Trader Map n'est pas responsable des pertes financières résultant de l'utilisation de nos services. Les utilisateurs doivent effectuer leurs propres recherches avant de prendre des décisions de trading."
       },
       "dispute": {
         "title": "9. Résolution des Litiges",
         "content": "Tout litige découlant de ces termes sera résolu par arbitrage conformément aux lois en vigueur."
       },
       "amendments": {
-        "title": "10. Amendements",
-        "content": "Nous nous réservons le droit de modifier ces termes à tout moment. Les utilisateurs seront informés des changements importants."
+        "title": "10. Modifications",
+        "content": "Nous nous réservons le droit de modifier ces termes à tout moment. Les utilisateurs seront informés des modifications importantes."
       }
     },
     "refund": {
-      "title": "Politique de Remboursement",
+      "title": "Refund Policy",
       "sections": {
         "policy": {
           "title": "1. Politique de Non-Remboursement",
-          "content": "Tous les achats effectués sur Trader Map sont définitifs. En raison de la nature des produits et services numériques, nous n’offrons ni remboursements ni échanges."
+          "content": "Tous les achats effectués sur Trader Map sont définitifs. En raison de la nature des produits et services numériques, nous n'offrons pas de remboursements ou d'échanges."
         },
         "exceptions": {
           "title": "2. Exceptions",
-          "content": "Des remboursements peuvent être accordés dans de rares cas où il y a eu une erreur de facturation ou si le service n’a pas été délivré comme décrit. Toute demande d’exception doit être soumise dans les 7 jours suivant l’achat."
+          "content": "Des remboursements peuvent être effectués dans de rares cas de problème de facturation ou si le service n'a pas été fourni tel que décrit. Toute demande d'exception doit être soumise dans les 7 jours suivant l'achat."
         },
         "request": {
           "title": "3. Comment Demander un Remboursement",
-          "content": "Pour demander un remboursement (si applicable), veuillez nous contacter à support@trader-map.com avec les détails de votre transaction et la raison de votre demande."
+          "content": "Pour demander un remboursement (le cas échéant), veuillez nous contacter à support@trader-map.com avec les détails de votre transaction et la raison de la demande."
         },
         "processing": {
-          "title": "4. Délais de Traitement",
-          "content": "Si un remboursement est approuvé, il sera traité dans un délai de 5 à 10 jours ouvrables. Les remboursements seront crédités sur le mode de paiement d’origine."
+          "title": "4. Délai de Traitement",
+          "content": "Si un remboursement est approuvé, il sera traité dans un délai de 5 à 10 jours ouvrables. Les remboursements seront crédités sur le mode de paiement initial."
         }
       }
     }
@@ -433,7 +433,7 @@
     "loading": "Chargement...",
     "tabs": {
       "profile": "Mon Profil",
-      "password": "Mot de passe",
+      "password": "Mot de Passe",
       "subscription": "Abonnement",
       "notification": "Notification",
       "upgrade": "Mise à niveau",
@@ -443,19 +443,19 @@
   "ProfileCard": {
     "title": "Mon Profil",
     "avatar": {
-      "add": "Ajouter une Photo",
-      "change": "Changer la Photo"
+      "add": "Ajouter une photo",
+      "change": "Changer la photo"
     },
     "labels": {
       "username": "Nom d'utilisateur",
       "email": "Email"
     },
     "plan": {
-      "label": "Mon offre :",
-      "upgrade": "Mise à niveau vers Pro"
+      "label": "Mon plan :",
+      "upgrade": "Mettez à niveau vers Pro"
     },
     "buttons": {
-      "save": "Enregistrer les Modifications"
+      "save": "Enregistrer les modifications"
     },
     "toast": {
       "error": {
@@ -470,7 +470,7 @@
   },
   "UpgradeAccount": {
     "title": "Mettez à niveau votre compte",
-    "subtitle": "Débloquez plus de fonctionnalités et d’avantages en mettant à niveau votre compte",
+    "subtitle": "Débloquez plus de fonctionnalités et d'avantages en mettant à niveau votre compte",
     "plan": {
       "name": "Premium Plan",
       "price": "65$",
@@ -490,7 +490,7 @@
     "title": "Réinitialisez votre Mot de Passe",
     "labels": {
       "password": "Mot de Passe",
-      "confirmPassword": "Confirmer le Mot de Passe"
+      "confirmPassword": "Confirmez le Mot de Passe"
     },
     "buttons": {
       "submit": "Réinitialiser le Mot de Passe",
@@ -503,21 +503,21 @@
   },
   "ManageAccount": {
     "plan": {
-      "title": "Mon Offre :",
+      "title": "Mon Plan :",
       "type": "Pro",
-      "status": "Statut de l’Offre :",
+      "status": "Statut du plan :",
       "memberSince": "Membre depuis :",
-      "endDate": "Fin de l’abonnement :"
+      "endDate": "Fin de l'abonnement :"
     },
     "buttons": {
-      "cancel": "Annuler l’Offre",
+      "cancel": "Annuler le Plan",
       "cancelling": "Annulation..."
     },
     "messages": {
-      "alreadyCanceled": "Vous avez déjà annulé votre offre"
+      "alreadyCanceled": "Vous avez déjà annulé votre plan"
     },
     "dialog": {
-      "title": "Annuler l’Abonnement",
+      "title": "Annuler l'Abonnement",
       "description": "Êtes-vous sûr de vouloir annuler votre abonnement ?"
     },
     "toast": {
@@ -527,17 +527,126 @@
       },
       "error": {
         "title": "Erreur",
-        "description": "Échec de l’annulation de l’abonnement, veuillez contacter le support"
+        "description": "Échec de l'annulation de l'abonnement, veuillez contacter le support"
       }
     }
   },
   "OAuth": {
     "providers": {
-      "google": "Connectez avec Google"
+      "google": "Se connecter avec Google"
     },
     "errors": {
-      "auth_error": "Authentication failed. Please try again.",
-      "provider_error": "Could not login with provider"
+      "auth_error": "Échec de l'authentification. Veuillez réessayer.",
+      "provider_error": "Impossible de se connecter avec ce fournisseur"
     }
+  },
+  "Navbar": {
+    "links": {
+      "home": "Accueil",
+      "signals": "Signaux",
+      "profile": "Profil",
+      "blog": "Blog",
+      "logout": "Déconnexion",
+      "login": "Connexion"
+    }
+  },
+  "ForgotPassword": {
+    "title": "Mot de passe oublié ?",
+    "labels": {
+      "email": "Adresse Email"
+    },
+    "placeholder": {
+      "email": "email@example.com"
+    },
+    "buttons": {
+      "submit": "Réinitialiser le Mot de Passe",
+      "sending": "Envoi en cours..."
+    },
+    "messages": {
+      "backToLogin": "Retour à la connexion"
+    }
+  },
+  "LoginForm": {
+    "navigation": {
+      "backHome": "Retour à l'Accueil"
+    },
+    "title": "Connectez-vous à votre compte",
+    "subtitle": "Entrez votre email ci-dessous pour vous connecter à votre compte",
+    "labels": {
+      "email": "Email",
+      "password": "Mot de Passe"
+    },
+    "placeholder": {
+      "email": "vous@example.com",
+      "password": "••••••••"
+    },
+    "links": {
+      "forgotPassword": "Mot de passe oublié ?",
+      "createAccount": "Créer un Compte"
+    },
+    "buttons": {
+      "submit": "Connexion",
+      "submitting": "Connexion en cours..."
+    },
+    "dividers": {
+      "or": "ou continuez avec :"
+    },
+    "account": {
+      "question": "Vous n'avez pas de compte ?"
+    }
+  },
+  "SignupForm": {
+    "navigation": {
+      "backHome": "Retour à l'Accueil"
+    },
+    "title": "Créer un Nouveau Compte",
+    "subtitle": "Entrez vos informations ci-dessous pour créer un compte",
+    "labels": {
+      "email": "Email",
+      "password": "Mot de Passe",
+      "confirmPassword": "Confirmez le Mot de Passe"
+    },
+    "placeholder": {
+      "email": "vous@example.com",
+      "password": "Minimum 8 caractères",
+      "confirmPassword": "Répétez votre mot de passe"
+    },
+    "validation": {
+      "email": "Email invalide",
+      "password": "Le mot de passe doit contenir au moins 8 caractères",
+      "passwordMismatch": "Les mots de passe ne correspondent pas"
+    },
+    "buttons": {
+      "submit": "Créer un Compte",
+      "creating": "Création du compte..."
+    },
+    "dividers": {
+      "or": "ou continuez avec :"
+    },
+    "account": {
+      "existing": "Vous avez déjà un compte ?",
+      "login": "Connectez-vous"
+    }
+  },
+  "verfiyEmail": {
+    "title": "Vérifiez votre email",
+    "subtitle": "Nous avons envoyé un lien de vérification à votre adresse email. Veuillez cliquer sur le lien pour vérifier votre compte.",
+    "login": "Retour à la connexion"
+  },
+  "UpgradePrompt": {
+    "title": "Mettez à niveau pour voir tous les signaux et ajouter des favoris.",
+    "button": "Mettre à niveau maintenant"
+  },
+  "TelegramAuth": {
+    "title": "Notifications Telegram",
+    "cta": "Connecter Telegram",
+    "description": "Cliquez pour ouvrir Telegram et démarrer le bot. Cela associera votre chat à votre compte.",
+    "remove": "Supprimer Telegram",
+    "success": "Telegram connecté avec succès"
+  },
+  "ErrorPage": {
+    "title": "Oups ! Quelque chose s'est mal passé.",
+    "description": "Nous sommes désolés, mais une erreur inattendue s'est produite. Veuillez réessayer plus tard.",
+    "button": "Retour à l'Accueil"
   }
 }
