@@ -1,8 +1,8 @@
 import UserDashboard from "@/components/UserDashboard";
 import { createClient } from "@/database/supabase/server";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/routing";
 
-export default async function Page() {
+export default async function Page({ params }: { params: { locale: string } }) {
   const supabase = await createClient();
 
   const {
@@ -10,7 +10,7 @@ export default async function Page() {
   } = await supabase.auth.getUser();
 
   if (!user || !user.id) {
-    return redirect("/login");
+    return redirect({ href: "/login", locale: params.locale });
   }
 
   return (
