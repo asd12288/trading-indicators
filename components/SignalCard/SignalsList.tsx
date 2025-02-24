@@ -37,7 +37,6 @@ const SignalsList = ({ userId }: SignalsListProps) => {
 
   const [searchedSignal, setSearchedSignal] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedSubCategory, setSelectedSubCategory] = useState("all");
 
   // 1) Filter signals by the typed search and the top-level category
   const filteredSignals = useMemo(() => {
@@ -52,9 +51,6 @@ const SignalsList = ({ userId }: SignalsListProps) => {
       const matchesCategory =
         selectedCategory === "all" ? true : category === selectedCategory;
 
-      const matchesSubCategory =
-        selectedSubCategory === "all" ? true : category === selectedSubCategory;
-
       // Check search condition
       const matchesSearch =
         searchedSignal.trim() === ""
@@ -63,7 +59,7 @@ const SignalsList = ({ userId }: SignalsListProps) => {
 
       return matchesCategory && matchesSearch;
     });
-  }, [signals, searchedSignal, selectedCategory, selectedSubCategory]);
+  }, [signals, searchedSignal, selectedCategory]);
 
   // 2) For non-pro users, limit the number of signals
   const displaySignals = isPro ? filteredSignals : filteredSignals.slice(0, 5);
@@ -130,30 +126,6 @@ const SignalsList = ({ userId }: SignalsListProps) => {
                 </SelectContent>
               </Select>
             </div>
-
-            {/* {selectedCategory === "futures" && (
-              <div className="w-full md:w-[200px]">
-                <Select
-                  value={selectedCategory}
-                  onValueChange={(value) => selectedSubCategory(value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Filter by sub-category" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-800">
-                    {SUBCATEGORIESFUTURE.map((cat) => (
-                      <SelectItem
-                        key={cat.value}
-                        className="cursor-pointer hover:bg-slate-700"
-                        value={cat.value}
-                      >
-                        {cat.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )} */}
           </div>
         </div>
       )}

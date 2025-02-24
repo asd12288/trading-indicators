@@ -18,9 +18,7 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
 
   const exitTimeInUserTimezone = parseISO(exit_time);
 
-  const adjustedExitTime = new Date(
-    exitTimeInUserTimezone.getTime() - 2 * 60 * 60 * 1000,
-  );
+  const adjustedExitTime = new Date(exitTimeInUserTimezone.getTime());
 
   // Calculate how long ago the trade finished
   const timeAgo = formatDistanceToNow(adjustedExitTime, {
@@ -29,9 +27,7 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
   });
 
   return (
-    <div
-      className="h-[26rem] w-72 rounded-lg bg-slate-900"
-    >
+    <div className="h-[26rem] w-72 rounded-lg bg-slate-900">
       <div
         className={`flex items-center justify-between ${
           isBuy ? "bg-green-950" : "bg-red-950"

@@ -10,13 +10,15 @@ import useProfile from "@/hooks/useProfile";
 import { useSignalsStatus } from "@/hooks/useSignalsStatus";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import SignalOverview from "./SignalOverview";
+import SignalInfo from "./SignalInfo";
 
 const SignalLayout = ({ id, userId, isPro }) => {
   const { isLoading, profile } = useProfile(userId);
   const { instrumentData, isLoading: loadingInstrumentData } =
     useInstrumentData(id);
 
-  const { signalsStatus, loading } = useSignalsStatus();
+  const instrumentName = instrumentData[0]?.instrument_name;
 
   if (isLoading || loadingInstrumentData || !profile) {
     return <div></div>;
@@ -52,22 +54,29 @@ const SignalLayout = ({ id, userId, isPro }) => {
       </div>
 
       <div className="mt-4 flex flex-col items-center gap-4 bg-slate-950 md:grid md:grid-cols-3">
+        <div className="flex h-full w-full flex-col items-center rounded-2xl bg-slate-800 p-6 shadow-lg">
+          <SignalOverview
+            instrumentData={instrumentData}
+            signalPassed={lastSignal}
+          />
+        </div>
         <div className="col-span-2">
           <div className="hidden h-full w-full flex-col items-center rounded-2xl bg-slate-800 shadow-lg md:block">
             <SignalTable allSignal={instrumentData} />
           </div>
-        </div>
-        <div className="flex h-full w-full flex-col items-center rounded-2xl bg-slate-800 p-6 shadow-lg">
-          <h2 className="mb-4 text-xl font-semibold text-slate-100">
-            Trade card - {signalsStatus.status}
-          </h2>
-          <SignalCard signalPassed={lastSignal} />
         </div>
         <div className="col-span-1 w-full">
           <SignalWinRateChart allSignals={instrumentData} />
         </div>
         <div className="col-span-2">
           <SignalPerformenceChart allSignal={instrumentData} />
+        </div>
+      </div>
+      <div className="col-span-3 mt-4 w-full rounded-2xl bg-slate-800 p-6 shadow-lg">
+        <div className="flex flex-col gap-4">
+          <div className="w-full">
+            <SignalInfo instrumentName={instrumentName} />
+          </div>
         </div>
       </div>
       <h3 className="mt-4 text-slate-400 hover:underline">

@@ -21,7 +21,7 @@ const RunningSignalCard = ({ instrument, isBuy }) => {
   const exitTimeInUserTimezone = parseISO(entry_time);
 
   const adjustedExitTime = new Date(
-    exitTimeInUserTimezone.getTime() - 2 * 60 * 60 * 1000,
+    exitTimeInUserTimezone.getTime()
   );
 
   return (

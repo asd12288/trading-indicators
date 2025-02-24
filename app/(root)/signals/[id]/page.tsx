@@ -39,9 +39,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     redirect("/login");
   }
 
-
   const isPro = profile?.plan === "pro" ? true : false;
-
 
   return (
     <div>
