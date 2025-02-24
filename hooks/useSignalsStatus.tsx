@@ -62,7 +62,7 @@ export const useSignalsStatus = () => {
 
     try {
       const signalTime = new Date(signal.time);
-      signalTime.setHours(signalTime.getHours() - 2);
+      signalTime.setHours(signalTime.getHours());
       const now = new Date();
       const fiveMinutes = 5 * 60 * 1000;
       const isActive = now.getTime() - signalTime.getTime() < fiveMinutes;
