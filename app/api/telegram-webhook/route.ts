@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import supabaseClient from "@/database/supabase/supabase";
 
 export async function POST(request: Request) {
-  const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+  const TELEGRAM_BOT_TOKEN = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
 
   if (!TELEGRAM_BOT_TOKEN) {
     console.error("TELEGRAM_BOT_TOKEN is not set");
