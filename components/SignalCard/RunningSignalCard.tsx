@@ -5,7 +5,6 @@ import { RxEnter } from "react-icons/rx";
 import { TbHandStop } from "react-icons/tb";
 import { TfiTarget } from "react-icons/tfi";
 import { motion } from "framer-motion";
-import SignalContextMenu from "./SignalContextMenu";
 
 const RunningSignalCard = ({ instrument, isBuy }) => {
   const {
@@ -16,7 +15,6 @@ const RunningSignalCard = ({ instrument, isBuy }) => {
     exit_price,
     take_profit_price,
     stop_loss_price,
-    client_trade_id,
     
   } = instrument;
 

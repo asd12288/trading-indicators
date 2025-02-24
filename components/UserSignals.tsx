@@ -12,7 +12,7 @@ import {
 import SignalTool from "./SignalCard/SignalTool";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { deleteSignal } from "@/app/(root)/profile/actions";
+import { deleteSignal } from "@/app/[locale]/(root)/profile/actions";
 import { useRouter } from "next/navigation";
 
 const UserSignals = ({ user, profile }) => {
@@ -23,7 +23,6 @@ const UserSignals = ({ user, profile }) => {
     await deleteSignal(signal, user.id);
     router.refresh();
   }
-
 
   if (!userPreferences || Object.keys(userPreferences).length === 0)
     return (

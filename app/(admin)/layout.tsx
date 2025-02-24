@@ -11,7 +11,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Fast Signals",
+  title: "Trader Map",
   description: "Get the best signals for your trades",
 };
 

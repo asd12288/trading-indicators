@@ -69,8 +69,8 @@ function usePreferences(userId: string): UsePreferencesReturn {
       // Optimistic update
       setPreferences((prev) => {
         const existingSignalPrefs = prev[signalId] || {
-          notifications: false,
-          volume: false,
+          notifications: true,
+          volume: true,
           favorite: false,
         };
         return {
@@ -84,8 +84,8 @@ function usePreferences(userId: string): UsePreferencesReturn {
         ...preferences,
         [signalId]: {
           ...(preferences[signalId] ?? {
-            notifications: false,
-            volume: false,
+            notifications: true,
+            volume: true,
             favorite: false,
           }),
           ...updatedValues,

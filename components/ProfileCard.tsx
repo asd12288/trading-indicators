@@ -6,7 +6,10 @@ import avatar from "@/public/avatar.png";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { updateEmail, updateAvatar } from "@/app/(root)/profile/actions";
+import {
+  updateEmail,
+  updateAvatar,
+} from "@/app/(root)/profile/actions";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { useClients } from "@/hooks/useClients";

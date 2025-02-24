@@ -7,6 +7,7 @@ import SignalTool from "@/components/SignalCard/SignalTool";
 import SignalTable from "@/components/SignalTable";
 import useInstrumentData from "@/hooks/useInstrumentData";
 import useProfile from "@/hooks/useProfile";
+import { useSignalsStatus } from "@/hooks/useSignalsStatus";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -14,6 +15,8 @@ const SignalLayout = ({ id, userId, isPro }) => {
   const { isLoading, profile } = useProfile(userId);
   const { instrumentData, isLoading: loadingInstrumentData } =
     useInstrumentData(id);
+
+  const { signalsStatus, loading } = useSignalsStatus();
 
   if (isLoading || loadingInstrumentData || !profile) {
     return <div></div>;
@@ -56,7 +59,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
         </div>
         <div className="flex h-full w-full flex-col items-center rounded-2xl bg-slate-800 p-6 shadow-lg">
           <h2 className="mb-4 text-xl font-semibold text-slate-100">
-            Trade card - Live
+            Trade card - {signalsStatus.status}
           </h2>
           <SignalCard signalPassed={lastSignal} />
         </div>

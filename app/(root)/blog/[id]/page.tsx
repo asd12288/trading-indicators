@@ -5,7 +5,7 @@ import React from "react";
 async function page({ params }: { params: { id: string } }) {
   const supabase = await createClient();
 
-  const { id } = params;
+  const { id } = await params;
 
   const { data: blog, error } = await supabase
     .from("blogs")
@@ -16,7 +16,7 @@ async function page({ params }: { params: { id: string } }) {
   if (error) return <h1>Error loading blog</h1>;
 
   return (
-    <div >
+    <div>
       <Blog blog={blog} />
     </div>
   );

@@ -1,7 +1,13 @@
 import { toast } from "@/hooks/use-toast";
 
-const audioStart = new Audio("/audio/newSignal.mp3");
-const audioEnd = new Audio("/audio/endSignal.mp3");
+let audioStart: HTMLAudioElement;
+let audioEnd: HTMLAudioElement;
+
+// Initialize audio only after user interaction
+export const initializeAudio = () => {
+  audioStart = new Audio("/audio/newSignal.mp3");
+  audioEnd = new Audio("/audio/endSignal.mp3");
+};
 
 export const notifyUser = (payload) => {
   toast({

@@ -13,6 +13,10 @@ const page = async () => {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user || !user.id) {
+    return redirect("/login");
+  }
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("*")
@@ -32,7 +36,7 @@ const page = async () => {
       <h1 className="my-4 text-center text-3xl font-medium">Admin Page</h1>
       <div className="flex justify-center p-4">
         <div className="w-full rounded-md bg-slate-800 p-12">
-          <Tabs defaultValue="monitoring">
+          <Tabs defaultValue="users">
             <TabsList className="flex justify-center bg-inherit">
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="signals">Signals</TabsTrigger>

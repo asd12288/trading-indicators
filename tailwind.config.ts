@@ -19,7 +19,6 @@ const config: Config = {
       animation: {
         "border-spin": "border-spin 7s linear infinite",
       },
-
       colors: {
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -30,11 +29,13 @@ const config: Config = {
           "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
         },
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 };
 
 export default config;

@@ -6,7 +6,6 @@ import { createClient } from "@/database/supabase/server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import SignalTool from "@/components/SignalCard/SignalTool";
-import AlertNotification from "@/components/AlertNotification";
 
 export default async function FeatureDocsPage() {
   const supabase = await createClient();
