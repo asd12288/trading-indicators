@@ -19,45 +19,15 @@ const PerformanceTableWithMFEAndLossTicks = ({ allSignal }) => {
     const formattedData = allSignal.map((trade) => {
       const entryPrice = Number(trade.entry_price);
       const exitPrice = Number(trade.exit_price);
-      const side = trade.trade_side.toLowerCase();
+      const resultTicks = Number(trade.result_ticks);
 
+      // If resultTicks is negative, it's a loss; otherwise it's MFE
       let mfeTicks = 0;
       let lossTicks = 0;
-
-      if (side === "short") {
-        // For a short trade:
-        // - Favorable when price drops (entry > exit)
-        // - Loss when price goes up (exit > entry)
-        if (entryPrice > exitPrice) {
-          mfeTicks =
-            trade.mfe !== undefined
-              ? Number(trade.mfe)
-              : entryPrice - exitPrice;
-          lossTicks = trade.loss !== undefined ? Number(trade.loss) : 0;
-        } else {
-          mfeTicks = trade.mfe !== undefined ? Number(trade.mfe) : 0;
-          lossTicks =
-            trade.loss !== undefined
-              ? Number(trade.loss)
-              : exitPrice - entryPrice;
-        }
+      if (resultTicks < 0) {
+        lossTicks = Math.abs(resultTicks);
       } else {
-        // For a long trade:
-        // - Favorable when price rises (exit > entry)
-        // - Loss when price falls (exit < entry)
-        if (exitPrice > entryPrice) {
-          mfeTicks =
-            trade.mfe !== undefined
-              ? Number(trade.mfe)
-              : exitPrice - entryPrice;
-          lossTicks = trade.loss !== undefined ? Number(trade.loss) : 0;
-        } else {
-          mfeTicks = trade.mfe !== undefined ? Number(trade.mfe) : 0;
-          lossTicks =
-            trade.loss !== undefined
-              ? Number(trade.loss)
-              : entryPrice - exitPrice;
-        }
+        mfeTicks = resultTicks;
       }
 
       return {
