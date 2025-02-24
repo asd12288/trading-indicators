@@ -100,18 +100,14 @@ export async function oAuthSignIn(provider: Provider, locale: string) {
       redirectTo: redirectUrl,
       queryParams: {
         locale,
-        next: `/signals`,
+        next: "/signals",
       },
     },
   });
 
   if (error) {
-    return redirect({
-      href: "/login",
-      locale,
-    });
+    return redirect({ href: "/login", locale });
   }
-
   redirect(data.url);
 }
 
