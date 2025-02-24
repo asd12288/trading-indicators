@@ -540,5 +540,114 @@
       "auth_error": "Authentication failed. Please try again.",
       "provider_error": "Could not login with provider"
     }
+  },
+  "Navbar": {
+    "links": {
+      "home": "Home",
+      "signals": "Signals",
+      "profile": "Profile",
+      "blog": "Blog",
+      "logout": "Logout",
+      "login": "Login"
+    }
+  },
+  "ForgotPassword": {
+    "title": "Forgot your password?",
+    "labels": {
+      "email": "Email Address"
+    },
+    "placeholder": {
+      "email": "email@example.com"
+    },
+    "buttons": {
+      "submit": "Reset Password",
+      "sending": "Sending..."
+    },
+    "messages": {
+      "backToLogin": "Back to login"
+    }
+  },
+  "LoginForm": {
+    "navigation": {
+      "backHome": "Back Home"
+    },
+    "title": "Login to your account",
+    "subtitle": "Enter your email below to log into your account",
+    "labels": {
+      "email": "Email",
+      "password": "Password"
+    },
+    "placeholder": {
+      "email": "you@example.com",
+      "password": "••••••••"
+    },
+    "links": {
+      "forgotPassword": "Forgot your password?",
+      "createAccount": "Create an Account"
+    },
+    "buttons": {
+      "submit": "Login",
+      "submitting": "Logging in..."
+    },
+    "dividers": {
+      "or": "or continue with:"
+    },
+    "account": {
+      "question": "Don't have an account?"
+    }
+  },
+  "SignupForm": {
+    "navigation": {
+      "backHome": "Back Home"
+    },
+    "title": "Create a New Account",
+    "subtitle": "Enter your details below to create an account",
+    "labels": {
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password"
+    },
+    "placeholder": {
+      "email": "you@example.com",
+      "password": "Minimum 8 characters",
+      "confirmPassword": "Repeat your password"
+    },
+    "validation": {
+      "email": "Invalid email",
+      "password": "Password must be at least 8 characters",
+      "passwordMismatch": "Passwords do not match"
+    },
+    "buttons": {
+      "submit": "Create Account",
+      "creating": "Creating account..."
+    },
+    "dividers": {
+      "or": "or continue with:"
+    },
+    "account": {
+      "existing": "Already have an account?",
+      "login": "Log in"
+    }
+  },
+  "verfiyEmail": {
+    "title": "Verify your email",
+    "subtitle": "We've sent a verification link to your email address. Please click the link to verify your account.",
+    "login": "Back to login"
+  },
+  "UpgradePrompt": {
+    "title": "Upgrade to view all signals and add favorites.",
+    "button": "Upgrade Now"
+  },
+  "TelegramAuth": {
+    "title": "Telegram Notifications",
+    "cta": "Connect Telegram",
+    "description": " Click to open Telegram and start the bot. This will link your chat to your account.",
+    "remove": "Remove Telegram",
+    "success": "Telegram connected successfully"
+  },
+  "ErrorPage": {
+    "title": "Oops! Something went wrong.",
+    "description": "We're sorry, but an unexpected error occurred. Please try again later.",
+    "button": "Back to Home"
   }
 }

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Button } from "./ui/button";
 import supabaseClient from "@/database/supabase/supabase";
 import { toast } from "@/hooks/use-toast";
+import { useTranslations } from "next-intl";
 
 interface TelegramAuthProps {
   userId: string;
@@ -14,11 +15,11 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
     profile?.telegram_chat_id,
   );
   const [isLoaded, setIsLoaded] = useState(false);
+  const t = useTranslations("TelegramAuth");
 
   const TELEGRAM_BOT_USERNAME = "World_Trade_Signals_Bot";
 
   const handleTelegramConnect = () => {
-    // Initialize audio on user interaction
 
     if (!userId) {
       console.error("No user ID available");
@@ -61,29 +62,23 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
 
   return (
     <div className="mb-4 flex flex-col items-center space-y-4 text-center">
-      <h2 className="text-2xl font-semibold">Telegram Notifications</h2>
+      <h2 className="text-2xl font-semibold">{t("title")}</h2>
       {!telegramActive ? (
         <>
-          <Button
-            onClick={handleTelegramConnect}
-            className="rounded  px-4 py-2 "
-          >
-            Connect Telegram
+          <Button onClick={handleTelegramConnect} className="rounded px-4 py-2">
+            {t("cta")}
           </Button>
-          <p className="mt-2 text-sm text-gray-400">
-            Click to open Telegram and start the bot. This will link your chat
-            to your account.
-          </p>
+          <p className="mt-2 text-sm text-gray-400">{t("description")}</p>
         </>
       ) : (
         <>
-          <p className="text-green-600">Telegram connected</p>
+          <p className="text-green-600">{t("success")}</p>
           <Button
             onClick={handleRemoveTelegram}
             className="bg-red-900 hover:bg-red-950"
             disabled={isLoaded}
           >
-            Remove Telegram
+            {t("remove")}
           </Button>
         </>
       )}

@@ -6,10 +6,13 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import LogoutBtn from "./LogoutBtn";
 import UpgradeButton from "./UpgradeButton";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { useTranslations } from "next-intl";
 
 export default function Navbar({ user, profile }) {
   // State to handle mobile menu toggle
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  const t = useTranslations("Navbar.links");
 
   return (
     <header className="relative top-0 z-50 mx-auto w-full">
@@ -34,13 +37,13 @@ export default function Navbar({ user, profile }) {
                 href="/signals"
                 className="flex items-center gap-2 hover:text-slate-300"
               >
-                <p>Signals</p>
+                <p> {t("signals")}</p>
               </Link>
             </li>
 
             <li>
               <Link href="/blog" className="hover:text-slate-300">
-                Blog
+                {t("blog")}
               </Link>
             </li>
 
@@ -56,7 +59,7 @@ export default function Navbar({ user, profile }) {
               <>
                 <li>
                   <Link href="/profile" className="hover:text-slate-300">
-                    Profile
+                    {t("profile")}
                   </Link>
                 </li>
                 <UpgradeButton profile={profile} />
@@ -68,7 +71,7 @@ export default function Navbar({ user, profile }) {
               <li>
                 <Link href="/login" className="hover:text-slate-300">
                   <button className="flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 hover:bg-slate-900">
-                    Login
+                    {t("login")}
                   </button>
                 </Link>
               </li>
@@ -105,7 +108,7 @@ export default function Navbar({ user, profile }) {
               className="block w-full hover:text-slate-300"
               onClick={() => setIsMobileOpen(false)}
             >
-              Signals
+              {t("signals")}
             </Link>
           </li>
           <li>
@@ -114,7 +117,7 @@ export default function Navbar({ user, profile }) {
               className="block w-full hover:text-slate-300"
               onClick={() => setIsMobileOpen(false)}
             >
-              Blog
+              {t("blog")}
             </Link>
           </li>
           {profile?.role === "admin" && (
@@ -137,7 +140,7 @@ export default function Navbar({ user, profile }) {
                   className="block w-full hover:text-slate-300"
                   onClick={() => setIsMobileOpen(false)}
                 >
-                  Profile
+                  {t("profile")}
                 </Link>
               </li>
 
@@ -153,7 +156,7 @@ export default function Navbar({ user, profile }) {
                 onClick={() => setIsMobileOpen(false)}
               >
                 <button className="mt-1 w-full rounded-lg bg-slate-800 px-4 py-2 text-left hover:bg-slate-900">
-                  Login
+                  {t("login")}
                 </button>
               </Link>
             </li>
