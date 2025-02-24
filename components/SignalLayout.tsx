@@ -2,21 +2,21 @@
 
 import SignalPerformenceChart from "@/components/charts/SignalPerformenceChart";
 import SignalWinRateChart from "@/components/charts/SignalWinRateChart";
-import SignalCard from "@/components/SignalCard/SignalCard";
 import SignalTool from "@/components/SignalCard/SignalTool";
 import SignalTable from "@/components/SignalTable";
 import useInstrumentData from "@/hooks/useInstrumentData";
 import useProfile from "@/hooks/useProfile";
-import { useSignalsStatus } from "@/hooks/useSignalsStatus";
+import { Link } from "@/i18n/routing";
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import SignalOverview from "./SignalOverview";
 import SignalInfo from "./SignalInfo";
+import SignalOverview from "./SignalOverview";
+import { useTranslations } from "next-intl";
 
 const SignalLayout = ({ id, userId, isPro }) => {
   const { isLoading, profile } = useProfile(userId);
   const { instrumentData, isLoading: loadingInstrumentData } =
     useInstrumentData(id);
+  const t = useTranslations("SignalLayout");
 
   const instrumentName = instrumentData[0]?.instrument_name;
 
@@ -27,7 +27,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
   const lastSignal = instrumentData?.[0] || null;
 
   if (!lastSignal) {
-    return <div>No signal data available</div>;
+    return <div>{t("noSignalData")}</div>;
   }
 
   return (
@@ -35,19 +35,18 @@ const SignalLayout = ({ id, userId, isPro }) => {
       <Link href="/signals">
         <div className="flex cursor-pointer items-center gap-4 hover:text-slate-400">
           <ArrowLeft size={24} />
-          <p className="my-2 text-xl">All Signals</p>
+          <p className="my-2 text-xl">{t("allSignals")}</p>
         </div>
       </Link>
 
-      <div className="flex w-full flex-col items-center gap-4 rounded-xl bg-slate-800 p-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex w-full flex-col items-center gap-4 rounded-xl bg-slate-800 p-6 md:flex-row md:items-center md:justify-between">
         <h2 className="relative mb-2 text-left text-2xl md:text-4xl">
-          Signal: <span className="font-medium md:font-semibold">{id}</span>
+          {t("signal")}{" "}
+          <span className="font-medium md:font-semibold">{id}</span>
         </h2>
         <div className="flex items-center gap-4">
           <h4 className="text-sm font-medium md:text-xl">
-            {isPro
-              ? "Signal Settings:"
-              : "Upgrade to add notifications and favoriting"}
+            {isPro ? t("signalSettings") : t("upgradeMessage")}
           </h4>
           <SignalTool signalId={id} userId={userId} isPro={isPro} />
         </div>
@@ -68,7 +67,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
         <div className="col-span-1 w-full">
           <SignalWinRateChart allSignals={instrumentData} />
         </div>
-        <div className="col-span-2">
+        <div className="col-span-2 w-full">
           <SignalPerformenceChart allSignal={instrumentData} />
         </div>
       </div>
@@ -80,7 +79,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
         </div>
       </div>
       <h3 className="mt-4 text-slate-400 hover:underline">
-        <Link href="/signals">All Signals...</Link>
+        <Link href="/signals">{t("allSignals")}...</Link>
       </h3>
     </div>
   );

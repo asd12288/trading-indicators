@@ -12,16 +12,18 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { format } from "date-fns";
+import { useTranslations } from "next-intl";
 
 const CumulativePotentialTicksChart = ({ allSignal }) => {
   const [chartData, setChartData] = useState([]);
+  const t = useTranslations("SignalPerformanceChart");
 
   useEffect(() => {
     if (!allSignal || !allSignal.length) return;
 
     // Sort trades by entry time to ensure proper cumulative calculation.
     const sortedTrades = [...allSignal].sort(
-      (a, b) => new Date(a.entry_time) - new Date(b.entry_time)
+      (a, b) => new Date(a.entry_time) - new Date(b.entry_time),
     );
 
     let cumulativePotential = 0;
@@ -74,16 +76,14 @@ const CumulativePotentialTicksChart = ({ allSignal }) => {
 
   if (!chartData.length) {
     return (
-      <div className="mt-4 text-center text-slate-400">
-        Loading chart...
-      </div>
+      <div className="mt-4 text-center text-slate-400">{t("loading")}</div>
     );
   }
 
   return (
     <div className="w-full rounded-2xl bg-slate-800 p-6 shadow-lg">
       <h2 className="mb-4 text-xl font-semibold text-slate-100">
-        Cumulative Potential Ticks
+        {t("title")}
       </h2>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
@@ -101,15 +101,13 @@ const CumulativePotentialTicksChart = ({ allSignal }) => {
           <YAxis stroke="#cbd5e1" />
           <Tooltip
             wrapperClassName="bg-slate-700 text-slate-100 p-2 rounded"
-            labelFormatter={(label) =>
-              format(new Date(label), "dd/MM/yyyy")
-            }
+            labelFormatter={(label) => format(new Date(label), "dd/MM/yyyy")}
           />
           <Legend wrapperStyle={{ color: "#cbd5e1" }} />
           <Line
             type="monotone"
             dataKey="cumulativePotential"
-            name="Cumulative Potential Ticks"
+            name={t("legend.cumulativePotential")}
             stroke="#18d100"
             strokeWidth={2}
             dot={{ r: 2, fill: "#3b82f6" }}

@@ -1,7 +1,7 @@
 import { format, formatDistanceToNow, parseISO } from "date-fns";
-import { FaLock, FaTrophy } from "react-icons/fa";
+import { useTranslations } from "next-intl";
+import { FaLock } from "react-icons/fa";
 import { RxEnter, RxExit } from "react-icons/rx";
-import { motion } from "framer-motion";
 
 const FufilledSignalCard = ({ instrument, isBuy }) => {
   const {
@@ -16,11 +16,10 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
     mfe,
   } = instrument;
 
+  const t = useTranslations("FufilledSignalCard");
   const exitTimeInUserTimezone = parseISO(exit_time);
-
   const adjustedExitTime = new Date(exitTimeInUserTimezone.getTime());
 
-  // Calculate how long ago the trade finished
   const timeAgo = formatDistanceToNow(adjustedExitTime, {
     addSuffix: true,
     includeSeconds: true,
@@ -39,31 +38,32 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
             <span> - {trade_side}</span>
           </h3>
           <p className="text-xs">
-            Finished:
+            {t("finished")}
             <br />
             {timeAgo}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <h3
-            className={`text-2xl font-semibold ${isBuy ? "text-green-100" : "text-red-100"}`}
+            className={`text-2xl font-semibold ${
+              isBuy ? "text-green-100" : "text-red-100"
+            }`}
           >
-            Close
+            {t("close")}
           </h3>
         </div>
       </div>
 
       <div className="flex justify-between border-b-2 border-slate-700 p-4">
-        <p>Status: </p>
-
+        <p>{t("status")}</p>
         <div className="flex items-center gap-2">
           <FaLock />
-          <p>Trade Over</p>
+          <p>{t("tradeOver")}</p>
         </div>
       </div>
 
       <div className="flex justify-between border-b-2 border-slate-700 p-4">
-        <p>Entry Price:</p>
+        <p>{t("entryPrice")}</p>
         <div className="flex items-center gap-2">
           <RxEnter />
           <p className="text-lg font-medium">{entry_price}</p>
@@ -71,7 +71,7 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
       </div>
 
       <div className="flex justify-between border-b-2 border-slate-700 p-4">
-        <p>Exit Price:</p>
+        <p>{t("exitPrice")}</p>
         <div className="flex items-center gap-2">
           <RxExit />
           <p className="text-lg font-medium">{exit_price}</p>
@@ -80,19 +80,21 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
 
       <div className="flex justify-between border-b-2 border-slate-500 p-4">
         <div className="flex items-center gap-2">
-          <p>MAE:</p>
+          <p>{t("mae")}</p>
           <p className="text-lg font-medium">{mae.toFixed(0)}</p>
         </div>
         <div className="flex items-center gap-2">
-          <p>MFE:</p>
+          <p>{t("mfe")}</p>
           <p className="text-lg font-medium">{mfe.toFixed(0)}</p>
         </div>
       </div>
 
-      <p className="p-2 text-center">Trade Duration: {trade_duration}</p>
+      <p className="p-2 text-center">
+        {t("tradeDuration")} {trade_duration}
+      </p>
       <div className="border-b-2 border-slate-700"></div>
       <p className="p-2 text-center">
-        Started at: {format(parseISO(exit_time), "MM/dd -  HH:mm")}
+        {t("startedAt")} {format(parseISO(exit_time), "MM/dd -  HH:mm")}
       </p>
     </div>
   );

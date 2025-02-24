@@ -3,7 +3,6 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import {
@@ -17,8 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-import { emailLogin } from "@/app/(auth)/login/actions";
-import Link from "next/link";
+import { emailLogin } from "@/app/[locale]/(auth)/login/actions";
+import { Link, useRouter } from "@/i18n/routing";
 import { OAuthButtons } from "./OauthSignin";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 

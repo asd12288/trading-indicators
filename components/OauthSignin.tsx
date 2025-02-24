@@ -1,5 +1,5 @@
 "use client";
-import { oAuthSignIn } from "@/app/(auth)/login/actions";
+import { oAuthSignIn } from "@/app/[locale]/(auth)/login/actions";
 import { Provider } from "@supabase/supabase-js";
 import { JSX } from "react";
 import { FaGoogle } from "react-icons/fa";

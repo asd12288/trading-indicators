@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import {
   PieChart,
@@ -15,6 +16,8 @@ const COLORS = ["#22c55e", "#8a2929"]; // matching the green/red scheme
 const SignalWinRateChart = ({ allSignals }) => {
   const [chartData, setChartData] = useState([]);
 
+  const t = useTranslations("SignalWinRateChart");
+
   useEffect(() => {
     if (!allSignals || !Array.isArray(allSignals)) return;
 
@@ -29,21 +32,21 @@ const SignalWinRateChart = ({ allSignals }) => {
       .reduce((acc, sig) => acc + Math.abs(sig.result_ticks), 0);
 
     setChartData([
-      { name: "MFE", value: Math.round(totalMFE) },
-      { name: "Negative Ticks", value: totalNegativeTicks },
+      { name: t("chart.mfeTicks"), value: Math.round(totalMFE) },
+      { name: t("chart.negativeTicks"), value: totalNegativeTicks },
     ]);
   }, [allSignals]);
 
   if (!chartData || chartData.length === 0) {
     return (
-      <div className="mt-4 text-center text-slate-400">Loading chart...</div>
+      <div className="mt-4 text-center text-slate-400">{t("loading")}</div>
     );
   }
 
   return (
     <div className="flex w-full flex-col items-center rounded-2xl bg-slate-800 p-6 shadow-lg">
       <h2 className="mb-4 text-xl font-semibold text-slate-100">
-        MFE vs Negative Ticks
+        {t("title")}
       </h2>
       <ResponsiveContainer width="100%" height={400}>
         <PieChart>

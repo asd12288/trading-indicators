@@ -5,7 +5,7 @@ import Link from "next/link";
 import { DataTable } from "./admin/DataTable";
 import { alertTableColumns } from "./alertTableColumns";
 
-const AlertsTable = ({ userId }) => {
+const AlertsTable = () => {
   const { alerts, isLoading } = useAlerts();
 
   if (isLoading) {

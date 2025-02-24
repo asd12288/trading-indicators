@@ -2,8 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
+import { useTranslations } from "next-intl";
 
 const PerformanceTableWithMFEAndLossTicks = ({ allSignal }) => {
+  const t = useTranslations("SignalTable");
   const [tableData, setTableData] = useState([]);
   const [summary, setSummary] = useState({
     totalTrades: 0,
@@ -64,38 +66,50 @@ const PerformanceTableWithMFEAndLossTicks = ({ allSignal }) => {
   return (
     <div className="w-full rounded-2xl bg-slate-800 p-6 shadow-lg">
       <h2 className="mb-4 text-xl font-semibold text-slate-100">
-        Trade MFE & Loss Ticks Performance Summary
+        {t("title")}
       </h2>
       <div className="mb-6 grid grid-cols-2 gap-4 text-slate-200">
         <div>
-          <strong>Total Trades:</strong> {summary.totalTrades}
+          <strong>{t("summary.totalTrades")}</strong> {summary.totalTrades}
         </div>
         <div>
-          <strong>Total MFE Ticks:</strong> {summary.totalMFE}
+          <strong>{t("summary.totalMFETicks")}</strong> {summary.totalMFE}
         </div>
         <div>
-          <strong>Total Loss Ticks:</strong> {summary.totalLoss}
+          <strong>{t("summary.totalLossTicks")}</strong> {summary.totalLoss}
         </div>
         <div>
-          <strong>Average MFE Ticks:</strong> {summary.avgMFE}
+          <strong>{t("summary.avgMFETicks")}</strong> {summary.avgMFE}
         </div>
         <div>
-          <strong>Average Loss Ticks:</strong> {summary.avgLoss}
+          <strong>{t("summary.avgLossTicks")}</strong> {summary.avgLoss}
         </div>
       </div>
       <div className="h-[500px] overflow-x-auto">
         <table className="min-w-full divide-y divide-slate-600">
           <thead className="sticky top-0 bg-slate-700">
             <tr className="ovreflow-x-auto">
-              <th className="px-4 py-2 text-left text-slate-200">Date</th>
               <th className="px-4 py-2 text-left text-slate-200">
-                Entry Price
+                {t("table.date")}
               </th>
-              <th className="px-4 py-2 text-left text-slate-200">Exit Price</th>
-              <th className="px-4 py-2 text-left text-slate-200">Trade Side</th>
-              <th className="px-4 py-2 text-left text-slate-200">Duration</th>
-              <th className="px-4 py-2 text-left text-slate-200">MFE Ticks</th>
-              <th className="px-4 py-2 text-left text-slate-200">Loss Ticks</th>
+              <th className="px-4 py-2 text-left text-slate-200">
+                {t("table.entryPrice")}
+              </th>
+              <th className="px-4 py-2 text-left text-slate-200">
+                {t("table.exitPrice")}
+              </th>
+              <th className="px-4 py-2 text-left text-slate-200">
+                {t("table.tradeSide")}
+              </th>
+              <th className="px-4 py-2 text-left text-slate-200">
+                {t("table.duration")}
+              </th>
+              <th className="px-4 py-2 text-left text-slate-200">
+                {t("table.mfeTicks")}
+              </th>
+              <th className="px-4 py-2 text-left text-slate-200">
+                {t("table.lossTicks")}
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700 bg-slate-800">

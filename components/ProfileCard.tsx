@@ -9,10 +9,12 @@ import { Label } from "./ui/label";
 import {
   updateEmail,
   updateAvatar,
-} from "@/app/(root)/profile/actions";
+} from "@/app/[locale]/(root)/profile/actions";
 import { useToast } from "@/hooks/use-toast";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { useClients } from "@/hooks/useClients";
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 
 interface ProfileCardProps {
   user: {
@@ -30,26 +32,27 @@ interface ProfileCardProps {
 const ProfileCard = ({ user, profile }: ProfileCardProps) => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations("ProfileCard");
+  const params = useParams();
+  const locale = params.locale || "en";
 
   const { username, avatarUrl, plan, email } = profile || {};
   const userId = user.id;
 
   const { clients } = useClients();
 
-  console.log(clients);
-
   const handleSubmit = async (formData: FormData) => {
     const result = await updateEmail(userId, user, formData);
     if (result.error) {
       toast({
         variant: "destructive",
-        title: "Error",
+        title: t("toast.error.title"),
         description: result.error.message,
       });
     } else {
       toast({
-        title: "Success",
-        description: "Profile updated successfully",
+        title: t("toast.success.title"),
+        description: t("toast.success.profileUpdate"),
       });
     }
   };
@@ -62,13 +65,13 @@ const ProfileCard = ({ user, profile }: ProfileCardProps) => {
     if (result.error) {
       toast({
         variant: "destructive",
-        title: "Error",
+        title: t("toast.error.title"),
         description: result.error.message,
       });
     } else {
       toast({
-        title: "Success",
-        description: "Avatar updated successfully",
+        title: t("toast.success.title"),
+        description: t("toast.success.avatarUpdate"),
       });
     }
   };
@@ -77,7 +80,7 @@ const ProfileCard = ({ user, profile }: ProfileCardProps) => {
     <div className="mt-10 md:w-96">
       <form action={handleSubmit}>
         <h1 className="mb-4 text-xl font-semibold md:text-3xl">
-          My Profile - {username}
+          {t("title")} - {username}
         </h1>
         <div className="flex flex-col gap-6">
           <div className="flex items-center justify-start gap-4">
@@ -96,17 +99,17 @@ const ProfileCard = ({ user, profile }: ProfileCardProps) => {
               className="hidden"
             />
             <Button type="button" onClick={() => fileInputRef.current?.click()}>
-              {!avatarUrl ? "Add Picture" : "Change Picture"}
+              {!avatarUrl ? t("avatar.add") : t("avatar.change")}
             </Button>
           </div>
 
           <div className="w-full space-y-2">
-            <Label htmlFor="username">Username</Label>
+            <Label htmlFor="username">{t("labels.username")}</Label>
             <Input id="username" name="username" defaultValue={username} />
           </div>
 
           <div className="w-full space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("labels.email")}</Label>
             <Input
               id="email"
               name="email"
@@ -117,20 +120,20 @@ const ProfileCard = ({ user, profile }: ProfileCardProps) => {
           </div>
           <div className="flex items-center justify-between">
             <p>
-              My plan: <span className="font-semibold">{plan}</span>
+              {t("plan.label")} <span className="font-semibold">{plan}</span>
             </p>
 
             {plan === "free" ? (
               <Link href="/profile?tab=upgrade">
                 <p className="rounded-lg bg-green-700 px-3 py-2 font-semibold hover:bg-green-800">
-                  Upgrade to pro
+                  {t("plan.upgrade")}
                 </p>
               </Link>
             ) : null}
           </div>
 
           <Button type="submit" className="w-full">
-            Save Changes
+            {t("buttons.save")}
           </Button>
         </div>
       </form>

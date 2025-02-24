@@ -1,4 +1,4 @@
-import { logout } from "@/app/(auth)/login/actions";
+import { logout } from "@/app/[locale]/(auth)/login/actions";
 import React from "react";
 import { IoMdExit } from "react-icons/io";
 

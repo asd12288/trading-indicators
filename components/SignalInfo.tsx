@@ -2,19 +2,23 @@ import useInstrumentInfo from "@/hooks/useInstrumentInfo";
 import React from "react";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
-const InfoRow = ({ label, value }) => (
-  <div className="flex justify-between border-b border-slate-700 py-2">
-    <span className="text-slate-400">{label}</span>
-    <span className="font-medium">{value}</span>
-  </div>
-);
+const InfoRow = ({ label, value }) => {
+  return (
+    <div className="flex justify-between border-b border-slate-700 py-2">
+      <span className="text-slate-400">{label}</span>
+      <span className="font-medium">{value}</span>
+    </div>
+  );
+};
 
 const SignalInfo = ({ instrumentName }) => {
   const { instrumentInfo, loading, error } = useInstrumentInfo(instrumentName);
+  const t = useTranslations("SignalInfo");
 
-  if (loading) return <div>Loading instrument info...</div>;
-  if (error) return <div>Error loading instrument info</div>;
+  if (loading) return <div>{t("loading")}</div>;
+  if (error) return <div>{t("error")}</div>;
 
   return (
     <>
@@ -29,7 +33,7 @@ const SignalInfo = ({ instrumentName }) => {
             className="flex items-center gap-2 text-blue-400 hover:text-blue-300"
           >
             <ExternalLink size={16} />
-            <span className="text-sm">Exchange</span>
+            <span className="text-sm">{t("exchange.link")}</span>
           </Link>
         </div>
         <p className="mt-2 text-lg text-slate-300">
@@ -40,21 +44,33 @@ const SignalInfo = ({ instrumentName }) => {
         </p>
       </div>
 
-      {/* Trading Info Grid */}
       <div className="space-y-3">
-        <InfoRow label="Exchange" value={instrumentInfo.exchange} />
-        <InfoRow label="Trading Hours" value={instrumentInfo.trading_hours} />
-        <InfoRow label="Contract Size" value={instrumentInfo.contract_size} />
-        <InfoRow label="Tick Size" value={instrumentInfo.tick_size} />
-        <InfoRow label="Tick Value" value={instrumentInfo.tick_value} />
+        <InfoRow label={t("exchange.label")} value={instrumentInfo.exchange} />
+        <InfoRow
+          label={t("tradingInfo.tradingHours")}
+          value={instrumentInfo.trading_hours}
+        />
+        <InfoRow
+          label={t("tradingInfo.contractSize")}
+          value={instrumentInfo.contract_size}
+        />
+        <InfoRow
+          label={t("tradingInfo.tickSize")}
+          value={instrumentInfo.tick_size}
+        />
+        <InfoRow
+          label={t("tradingInfo.tickValue")}
+          value={instrumentInfo.tick_value}
+        />
 
         <div className="flex justify-between py-2">
-          <span className="text-slate-400">Volatility</span>
+          <span className="text-slate-400">{t("tradingInfo.volatility")}</span>
           <span
             className={`rounded-full px-3 py-1 text-sm font-medium ${
-              instrumentInfo.volatility_level === "High"
+              instrumentInfo.volatility_level === t("volatilityLevels.high")
                 ? "bg-red-500/20 text-red-400"
-                : instrumentInfo.volatility_level === "Medium"
+                : instrumentInfo.volatility_level ===
+                    t("volatilityLevels.medium")
                   ? "bg-yellow-500/20 text-yellow-400"
                   : "bg-green-500/20 text-green-400"
             }`}

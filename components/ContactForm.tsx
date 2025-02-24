@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Textarea } from "./ui/textarea";
+import { useTranslations } from "next-intl";
 
 const formSchema = z.object({
   name: z.string().nonempty(),
@@ -39,6 +40,8 @@ const ContactForm = () => {
       title: "",
     },
   });
+
+  const t = useTranslations("HomePage.contactForm");
 
   const [success, setSuccess] = useState(false);
   const [loading, setIsLoading] = useState(false);
@@ -80,14 +83,14 @@ const ContactForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4 rounded-lg bg-slate-800 p-8 max-w-md mx-auto md:w-[500px]"
+        className="mx-auto max-w-md space-y-4 rounded-lg bg-slate-800 p-8 md:w-[500px]"
       >
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>{t("name")}</FormLabel>
               <FormControl>
                 <Input placeholder="Name" {...field} />
               </FormControl>
@@ -100,7 +103,7 @@ const ContactForm = () => {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t("email")}</FormLabel>
               <FormControl>
                 <Input placeholder="Email" {...field} required typeof="email" />
               </FormControl>
@@ -117,17 +120,28 @@ const ContactForm = () => {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Your Title</FormLabel>
+                  <FormLabel>{t("title.position")}</FormLabel>
                   <FormControl>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Trader" />
                       </SelectTrigger>
                       <SelectContent className="bg-slate-900">
-                        <SelectItem value="trader">Trader</SelectItem>
-                        <SelectItem value="investor">Investor</SelectItem>
-                        <SelectItem value="broker">Broker</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
+                        <SelectItem value="trader">
+                          {t("title.option1")}
+                        </SelectItem>
+                        <SelectItem value="investor">
+                          {" "}
+                          {t("title.option2")}
+                        </SelectItem>
+                        <SelectItem value="broker">
+                          {" "}
+                          {t("title.option3")}
+                        </SelectItem>
+                        <SelectItem value="other">
+                          {" "}
+                          {t("title.option4")}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -142,7 +156,7 @@ const ContactForm = () => {
           name="message"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>{t("message")}</FormLabel>
               <FormControl>
                 <Textarea placeholder="Message" {...field} />
               </FormControl>
@@ -153,7 +167,7 @@ const ContactForm = () => {
         <Button type="submit">{loading ? "Sending" : "Send Message"}</Button>
         {success && (
           <p className="text-center text-sm text-green-500">
-            Message sent with success, we will get back to you soon.
+            {t("feedback.success")}
           </p>
         )}
       </form>

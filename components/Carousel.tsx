@@ -7,6 +7,8 @@ interface CarouselProps {
 }
 
 const InfiniteCarousel: React.FC<CarouselProps> = ({ children }) => {
+
+  
   // Duplicate children to allow a seamless scroll loop.
   const duplicatedChildren = [...children, ...children];
 

@@ -1,19 +1,25 @@
 import React from "react";
 import SignalCard from "./SignalCard/SignalCard";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 const FavoriteSignals = ({ favouriteSignals }) => {
+  const t = useTranslations("Signals");
   return (
     <>
-      <h2 className="my-4 text-center text-2xl font-medium">My Signals</h2>
-      <div className={`md:grid md:grid-cols-3 flex flex-col justify-center gap-8`}>
+      <h2 className="my-4 text-center text-2xl font-medium">
+        {t("titleFavor")}
+      </h2>
+      <div
+        className={`flex flex-col justify-center gap-8 md:grid md:grid-cols-3`}
+      >
         {favouriteSignals.map((signal) => (
           <Link
             key={signal.client_trade_id}
             href={`/signals/${encodeURIComponent(signal.instrument_name)}`}
-            className="justify-center flex "
+            className="flex justify-center"
           >
-            <SignalCard signalPassed={signal}  />
+            <SignalCard signalPassed={signal} />
           </Link>
         ))}
       </div>

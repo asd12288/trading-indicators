@@ -1,32 +1,32 @@
 "use client";
 
-import { updatePassword } from "@/app/(auth)/reset-password/actions";
+import { updatePassword } from "@/app/[locale]/(auth)/reset-password/actions";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import React, { startTransition, useActionState, useState } from "react";
 import { z } from "zod";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
-
-const passwordSchema = z
-  .object({
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z
-      .string()
-      .min(8, "Password must be at least 8 characters"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
+import { useTranslations } from "next-intl";
 
 const ResetPasswordForm = () => {
+  const t = useTranslations("ResetPasswordForm");
   const [clientError, setClientError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [state, formAction, isPending] = useActionState(updatePassword, {
     error: "",
     success: false,
   });
+
+  const passwordSchema = z
+    .object({
+      password: z.string().min(8, t("validation.minLength")),
+      confirmPassword: z.string().min(8, t("validation.minLength")),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t("validation.passwordMismatch"),
+      path: ["confirmPassword"],
+    });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,15 +54,15 @@ const ResetPasswordForm = () => {
 
   return (
     <div className="max-w-96 space-y-6 bg-slate-800 p-2 text-slate-50 md:w-96 md:p-8">
-      <h3 className="mb-2 text-2xl font-semibold">Reset your Password</h3>
+      <h3 className="mb-2 text-2xl font-semibold">{t("title")}</h3>
 
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <Label
             className="mb-2 block text-sm font-bold text-slate-200"
-            htmlFor=""
+            htmlFor="password"
           >
-            password
+            {t("labels.password")}
           </Label>
           <div className="relative">
             <Input
@@ -87,9 +87,9 @@ const ResetPasswordForm = () => {
         <div>
           <Label
             className="mb-2 block text-sm font-bold text-slate-200"
-            htmlFor=""
+            htmlFor="confirmPassword"
           >
-            Confirm Password
+            {t("labels.confirmPassword")}
           </Label>
           <div>
             <Input
@@ -101,8 +101,8 @@ const ResetPasswordForm = () => {
           </div>
         </div>
         <div className="mt-4">
-          <Button type="submit" className=" px-4 py-2">
-            {isPending ? "Updating..." : "Reset Password"}
+          <Button type="submit" className="px-4 py-2">
+            {isPending ? t("buttons.updating") : t("buttons.submit")}
           </Button>
           {clientError && <p className="text-red-500">{clientError}</p>}
           {success && <p className="text-green-500">{success}</p>}

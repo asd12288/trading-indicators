@@ -4,7 +4,6 @@ import * as React from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 // Shadcn UI form components
@@ -20,9 +19,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 // The server action we defined
-import { signup } from "@/app/(auth)/signup/actions";
+import { signup } from "@/app/[locale]/(auth)/signup/actions";
 import { OAuthButtons } from "./OauthSignin";
-import Link from "next/link";
+import { Link, useRouter } from "@/i18n/routing";
 
 // The same Zod schema used on the server for synergy:
 const signupFormSchema = z

@@ -1,12 +1,11 @@
 "use client";
+import { Link } from "@/i18n/routing";
+import { MapIcon } from "lucide-react";
 import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
+import { RxHamburgerMenu } from "react-icons/rx";
 import LogoutBtn from "./LogoutBtn";
 import UpgradeButton from "./UpgradeButton";
-import { FaHamburger } from "react-icons/fa";
-import { RxHamburgerMenu } from "react-icons/rx";
-import { MapIcon } from "lucide-react";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Navbar({ user, profile }) {
   // State to handle mobile menu toggle
@@ -27,6 +26,9 @@ export default function Navbar({ user, profile }) {
           </li>
 
           <div className="flex items-center gap-12">
+            <li>
+              <LanguageSwitcher />
+            </li>
             <li className="hover:text-slate-300">
               <Link
                 href="/signals"

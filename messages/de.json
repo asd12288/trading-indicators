@@ -1,0 +1,534 @@
+{
+  "InfoPage": {
+    "mainTitle": "Trader Map: Descripción general de las funciones",
+    "welcome": "¡Bienvenido a Trader Map! A continuación encontrarás una explicación clara de nuestras funciones principales, términos clave de trading y cómo interpretar tus tarjetas de señales de trading.",
+    "sections": {
+      "coreFeatures": {
+        "title": "Secciones principales de la aplicación",
+        "items": {
+          "traderMap": "Proporciona una visión general de los mercados y de las operaciones en tiempo real. Piénsalo como tu panel principal para ver todas las señales activas en un solo lugar y construir tu estrategia en torno a ellas.",
+          "signals": "Muestra todas las señales de trading activas y pasadas. Cada señal indicará si es una operación Long o Short, el precio de entrada, el precio de salida (si se cerró) y las métricas de rendimiento.",
+          "profile": "Tu página de cuenta para ver o actualizar tu información personal, ajustar tus planes de suscripción o configurar tus preferencias, como notificaciones y alertas."
+        }
+      },
+      "tradingTerms": {
+        "title": "Términos clave de trading en la aplicación",
+        "terms": {
+          "mae": {
+            "title": "MAE (Maximum Adverse Excursion)",
+            "description": "El MAE mide cuánto se movió una operación en tu contra (es decir, cuánto movimiento de precio 'adverso' encontraste) antes de que la operación se cerrara. Un MAE más alto sugiere que la operación estuvo un tiempo en territorio negativo antes de volverse rentable o ser detenida."
+          },
+          "mfe": {
+            "title": "MFE (Maximum Favorable Excursion)",
+            "description": "El MFE rastrea la mayor ganancia no realizada que alcanzó una operación antes de cerrarse. Si tu operación tuvo una ganancia de 10 ticks en algún momento, pero se cierra con 5 ticks, entonces el MFE fue 10 ticks."
+          },
+          "exitPrice": {
+            "title": "Exit Price",
+            "description": "El precio exacto al que se cerró la posición. Este valor se registra automáticamente una vez que finaliza la operación (ya sea al alcanzar un objetivo, un stop o un cierre manual)."
+          },
+          "tradeDuration": {
+            "title": "Trade Duration",
+            "description": "El tiempo durante el cual la posición permaneció abierta, medido en minutos u horas. La aplicación lo calcula desde el momento en que entraste (Entry Price) hasta el momento en que saliste (Exit Price)."
+          }
+        }
+      },
+      "signalCards": {
+        "title": "Signal Cards",
+        "description": "Las señales en Trader Map se muestran a través de tarjetas especializadas. Cada tarjeta contiene detalles de la operación, incluido el tipo de operación (Long o Short), estado, precios de entrada/salida y métricas de rendimiento.",
+        "running": {
+          "title": "Running Signal Card",
+          "description": "Muestra las operaciones que están actualmente en curso:",
+          "item0": "Entry Price: El precio al que se abrió la operación.",
+          "item1": "Stop Price: El nivel de stop-loss protector.",
+          "item2": "Target Price: El nivel de toma de ganancias previsto.",
+          "item3": "Trade Duration: El tiempo que lleva la operación abierta.",
+          "item4": "Status: Usualmente muestra 'Running' mientras la operación está activa."
+        },
+        "fulfilled": {
+          "title": "Fulfilled Signal Card",
+          "description": "Muestra las operaciones que ya han sido cerradas:",
+          "item0": "Entry Price & Exit Price: Muestra dónde entraste y dónde saliste.",
+          "item1": "MAE & MFE: Refleja el comportamiento de la operación en su peor y mejor momento.",
+          "item2": "Trade Duration: El tiempo total desde la entrada hasta la salida.",
+          "item3": "Status: Normalmente 'Trade Over' o 'Closed'."
+        }
+      },
+      "signalTool": {
+        "title": "Signal Tool (Notifications, Volume, Favorites) - Pro Users",
+        "description": "Cada señal puede personalizarse para adaptarse a tus preferencias:",
+        "items": {
+          "notifications": "Actívalas si deseas recibir alertas (en la aplicación o en Telegram) cuando se cumplan ciertas condiciones para esa señal.",
+          "volume": "Activa o desactiva las alertas de sonido para nuevas señales, de modo que puedas escuchar un sonido cuando se inicie una operación.",
+          "favorite": "Marca una señal como favorita para encontrarla o filtrarla más fácilmente en tu panel."
+        }
+      },
+      "alerts": {
+        "title": "Alerts",
+        "description": "Puedes ver todas las alertas recientes en la sección 'Alerts'. Estas notificaciones te informan sobre nuevas oportunidades o cambios en el mercado. Si eres usuario Pro, también puedes filtrar los instrumentos para los que recibes alertas. De lo contrario, verás todas las alertas generales.",
+        "sampleAlert": "(10/21) 20:30 - Alert: Potential Long Opportunity en NQ - Nivel 21992.75 Mantente alerta."
+      }
+    },
+    "cta": {
+      "noAccount": "¿Aún no tienes cuenta?",
+      "createAccount": "Crear Cuenta",
+      "readyToTrade": "¿Listo para empezar a operar?",
+      "viewSignals": "Ver todas las señales"
+    }
+  },
+  "HomePage": {
+    "hero": {
+      "rating": "⭐⭐⭐⭐⭐",
+      "usersCount": "Más de 1000+ traders",
+      "mainTitle": "Opera de manera más inteligente con",
+      "highlightedText": "Señales de Trading en Tiempo Real",
+      "subtitle": "Únete a nuestra comunidad de traders que aprovechan el análisis experto para mantenerse a la vanguardia en el mercado",
+      "buttons": {
+        "joinUs": "Únete",
+        "learnMore": "Saber más"
+      },
+      "stats": {
+        "users": {
+          "label": "Usuarios",
+          "value": "100",
+          "symbol": "+"
+        },
+        "signals": {
+          "label": "Señales",
+          "value": "26",
+          "symbol": "+"
+        },
+        "winRate": {
+          "label": "Tasa de Éxito",
+          "value": "70",
+          "symbol": "%"
+        }
+      }
+    },
+    "offers": {
+      "mainTitle": "Señales de Trading en Vivo – Mantente un paso adelante en el mercado",
+      "subtitle": "Nuestras señales de trading en tiempo real te proporcionan información experta del mercado, ayudándote a tomar decisiones de trading informadas rápidamente.",
+      "bottomText": "¡Con nuestras alertas en tiempo real, no volverás a perderte ninguna oportunidad de trading!"
+    },
+    "plans": {
+      "title": "Planes",
+      "subtitle": "Tenemos un plan perfecto para ti",
+      "loginPrompt": "¿Ya tienes una cuenta? Inicia sesión",
+      "freePlan": {
+        "title": "Plan Gratis",
+        "benefits": [
+          "Acceso a 5 señales",
+          "Análisis de los instrumentos",
+          "Alertas sobre operaciones futuras"
+        ],
+        "ctaButton": "Comenzar gratis"
+      }
+    },
+    "service": {
+      "title": "Simple, en Tiempo Real y Óptimo para Trabajar",
+      "subtitle": "Elegimos los mejores instrumentos del mercado y los perfeccionamos",
+      "features": {
+        "alerts": {
+          "title": "Alertas en Tiempo Real",
+          "description": "Recibe actualizaciones instantáneas sobre oportunidades de mercado."
+        },
+        "analysis": {
+          "title": "Análisis Experto",
+          "description": "Estrategias basadas en análisis técnico y fundamental."
+        },
+        "userFriendly": {
+          "title": "Fácil de Usar",
+          "description": "Señales fáciles de seguir para todos los niveles de trading."
+        },
+        "multiAsset": {
+          "title": "Cobertura Multiactivo",
+          "description": "Forex, Cripto, Acciones y más."
+        }
+      }
+    },
+    "contact": {
+      "title": "Contáctanos",
+      "subtitle": "¿Tienes alguna pregunta? ¿Quieres ponerte en contacto con nosotros?"
+    },
+    "freePlanCard": {
+      "plan": "Plan Gratis",
+      "button": "Comenzar gratis",
+      "benefit1": "Acceso a 5 señales",
+      "benefit2": "Análisis de los instrumentos",
+      "benefit3": "Alertas sobre operaciones futuras"
+    },
+    "proPlanCard": {
+      "plan": "Pro Plan",
+      "frequency": "Por mes",
+      "billed": "Facturado mensualmente",
+      "button": "Comenzar",
+      "benefit1": "Acceso a todas las señales",
+      "benefit2": "Análisis de los instrumentos",
+      "benefit3": "Alertas sobre operaciones futuras",
+      "benefit4": "Notificaciones de Telegram",
+      "benefit5": "Preferencias de señales personalizadas"
+    },
+    "testimonials": {
+      "title": "Escucha lo que nuestros usuarios dicen de nosotros"
+    },
+    "contactForm": {
+      "name": "Nombre",
+      "email": "Correo Electrónico",
+      "message": "Mensaje",
+      "button": "Enviar",
+      "title": {
+        "position": "¿Cuál es tu título?",
+        "option1": "Trader",
+        "option2": "Inversor",
+        "option3": "Corredor",
+        "option4": "Otro"
+      },
+      "feedback": {
+        "success": "¡Gracias por contactarnos! Te responderemos pronto.",
+        "error": "Ocurrió un error al enviar tu mensaje. Por favor, inténtalo de nuevo."
+      }
+    }
+  },
+  "Signals": {
+    "mainTitle": "Últimas Señales",
+    "titleFavor": "Mis Señales",
+    "infoLink": "Más información sobre nuestras señales...",
+    "signalStatus": " Estado de las Señales: ",
+    "live": "En vivo",
+    "noResult": "No se encontraron señales. Prueba con una búsqueda o categoría diferente."
+  },
+  "Alert": {
+    "loading": "Cargando...",
+    "noAlertsDefault": "No hay alertas disponibles",
+    "noAlertsPro": "No hay alertas disponibles. Activa las notificaciones en las señales para recibir alertas",
+    "messages": {
+      "noRecentAlerts": "No hay alertas recientes disponibles",
+      "alert": "Alerta: Potencial",
+      "opportunity": "Oportunidad en",
+      "level": "Nivel",
+      "stayVigilant": "Mantente alerta"
+    }
+  },
+  "RunningSignalCard": {
+    "started": "Inicio:",
+    "status": "Estado:",
+    "running": "Running",
+    "notActivated": "No Activado",
+    "entryPrice": "Entry Price:",
+    "invalidation": "Invalidación",
+    "objective": "Objetivo",
+    "tradeDuration": "Trade Duration:",
+    "startedAt": "Iniciado a las:"
+  },
+  "FufilledSignalCard": {
+    "finished": "Finalizado:",
+    "close": "Cerrar",
+    "status": "Estado:",
+    "tradeOver": "Trade Over",
+    "entryPrice": "Entry Price:",
+    "exitPrice": "Exit Price:",
+    "mae": "MAE:",
+    "mfe": "MFE:",
+    "tradeDuration": "Trade Duration:",
+    "startedAt": "Iniciado a las:"
+  },
+  "SignalLayout": {
+    "allSignals": "Todas las Señales",
+    "signal": "Señal:",
+    "signalSettings": "Configuración de la Señal:",
+    "upgradeMessage": "Mejora tu plan para agregar notificaciones y favoritos",
+    "noSignalData": "No hay datos de señal disponibles"
+  },
+  "SignalTool": {
+    "notifications": {
+      "tooltip": "Recibe notificaciones en Telegram y en la plataforma",
+      "enabled": "Notificaciones habilitadas",
+      "disabled": "Notificaciones deshabilitadas",
+      "description": "Las notificaciones para la señal {signalId} ahora están {status}"
+    },
+    "volume": {
+      "tooltip": "Activa o desactiva el sonido para esta señal",
+      "enabled": "Volumen habilitado",
+      "disabled": "Volumen deshabilitado",
+      "description": "El sonido para la señal {signalId} ahora está {status}"
+    },
+    "favorite": {
+      "tooltip": "Agrega esta señal a tu lista de favoritos",
+      "added": "Agregada a favoritos",
+      "removed": "Eliminada de favoritos",
+      "description": "La señal {signalId} ha sido {status} de los favoritos"
+    }
+  },
+  "SignalOverview": {
+    "noData": "No hay datos de señal disponibles",
+    "loading": "Cargando...",
+    "status": {
+      "title": "Estado del Instrumento:",
+      "active": "Activo",
+      "inactive": "Desactivado",
+      "lastUpdate": "Última actualización: {time}"
+    }
+  },
+  "SignalTable": {
+    "title": "Resumen del rendimiento de operaciones (MFE y ticks de pérdida)",
+    "summary": {
+      "totalTrades": "Total de Operaciones:",
+      "totalMFETicks": "Total de Ticks MFE:",
+      "totalLossTicks": "Total de Ticks de Pérdida:",
+      "avgMFETicks": "Promedio de Ticks MFE:",
+      "avgLossTicks": "Promedio de Ticks de Pérdida:"
+    },
+    "table": {
+      "date": "Fecha",
+      "entryPrice": "Entry Price",
+      "exitPrice": "Exit Price",
+      "tradeSide": "Lado de la Operación",
+      "duration": "Duración",
+      "mfeTicks": "MFE Ticks",
+      "lossTicks": "Loss Ticks"
+    }
+  },
+  "SignalWinRateChart": {
+    "title": "MFE vs Ticks Negativos",
+    "loading": "Cargando...",
+    "chart": {
+      "mfeTicks": "MFE Ticks",
+      "negativeTicks": "Ticks Negativos"
+    }
+  },
+  "SignalPerformanceChart": {
+    "loading": "Cargando gráfico...",
+    "title": "Ticks Potenciales Acumulados",
+    "legend": {
+      "cumulativePotential": "Ticks Potenciales Acumulados"
+    }
+  },
+  "SignalInfo": {
+    "loading": "Cargando información del instrumento...",
+    "error": "Error al cargar la información del instrumento",
+    "exchange": {
+      "link": "Exchange",
+      "label": "Exchange"
+    },
+    "tradingInfo": {
+      "tradingHours": "Horas de Trading",
+      "contractSize": "Tamaño del Contrato",
+      "tickSize": "Tamaño del Tick",
+      "tickValue": "Valor del Tick",
+      "volatility": "Volatilidad"
+    },
+    "volatilityLevels": {
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Baja"
+    }
+  },
+  "Footer": {
+    "companyName": "Trader Map",
+    "copyright": "© 2025 Trader-Map. Todos los derechos reservados.",
+    "links": {
+      "privacy": "Política de Privacidad",
+      "terms": "Términos y Condiciones"
+    }
+  },
+  "PrivacyPolicy": {
+    "title": "Política de Privacidad",
+    "effectiveDate": "Fecha de Vigencia:",
+    "sections": {
+      "collect": {
+        "title": "1. Información que Recopilamos",
+        "content": "Recopilamos la información que nos proporcionas directamente, como cuando te registras, contactas con el soporte o utilizas nuestros servicios. Esto puede incluir datos personales como tu nombre, correo electrónico e historial de transacciones."
+      },
+      "use": {
+        "title": "2. Cómo Usamos Tu Información",
+        "content": "Usamos tu información para proporcionar, mejorar y personalizar nuestros servicios. Esto incluye procesar transacciones, enviar notificaciones y mejorar la experiencia del usuario."
+      },
+      "security": {
+        "title": "3. Compartir y Seguridad de los Datos",
+        "content": "No vendemos tu información personal. Podemos compartir datos con socios de confianza con fines operativos, pero nos aseguramos de que existan medidas de seguridad adecuadas para proteger tu privacidad."
+      },
+      "rights": {
+        "title": "4. Tus Derechos y Opciones",
+        "content": "Tienes derecho a acceder, modificar o solicitar la eliminación de tus datos personales. También puedes optar por no participar en ciertas actividades de procesamiento de datos poniéndote en contacto con nosotros."
+      },
+      "changes": {
+        "title": "5. Cambios en Esta Política",
+        "content": "Nos reservamos el derecho de actualizar esta política de privacidad en cualquier momento. Notificaremos a los usuarios sobre cambios significativos a través de nuestra plataforma."
+      },
+      "contact": {
+        "title": "6. Información de Contacto",
+        "content": "Si tienes alguna pregunta sobre esta política de privacidad, contáctanos en",
+        "email": "support@trader-map.com"
+      }
+    }
+  },
+  "TermsAndConditions": {
+    "title": "Términos y Condiciones",
+    "welcome": "Bienvenido a Trader Map. Al usar nuestro sitio web, aceptas cumplir con los siguientes términos y condiciones. Por favor, léelos detenidamente.",
+    "sections": {
+      "acceptance": {
+        "title": "1. Aceptación de los Términos",
+        "content": "Al acceder y utilizar nuestros servicios, aceptas quedar obligado por estos Términos y Condiciones. Si no estás de acuerdo, por favor no uses nuestros servicios."
+      },
+      "use": {
+        "title": "2. Uso de los Servicios",
+        "content": "Nuestros servicios están destinados únicamente a fines informativos. No brindamos asesoramiento financiero o de inversión, y los usuarios deben actuar con cautela al tomar decisiones de trading."
+      },
+      "account": {
+        "title": "3. Registro de Cuenta y Seguridad",
+        "content": "Los usuarios deben proporcionar información precisa y completa al crear una cuenta. Eres responsable de mantener la confidencialidad de tus credenciales de inicio de sesión y de todas las actividades que ocurran en tu cuenta."
+      },
+      "prohibited": {
+        "title": "4. Actividades Prohibidas",
+        "content": "Los usuarios aceptan no participar en actividades, que incluyen, entre otras: - Usar nuestra plataforma con fines fraudulentos. - Distribuir contenido dañino o malicioso. - Violar derechos de propiedad intelectual. - Realizar recolección de datos no autorizada."
+      },
+      "payment": {
+        "title": "5. Pago y Suscripción",
+        "content": "Algunas funciones requieren una suscripción de pago. Los pagos se facturan mensualmente y deben realizarse a través de proveedores de pago aprobados. No pagar a tiempo puede resultar en la suspensión o cancelación de los servicios."
+      },
+      "termination": {
+        "title": "6. Cancelación del Servicio",
+        "content": "Nos reservamos el derecho de cancelar o suspender el acceso a nuestros servicios en cualquier momento, sin previo aviso, por violaciones de estos Términos y Condiciones."
+      },
+      "ip": {
+        "title": "7. Propiedad Intelectual",
+        "content": "Todo el contenido proporcionado en este sitio web, incluidos textos, gráficos, logotipos y software, es propiedad de Trader Map y está protegido por las leyes de derechos de autor."
+      },
+      "liability": {
+        "title": "8. Limitación de Responsabilidad",
+        "content": "Trader Map no es responsable de pérdidas financieras que resulten del uso de nuestros servicios. Los usuarios deben realizar su propia investigación antes de tomar decisiones de trading."
+      },
+      "dispute": {
+        "title": "9. Resolución de Disputas",
+        "content": "Cualquier disputa que surja de estos términos se resolverá mediante arbitraje de acuerdo con las leyes aplicables."
+      },
+      "amendments": {
+        "title": "10. Enmiendas",
+        "content": "Nos reservamos el derecho de modificar estos términos en cualquier momento. Los usuarios serán notificados de cambios significativos."
+      }
+    },
+    "refund": {
+      "title": "Política de Reembolso",
+      "sections": {
+        "policy": {
+          "title": "1. Política de No Reembolso",
+          "content": "Todas las compras realizadas en Trader Map son finales. Debido a la naturaleza de los productos y servicios digitales, no ofrecemos reembolsos ni cambios."
+        },
+        "exceptions": {
+          "title": "2. Excepciones",
+          "content": "Los reembolsos pueden emitirse en casos excepcionales cuando haya habido un error de facturación o si el servicio no se ha entregado como se describió. Cualquier solicitud de excepción debe enviarse dentro de los 7 días posteriores a la compra."
+        },
+        "request": {
+          "title": "3. Cómo Solicitar un Reembolso",
+          "content": "Para solicitar un reembolso (si aplica), contáctanos en support@trader-map.com con los detalles de tu transacción y la razón de la solicitud."
+        },
+        "processing": {
+          "title": "4. Tiempo de Procesamiento",
+          "content": "Si se aprueba un reembolso, se procesará en un plazo de 5 a 10 días hábiles. Los reembolsos se acreditarán al método de pago original."
+        }
+      }
+    }
+  },
+  "UserDashboard": {
+    "title": "Mi Perfil",
+    "loading": "Cargando...",
+    "tabs": {
+      "profile": "Mi Perfil",
+      "password": "Contraseña",
+      "subscription": "Suscripción",
+      "notification": "Notificación",
+      "upgrade": "Mejorar",
+      "mySignals": "Mis Señales"
+    }
+  },
+  "ProfileCard": {
+    "title": "Mi Perfil",
+    "avatar": {
+      "add": "Agregar Foto",
+      "change": "Cambiar Foto"
+    },
+    "labels": {
+      "username": "Nombre de usuario",
+      "email": "Correo Electrónico"
+    },
+    "plan": {
+      "label": "Mi plan:",
+      "upgrade": "Mejorar a Pro"
+    },
+    "buttons": {
+      "save": "Guardar Cambios"
+    },
+    "toast": {
+      "error": {
+        "title": "Error"
+      },
+      "success": {
+        "title": "Éxito",
+        "profileUpdate": "Perfil actualizado con éxito",
+        "avatarUpdate": "Foto de perfil actualizada con éxito"
+      }
+    }
+  },
+  "UpgradeAccount": {
+    "title": "Mejora tu cuenta",
+    "subtitle": "Desbloquea más funciones y beneficios al mejorar tu cuenta",
+    "plan": {
+      "name": "Premium Plan",
+      "price": "65$",
+      "period": "por mes",
+      "billing": "Facturado mensualmente"
+    },
+    "benefits": {
+      "signals": "Acceso a todas las señales",
+      "analysis": "Análisis de todos los instrumentos",
+      "telegram": "Notificaciones de Telegram",
+      "alerts": "Alertas sobre operaciones futuras",
+      "preferences": "Preferencias de señales personalizadas"
+    },
+    "upgradeButton": "Mejorar mi cuenta"
+  },
+  "ResetPasswordForm": {
+    "title": "Restablece tu Contraseña",
+    "labels": {
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar Contraseña"
+    },
+    "buttons": {
+      "submit": "Restablecer Contraseña",
+      "updating": "Actualizando..."
+    },
+    "validation": {
+      "minLength": "La contraseña debe tener al menos 8 caracteres",
+      "passwordMismatch": "Las contraseñas no coinciden"
+    }
+  },
+  "ManageAccount": {
+    "plan": {
+      "title": "Mi Plan:",
+      "type": "Pro",
+      "status": "Estado del Plan:",
+      "memberSince": "Miembro desde:",
+      "endDate": "Fin de la suscripción:"
+    },
+    "buttons": {
+      "cancel": "Cancelar Plan",
+      "cancelling": "Cancelando..."
+    },
+    "messages": {
+      "alreadyCanceled": "Ya has cancelado tu plan"
+    },
+    "dialog": {
+      "title": "Cancelar Suscripción",
+      "description": "¿Estás seguro de que deseas cancelar tu suscripción?"
+    },
+    "toast": {
+      "success": {
+        "title": "Éxito",
+        "description": "Suscripción cancelada con éxito"
+      },
+      "error": {
+        "title": "Error",
+        "description": "No se pudo cancelar la suscripción, por favor contacta al soporte"
+      }
+    }
+  }
+}
