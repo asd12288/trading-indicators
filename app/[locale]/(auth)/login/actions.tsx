@@ -3,7 +3,9 @@
 import { createClient } from "@/database/supabase/server";
 import { Provider } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirect as redirectNext } from "next/navigation";
+import { redirect } from "@/i18n/routing";
+
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -69,7 +71,7 @@ export async function emailLogin(
 
     // Revalidate and redirect on success
     revalidatePath("/");
-    redirect("/signals");
+    redirect({ href: "/signals", locale: params.params.locale });
   } catch (err: any) {
     if (err instanceof z.ZodError) {
       return {
@@ -83,12 +85,12 @@ export async function emailLogin(
 export async function logout() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect("/");
+  redirectNext("/");
 }
 
 export async function oAuthSignIn(provider: Provider, locale: string) {
   if (!provider) {
-    redirect("/error");
+    redirectNext("/error");
   }
 
   const supabase = await createClient();
@@ -108,15 +110,15 @@ export async function oAuthSignIn(provider: Provider, locale: string) {
   });
 
   if (error) {
-    return redirect(`/login`);
+    return redirectNext(`/login`);
   }
 
   // Make sure data.url exists before redirecting
   if (!data?.url) {
-    return redirect(`/login?error=invalid_state`);
+    return redirectNext(`/login?error=invalid_state`);
   }
 
-  return redirect(data.url);
+  return redirectNext(data.url);
 }
 
 export async function resetPassword(email: string) {
