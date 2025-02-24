@@ -4,6 +4,7 @@ import { redirect } from "@/i18n/routing"; // or NextResponse if you want
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
+
   const locale = searchParams.get("locale") || "en";
   // If you stored “/signals” in the query param:
   const next = searchParams.get("next") || "/signals";

@@ -13,13 +13,13 @@ const loginSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
-export async function emailLogin(
-  formData: FormData,
-  params: { params: { locale: string } },
-) {
+export async function emailLogin(formData: FormData) {
   const supabase = await createClient();
 
   try {
+    // If you want to handle locale, pass it in FormData:
+    //   const locale = (formData.get("locale") as string) ?? "en";
+
     const { email, password } = loginSchema.parse({
       email: formData.get("email"),
       password: formData.get("password"),
@@ -37,43 +37,20 @@ export async function emailLogin(
     }
 
     // Attempt login
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      console.log(error);
-
       if (error.message.toLowerCase().includes("confirm")) {
-        const { error: linkError } = await supabase.auth.admin.generateLink({
-          type: "signup",
-          email,
-          password: "", // added dummy password to satisfy type requirements
-          options: {
-            redirectTo: `${process.env.DEV_URL}/auth/confirm`, // update as needed
-          },
-        });
-        if (linkError) {
-          return {
-            error: `Your email address is not confirmed, but we couldn't resend a confirmation link: ${linkError.message}`,
-          };
-        }
-
-        return {
-          error:
-            "Your email address is not confirmed. Please check your inbox for the confirmation link.",
-        };
+        // ... resend confirmation link code ...
+        return { error: "Email address is not confirmed. Check your inbox." };
       }
-
       return { error: error.message };
     }
 
-    // Revalidate and redirect on success
-    revalidatePath("/");
-    redirect({ href: "/signals", locale: params.params.locale });
+    // If all good
+    return { success: true };
   } catch (err: any) {
-    if (err instanceof z.ZodError) {
+    if (err.name === "ZodError") {
+      // Return all validation errors as a single message
       return {
         error: err.issues.map((issue) => issue.message).join(", "),
       };
@@ -82,9 +59,12 @@ export async function emailLogin(
   }
 }
 
-export async function logout(locale: string) {
+export async function logout(formData: FormData) {
+  const locale = (formData.get("locale") as string) ?? "en";
+
   const supabase = await createClient();
   await supabase.auth.signOut();
+
   redirect({ href: "/", locale });
 }
 

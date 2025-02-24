@@ -530,5 +530,14 @@
         "description": "Échec de l’annulation de l’abonnement, veuillez contacter le support"
       }
     }
+  },
+  "OAuth": {
+    "providers": {
+      "google": "Connectez avec Google"
+    },
+    "errors": {
+      "auth_error": "Authentication failed. Please try again.",
+      "provider_error": "Could not login with provider"
+    }
   }
 }
