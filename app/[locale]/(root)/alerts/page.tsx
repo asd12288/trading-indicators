@@ -1,5 +1,3 @@
-"use client";
-
 import AlertsTable from "@/components/AlertsTable";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
