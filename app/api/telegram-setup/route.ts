@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const TELEGRAM_BOT_TOKEN = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
-  const WEBHOOK_URL = `${process.env.DEV_URL}/en/api/telegram-webhook`;
+  // In production, set LIVE_URL or similar in your environment
+  const TELEGRAM_BOT_TOKEN =
+    process.env.TELEGRAM_BOT_TOKEN ||
+    process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
+  // Use a production URL (ensure it’s HTTPS)
+  const WEBHOOK_URL = `${process.env.LIVE_URL || process.env.DEV_URL}/api/telegram-webhook`;
   console.log("WEBHOOK_URL:", WEBHOOK_URL);
 
   try {
