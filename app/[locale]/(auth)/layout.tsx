@@ -1,12 +1,12 @@
-import React from "react";
-import "@/app/[locale]/globals.css"; // adjust this path to match your project
 
-const layout = ({ children }) => {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html>
-      <body>{children}</body>
-    </html>
+    <>
+      <div>{children}</div>
+    </>
   );
-};
-
-export default layout;
+}

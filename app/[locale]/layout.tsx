@@ -21,14 +21,11 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
-      <body>
-        <PaddleProvider>
-          <NextIntlClientProvider messages={messages}>
-            {children}
-          </NextIntlClientProvider>
-        </PaddleProvider>
-      </body>
-    </html>
+    <PaddleProvider>
+      {" "}
+      <NextIntlClientProvider messages={messages}>
+        {children}
+      </NextIntlClientProvider>
+    </PaddleProvider>
   );
 }

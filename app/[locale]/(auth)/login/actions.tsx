@@ -1,9 +1,9 @@
 "use server";
 
 import { createClient } from "@/database/supabase/server";
-import { redirect } from "@/i18n/routing";
 import { Provider } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -69,7 +69,7 @@ export async function emailLogin(
 
     // Revalidate and redirect on success
     revalidatePath("/");
-    redirect({ href: "/signals", locale: params.locale || "en" });
+    redirect("/signals");
   } catch (err: any) {
     if (err instanceof z.ZodError) {
       return {
@@ -83,16 +83,18 @@ export async function emailLogin(
 export async function logout() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect({ href: "/", locale: "en" });
+  redirect("/");
 }
 
 export async function oAuthSignIn(provider: Provider, locale: string) {
   if (!provider) {
-    redirect({ href: "/error", locale });
+    redirect("/error");
   }
 
   const supabase = await createClient();
-  const redirectUrl = `${process.env.DEV_URL}/${locale}/auth/callback`;
+  // Make sure DEV_URL doesn't end with a slash
+  const baseUrl = process.env.DEV_URL?.replace(/\/$/, "");
+  const redirectUrl = `${baseUrl}/auth/callback`;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
@@ -100,15 +102,21 @@ export async function oAuthSignIn(provider: Provider, locale: string) {
       redirectTo: redirectUrl,
       queryParams: {
         locale,
-        next: "/signals",
+        next: `/signals`, // Add locale to next path
       },
     },
   });
 
   if (error) {
-    return redirect({ href: "/login", locale });
+    return redirect(`/login`);
   }
-  redirect(data.url);
+
+  // Make sure data.url exists before redirecting
+  if (!data?.url) {
+    return redirect(`/login?error=invalid_state`);
+  }
+
+  return redirect(data.url);
 }
 
 export async function resetPassword(email: string) {

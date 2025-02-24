@@ -11,9 +11,11 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      // Single successful redirect
       return redirect({ href: next, locale });
     }
   }
 
-  redirect({ href: `/login?error=auth_error`, locale });
+  // Single error redirect
+  return redirect({ href: "/login?error=auth_error", locale });
 }
