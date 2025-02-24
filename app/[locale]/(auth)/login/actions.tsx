@@ -82,21 +82,23 @@ export async function emailLogin(
   }
 }
 
-export async function logout() {
+export async function logout(locale: string) {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirectNext("/");
+  redirect({ href: "/", locale });
 }
 
 export async function oAuthSignIn(provider: Provider, locale: string) {
   if (!provider) {
-    redirectNext("/error");
+    return redirectNext("/login");
   }
 
   const supabase = await createClient();
-  // Make sure DEV_URL doesn't end with a slash
+
+  // e.g. `http://localhost:3000` in dev, no trailing slash
   const baseUrl = process.env.DEV_URL?.replace(/\/$/, "");
-  const redirectUrl = `${baseUrl}/auth/callback`;
+  // Possibly include the locale part:
+  const redirectUrl = `${baseUrl}/${locale}/auth/callback`;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
@@ -104,20 +106,20 @@ export async function oAuthSignIn(provider: Provider, locale: string) {
       redirectTo: redirectUrl,
       queryParams: {
         locale,
-        next: `${locale}/signals`, // Add locale to next path
+        next: "/signals", // or just /signals
       },
     },
   });
 
   if (error) {
-    return redirectNext(`/login`);
+    return redirectNext(`/login?error=oAuthSignInFailed`);
   }
 
-  // Make sure data.url exists before redirecting
   if (!data?.url) {
-    return redirectNext(`/login?error=invalid_state`);
+    return redirectNext(`/login?error=invalid_oauth_url`);
   }
 
+  // This triggers the real OAuth flow:
   return redirectNext(data.url);
 }
 

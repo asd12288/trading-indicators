@@ -1,32 +1,23 @@
 import { createClient } from "@/database/supabase/server";
-import { NextResponse } from "next/server";
-// The client you created from the Server-Side Auth instructions
+import { redirect } from "@/i18n/routing"; // or NextResponse if you want
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
-  // if "next" is in param, use it as the redirect URL
-  const next = searchParams.get("next") ?? "/signals";
+  const locale = searchParams.get("locale") || "en";
+  // If you stored “/signals” in the query param:
+  const next = searchParams.get("next") || "/signals";
 
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
+
     if (!error) {
-      const forwardedHost = request.headers.get("x-forwarded-host"); // original origin before load balancer
-      const isLocalEnv = process.env.NODE_ENV === "development";
-      if (isLocalEnv) {
-        // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
-        return NextResponse.redirect(`${origin}${next}`);
-      } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`);
-      } else {
-        return NextResponse.redirect(`${origin}${next}`);
-      }
+      // Could do redirect({ href: next, locale })
+      // If next is /signals, that final route will be /{locale}/signals
+      return redirect({ href: next, locale });
     }
   }
 
-  // return the user to an error page with instructions
-  return NextResponse.redirect(
-    `${origin}/login?message=Could not login with provider`,
-  );
+  return redirect({ href: "/login?error=auth_error", locale });
 }
