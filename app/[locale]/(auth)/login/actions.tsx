@@ -103,7 +103,7 @@ export async function oAuthSignIn(provider: Provider, locale: string) {
   }
 
   // This triggers the real OAuth flow:
-  return redirect(data.url);
+  return redirectNext(data.url);
 }
 
 export async function resetPassword(email: string) {
