@@ -28,7 +28,10 @@ const page = async ({ params }: { params: { locale: string } }) => {
   if (!isAdmin) redirect("/");
 
   const { data: users } = await supabase.from("profiles").select("*");
-  const { data: signals } = await supabase.from("all_signals").select("*");
+  const { data: signals } = await supabase
+    .from("all_signals")
+    .select("*")
+    .order("entry_time", { ascending: false });
   const { data: posts } = await supabase.from("blogs").select("*");
 
   return (
