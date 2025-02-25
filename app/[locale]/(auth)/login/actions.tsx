@@ -89,7 +89,7 @@ export async function oAuthSignIn(provider: Provider, locale: string) {
       redirectTo: redirectUrl,
       queryParams: {
         locale: locale,
-        next: "/signals", // or just /signals
+        next: `${locale}/signals`, // or just /signals
       },
     },
   });
