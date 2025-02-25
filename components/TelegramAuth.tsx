@@ -12,14 +12,14 @@ interface TelegramAuthProps {
 
 const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
   const [telegramActive, setTelegramActive] = useState(
-    profile?.telegram_chat_id,
+    Boolean(profile.telegram_chat_id),
   );
   const [isLoaded, setIsLoaded] = useState(false);
   const t = useTranslations("TelegramAuth");
 
   const TELEGRAM_BOT_USERNAME = "World_Trade_Signals_Bot";
 
-  const handleTelegramConnect = () => {
+  const handleTelegramConnect = async () => {
     if (!userId) {
       toast({
         title: "Error",
@@ -34,17 +34,22 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
       "_blank",
     );
 
-    // Poll for telegram_chat_id updates
-    const checkInterval = setInterval(async () => {
-      const { data } = await supabaseClient
+    // Start polling for telegram_chat_id updates every 2 seconds
+    const pollInterval = setInterval(async () => {
+      const { data, error } = await supabaseClient
         .from("profiles")
         .select("telegram_chat_id")
         .eq("id", userId)
         .single();
 
+      if (error) {
+        console.error("Polling error:", error);
+        return;
+      }
+
       if (data?.telegram_chat_id) {
+        clearInterval(pollInterval);
         setTelegramActive(true);
-        clearInterval(checkInterval);
         toast({
           title: "Success",
           description: t("success"),
@@ -52,9 +57,13 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
       }
     }, 2000);
 
-    // Clear interval after 2 minutes
-    setTimeout(() => clearInterval(checkInterval), 120000);
+    // Clear polling after 2 minutes if no update is detected
+    setTimeout(() => {
+      clearInterval(pollInterval);
+    }, 120000);
   };
+
+  // Clear interval after 2 minutes
 
   async function handleRemoveTelegram() {
     try {

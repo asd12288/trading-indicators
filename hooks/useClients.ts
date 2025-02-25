@@ -9,7 +9,6 @@ export async function useClients() {
       return { clients: [] };
     }
 
-    console.log("Supabase Data:", data);
     return { clients: data };
   } catch (err) {
     console.error("Fetch failed:", err);
