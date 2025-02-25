@@ -12,7 +12,7 @@ interface TelegramAuthProps {
 
 const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
   const [telegramActive, setTelegramActive] = useState(
-    Boolean(profile.telegram_chat_id),
+    Boolean(profile.telegram_chat_id)
   );
   const [isLoaded, setIsLoaded] = useState(false);
   const t = useTranslations("TelegramAuth");
@@ -21,6 +21,7 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
 
   const handleTelegramConnect = async () => {
     if (!userId) {
+      console.error("handleTelegramConnect: No userId provided");
       toast({
         title: "Error",
         description: "No user ID available",
@@ -29,13 +30,15 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
       return;
     }
 
+    console.log("handleTelegramConnect: Opening Telegram URL for userId:", userId);
     window.open(
       `https://t.me/${TELEGRAM_BOT_USERNAME}?start=${userId}`,
-      "_blank",
+      "_blank"
     );
 
     // Start polling for telegram_chat_id updates every 2 seconds
     const pollInterval = setInterval(async () => {
+      console.log("Polling for telegram_chat_id update for user:", userId);
       const { data, error } = await supabaseClient
         .from("profiles")
         .select("telegram_chat_id")
@@ -44,28 +47,28 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
 
       if (error) {
         console.error("Polling error:", error);
-        return;
-      }
-
-      if (data?.telegram_chat_id) {
+      } else if (data?.telegram_chat_id) {
+        console.log("Polling success: telegram_chat_id updated:", data.telegram_chat_id);
         clearInterval(pollInterval);
         setTelegramActive(true);
         toast({
           title: "Success",
           description: t("success"),
         });
+      } else {
+        console.log("Polling: telegram_chat_id not yet updated");
       }
     }, 2000);
 
     // Clear polling after 2 minutes if no update is detected
     setTimeout(() => {
+      console.log("Polling timeout reached, clearing interval");
       clearInterval(pollInterval);
     }, 120000);
   };
 
-  // Clear interval after 2 minutes
-
   async function handleRemoveTelegram() {
+    console.log("handleRemoveTelegram: Attempting to remove Telegram connection for user:", userId);
     try {
       setIsLoaded(true);
       const { data, error } = await supabaseClient
@@ -73,15 +76,24 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
         .update({ telegram_chat_id: null })
         .eq("id", userId);
 
-      toast({
-        title: "success",
-        description: "Telegram removed",
-      });
-      setTelegramActive(false);
+      if (error) {
+        console.error("handleRemoveTelegram: Error updating profile", error);
+        toast({
+          title: "Error",
+          description: "Error removing Telegram",
+        });
+      } else {
+        console.log("handleRemoveTelegram: Successfully removed telegram_chat_id:", data);
+        toast({
+          title: "Success",
+          description: "Telegram removed",
+        });
+        setTelegramActive(false);
+      }
     } catch (error) {
-      console.error("Error removing Telegram", error);
+      console.error("handleRemoveTelegram: Exception occurred:", error);
       toast({
-        title: "error",
+        title: "Error",
         description: "Error removing Telegram",
       });
     } finally {
