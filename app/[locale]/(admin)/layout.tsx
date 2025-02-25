@@ -20,12 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${poppins.className} antialiased`}>
-        <Header />
-        <main className="h-screen">{children}</main>
-        <Toaster />
-      </body>
-    </html>
+    <>
+      <Header />
+      <main className="h-screen">{children}</main>
+      <Toaster />
+    </>
   );
 }

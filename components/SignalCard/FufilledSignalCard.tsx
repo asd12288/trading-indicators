@@ -1,4 +1,4 @@
-import { format, formatDistanceToNow, parseISO } from "date-fns";
+import { format, formatDistance, formatDistanceToNow, parseISO } from "date-fns";
 import { useTranslations } from "next-intl";
 import { FaLock } from "react-icons/fa";
 import { RxEnter, RxExit } from "react-icons/rx";
@@ -14,11 +14,18 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
     exit_time,
     mae,
     mfe,
+    entry_time,
   } = instrument;
 
   const t = useTranslations("FufilledSignalCard");
   const exitTimeInUserTimezone = parseISO(exit_time);
   const adjustedExitTime = new Date(exitTimeInUserTimezone.getTime());
+  const start = parseISO(entry_time);
+  const end   = parseISO(exit_time);
+  const rawDuration = +end - +start;
+  const positiveDuration = Math.abs(rawDuration);
+  const tradeDuration = formatDistance(start, end); // always a positive, readable string
+
 
   const timeAgo = formatDistanceToNow(adjustedExitTime, {
     addSuffix: true,
@@ -90,7 +97,7 @@ const FufilledSignalCard = ({ instrument, isBuy }) => {
       </div>
 
       <p className="p-2 text-center">
-        {t("tradeDuration")} {trade_duration}
+        {t("tradeDuration")} {tradeDuration}
       </p>
       <div className="border-b-2 border-slate-700"></div>
       <p className="p-2 text-center">

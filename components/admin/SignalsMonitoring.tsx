@@ -23,7 +23,7 @@ export default function SignalsMonitoring() {
                   <p className="mb-2 text-2xl font-semibold">
                     {signal.instrument_name}
                   </p>
-                  <p className="text-lg uppercase font-medium">
+                  <p className="text-lg font-medium uppercase">
                     {signal.position_status}
                   </p>
                 </div>

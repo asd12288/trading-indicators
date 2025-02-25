@@ -32,12 +32,25 @@ const PerformanceTableWithMFEAndLossTicks = ({ allSignal }) => {
         mfeTicks = resultTicks;
       }
 
+      // Ensure trade_duration is always positive
+      let tradeDuration = trade.trade_duration;
+      if (tradeDuration) {
+        // Handle case where the entire string starts with a minus
+        if (tradeDuration.startsWith("-")) {
+          tradeDuration = tradeDuration.replace(/^-\s*/, "");
+        }
+
+        // Handle case where individual parts have minus signs (like "1m -46s")
+        tradeDuration = tradeDuration.replace(/ -(\d+[hms])/g, " $1");
+      }
+
       return {
         ...trade,
         entry_price: entryPrice,
         exit_price: exitPrice,
         mfeTicks: Number(mfeTicks.toFixed(2)),
         lossTicks: Number(lossTicks.toFixed(2)),
+        trade_duration: tradeDuration,
       };
     });
 

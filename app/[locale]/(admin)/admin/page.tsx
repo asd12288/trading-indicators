@@ -36,7 +36,7 @@ const page = async ({ params }: { params: { locale: string } }) => {
       <h1 className="my-4 text-center text-3xl font-medium">Admin Page</h1>
       <div className="flex justify-center p-4">
         <div className="w-full rounded-md bg-slate-800 p-12">
-          <Tabs defaultValue="users">
+          <Tabs defaultValue="monitoring">
             <TabsList className="flex justify-center bg-inherit">
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="signals">Signals</TabsTrigger>

@@ -38,7 +38,9 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
 
     // Start polling for telegram_chat_id updates every 2 seconds
     const pollInterval = setInterval(async () => {
-      console.log("Polling for telegram_chat_id update for user:", userId);
+      
+
+
       const { data, error } = await supabaseClient
         .from("profiles")
         .select("telegram_chat_id")
