@@ -71,12 +71,13 @@ export async function logout(formData: FormData) {
   redirect({ href: "/", locale });
 }
 
-export async function oAuthSignIn(provider: Provider, locale: string) {
+export async function oAuthSignIn(provider: Provider) {
   if (!provider) {
     return redirectNext("/login");
   }
 
   const supabase = await createClient();
+  console.log(locale);
 
   // e.g. `http://localhost:3000` in dev, no trailing slash
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.DEV_URL;
@@ -89,7 +90,7 @@ export async function oAuthSignIn(provider: Provider, locale: string) {
       redirectTo: redirectUrl,
       queryParams: {
         locale: locale,
-        next: `${locale}/signals`, // or just /signals
+        next: `/signals`, // or just /signals
       },
     },
   });
