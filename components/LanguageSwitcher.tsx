@@ -20,7 +20,7 @@ export default function LanguageSwitcher() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 rounded-md px-2 py-1 text-sm hover:bg-slate-700"
+        className="flex items-center gap-1 rounded-md px-2 py-1 hover:bg-slate-800"
       >
         {languages[locale]}
         <ChevronDown className="h-4 w-4" />

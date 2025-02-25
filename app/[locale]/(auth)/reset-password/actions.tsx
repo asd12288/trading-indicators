@@ -9,6 +9,7 @@ export async function updatePassword(prev, formData) {
   const data = {
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
+    locale: formData.get("locale") || "en",
   };
 
   const { error } = await supabase.auth.updateUser({
@@ -23,6 +24,6 @@ export async function updatePassword(prev, formData) {
   }
 
   if (!error) {
-    redirect({ href: "/profile", locale: params.locale || 'en'});
+    redirect({ href: "/profile", locale: data.locale as string });
   }
 }

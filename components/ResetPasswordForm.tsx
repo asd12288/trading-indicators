@@ -8,8 +8,10 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 
 const ResetPasswordForm = () => {
+  const { locale } = useParams();
   const t = useTranslations("ResetPasswordForm");
   const [clientError, setClientError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -65,6 +67,7 @@ const ResetPasswordForm = () => {
             {t("labels.password")}
           </Label>
           <div className="relative">
+            <input type="hidden" name="locale" value={locale} />
             <Input
               className="w-full appearance-none rounded border px-3 py-2 shadow"
               type={showPassword ? "text" : "password"}

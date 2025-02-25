@@ -37,7 +37,10 @@ export async function emailLogin(formData: FormData) {
     }
 
     // Attempt login
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
     if (error) {
       if (error.message.toLowerCase().includes("confirm")) {
         // ... resend confirmation link code ...
@@ -76,23 +79,23 @@ export async function oAuthSignIn(provider: Provider, locale: string) {
   const supabase = await createClient();
 
   // e.g. `http://localhost:3000` in dev, no trailing slash
-  const baseUrl = process.env.DEV_URL?.replace(/\/$/, "");
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.DEV_URL;
   // Possibly include the locale part:
-  const redirectUrl = `${baseUrl}/${locale}/auth/callback`;
+  const redirectUrl = `${baseUrl}/auth/callback`;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
       redirectTo: redirectUrl,
       queryParams: {
-        locale,
+        locale: locale,
         next: "/signals", // or just /signals
       },
     },
   });
 
   if (error) {
-    return redirectNext(`/login?error=oAuthSignInFailed`);
+    return redirect({ href: `/login?error=${error.message}`, locale });
   }
 
   if (!data?.url) {
@@ -100,7 +103,7 @@ export async function oAuthSignIn(provider: Provider, locale: string) {
   }
 
   // This triggers the real OAuth flow:
-  return redirectNext(data.url);
+  return redirect({ href: data.url, locale });
 }
 
 export async function resetPassword(email: string) {
