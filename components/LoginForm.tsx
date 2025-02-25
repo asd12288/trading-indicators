@@ -36,7 +36,7 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const t = useTranslations("LoginForm");
   const params = useParams();
-  const locale = (params.locale as string) || "en";
+  const locale = params.locale as string;
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
@@ -52,6 +52,8 @@ export function LoginForm() {
     formData.append("email", values.email);
     formData.append("password", values.password);
     formData.append("locale", locale);
+
+    console.log(locale);
 
     startTransition(async () => {
       const result = await emailLogin(formData);
@@ -152,7 +154,7 @@ export function LoginForm() {
 
         <div className="flex flex-col gap-2">
           <p className="text-sm font-light">{t("dividers.or")}</p>
-          <OAuthButtons />
+          <OAuthButtons locale={locale} />
         </div>
 
         <div className="text-center text-sm font-light">
