@@ -37,6 +37,12 @@ export async function POST(req) {
       console.log(
         `Subscription ${subscriptionId} activated for user ${userId}`,
       );
+
+      await supabaseClient
+        .from("profiles")
+        .update({ plan: "pro" })
+        .eq("id", userId);
+      console.log(`User ${userId} upgraded to pro plan`);
     } else if (
       eventType === "BILLING.SUBSCRIPTION.CANCELLED" ||
       eventType === "BILLING.SUBSCRIPTION.EXPIRED"
