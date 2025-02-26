@@ -30,10 +30,10 @@ export default function SuccessPage() {
 
         <div className="pt-4">
           <Link
-            href="/dashboard"
+            href="/signals"
             className="bg-primary hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-6 py-2 font-medium text-white"
           >
-            Go to Dashboard
+            Go to Signals
           </Link>
         </div>
       </div>

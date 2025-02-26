@@ -33,7 +33,7 @@ const ManageAccount = ({ profile }) => {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to cancel subscription");
       }
-      
+
       toast({
         title: t("toast.success.title"),
         description: t("toast.success.description"),
@@ -54,18 +54,18 @@ const ManageAccount = ({ profile }) => {
   return (
     <div className="flex flex-col items-center justify-center gap-4 text-lg">
       <div className="flex flex-col justify-center gap-4">
+        <p className="text-sm font-extralight">
+          {t("plan.memberSince")}{" "}
+          <span className="font-medium">
+            {format(new Date(profile.created_at), "dd/MM/yyyy")}
+          </span>
+        </p>
         <h3>
           {t("plan.title")} {profile.plan || t("plan.type")}
         </h3>
         <p>
           {t("plan.status")}{" "}
           <span className="font-medium">{profile.subscription_status}</span>
-        </p>
-        <p>
-          {t("plan.memberSince")}{" "}
-          <span className="font-medium">
-            {format(new Date(profile.created_at), "dd/MM/yyyy")}
-          </span>
         </p>
 
         {profile.scheduled_change && (
@@ -81,16 +81,21 @@ const ManageAccount = ({ profile }) => {
           <Button
             className="bg-red-900 hover:bg-red-950"
             onClick={() => setAlertOpen(true)}
-            disabled={isLoading || profile.subscription_status === "CANCEL_AT_PERIOD_END"}
+            disabled={
+              isLoading ||
+              profile.subscription_status === "CANCEL_AT_PERIOD_END"
+            }
           >
-            {isLoading 
-              ? t("buttons.cancelling") 
-              : profile.subscription_status === "CANCEL_AT_PERIOD_END" 
-                ? t("buttons.cancelPending") 
+            {isLoading
+              ? t("buttons.cancelling")
+              : profile.subscription_status === "CANCEL_AT_PERIOD_END"
+                ? t("buttons.cancelPending")
                 : t("buttons.cancel")}
           </Button>
           <p className="text-sm font-extralight">
-            {profile.subscription_status === "CANCEL_AT_PERIOD_END" ? t("messages.alreadyCanceled") : ""}
+            {profile.subscription_status === "CANCEL_AT_PERIOD_END"
+              ? t("messages.alreadyCanceled")
+              : ""}
           </p>
         </div>
       </div>
