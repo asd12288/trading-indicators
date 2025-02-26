@@ -10,6 +10,7 @@ import ProfileCard from "./ProfileCard";
 import ResetPasswordForm from "./ResetPasswordForm";
 import TelegramAuth from "./TelegramAuth";
 import UpgradeAccount from "./UpgradeAccount";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 const UserDashboard = ({ user }) => {
   const searchParams = useSearchParams();
@@ -40,11 +41,10 @@ const UserDashboard = ({ user }) => {
   return (
     <>
       <h2 className="mb-4 text-2xl font-semibold md:text-4xl">{t("title")}</h2>
-
       <div className="mb-4 flex w-full flex-col rounded-md bg-slate-800 md:h-[600px] md:w-[1200px] md:flex-row">
         <aside className="flex w-full flex-col justify-center border-b border-slate-700 p-6 md:w-64 md:border-b-0 md:border-r md:p-12 md:pl-6">
           <nav className="w-full">
-            <ul className="justify-center md:gap-4 md:space-y-6 md:text-lg w-full">
+            <ul className="w-full justify-center md:gap-4 md:space-y-6 md:text-lg">
               <li className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 md:justify-start">
                 <FaCircleUser />
                 <button onClick={() => handleTabChange("profile")}>
@@ -55,7 +55,7 @@ const UserDashboard = ({ user }) => {
                 <FaLock />
                 <button onClick={() => handleTabChange("password")}>
                   {t("tabs.password")}
-                </button> 
+                </button>
               </li>
 
               {isPro ? (

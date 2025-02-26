@@ -28,6 +28,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "utils/xmlPraser.js"
-  ],
+, "app/api/paypal/create-subscription/route.js"  ],
   "exclude": ["node_modules"]
 }
