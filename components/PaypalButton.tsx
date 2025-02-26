@@ -1,30 +1,17 @@
 "use client";
+import supabaseClient from "@/database/supabase/supabase";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
-import { createClient } from "@supabase/supabase-js";
 import { useState, useEffect } from "react";
 
-export default function PaypalSubscribeButton({ onSubscribed }) {
-  const [token, setToken] = useState(null);
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
+export default function PaypalSubscribeButton({ onSubscribed, user }) {
+  const [userId, setUserId] = useState(user.id);
 
-  // Get auth token on mount
-  useEffect(() => {
-    const getSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data?.session) {
-        setToken(data.session.access_token);
-      }
-    };
-    getSession();
-  }, []);
+  console.log(userId);
 
   return (
     <PayPalScriptProvider
       options={{
-        "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID,
+        clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
         currency: "USD",
         intent: "subscription", // Critical for subscriptions
         vault: true,
@@ -39,17 +26,13 @@ export default function PaypalSubscribeButton({ onSubscribed }) {
         }}
         createSubscription={(data, actions) => {
           // Option B: Create subscription via API (More secure, use this)
-          if (!token) {
-            console.error("No auth token available");
-            return Promise.reject(new Error("Authentication required"));
-          }
 
           return fetch("/api/paypal/create-subscription", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
             },
+            body: JSON.stringify({ userId: userId }),
           })
             .then((res) => {
               if (!res.ok) throw new Error("Failed to create subscription");

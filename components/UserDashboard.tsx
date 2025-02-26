@@ -88,7 +88,7 @@ const UserDashboard = ({ user }) => {
         <main className="flex w-full flex-col items-center justify-center gap-4 p-6 md:p-12">
           <div className="flex flex-col items-center">
             {tab === "profile" && <ProfileCard user={user} profile={profile} />}
-            {tab === "upgrade" && <UpgradeAccount />}
+            {tab === "upgrade" && <UpgradeAccount user={user} />}
             {tab === "password" && <ResetPasswordForm />}
             {tab === "manage" && <ManageAccount profile={profile} />}
             {tab === "notification" && (

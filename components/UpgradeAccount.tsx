@@ -8,7 +8,7 @@ import { Link } from "@/i18n/routing";
 import PaypalSubscribeButton from "./PaypalButton";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
-const UpgradeAccount = () => {
+const UpgradeAccount = ({ user }) => {
   const [checkoutUrl, setCheckoutUrl] = useState("");
   const t = useTranslations("UpgradeAccount");
   const params = useParams();
@@ -64,7 +64,7 @@ const UpgradeAccount = () => {
           </div>
         </div>
         <div className="bg-slate-900 p-4 text-slate-100">
-          <PaypalSubscribeButton />
+          <PaypalSubscribeButton user={user} />
         </div>
       </div>
     </PayPalScriptProvider>
