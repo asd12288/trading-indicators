@@ -22,15 +22,13 @@ const PerformanceTableWithMFEAndLossTicks = ({ allSignal }) => {
       const entryPrice = Number(trade.entry_price);
       const exitPrice = Number(trade.exit_price);
       const resultTicks = Number(trade.result_ticks);
-
-      // If resultTicks is negative, it's a loss; otherwise it's MFE
-      let mfeTicks = 0;
-      let lossTicks = 0;
-      if (resultTicks < 0) {
-        lossTicks = Math.abs(resultTicks);
-      } else {
-        mfeTicks = resultTicks;
-      }
+      
+      // Use actual MFE from DB if available, otherwise calculate it
+      const mfeTicks = trade.mfe ? Number(trade.mfe) : 
+                      (resultTicks > 0 ? resultTicks : 0);
+                      
+      // Calculate loss ticks from result_ticks if negative
+      const lossTicks = resultTicks < 0 ? Math.abs(resultTicks) : 0;
 
       // Ensure trade_duration is always positive
       let tradeDuration = trade.trade_duration;
