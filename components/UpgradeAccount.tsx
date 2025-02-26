@@ -35,12 +35,12 @@ const UpgradeAccount = ({ user }) => {
         vault: true,
       }}
     >
-      <div className="flex items-center">
-        <div className="flex flex-col items-center justify-center">
-          <h1 className="text-center text-3xl font-semibold">{t("title")}</h1>
-          <p className="mt-4 text-center text-lg text-gray-500">
-            {t("subtitle")}
-          </p>
+      <div className="flex md:items-center flex-col md:flex-row justify-center">
+        <div className="flex flex-col justify-center">
+          <div className="">
+            <h1 className="text-3xl font-semibold">{t("title")}</h1>
+            <p className="mt-4 text w-2/3 text-gray-500">{t("subtitle")}</p>
+          </div>
 
           <div className="w-128 j space-y-4 p-8">
             <h4 className="text-3xl font-semibold">{t("plan.name")}</h4>
@@ -56,14 +56,12 @@ const UpgradeAccount = ({ user }) => {
                 <Benefit key={index} benefit={benefit} />
               ))}
             </ul>
-            <Link href={`/${locale}/checkout/pri_01jkxw8zjnvbkr2ehd3h900z8f`}>
               {/* <button className="mt-4 w-80 rounded-lg bg-green-800 px-2 py-2">
             {t("upgradeButton")}
           </button> */}
-            </Link>
           </div>
         </div>
-        <div className="bg-slate-900 p-4 text-slate-100">
+        <div className="p-4 text-slate-100">
           <PaypalSubscribeButton user={user} />
         </div>
       </div>
