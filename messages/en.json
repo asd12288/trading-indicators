@@ -286,6 +286,15 @@
       "duration": "Duration",
       "mfeTicks": "MFE Ticks",
       "lossTicks": "Loss Ticks"
+    },
+    "tooltips": {
+      "date": "The date when the trade was entered. This shows when the position was opened in the format day/month/year.",
+      "entryPrice": "The exact price at which the trade position was opened. This is the price level where your position was established in the market.",
+      "exitPrice": "The exact price at which the position was closed. This value is automatically recorded once the trade finishes either by hitting a target, a stop, or manual close.",
+      "tradeSide": "Indicates whether the trade was a Long position (betting on price increase) or Short position (betting on price decrease). This shows the trade direction.",
+      "duration": "How long the position remained open, measured in hours, minutes, or seconds. The app calculates this from the time you entered (Entry Price) to the time you exited (Exit Price).",
+      "mfeTicks": "MFE (Maximum Favorable Excursion) tracks the biggest unrealized gain achieved during a trade before it was closed. If your trade was 'in profit' by 10 ticks at some point but closes at 5 ticks, then the MFE was 10 ticks. This helps you understand how much potential profit was available during the trade.",
+      "lossTicks": "Shows how many ticks the trade moved against your position. This represents the negative movement in your trade. Higher loss ticks indicate that the trade experienced more adverse movement, which could have triggered stop losses or resulted in greater drawdowns."
     }
   },
   "SignalWinRateChart": {

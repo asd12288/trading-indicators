@@ -2,7 +2,6 @@ import Image from "next/image";
 import React from "react";
 import runningCard from "@/public/runningCard.png";
 import fulfilledCard from "@/public/fufiledCard.png";
-import Link from "next/link";
 import SignalTool from "@/components/SignalCard/SignalTool";
 import { useTranslations } from "next-intl";
 
@@ -11,7 +10,7 @@ export default function FeatureDocsPage() {
 
   return (
     <div className="min-h-screen w-full p-6 text-slate-50 md:p-12">
-      <div className="mx-auto max-w-6xl bg-slate-900 p-6 rounded-lg ">
+      <div className="mx-auto max-w-6xl rounded-lg bg-slate-900 p-6">
         <h1 className="mb-6 text-4xl font-bold text-white">{t("mainTitle")}</h1>
         <p className="mb-12 text-slate-300">{t("welcome")}</p>
 
@@ -172,11 +171,9 @@ export default function FeatureDocsPage() {
           </h2>
           <p className="text-slate-300">{t("sections.alerts.description")}</p>
           <div className="mt-8 flex items-center justify-center rounded-lg bg-slate-800 py-4">
-            <Link href="/alerts">
-              <h4 className="animate-pulse text-center text-sm md:text-xl md:font-semibold">
-                {t("sections.alerts.sampleAlert")}
-              </h4>
-            </Link>
+            <h4 className="animate-pulse text-center text-sm md:text-xl md:font-semibold">
+              {t("sections.alerts.sampleAlert")}
+            </h4>
           </div>
         </section>
 

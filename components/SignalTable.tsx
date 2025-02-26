@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
-import { Tooltip } from "./ui/tooltip";
 import SignalToolTooltip from "./SignalCard/SignalToolTooltip";
 
 const PerformanceTableWithMFEAndLossTicks = ({ allSignal }) => {
@@ -16,8 +15,6 @@ const PerformanceTableWithMFEAndLossTicks = ({ allSignal }) => {
     avgMFE: 0,
     avgLoss: 0,
   });
-
-  // Rest of your state and effect code remains the same...
 
   useEffect(() => {
     if (!allSignal || !allSignal.length) return;
@@ -55,7 +52,6 @@ const PerformanceTableWithMFEAndLossTicks = ({ allSignal }) => {
       };
     });
 
-    // Rest of your calculations remain the same...
     const totalTrades = formattedData.length;
     const totalMFE = formattedData.reduce(
       (acc, trade) => acc + trade.mfeTicks,
@@ -104,43 +100,43 @@ const PerformanceTableWithMFEAndLossTicks = ({ allSignal }) => {
         <table className="min-w-full divide-y divide-slate-600">
           <thead className="sticky top-0 bg-slate-700">
             <tr className="ovreflow-x-auto">
-              <SignalToolTooltip text="The date when the trade was entered. This shows when the position was opened in the format day/month/year.">
+              <SignalToolTooltip text={t("tooltips.date")}>
                 <th className="px-4 py-2 text-left text-slate-200">
                   {t("table.date")}
                 </th>
               </SignalToolTooltip>
 
-              <SignalToolTooltip text="The exact price at which the trade position was opened. This is the price level where your position was established in the market.">
+              <SignalToolTooltip text={t("tooltips.entryPrice")}>
                 <th className="px-4 py-2 text-left text-slate-200">
                   {t("table.entryPrice")}
                 </th>
               </SignalToolTooltip>
 
-              <SignalToolTooltip text="The exact price at which the position was closed. This value is automatically recorded once the trade finishes either by hitting a target, a stop, or manual close.">
+              <SignalToolTooltip text={t("tooltips.exitPrice")}>
                 <th className="px-4 py-2 text-left text-slate-200">
                   {t("table.exitPrice")}
                 </th>
               </SignalToolTooltip>
 
-              <SignalToolTooltip text="Indicates whether the trade was a Long position (betting on price increase) or Short position (betting on price decrease). This shows the trade direction.">
+              <SignalToolTooltip text={t("tooltips.tradeSide")}>
                 <th className="px-4 py-2 text-left text-slate-200">
                   {t("table.tradeSide")}
                 </th>
               </SignalToolTooltip>
 
-              <SignalToolTooltip text="How long the position remained open, measured in hours, minutes, or seconds. The app calculates this from the time you entered (Entry Price) to the time you exited (Exit Price).">
+              <SignalToolTooltip text={t("tooltips.duration")}>
                 <th className="px-4 py-2 text-left text-slate-200">
                   {t("table.duration")}
                 </th>
               </SignalToolTooltip>
 
-              <SignalToolTooltip text="MFE (Maximum Favorable Excursion) tracks the biggest unrealized gain achieved during a trade before it was closed. If your trade was 'in profit' by 10 ticks at some point but closes at 5 ticks, then the MFE was 10 ticks. This helps you understand how much potential profit was available during the trade.">
+              <SignalToolTooltip text={t("tooltips.mfeTicks")}>
                 <th className="px-4 py-2 text-left text-slate-200">
                   {t("table.mfeTicks")}
                 </th>
               </SignalToolTooltip>
 
-              <SignalToolTooltip text="Shows how many ticks the trade moved against your position. This represents the negative movement in your trade. Higher loss ticks indicate that the trade experienced more adverse movement, which could have triggered stop losses or resulted in greater drawdowns.">
+              <SignalToolTooltip text={t("tooltips.lossTicks")}>
                 <th className="px-4 py-2 text-left text-slate-200">
                   {t("table.lossTicks")}
                 </th>

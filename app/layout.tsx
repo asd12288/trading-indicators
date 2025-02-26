@@ -1,5 +1,7 @@
 import "./globals.css";
 import { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 import { Poppins } from "next/font/google";
 
 const poppins = Poppins({
@@ -8,20 +10,25 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Fast Signals",
+  title: "Trader Map",
   description: "Get the best signals for your trades",
 };
 
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: { locale: string };
 }) {
+  const messages = await getMessages(params.locale);
+
   return (
-    <html lang="en">
+    <html lang={params.locale}>
       <body className={`${poppins.className} antialiased`}>
-      {children}
+        <NextIntlClientProvider locale={params.locale} messages={messages}>
+          {children}
+        </NextIntlClientProvider>
       </body>
     </html>
   );
