@@ -1,12 +1,13 @@
 "use client";
 import supabaseClient from "@/database/supabase/supabase";
+import { toast } from "@/hooks/use-toast";
+import { useRouter } from "@/i18n/routing";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { useState, useEffect } from "react";
 
 export default function PaypalSubscribeButton({ onSubscribed, user }) {
   const [userId, setUserId] = useState(user.id);
-
-  console.log(userId);
+  const router = useRouter();
 
   return (
     <PayPalScriptProvider
@@ -48,10 +49,16 @@ export default function PaypalSubscribeButton({ onSubscribed, user }) {
           if (onSubscribed) {
             onSubscribed(data.subscriptionID);
           }
+          router.push("/success");
         }}
         onError={(err) => {
           console.error("PayPal subscription error:", err);
-          alert("An error occurred during subscription. Please try again.");
+          toast({
+            title: "Subscription Error",
+            description:
+              "An error occurred during subscription. Please try again.",
+            variant: "destructive",
+          });
         }}
       />
     </PayPalScriptProvider>

@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ConfirmDialog from "./ConfirmDialog";
 import { Button } from "./ui/button";
-import { useClients } from "@/hooks/useClients";
 import { useTranslations } from "next-intl";
 
 const ManageAccount = ({ profile }) => {
@@ -19,19 +18,22 @@ const ManageAccount = ({ profile }) => {
   const handleCancelConfirmSubscription = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/subscription", {
+      // Updated to use the PayPal-specific endpoint
+      const response = await fetch("/api/paypal/cancel-subscription", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          subscriptionId: profile.subscription_id,
+          userId: profile.id,
         }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to cancel subscription");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to cancel subscription");
       }
+      
       toast({
         title: t("toast.success.title"),
         description: t("toast.success.description"),
@@ -41,7 +43,7 @@ const ManageAccount = ({ profile }) => {
       console.error("Error cancelling subscription:", error);
       toast({
         title: t("toast.error.title"),
-        description: t("toast.error.description"),
+        description: error.message || t("toast.error.description"),
       });
     } finally {
       setIsLoading(false);
@@ -53,7 +55,7 @@ const ManageAccount = ({ profile }) => {
     <div className="flex flex-col items-center justify-center gap-4 text-lg">
       <div className="flex flex-col justify-center gap-4">
         <h3>
-          {t("plan.title")} {t("plan.type")}
+          {t("plan.title")} {profile.plan || t("plan.type")}
         </h3>
         <p>
           {t("plan.status")}{" "}
@@ -79,12 +81,16 @@ const ManageAccount = ({ profile }) => {
           <Button
             className="bg-red-900 hover:bg-red-950"
             onClick={() => setAlertOpen(true)}
-            disabled={isLoading || profile.scheduled_change}
+            disabled={isLoading || profile.subscription_status === "CANCEL_AT_PERIOD_END"}
           >
-            {isLoading ? t("buttons.cancelling") : t("buttons.cancel")}
+            {isLoading 
+              ? t("buttons.cancelling") 
+              : profile.subscription_status === "CANCEL_AT_PERIOD_END" 
+                ? t("buttons.cancelPending") 
+                : t("buttons.cancel")}
           </Button>
           <p className="text-sm font-extralight">
-            {profile.scheduled_change ? t("messages.alreadyCanceled") : ""}
+            {profile.subscription_status === "CANCEL_AT_PERIOD_END" ? t("messages.alreadyCanceled") : ""}
           </p>
         </div>
       </div>

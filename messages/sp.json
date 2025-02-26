@@ -507,7 +507,8 @@
       "type": "Pro",
       "status": "Estado del plan:",
       "memberSince": "Miembro desde:",
-      "endDate": "Fin de la suscripción:"
+      "endDate": "Fin de la suscripción:",
+      "cancelPending": "Cancel Pending"
     },
     "buttons": {
       "cancel": "Cancelar plan",

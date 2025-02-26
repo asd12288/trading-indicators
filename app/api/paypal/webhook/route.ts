@@ -1,4 +1,5 @@
-// app/api/paypal/webhook/route.js
+// Update the existing webhook handler to handle subscription cancellations
+
 import { NextResponse } from "next/server";
 import { verifyWebhookSignature } from "@/lib/paypal";
 import supabaseClient from "@/database/supabase/supabase";
@@ -6,11 +7,9 @@ import supabaseClient from "@/database/supabase/supabase";
 export async function POST(req) {
   let event;
   try {
-    // Get raw body for verification (Next 13 can give raw body via req.text())
     const bodyText = await req.text();
     event = JSON.parse(bodyText);
 
-    // Verify PayPal webhook signature
     const isValid = await verifyWebhookSignature(event, req.headers);
     if (!isValid) {
       console.error("Invalid PayPal webhook signature");
@@ -21,11 +20,10 @@ export async function POST(req) {
     return NextResponse.json({ error: "Bad Request" }, { status: 400 });
   }
 
-  // At this point, signature is verified
   const eventType = event.event_type;
-  const sub = event.resource; // subscription object or related resource
+  const sub = event.resource;
   const subscriptionId = sub.id;
-  const userId = sub.custom_id; // we set this in createSubscription
+  const userId = sub.custom_id;
 
   try {
     if (eventType === "BILLING.SUBSCRIPTION.ACTIVATED") {
@@ -34,47 +32,69 @@ export async function POST(req) {
         .from("subscriptions")
         .update({ status: "ACTIVE" })
         .eq("id", subscriptionId);
-      console.log(
-        `Subscription ${subscriptionId} activated for user ${userId}`,
-      );
-
+        
       await supabaseClient
         .from("profiles")
         .update({ plan: "pro" })
         .eq("id", userId);
-      console.log(`User ${userId} upgraded to pro plan`);
-    } else if (
-      eventType === "BILLING.SUBSCRIPTION.CANCELLED" ||
-      eventType === "BILLING.SUBSCRIPTION.EXPIRED"
-    ) {
-      // Mark subscription as canceled/expired
+    } 
+    else if (eventType === "BILLING.SUBSCRIPTION.CANCELLED") {
+      // This fires when subscription is fully cancelled (after the period ends)
       await supabaseClient
         .from("subscriptions")
-        .update({ status: "CANCELLED" })
+        .update({ 
+          status: "CANCELLED",
+          scheduled_change: new Date().toISOString() 
+        })
         .eq("id", subscriptionId);
-      console.log(
-        `Subscription ${subscriptionId} cancelled/expired for user ${userId}`,
-      );
-    } else if (
-      eventType === "PAYMENT.SALE.COMPLETED" ||
-      eventType === "PAYMENT.CAPTURE.COMPLETED"
-    ) {
-      // A payment was received (could be initial or recurring payment)
-      // You might record the payment or update last payment date.
-      const paymentId = sub.id; // in this case, sub is a sale/capture resource
-      console.log(
-        `Payment received for subscription ${subscriptionId}: payment ${paymentId}`,
-      );
-      // (Optional) Update subscription record with last payment timestamp or increment payment count
+        
+      // Downgrade user plan
+      await supabaseClient
+        .from("profiles")
+        .update({ plan: "free" })
+        .eq("id", userId);
+    }
+    else if (eventType === "BILLING.SUBSCRIPTION.SUSPENDED" || 
+             eventType === "BILLING.SUBSCRIPTION.EXPIRED") {
+      await supabaseClient
+        .from("subscriptions")
+        .update({ status: "EXPIRED" })
+        .eq("id", subscriptionId);
+        
+      // Downgrade user plan
+      await supabaseClient
+        .from("profiles")
+        .update({ plan: "free" })
+        .eq("id", userId);
+    }
+    else if (eventType === "BILLING.SUBSCRIPTION.UPDATED") {
+      // Check if the update is related to cancellation
+      if (sub.status === "ACTIVE" && 
+          sub.billing_info && 
+          sub.billing_info.cycle_executions && 
+          sub.billing_info.cycle_executions[0] && 
+          sub.billing_info.cycle_executions[0].cycles_remaining === 1) {
+        
+        // This is likely a subscription that will be cancelled after the current cycle
+        await supabaseClient
+          .from("subscriptions")
+          .update({ 
+            status: "CANCEL_AT_PERIOD_END",
+            scheduled_change: sub.billing_info.next_billing_time || null
+          })
+          .eq("id", subscriptionId);
+      }
+    }
+    else if (eventType === "PAYMENT.SALE.COMPLETED" || 
+             eventType === "PAYMENT.CAPTURE.COMPLETED") {
+      // Payment received, update last_payment date
       await supabaseClient
         .from("subscriptions")
         .update({ last_payment: new Date().toISOString() })
         .eq("id", subscriptionId);
     }
-    // ... handle other event types as needed
   } catch (dbErr) {
     console.error("Database update failed:", dbErr);
-    // We still return 200 to avoid endless retries, but you might want to alert/monitor this.
   }
 
   return NextResponse.json({ status: "OK" }, { status: 200 });

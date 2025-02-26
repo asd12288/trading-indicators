@@ -1,6 +1,5 @@
 // app/api/paypal/create-subscription/route.js
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { createSubscription } from "@/lib/paypal";
 import supabaseClient from "@/database/supabase/supabase";
 

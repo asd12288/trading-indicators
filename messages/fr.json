@@ -511,7 +511,8 @@
     },
     "buttons": {
       "cancel": "Annuler le Plan",
-      "cancelling": "Annulation..."
+      "cancelling": "Annulation...",
+      "cancelPending" : "Anulle"
     },
     "messages": {
       "alreadyCanceled": "Vous avez déjà annulé votre plan"

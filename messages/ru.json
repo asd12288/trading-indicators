@@ -511,7 +511,8 @@
     },
     "buttons": {
       "cancel": "Отменить план",
-      "cancelling": "Отмена..."
+      "cancelling": "Отмена...",
+      "cancelPending" : "Cancel Pending"
     },
     "messages": {
       "alreadyCanceled": "Вы уже отменили свой план"

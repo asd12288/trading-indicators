@@ -27,6 +27,29 @@ export async function getPayPalAccessToken() {
   return data.access_token;
 }
 
+
+export async function cancelSubscription(subscriptionId) {
+    const accessToken = await getPayPalAccessToken();
+    
+    const res = await fetch(`${PAYPAL_BASE_URL}/v1/billing/subscriptions/${subscriptionId}/cancel`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        reason: "Customer requested cancellation at end of billing period"
+      }),
+    });
+    
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`PayPal cancel subscription failed: ${err}`);
+    }
+    
+    return true;
+  }
+
 // 2. Create a subscription for the given Plan ID
 export async function createSubscription(
   planId,
