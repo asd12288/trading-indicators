@@ -41,7 +41,7 @@ const Hero = () => {
           </div>
 
           <div className="mt-12 flex justify-center gap-12 md:grid md:grid-cols-3 md:gap-4 lg:w-2/3 lg:justify-between lg:gap-20">
-            <Stats
+            {/* <Stats
               text={t("stats.users.label")}
               num={23}
               symbol={t("stats.users.symbol")}
@@ -58,7 +58,7 @@ const Hero = () => {
               num={t("stats.winRate.value")}
               symbol={t("stats.winRate.symbol")}
               duration={4}
-            />
+            /> */}
           </div>
         </div>
         <div className="w- md:w-2/5 md:p-9">

@@ -68,14 +68,7 @@ const ManageAccount = ({ profile }) => {
           <span className="font-medium">{profile.subscription_status}</span>
         </p>
 
-        {profile.scheduled_change && (
-          <p>
-            {t("plan.endDate")}{" "}
-            <span className="font-medium">
-              {format(new Date(profile.scheduled_change), "dd/MM/yyyy")}
-            </span>
-          </p>
-        )}
+       
 
         <div className="flex items-center gap-4">
           <Button
