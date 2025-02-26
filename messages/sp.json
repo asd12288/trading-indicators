@@ -649,5 +649,16 @@
     "title": "¡Ups! Algo salió mal.",
     "description": "Lo sentimos, se produjo un error inesperado. Por favor, inténtalo de nuevo más tarde.",
     "button": "Volver a inicio"
+  },
+
+  "NotFoundPage": {
+    "title": "Página no encontrada",
+    "description": "La página que buscas no existe. Por favor, verifica la URL o regresa a la página de inicio.",
+    "button": "Volver al inicio"
+  },
+  "SuccessPayment": {
+    "title": "Pago exitoso",
+    "description": "Gracias por suscribirte a nuestro plan premium. Tu cuenta ha sido actualizada y ahora tienes acceso a todas las funciones premium.",
+    "button": "Volver a señales"
   }
 }

@@ -1,6 +1,26 @@
-import { Link } from "@/i18n/routing";
+"use client";
+
+import { useRouter, Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 
 export default function SuccessPage() {
+  const router = useRouter();
+
+  const t = useTranslations('SuccessPayment');
+  useEffect(() => {
+    // Force a router refresh to ensure all server components
+    // fetch fresh data from the database
+    router.refresh();
+
+    // Optional: redirect to dashboard after a delay
+    const timeout = setTimeout(() => {
+      router.push("/signals");
+    }, 5000); // 5 seconds
+
+    return () => clearTimeout(timeout);
+  }, [router]);
+
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
       <div className="max-w-md space-y-6">
@@ -21,11 +41,10 @@ export default function SuccessPage() {
           </svg>
         </div>
 
-        <h1 className="text-3xl font-bold">Subscription Successful!</h1>
+        <h1 className="text-3xl font-bold">{t('title')}</h1>
 
         <p className="text-gray-500">
-          Thank you for subscribing to our premium plan. Your account has been
-          upgraded and you now have access to all premium features.
+        {t('description')}
         </p>
 
         <div className="pt-4">
@@ -33,7 +52,7 @@ export default function SuccessPage() {
             href="/signals"
             className="bg-primary hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-6 py-2 font-medium text-white"
           >
-            Go to Signals
+              {t('button')}
           </Link>
         </div>
       </div>

@@ -83,17 +83,17 @@ const ManageAccount = ({ profile }) => {
             onClick={() => setAlertOpen(true)}
             disabled={
               isLoading ||
-              profile.subscription_status === "CANCEL_AT_PERIOD_END"
+              profile.subscription_status === "CANCELLED"
             }
           >
             {isLoading
               ? t("buttons.cancelling")
-              : profile.subscription_status === "CANCEL_AT_PERIOD_END"
+              : profile.subscription_status === "CANCELLED"
                 ? t("buttons.cancelPending")
                 : t("buttons.cancel")}
           </Button>
           <p className="text-sm font-extralight">
-            {profile.subscription_status === "CANCEL_AT_PERIOD_END"
+            {profile.subscription_status === "CANCELLED"
               ? t("messages.alreadyCanceled")
               : ""}
           </p>

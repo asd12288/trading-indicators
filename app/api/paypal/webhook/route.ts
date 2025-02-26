@@ -32,61 +32,62 @@ export async function POST(req) {
         .from("subscriptions")
         .update({ status: "ACTIVE" })
         .eq("id", subscriptionId);
-        
+
       await supabaseClient
         .from("profiles")
-        .update({ plan: "pro" })
+        .update({ plan: "pro", subscription_status: "Active" })
         .eq("id", userId);
-    } 
-    else if (eventType === "BILLING.SUBSCRIPTION.CANCELLED") {
+    } else if (eventType === "BILLING.SUBSCRIPTION.CANCELLED") {
       // This fires when subscription is fully cancelled (after the period ends)
       await supabaseClient
         .from("subscriptions")
-        .update({ 
+        .update({
           status: "CANCELLED",
-          scheduled_change: new Date().toISOString() 
+          scheduled_change: new Date().toISOString(),
         })
         .eq("id", subscriptionId);
-        
+
       // Downgrade user plan
       await supabaseClient
         .from("profiles")
         .update({ plan: "free" })
         .eq("id", userId);
-    }
-    else if (eventType === "BILLING.SUBSCRIPTION.SUSPENDED" || 
-             eventType === "BILLING.SUBSCRIPTION.EXPIRED") {
+    } else if (
+      eventType === "BILLING.SUBSCRIPTION.SUSPENDED" ||
+      eventType === "BILLING.SUBSCRIPTION.EXPIRED"
+    ) {
       await supabaseClient
         .from("subscriptions")
         .update({ status: "EXPIRED" })
         .eq("id", subscriptionId);
-        
+
       // Downgrade user plan
       await supabaseClient
         .from("profiles")
         .update({ plan: "free" })
         .eq("id", userId);
-    }
-    else if (eventType === "BILLING.SUBSCRIPTION.UPDATED") {
+    } else if (eventType === "BILLING.SUBSCRIPTION.UPDATED") {
       // Check if the update is related to cancellation
-      if (sub.status === "ACTIVE" && 
-          sub.billing_info && 
-          sub.billing_info.cycle_executions && 
-          sub.billing_info.cycle_executions[0] && 
-          sub.billing_info.cycle_executions[0].cycles_remaining === 1) {
-        
+      if (
+        sub.status === "ACTIVE" &&
+        sub.billing_info &&
+        sub.billing_info.cycle_executions &&
+        sub.billing_info.cycle_executions[0] &&
+        sub.billing_info.cycle_executions[0].cycles_remaining === 1
+      ) {
         // This is likely a subscription that will be cancelled after the current cycle
         await supabaseClient
           .from("subscriptions")
-          .update({ 
+          .update({
             status: "CANCEL_AT_PERIOD_END",
-            scheduled_change: sub.billing_info.next_billing_time || null
+            scheduled_change: sub.billing_info.next_billing_time || null,
           })
           .eq("id", subscriptionId);
       }
-    }
-    else if (eventType === "PAYMENT.SALE.COMPLETED" || 
-             eventType === "PAYMENT.CAPTURE.COMPLETED") {
+    } else if (
+      eventType === "PAYMENT.SALE.COMPLETED" ||
+      eventType === "PAYMENT.CAPTURE.COMPLETED"
+    ) {
       // Payment received, update last_payment date
       await supabaseClient
         .from("subscriptions")

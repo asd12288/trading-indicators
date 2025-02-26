@@ -512,7 +512,7 @@
     "buttons": {
       "cancel": "Annuler le Plan",
       "cancelling": "Annulation...",
-      "cancelPending" : "Anulle"
+      "cancelPending": "Anulle"
     },
     "messages": {
       "alreadyCanceled": "Vous avez déjà annulé votre plan"
@@ -649,5 +649,16 @@
     "title": "Oups ! Quelque chose s'est mal passé.",
     "description": "Nous sommes désolés, mais une erreur inattendue s'est produite. Veuillez réessayer plus tard.",
     "button": "Retour à l'Accueil"
+  },
+
+  "NotFoundPage": {
+    "title": "Page non trouvée",
+    "description": "La page que vous recherchez n'existe pas. Veuillez vérifier l'URL ou retourner à la page d'accueil.",
+    "button": "Retour à l'accueil"
+  },
+  "SuccessPayment": {
+    "title": "Paiement réussi",
+    "description": "Merci de vous être abonné à notre plan premium. Votre compte a été mis à niveau et vous avez maintenant accès à toutes les fonctionnalités premium.",
+    "button": "Retour aux signaux"
   }
 }

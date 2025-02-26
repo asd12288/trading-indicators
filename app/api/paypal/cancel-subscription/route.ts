@@ -72,7 +72,7 @@ export async function POST(req) {
     const { error: profileError } = await supabaseClient
       .from("profiles")
       .update({
-        subscription_status: "CANCELED",
+        subscription_status: "CANCELLED",
         scheduled_change: subscription.current_period_end 
       })
       .eq("id", userId);

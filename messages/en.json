@@ -650,5 +650,15 @@
     "title": "Oops! Something went wrong.",
     "description": "We're sorry, but an unexpected error occurred. Please try again later.",
     "button": "Back to Home"
+  },
+  "NotFoundPage": {
+    "title": "Page Not Found",
+    "description": "The page you're looking for doesn't exist. Please check the URL or return to the homepage.",
+    "button": "Back to Home"
+  },
+  "SuccessPayment": {
+    "title": "Payment Successful",
+    "description": "Thank you for subscribing to our premium plan. Your account has been upgraded and you now have access to all premium features.",
+    "button": "Back to Signals"
   }
 }

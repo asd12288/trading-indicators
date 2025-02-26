@@ -1,6 +1,6 @@
 "use client";
 import supabaseClient from "@/database/supabase/supabase";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "@/i18n/routing";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { useState, useEffect } from "react";
@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 export default function PaypalSubscribeButton({ onSubscribed, user }) {
   const [userId, setUserId] = useState(user.id);
   const router = useRouter();
+  const { toast } = useToast();
 
   return (
     <PayPalScriptProvider
@@ -44,11 +45,27 @@ export default function PaypalSubscribeButton({ onSubscribed, user }) {
               return data.id; // Return subscription ID to PayPal SDK
             });
         }}
-        onApprove={(data) => {
+        onApprove={async (data) => {
           console.log("Subscription approved:", data.subscriptionID);
+          
+          // Update user profile directly after PayPal approval
+          // This ensures the UI can be updated without waiting for webhook
+          try {
+            await supabaseClient
+              .from("profiles")
+              .update({ plan: "pro" })
+              .eq("id", userId);
+            
+            // Force router refresh to update server components
+            router.refresh();
+          } catch (error) {
+            console.error("Error updating profile:", error);
+          }
+          
           if (onSubscribed) {
             onSubscribed(data.subscriptionID);
           }
+          
           router.push("/success");
         }}
         onError={(err) => {
