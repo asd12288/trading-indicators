@@ -1,11 +1,10 @@
 // lib/paypal.js
 import fetch from "node-fetch";
 
-const PAYPAL_BASE_URL = "https://api-m.sandbox.paypal.com";
-
-// process.env.NODE_ENV === 'production'
-//   ? 'https://api-m.paypal.com'
-//   : 'https://api-m.sandbox.paypal.com';
+const PAYPAL_BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://api-m.paypal.com"
+    : "https://api-m.sandbox.paypal.com";
 
 // 1. Get PayPal API access token using Client ID/Secret
 export async function getPayPalAccessToken() {
@@ -27,28 +26,30 @@ export async function getPayPalAccessToken() {
   return data.access_token;
 }
 
-
 export async function cancelSubscription(subscriptionId) {
-    const accessToken = await getPayPalAccessToken();
-    
-    const res = await fetch(`${PAYPAL_BASE_URL}/v1/billing/subscriptions/${subscriptionId}/cancel`, {
+  const accessToken = await getPayPalAccessToken();
+
+  const res = await fetch(
+    `${PAYPAL_BASE_URL}/v1/billing/subscriptions/${subscriptionId}/cancel`,
+    {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        reason: "Customer requested cancellation at end of billing period"
+        reason: "Customer requested cancellation at end of billing period",
       }),
-    });
-    
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(`PayPal cancel subscription failed: ${err}`);
-    }
-    
-    return true;
+    },
+  );
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`PayPal cancel subscription failed: ${err}`);
   }
+
+  return true;
+}
 
 // 2. Create a subscription for the given Plan ID
 export async function createSubscription(
