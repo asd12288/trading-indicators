@@ -7,10 +7,12 @@ import LogoutBtn from "./LogoutBtn";
 import UpgradeButton from "./UpgradeButton";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 
 export default function Navbar({ user, profile }) {
   // State to handle mobile menu toggle
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { locale } = useParams<{ locale: string }>();
 
   const t = useTranslations("Navbar.links");
 
@@ -64,7 +66,7 @@ export default function Navbar({ user, profile }) {
                 </li>
                 <UpgradeButton profile={profile} />
                 <li>
-                  <LogoutBtn />
+                  <LogoutBtn locale={locale} />
                 </li>
               </>
             ) : (
@@ -145,7 +147,7 @@ export default function Navbar({ user, profile }) {
               </li>
 
               <li>
-                <LogoutBtn />
+                <LogoutBtn locale={locale} />
               </li>
             </>
           ) : (

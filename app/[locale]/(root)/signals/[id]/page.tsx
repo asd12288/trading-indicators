@@ -1,6 +1,17 @@
 import SignalLayout from "@/components/SignalLayout";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
+import { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string; locale: string };
+}): Promise<Metadata> {
+  return {
+    title: params ? `Signal ${params.id}` : "Trader Map - Signal",
+  };
+}
 
 export default async function Page({
   params,

@@ -1,6 +1,13 @@
 import UserDashboard from "@/components/UserDashboard";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
+import { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Profile",
+};
+
 
 export default async function Page({ params }: { params: { locale: string } }) {
   const supabase = await createClient();

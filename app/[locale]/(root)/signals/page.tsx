@@ -1,8 +1,11 @@
 import SignalsLayout from "@/components/SignalsLayout";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
+import { Metadata } from "next";
 
-
+export const metadata: Metadata = {
+  title: "Signals",
+};
 
 async function page({ params }: { params: { locale: string } }) {
   const supabase = await createClient();

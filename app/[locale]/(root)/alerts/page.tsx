@@ -3,6 +3,11 @@ import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
 import React from "react";
 
+
+export 
+
+
+
 const page = async ({ params }: { params: { locale: string } }) => {
   const supabase = await createClient();
 

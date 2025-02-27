@@ -4,6 +4,13 @@ import runningCard from "@/public/runningCard.png";
 import fulfilledCard from "@/public/fufiledCard.png";
 import SignalTool from "@/components/SignalCard/SignalTool";
 import { useTranslations } from "next-intl";
+import { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Info",
+};
+
 
 export default function FeatureDocsPage() {
   const t = useTranslations("InfoPage");

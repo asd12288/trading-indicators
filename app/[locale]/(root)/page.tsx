@@ -5,6 +5,7 @@ import Plans from "@/components/homePage/Plans";
 import Service from "@/components/homePage/Service";
 import TestimonialsSection from "@/components/homePage/TestimonialsSection";
 
+
 function page() {
 
   

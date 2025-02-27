@@ -6,6 +6,17 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
 import { TabsContent } from "@radix-ui/react-tabs";
+import { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Admin",
+}
+   
+  
+
+
+
 
 const page = async ({ params }: { params: { locale: string } }) => {
   const supabase = await createClient();

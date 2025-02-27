@@ -1,13 +1,13 @@
 {
   "InfoPage": {
     "mainTitle": "Trader Map: Feature Overview",
-    "welcome": "Welcome to Trader Map! Below you'll find a clear explanation of our main features, key trading terms, and how to interpret your trading signal cards.",
+    "welcome": "Welcome to Trader Map! Below you'll find a clear explanation of our main features, key trading terms, and how to interpret your smart alert cards.",
     "sections": {
       "coreFeatures": {
         "title": "Core App Sections",
         "items": {
-          "traderMap": "Provides an overview of the markets and real-time trades. Think of it as your main dashboard to see running signals in one place, building your strategy around them.",
-          "signals": "Displays all active and past trading signals. Each signal will show whether it's a Long or Short trade, entry price, exit price (if closed), and performance metrics.",
+          "traderMap": "Provides an overview of the markets and real-time trades. Think of it as your main dashboard to see running smart alerts in one place, building your strategy around them.",
+          "signals": "Displays all active and past smart alerts. Each smart alert will show whether it's a Long or Short trade, entry price, exit price (if closed), and performance metrics.",
           "profile": "Your account page to view or update personal info, adjust subscription plans, or set preferences like notifications and alerts."
         }
       },
@@ -33,10 +33,10 @@
         }
       },
       "signalCards": {
-        "title": "Signal Cards",
-        "description": "Signals in Trader Map are shown via specialized cards. Each card contains trade details including the type of trade (Long or Short), status, entry/exit prices, and performance metrics.",
+        "title": "Smart Alert Cards",
+        "description": "Smart alerts in Trader Map are shown via specialized cards. Each card contains trade details including the type of trade (Long or Short), status, entry/exit prices, and performance metrics.",
         "running": {
-          "title": "Running Signal Card",
+          "title": "Running Smart Alert Card",
           "description": "Displays trades that are actively in progress:",
           "item0": "Entry Price: The price at which the trade was opened.",
           "item1": "Stop Price: The protective stop-loss level.",
@@ -45,7 +45,7 @@
           "item4": "Status: Usually shows 'Running' while the trade is active."
         },
         "fulfilled": {
-          "title": "Fulfilled Signal Card",
+          "title": "Fulfilled Smart Alert Card",
           "description": "Displays trades that have already closed:",
           "item0": "Entry Price & Exit Price: Shows where you got in and out.",
           "item1": "MAE & MFE: Reflects how the trade performed at its worst and best.",
@@ -54,12 +54,12 @@
         }
       },
       "signalTool": {
-        "title": "Signal Tool (Notifications, Volume, Favorites) - Pro Users",
-        "description": "Each signal can be customized to suit your preferences:",
+        "title": "Smart Alert Tool (Notifications, Volume, Favorites) - Pro Users",
+        "description": "Each smart alert can be customized to suit your preferences:",
         "items": {
-          "notifications": "Turn these on if you’d like to receive alerts (in-app or Telegram) when certain conditions are met for that signal.",
-          "volume": "Enable or disable sound alerts for new signals, so you can hear a beep when a trade triggers.",
-          "favorite": "Mark a signal as a favorite to find or filter it more easily in your dashboard."
+          "notifications": "Turn these on if you’d like to receive alerts (in-app or Telegram) when certain conditions are met for that smart alert.",
+          "volume": "Enable or disable sound alerts for new smart alerts, so you can hear a beep when a trade triggers.",
+          "favorite": "Mark a smart alert as a favorite to find or filter it more easily in your dashboard."
         }
       },
       "alerts": {
@@ -72,7 +72,7 @@
       "noAccount": "Don't have an account yet?",
       "createAccount": "Create An Account",
       "readyToTrade": "Ready to start trading?",
-      "viewSignals": "View All Signals"
+      "viewSignals": "View All Smart Alerts"
     }
   },
   "HomePage": {
@@ -80,8 +80,8 @@
       "rating": "⭐⭐⭐⭐⭐",
       "usersCount": "More then 1000+ traders",
       "mainTitle": "Trade Smarter with Real-Time",
-      "highlightedText": "Trading Signals",
-      "subtitle": "Join our community of traders leveraging expert analysis to stay ahead in the Trade market",
+      "highlightedText": "Smart Alerts",
+      "subtitle": "Join our community of traders leveraging expert analysis to stay ahead in the trade market with real-time smart alerts",
       "buttons": {
         "joinUs": "Join us",
         "learnMore": "Learn more"
@@ -93,7 +93,7 @@
           "symbol": "+"
         },
         "signals": {
-          "label": "Signals",
+          "label": "Smart Alerts",
           "value": "26",
           "symbol": "+"
         },
@@ -105,9 +105,9 @@
       }
     },
     "offers": {
-      "mainTitle": "Live Trading Signals – Stay Ahead of the Market",
-      "subtitle": "Our real-time trading signals provide you with expert-driven market insights, helping you make informed trading decisions quickly.",
-      "bottomText": "With our real-time alerts, you'll never miss a trading opportunity again!"
+      "mainTitle": "Live Smart Alerts – Stay Ahead of the Market",
+      "subtitle": "Our real-time smart alerts provide you with expert-driven market insights, helping you make informed trading decisions quickly.",
+      "bottomText": "With our real-time smart alerts, you'll never miss a trading opportunity again!"
     },
     "plans": {
       "title": "Plans",
@@ -116,7 +116,7 @@
       "freePlan": {
         "title": "Free Plan",
         "benefits": [
-          "Access 5 Signals",
+          "Access 5 Smart Alerts",
           "Analysis of the instruments",
           "Alerts on upcomming trades"
         ],
@@ -137,7 +137,7 @@
         },
         "userFriendly": {
           "title": "User-Friendly",
-          "description": "Easy-to-follow signals for all trading levels."
+          "description": "Easy-to-follow smart alerts for all trading levels."
         },
         "multiAsset": {
           "title": "Multi-Asset Coverage",
@@ -152,7 +152,7 @@
     "freePlanCard": {
       "plan": "Free Plan",
       "button": "Get started for free",
-      "benefit1": "Access 5 Signals",
+      "benefit1": "Access 5 Smart Alerts",
       "benefit2": "Analysis of the instruments",
       "benefit3": "Alerts on upcomming trades"
     },
@@ -162,11 +162,11 @@
       "billed": "Billed monthly",
 
       "button": "Get Started",
-      "benefit1": "Access to all signals",
+      "benefit1": "Access to all smart alerts",
       "benefit2": "Analysis of the instruments",
       "benefit3": "Alerts on upcomming trades",
       "benefit4": "Telegram notifications",
-      "benefit5": "Custom signals prefrences"
+      "benefit5": "Custom smart alert preferences"
     },
     "testimonials": {
       "title": " Hear what are users say about us"
@@ -190,17 +190,17 @@
     }
   },
   "Signals": {
-    "mainTitle": "Latest Signals",
-    "titleFavor": "My Signals",
-    "infoLink": "Learn more about our signals...",
-    "signalStatus": " Signals Status: ",
+    "mainTitle": "Latest Smart Alerts",
+    "titleFavor": "My Smart Alerts",
+    "infoLink": "Learn more about our smart alerts...",
+    "signalStatus": " Smart Alerts Status: ",
     "live": "Live",
-    "noResult": "No signals found. Try a different search or category."
+    "noResult": "No smart alerts found. Try a different search or category."
   },
   "Alert": {
     "loading": "Loading...",
     "noAlertsDefault": "No alerts available",
-    "noAlertsPro": "No alerts available. Turn on notifications on signals to get alerts",
+    "noAlertsPro": "No alerts available. Turn on notifications on smart alerts to get alerts",
     "messages": {
       "noRecentAlerts": "No recent alerts available",
       "alert": "Alert: Potential",
@@ -233,34 +233,34 @@
     "startedAt": "Started at:"
   },
   "SignalLayout": {
-    "allSignals": "All Signals",
-    "signal": "Signal:",
-    "signalSettings": "Signal Settings:",
+    "allSignals": "All Smart Alerts",
+    "signal": "Smart Alert:",
+    "signalSettings": "Smart Alert Settings:",
     "upgradeMessage": "Upgrade to add notifications and favoriting",
-    "noSignalData": "No signal data available"
+    "noSignalData": "No smart alert data available"
   },
   "SignalTool": {
     "notifications": {
       "tooltip": "Get notification on Telegram and on the platform",
       "enabled": "Notifications enabled",
       "disabled": "Notifications disabled",
-      "description": "Signal {signalId} notifications are now {status}"
+      "description": "Smart alert {signalId} notifications are now {status}"
     },
     "volume": {
-      "tooltip": "Enable or disable the sound for this signal",
+      "tooltip": "Enable or disable the sound for this smart alert",
       "enabled": "Volume enabled",
       "disabled": "Volume disabled",
-      "description": "Sound for signal {signalId} is now {status}"
+      "description": "Sound for smart alert {signalId} is now {status}"
     },
     "favorite": {
-      "tooltip": "Add this signal to your favorites list",
+      "tooltip": "Add this smart alert to your favorites list",
       "added": "Added to favorites",
       "removed": "Removed from favorites",
-      "description": "Signal {signalId} has been {status} from favorites"
+      "description": "Smart alert {signalId} has been {status} from favorites"
     }
   },
   "SignalOverview": {
-    "noData": "No signal data available",
+    "noData": "No smart alert data available",
     "loading": "Loading...",
     "status": {
       "title": "Instrument Status:",
@@ -447,7 +447,7 @@
       "subscription": "Subscription",
       "notification": "Notification",
       "upgrade": "Upgrade",
-      "mySignals": "My Signals"
+      "mySignals": "My Smart Alerts"
     }
   },
   "ProfileCard": {
@@ -488,11 +488,11 @@
       "billing": "Billed monthly"
     },
     "benefits": {
-      "signals": "Access to all signals",
+      "signals": "Access to all smart alerts",
       "analysis": "Analysis of all the instruments",
       "telegram": "Telegram notifications",
       "alerts": "Alerts on upcoming trades",
-      "preferences": "Custom signals preferences"
+      "preferences": "Custom smart alert preferences"
     },
     "upgradeButton": "Upgrade my account"
   },
@@ -554,7 +554,7 @@
   "Navbar": {
     "links": {
       "home": "Home",
-      "signals": "Signals",
+      "signals": "Smart Alerts",
       "profile": "Profile",
       "blog": "Blog",
       "logout": "Logout",
@@ -645,7 +645,7 @@
     "login": "Back to login"
   },
   "UpgradePrompt": {
-    "title": "Upgrade to view all signals and add favorites.",
+    "title": "Upgrade to view all smart alerts and add favorites.",
     "button": "Upgrade Now"
   },
   "TelegramAuth": {
@@ -668,6 +668,6 @@
   "SuccessPayment": {
     "title": "Payment Successful",
     "description": "Thank you for subscribing to our premium plan. Your account has been upgraded and you now have access to all premium features.",
-    "button": "Back to Signals"
+    "button": "Back to Smart Alerts"
   }
 }

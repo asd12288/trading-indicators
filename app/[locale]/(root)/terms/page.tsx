@@ -1,5 +1,14 @@
+import { Metadata } from "next";
 import { useTranslations } from "next-intl";
 import React from "react";
+
+
+
+export const metadata: Metadata = {
+  title: "Terms and Conditions",
+};
+
+
 
 const TermsAndConditions = () => {
   const t = useTranslations("TermsAndConditions");
