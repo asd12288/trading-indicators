@@ -44,8 +44,6 @@ const useSignals = (preferences = {}) => {
         "postgres_changes",
         { event: "*", schema: "public", table: "all_signals" },
         (payload) => {
-          console.log("Change received!", payload);
-
           // Check if user has notifications or volume turned on for this instrument
           const instrumentName = payload.new.instrument_name;
           const userPrefs = preferences[instrumentName] || {};
