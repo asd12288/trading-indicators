@@ -14,12 +14,13 @@ const Hero = () => {
       <div className="flex h-full flex-col items-center justify-center md:flex-row md:items-center md:justify-around md:p-8">
         <div className="mb-24 w-full p-2 md:p-8 lg:w-3/5">
           <p className="text-center md:text-left">{t("rating")}</p>
-          <p className="mb-3 text-center font-thin md:text-left">
-            {t("usersCount")}
+          <p className="my-3 text-center font-thin md:text-left">
+            {t("count")}
           </p>
-          <h1 className="leading-2 text-center text-4xl font-bold text-green-50 md:text-left md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl">
-            {t("mainTitle")} <br />
+          <h1 className="text-center text-4xl font-bold text-green-50 md:text-left md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl">
+            {t("mainTitleStart")} <br />
             <span className="text-green-400">{t("highlightedText")}</span>
+            {t("mainTitleEnd")}{" "}
           </h1>
           <h2 className="text-md mt-8 text-center font-light text-gray-300 md:pr-10 md:text-left lg:text-xl">
             {t("subtitle")}

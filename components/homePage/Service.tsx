@@ -6,12 +6,12 @@ const Service = () => {
   const t = useTranslations("HomePage.service");
 
   return (
-    <section className="mt-3 flex flex-col md:space-x-4 lg:flex-row lg:items-center lg:justify-between">
+    <section className="mt-3 flex flex-col md:space-x-4 lg:items-center lg:justify-between">
       <div className="w-full lg:w-1/2">
-        <h2 className="text-center text-3xl font-semibold md:text-5xl lg:pr-8 lg:text-left lg:text-6xl">
+        <h2 className="section-title">
           {t("title")}
         </h2>
-        <p className="mt-3 p-2 text-center text-lg font-light lg:pr-3 lg:text-left lg:text-xl">
+        <p className="mt-3 p-2 text-center text-lg font-light lg:pr-3 lg:text-xl">
           {t("subtitle")}
         </p>
       </div>

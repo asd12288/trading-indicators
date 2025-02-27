@@ -1,8 +1,5 @@
 import { toast } from "@/hooks/use-toast";
 
-let audioStart: HTMLAudioElement | null = null;
-let audioEnd: HTMLAudioElement | null = null;
-
 interface SignalPayload {
   new: {
     instrument_name: string;
@@ -11,11 +8,15 @@ interface SignalPayload {
   };
 }
 
+let audioStart: HTMLAudioElement | null = null;
+let audioEnd: HTMLAudioElement | null = null;
+
 // Initialize audio only after user interaction
 export const initializeAudio = () => {
-  if (!audioStart || !audioEnd) {
+  if (typeof window !== "undefined") {
     audioStart = new Audio("/audio/newSignal.mp3");
     audioEnd = new Audio("/audio/endSignal.mp3");
+    console.log("Audio initialized");
   }
 };
 
@@ -38,12 +39,10 @@ export const soundNotification = (payload: SignalPayload) => {
 
   try {
     if (payload.new.exit_price === null) {
-      audioStart.currentTime = 0;
       audioStart
         .play()
         .catch((err) => console.warn("Audio playback blocked", err));
     } else {
-      audioEnd.currentTime = 0;
       audioEnd
         .play()
         .catch((err) => console.warn("Audio playback blocked", err));
@@ -53,4 +52,7 @@ export const soundNotification = (payload: SignalPayload) => {
   }
 };
 
-// telegram is sent on the server ... so we don't need to do anything here
+// Example usage: Call initializeAudio() after user interaction
+if (typeof window !== "undefined") {
+  document.addEventListener("click", initializeAudio, { once: true });
+}

@@ -67,4 +67,8 @@
   .card-content {
     @apply absolute left-[1px] top-[1px] h-[calc(100%-2px)] w-[calc(100%-2px)] rounded-2xl bg-slate-800 bg-slate-900 bg-gradient-to-b;
   }
+
+  .section-title {
+    @apply text-center text-3xl font-semibold md:text-5xl lg:pr-8 lg:text-6xl;
+  }
 }

@@ -78,12 +78,13 @@
   "HomePage": {
     "hero": {
       "rating": "⭐⭐⭐⭐⭐",
-      "usersCount": "More then 1000+ traders",
-      "mainTitle": "Trade Smarter with Real-Time",
-      "highlightedText": "Smart Alerts",
-      "subtitle": "Join our community of traders leveraging expert analysis to stay ahead in the trade market with real-time smart alerts",
+      "count": "More then 50+ Instruments",
+      "mainTitleStart": "Real-Time ",
+      "highlightedText": "Smart Alerts ",
+      "mainTitleEnd": "for Confident Trading",
+      "subtitle": "Stay Ahead of the Market with Automated Insights and Timely Notifications",
       "buttons": {
-        "joinUs": "Join us",
+        "joinUs": "Get Started Now",
         "learnMore": "Learn more"
       },
       "stats": {
@@ -124,7 +125,7 @@
       }
     },
     "service": {
-      "title": "Simple, Real Time, and optimal to work with",
+      "title": "Why Choose Our Smart Alerts?",
       "subtitle": "We choose the best intrumet on the market and made them",
       "features": {
         "alerts": {
