@@ -4,7 +4,7 @@ import { redirect } from "@/i18n/routing";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Signals",
+  title: "Smart Alerts",
 };
 
 async function page({ params }: { params: { locale: string } }) {

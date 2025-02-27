@@ -11,6 +11,7 @@ import { ArrowLeft } from "lucide-react";
 import SignalInfo from "./SignalInfo";
 import SignalOverview from "./SignalOverview";
 import { useTranslations } from "next-intl";
+import { notFound } from "next/navigation";
 
 const SignalLayout = ({ id, userId, isPro }) => {
   const { isLoading, profile } = useProfile(userId);
@@ -27,12 +28,12 @@ const SignalLayout = ({ id, userId, isPro }) => {
   const lastSignal = instrumentData?.[0] || null;
 
   if (!lastSignal) {
-    return <div>{t("noSignalData")}</div>;
+    notFound();
   }
 
   return (
     <div className="mb-8 flex flex-col p-2 md:p-12">
-      <Link href="/signals">
+      <Link href="/smart-alerts">
         <div className="flex cursor-pointer items-center gap-4 hover:text-slate-400">
           <ArrowLeft size={24} />
           <p className="my-2 text-xl">{t("allSignals")}</p>

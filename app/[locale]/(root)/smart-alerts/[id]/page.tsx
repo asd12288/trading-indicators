@@ -9,7 +9,7 @@ export async function generateMetadata({
   params: { id: string; locale: string };
 }): Promise<Metadata> {
   return {
-    title: params ? `Signal ${params.id}` : "Trader Map - Signal",
+    title: params ? `${params.id}` : "Trader Map",
   };
 }
 
@@ -19,8 +19,7 @@ export default async function Page({
   params: { id: string; locale: string };
 }) {
   if (!params?.id) {
-    console.error("No ID provided in URL params");
-    redirect({ href: "/signals", locale: params.locale });
+    redirect({ href: "/smart-alerts", locale: params.locale });
   }
 
   const supabase = await createClient();
@@ -30,7 +29,6 @@ export default async function Page({
   } = await supabase.auth.getUser();
 
   if (userError || !user?.id) {
-    console.error("Auth error or missing user ID:", userError);
     redirect({ href: "/login", locale: params.locale });
   }
 
@@ -40,7 +38,7 @@ export default async function Page({
       signalId: params.id,
       userId: user.id,
     });
-    redirect({ href: "/signals", locale: params.locale });
+    redirect({ href: "/smart-alerts", locale: params.locale });
   }
 
   const { data: profile } = await supabase

@@ -1,5 +1,4 @@
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
+
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
@@ -9,7 +8,6 @@ export default function NotFound() {
 
   return (
     <>
-      <Header />
       <div className="flex h-screen flex-col items-center justify-center gap-4 p-48 text-center">
         <div className="space-y-4">
           <h1 className="text-6xl font-bold">404</h1>
@@ -20,7 +18,6 @@ export default function NotFound() {
           <Link href="/">{t("button")}</Link>
         </Button>
       </div>
-      <Footer />
     </>
   );
 }

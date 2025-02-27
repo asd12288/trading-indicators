@@ -15,7 +15,7 @@ export default function SuccessPage() {
 
     // Optional: redirect to dashboard after a delay
     const timeout = setTimeout(() => {
-      router.push("/signals");
+      router.push("/smart-alerts");
     }, 5000); // 5 seconds
 
     return () => clearTimeout(timeout);

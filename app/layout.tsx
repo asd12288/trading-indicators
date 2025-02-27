@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     default: "Trader Map",
     template: "%s | Trader Map",
   },
-  description: "Get the best signals for your trades",
+  description: "Get the best Smart Alerts for your trades",
 };
 
 export default async function RootLayout({

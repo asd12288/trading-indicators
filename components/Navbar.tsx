@@ -36,7 +36,7 @@ export default function Navbar({ user, profile }) {
             </li>
             <li className="hover:text-slate-300">
               <Link
-                href="/signals"
+                href="/smart-alerts"
                 className="flex items-center gap-2 hover:text-slate-300"
               >
                 <p> {t("signals")}</p>
@@ -106,7 +106,7 @@ export default function Navbar({ user, profile }) {
         <ul className="transtion mb-3 flex flex-col items-center gap-4 bg-slate-900 px-6 py-4 text-sm ease-in lg:hidden">
           <li>
             <Link
-              href="/signals"
+              href="/smart-alerts"
               className="block w-full hover:text-slate-300"
               onClick={() => setIsMobileOpen(false)}
             >

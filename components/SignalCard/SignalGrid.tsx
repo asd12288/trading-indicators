@@ -8,7 +8,7 @@ const SignalsGrid = ({ signals }) => {
         <Link
           className="flex justify-center"
           key={`${signal.instrument_name}-${index}`}
-          href={`signals/${signal.instrument_name}`}
+          href={`smart-alerts/${signal.instrument_name}`}
         >
           <SignalCard signalPassed={signal} />
         </Link>

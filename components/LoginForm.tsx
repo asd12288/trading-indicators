@@ -60,7 +60,7 @@ export function LoginForm() {
       if (result?.error) {
         setServerError(result.error);
       } else {
-        router.push(`/signals`);
+        router.push(`/smart-alerts`);
       }
     });
   }
