@@ -23,21 +23,9 @@ import { useState } from "react";
 import ConfirmDialog from "../ConfirmDialog";
 import { Button } from "../ui/button";
 import EditSignalFrom from "./EditSignalFrom";
+import { Signal } from "@/lib/types";
 
-export type Signal = {
-  instrument_name: string;
-  trade_side: string;
-  entry_price: number;
-  entry_time: string;
-  exit_price: number | null;
-  exit_time: string | null;
-  mae: number | null;
-  mfe: number | null;
-  result_ticks: number | null;
-  trade_duration: string | null;
-  take_profit_price: number;
-  stop_loss_price: number;
-};
+
 
 export const signalTableColumns: ColumnDef<Signal>[] = [
   {

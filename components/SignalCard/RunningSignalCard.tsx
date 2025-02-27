@@ -1,12 +1,21 @@
+import { Signal } from "@/lib/types";
 import { format, formatDistanceToNow, parseISO } from "date-fns";
 import { useTranslations } from "next-intl";
-import React from "react";
+import { FC } from "react";
 import { FaArrowDown, FaArrowUp, FaCheck } from "react-icons/fa";
 import { RxEnter } from "react-icons/rx";
 import { TbHandStop } from "react-icons/tb";
 import { TfiTarget } from "react-icons/tfi";
 
-const RunningSignalCard = ({ instrument, isBuy }) => {
+interface RunningSignalCardProps {
+  instrument: Signal;
+  isBuy: boolean;
+}
+
+const RunningSignalCard: FC<RunningSignalCardProps> = ({
+  instrument,
+  isBuy,
+}) => {
   const {
     entry_time,
     instrument_name,
@@ -83,7 +92,9 @@ const RunningSignalCard = ({ instrument, isBuy }) => {
         </div>
       </div>
 
-      <p className="p-2 text-center">{t("tradeDuration")} {""}</p>
+      <p className="p-2 text-center">
+        {t("tradeDuration")} {""}
+      </p>
       <div className="border-b-2 border-slate-700"></div>
       <p className="p-2 text-center">
         {t("startedAt")} {format(parseISO(entry_time), "MM/dd -  HH:mm")}

@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "https://auth.trader-map.com",
+        hostname: "auth.trader-map.com",
       },
     ],
   },
