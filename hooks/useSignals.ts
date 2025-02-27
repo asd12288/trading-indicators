@@ -2,11 +2,17 @@
 
 import supabaseClient from "@/database/supabase/supabase.js";
 import { notifyUser, soundNotification } from "@/lib/notification";
+import { Signal } from "@/lib/types";
 import { useEffect, useState } from "react";
 
-const useSignals = (preferences = {}) => {
-  const [signals, setSignals] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+type PreferencesMap = Record<
+  string,
+  { notifications: boolean; volume: boolean }
+>;
+
+const useSignals = (preferences: PreferencesMap = {}) => {
+  const [signals, setSignals] = useState<Signal[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchData = async () => {
     const { data, error } = await supabaseClient
@@ -19,7 +25,7 @@ const useSignals = (preferences = {}) => {
     } else if (data) {
       // Filter only the latest entry for each instrument
       const latestSignals = Object.values(
-        data.reduce((acc, row) => {
+        data.reduce<{ [key: string]: Signal }>((acc, row) => {
           if (
             !acc[row.instrument_name] ||
             new Date(row.entry_time) >
@@ -45,7 +51,7 @@ const useSignals = (preferences = {}) => {
         { event: "*", schema: "public", table: "all_signals" },
         (payload) => {
           // Check if user has notifications or volume turned on for this instrument
-          const instrumentName = payload.new.instrument_name;
+          const instrumentName = (payload.new as { instrument_name: string }).instrument_name;
           const userPrefs = preferences[instrumentName] || {};
 
           if (userPrefs.notifications) {

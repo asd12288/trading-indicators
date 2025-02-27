@@ -3,12 +3,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "@/hooks/use-toast";
 import supabaseClient from "@/database/supabase/supabase";
+import { PreferenceValues } from "@/lib/types";
 
-interface PreferenceValues {
-  notifications: boolean;
-  volume: boolean;
-  favorite: boolean;
-}
+
 
 // The shape of your entire preferences object: { [instrumentId]: PreferenceValues }
 type PreferencesMap = Record<string, PreferenceValues>;

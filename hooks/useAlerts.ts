@@ -1,40 +1,41 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import supabaseClient from "@/database/supabase/supabase";
+import { Alert } from "@/lib/types";
 
 const useAlerts = () => {
-  const [alerts, setAlerts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const pingSoundRef = new Audio("/audio/ping.mp3");
-
-  const fetchData = async () => {
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabaseClient
-        .from("signals_alert")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(200);
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      setAlerts(data || []);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching alerts:", err);
-      setError(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const pingSoundRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Initial fetch
+    pingSoundRef.current = new Audio("/audio/ping.mp3");
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabaseClient
+          .from("signals_alert")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(200);
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        setAlerts(data || []);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching alerts:", err);
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchData();
 
     // Subscribe to changes in the "signals_alert" table
@@ -43,9 +44,11 @@ const useAlerts = () => {
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "signals_alert" },
-        async (payload) => {
+        async () => {
           await fetchData();
-          pingSoundRef.play();
+          pingSoundRef.current
+            ?.play()
+            .catch((err) => console.warn("Audio playback blocked", err));
         },
       )
       .subscribe();

@@ -27,3 +27,44 @@ export interface Signal {
   stop_loss_price: number;
   signal: string;
 }
+
+export interface Alert {
+  id: string;
+  message: string;
+  trade_side: "LONG" | "SHORT";
+  instrument_name: string;
+  created_at: string;
+  time: string;
+  price: number;
+  time_utc: string;
+  VWAP: string;
+  value: string;
+}
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  content: string;
+  created_at: string;
+  subTitle: string;
+  imageUrl: string;
+}
+
+export interface Profile {
+  id: string;
+  username: string;
+  email: string;
+  avatar_url: string;
+  created_at: string;
+  plan?: "pro" | "free";
+  role?: "admin" | "user";
+  preferences: PreferenceValues;
+}
+
+export interface PreferenceValues {
+  notifications: boolean;
+  volume: boolean;
+  favorite: boolean;
+}
+
+

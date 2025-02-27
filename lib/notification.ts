@@ -1,26 +1,36 @@
 import { toast } from "@/hooks/use-toast";
 
-let audioStart: HTMLAudioElement;
-let audioEnd: HTMLAudioElement;
+let audioStart: HTMLAudioElement | null = null;
+let audioEnd: HTMLAudioElement | null = null;
+
+interface SignalPayload {
+  new: {
+    instrument_name: string;
+    entry_price: number;
+    exit_price: number | null;
+  };
+}
 
 // Initialize audio only after user interaction
 export const initializeAudio = () => {
-  audioStart = new Audio("/audio/newSignal.mp3");
-  audioEnd = new Audio("/audio/endSignal.mp3");
+  if (!audioStart || !audioEnd) {
+    audioStart = new Audio("/audio/newSignal.mp3");
+    audioEnd = new Audio("/audio/endSignal.mp3");
+  }
 };
 
-export const notifyUser = (payload) => {
+export const notifyUser = (payload: SignalPayload) => {
   toast({
-    title: `New signal ${payload?.new?.instrument_name}`,
+    title: `New Alert ${payload?.new?.instrument_name}`,
     description: `${
       payload.new.exit_price === null
-        ? `A new signal has started. Entry Price: ${payload.new.entry_price}`
-        : `A signal has been closed. Exit Price: ${payload.new.exit_price}`
+        ? `A new Alert has started. Entry Price: ${payload.new.entry_price}`
+        : `A Alert has been closed. Exit Price: ${payload.new.exit_price}`
     }`,
   });
 };
 
-export const soundNotification = (payload) => {
+export const soundNotification = (payload: SignalPayload) => {
   if (!audioStart || !audioEnd) {
     console.warn("Audio not initialized. Call initializeAudio() first");
     return;
@@ -28,9 +38,15 @@ export const soundNotification = (payload) => {
 
   try {
     if (payload.new.exit_price === null) {
-      audioStart.play();
+      audioStart.currentTime = 0;
+      audioStart
+        .play()
+        .catch((err) => console.warn("Audio playback blocked", err));
     } else {
-      audioEnd.play();
+      audioEnd.currentTime = 0;
+      audioEnd
+        .play()
+        .catch((err) => console.warn("Audio playback blocked", err));
     }
   } catch (err) {
     console.error("Audio playback error:", err);

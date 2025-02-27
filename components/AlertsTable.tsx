@@ -1,15 +1,19 @@
 "use client";
 
 import useAlerts from "@/hooks/useAlerts";
-import Link from "next/link";
 import { DataTable } from "./admin/DataTable";
 import { alertTableColumns } from "./alertTableColumns";
+import { Link } from "@/i18n/routing";
 
 const AlertsTable = () => {
-  const { alerts, isLoading } = useAlerts();
+  const { alerts, isLoading, error } = useAlerts();
 
   if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-400">Error: {error}</div>;
   }
 
   return (
@@ -23,7 +27,11 @@ const AlertsTable = () => {
             </p>
           </Link>
         </div>
-        <DataTable data={alerts} columns={alertTableColumns} type="alerts" />
+        {alerts.length > 0 ? (
+          <DataTable data={alerts} columns={alertTableColumns} type="alerts" />
+        ) : (
+          <p className="text-center text-gray-400">No alerts available.</p>
+        )}
       </div>
     </div>
   );

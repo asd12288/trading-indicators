@@ -1,14 +1,10 @@
 "use client";
 
+import { Alert } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
-export type Alert = {
-  price: number;
-  instrumnet_name: string;
-  time: Date;
-  trade_direction: string;
-};
+
 
 export const alertTableColumns: ColumnDef<Alert>[] = [
   {

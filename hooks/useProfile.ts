@@ -2,10 +2,28 @@
 
 import { useState, useEffect } from "react";
 import supabaseClient from "@/database/supabase/supabase.js";
+import { Profile } from "@/lib/types";
+
+const defaultProfile: Profile = {
+  id: "",
+  username: "Guest",
+  email: "",
+  avatar_url: "",
+  created_at: new Date().toISOString(),
+  plan: "free",
+  role: "user",
+  preferences: {
+    notifications: true,
+    volume: true,
+    favorite: false,
+  },
+};
 
 const useProfile = (userId: string) => {
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -23,26 +41,22 @@ const useProfile = (userId: string) => {
 
         if (error) {
           console.error("Error fetching profile:", error);
-          // Set default profile data if there's an error
+          setError(error.message);
           setProfile({
+            ...defaultProfile,
             id: userId,
-            preferences: {},
-            // add other default fields as needed
           });
         } else {
           // Ensure profile has preferences object
           setProfile({
             ...data,
-            preferences: data?.preferences || {},
+            preferences: data?.preferences || defaultProfile.preferences,
           });
         }
-      } catch (error) {
-        console.error("Profile fetch error:", error);
-        // Set default profile data on error
-        setProfile({
-          id: userId,
-          preferences: {},
-        });
+      } catch (err) {
+        console.error("Profile fetch error:", err);
+        setError(err instanceof Error ? err.message : "An error occurred");
+        setProfile({ ...defaultProfile, id: userId });
       } finally {
         setIsLoading(false);
       }

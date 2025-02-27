@@ -1,5 +1,0 @@
-export interface Signal {
-  instrument_name: string;
-  // Add other signal properties here
-  
-}
