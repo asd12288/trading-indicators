@@ -19,7 +19,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 2. Create an array for all the URLs
   const routes: MetadataRoute.Sitemap = [];
 
-  // 3. Generate your localized homepage routes
   locales.forEach((locale) => {
     routes.push({
       url: `${process.env.LIVE_URL}/${locale}`, 
@@ -27,7 +26,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   });
 
-  // 4. Generate your Smart Alerts routes for each locale
+  locales.forEach((locale) => {
+    routes.push({
+      url: `${process.env.LIVE_URL}/${locale}/smart-alerts`, 
+      lastModified: new Date(),
+    });
+  });
+
+
+
   instrumentsSafe.forEach(({ instrument_name }) => {
     locales.forEach((locale) => {
       routes.push({
@@ -37,7 +44,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   });
 
-  // 5. Generate your blog routes for each locale
   blogsSafe.forEach(({ id }) => {
     locales.forEach((locale) => {
       routes.push({

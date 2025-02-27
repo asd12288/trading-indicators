@@ -1,7 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 import { Button } from "./ui/button";
+import { Link } from "@/i18n/routing";
 
 function BlogCard({ blog }) {
   return (

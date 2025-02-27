@@ -17,7 +17,7 @@ const AlertsTable = () => {
       <div className="rounded-lg bg-slate-800 p-8">
         <div className="flex items-center justify-between">
           <h2 className="mb-2 text-2xl font-semibold">All Alerts</h2>
-          <Link href="/signals">
+          <Link href="/smart-alerts">
             <p className="text-xl font-medium hover:underline">
               Back to signals
             </p>

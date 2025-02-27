@@ -16,7 +16,7 @@ const FavoriteSignals = ({ favouriteSignals }) => {
         {favouriteSignals.map((signal) => (
           <Link
             key={signal.client_trade_id}
-            href={`/signals/${encodeURIComponent(signal.instrument_name)}`}
+            href={`/smart-alerts/${encodeURIComponent(signal.instrument_name)}`}
             className="flex justify-center"
           >
             <SignalCard signalPassed={signal} />

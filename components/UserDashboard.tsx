@@ -10,7 +10,6 @@ import ProfileCard from "./ProfileCard";
 import ResetPasswordForm from "./ResetPasswordForm";
 import TelegramAuth from "./TelegramAuth";
 import UpgradeAccount from "./UpgradeAccount";
-import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 const UserDashboard = ({ user }) => {
   const searchParams = useSearchParams();

@@ -5,7 +5,7 @@ export default async function Header() {
   const supabase = await createClient();
 
   // Get the authenticated user
-  const { data: authData, error: authError } = await supabase.auth.getUser();
+  const { data: authData } = await supabase.auth.getUser();
   const user = authData?.user || null;
 
   let profile = null;
