@@ -1,5 +1,6 @@
 import React from "react";
 import BlogCard from "./BlogCard";
+import { BlogProps } from "@/lib/Blog";
 
 async function BlogList({ blogs }) {
   return (

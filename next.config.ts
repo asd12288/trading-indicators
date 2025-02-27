@@ -1,9 +1,7 @@
 import type { NextConfig } from "next";
-import createNextIntlPlugin from 'next-intl/plugin';
-
+import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin();
-
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -12,6 +10,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "lcwpenbtlqwuxtlrdzbq.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "https://auth.trader-map.com",
       },
     ],
   },
@@ -30,4 +32,3 @@ const nextConfig: NextConfig = {
 };
 
 export default withNextIntl(nextConfig);
-
