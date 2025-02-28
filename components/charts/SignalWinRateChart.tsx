@@ -44,7 +44,7 @@ const SignalWinRateChart = ({ allSignals }) => {
   }
 
   return (
-    <div className="flex w-full flex-col items-center rounded-2xl bg-slate-800 p-6 shadow-lg">
+    <div className="flex w-full flex-col items-center rounded-2xl bg-slate-800 p-6 shadow-lg min-h-">
       <h2 className="mb-4 text-xl font-semibold text-slate-100">
         {t("title")}
       </h2>

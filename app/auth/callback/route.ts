@@ -6,7 +6,7 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
   const locale = searchParams.get("locale") || "en";
   // If you stored “/signals” in the query param:
-  const next = searchParams.get("next") || "/signals";
+  const next = searchParams.get("next") || "/smart-alerts";
 
   if (code) {
     const supabase = await createClient();

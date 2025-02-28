@@ -15,6 +15,8 @@ import { notFound } from "next/navigation";
 import SignalLayoutLoader from "./loaders/SignalLayoutLoader";
 import SignalStatusBar from "./SignalStatusBar";
 import AlertNotification from "./AlertNotification";
+import SignalSummaryStats from "./SignalSummaryStats";
+import SignalNews from "./SignalNews";
 
 const SignalLayout = ({ id, userId, isPro }) => {
   const { isLoading, profile } = useProfile(userId);
@@ -49,7 +51,6 @@ const SignalLayout = ({ id, userId, isPro }) => {
           <span className="font-medium md:font-semibold">{id}</span>
         </h2>
         <AlertNotification instrumentName={instrumentName} userId={userId} />
-        <SignalStatusBar instrumentName={instrumentName} />
         <div className="flex items-center gap-4">
           <h4 className="text-sm font-medium md:text-xl">
             {isPro ? t("signalSettings") : t("upgradeMessage")}
@@ -59,32 +60,40 @@ const SignalLayout = ({ id, userId, isPro }) => {
         </div>
       </div>
 
-      <div className="mt-4 flex flex-col items-center gap-4 bg-slate-950 md:grid md:grid-cols-3">
-        <div className="flex h-full w-full flex-col items-center rounded-2xl bg-slate-800 p-6 shadow-lg">
+      <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+
+        <div className="grid grid-cols-1 gap-4 grid-span-1 md:col-span-1">
           <SignalOverview
             instrumentData={instrumentData}
             signalPassed={lastSignal}
           />
-        </div>
-        <div className="col-span-2">
-          <div className="hidden h-full w-full flex-col items-center rounded-2xl bg-slate-800 shadow-lg md:block">
-            <SignalTable allSignal={instrumentData} />
+
+          <div className="">
+            <SignalNews instrumentName={instrumentName} />
           </div>
-        </div>
-        <div className="col-span-1 w-full">
-          <SignalWinRateChart allSignals={instrumentData} />
-        </div>
-        <div className="col-span-2 w-full">
-          <SignalPerformenceChart allSignal={instrumentData} />
-        </div>
-      </div>
-      <div className="col-span-3 mt-4 w-full rounded-2xl bg-slate-800 p-6 shadow-lg">
-        <div className="flex flex-col gap-4">
-          <div className="w-full">
+
+          <div className="">
             <SignalInfo instrumentName={instrumentName} />
           </div>
         </div>
+
+        <div className="col-span-2">
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <SignalSummaryStats data={instrumentData} />
+            </div>
+
+            <div className="">
+              <SignalTable allSignal={instrumentData} />
+            </div>
+
+            <div className="">
+              <SignalPerformenceChart allSignal={instrumentData} />
+            </div>
+          </div>
+        </div>
       </div>
+
       <h3 className="mt-4 text-slate-400 hover:underline">
         <Link href="/signals">{t("allSignals")}...</Link>
       </h3>

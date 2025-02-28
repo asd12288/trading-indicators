@@ -77,7 +77,7 @@ const PerformanceTableWithMFEAndLossTicks = ({ allSignal }) => {
 
   return (
     <div className="w-full rounded-2xl bg-slate-800 p-6 shadow-lg">
-      <h2 className="mb-4 text-xl font-semibold text-slate-100">
+      <h2 className="mb-4 text-xl font-semibold text-gray-500">
         {t("title")}
       </h2>
       
