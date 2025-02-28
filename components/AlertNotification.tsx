@@ -7,7 +7,7 @@ import { Link } from "@/i18n/routing";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 
-const AlertNotification = ({ userId }) => {
+const AlertNotification = ({ userId, instrumentName = '' }) => {
   const { alerts, isLoading } = useAlerts();
   const { notificationsOn } = usePreferences(userId);
   const { isPro } = useProfile(userId);
@@ -17,19 +17,25 @@ const AlertNotification = ({ userId }) => {
     return <div>{t("loading")}</div>;
   }
 
-  const alertsToDisplay = isPro
-    ? alerts.filter((alert) => notificationsOn.includes(alert.instrument_name))
-    : alerts;
+  // Filter alerts based on the passed instrumentName first, if provided
+  const filteredAlerts = instrumentName 
+    ? alerts.filter(alert => alert.instrument_name === instrumentName)
+    : isPro
+      ? alerts.filter((alert) => notificationsOn.includes(alert.instrument_name))
+      : alerts;
 
-  if (!alertsToDisplay || (alertsToDisplay.length === 0 && !isPro)) {
-    return <div className="text-center">{t("noAlertsDefault")}</div>;
+  // Check if we have any alerts to display
+  if (!filteredAlerts || filteredAlerts.length === 0) {
+    return <div className="text-center">
+      {instrumentName 
+        ? t("messages.noAlertsForInstrument", { instrument: instrumentName }) 
+        : isPro 
+          ? t("noAlertsPro") 
+          : t("noAlertsDefault")}
+    </div>;
   }
 
-  if (!alertsToDisplay || (alertsToDisplay.length === 0 && isPro)) {
-    return <div className="text-center">{t("noAlertsPro")}</div>;
-  }
-
-  const lastAlert = alertsToDisplay[0];
+  const lastAlert = filteredAlerts[0];
 
   if (lastAlert.time) {
     const now = new Date();
@@ -39,10 +45,6 @@ const AlertNotification = ({ userId }) => {
     if (minutesDiff > 5) {
       return <div className="text-center">{t("messages.noRecentAlerts")}</div>;
     }
-  }
-
-  if (!lastAlert || lastAlert === null) {
-    return <div className="text-center">{t("noAlertsDefault")}</div>;
   }
 
   const { instrument_name, price, time, trade_direction } = lastAlert;

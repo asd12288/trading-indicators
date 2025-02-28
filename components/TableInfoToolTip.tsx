@@ -1,13 +1,23 @@
+import React, { ReactNode } from "react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "./ui/tooltip";
+import { useTranslations } from "next-intl";
 
-import React from "react";
+const TableInfoToolTip = ({
+  children,
+  type,
+}: {
+  children: ReactNode;
+  type: string;
+}) => {
+  const t = useTranslations("SignalTable.tooltips");
 
-const SignalToolTooltip = ({ children, text }) => {
+  const text = t(type);
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -20,4 +30,4 @@ const SignalToolTooltip = ({ children, text }) => {
   );
 };
 
-export default SignalToolTooltip;
+export default TableInfoToolTip;

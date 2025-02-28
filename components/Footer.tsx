@@ -6,7 +6,7 @@ const Footer = () => {
   const t = useTranslations("Footer");
 
   return (
-    <section className="relative bottom-0 flex w-full flex-col items-center justify-center bg-slate-900 p-8 text-center text-white md:flex-row md:justify-between md:text-left">
+    <section className="bottom-0 flex w-full flex-col items-center justify-center bg-slate-900 p-8 text-center text-white md:flex-row md:justify-between md:text-left">
       <div>
         <h4 className="text-xl font-semibold md:text-3xl">
           {t("companyName")}

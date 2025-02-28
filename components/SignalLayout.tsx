@@ -12,6 +12,9 @@ import SignalInfo from "./SignalInfo";
 import SignalOverview from "./SignalOverview";
 import { useTranslations } from "next-intl";
 import { notFound } from "next/navigation";
+import SignalLayoutLoader from "./loaders/SignalLayoutLoader";
+import SignalStatusBar from "./SignalStatusBar";
+import AlertNotification from "./AlertNotification";
 
 const SignalLayout = ({ id, userId, isPro }) => {
   const { isLoading, profile } = useProfile(userId);
@@ -22,7 +25,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
   const instrumentName = instrumentData[0]?.instrument_name;
 
   if (isLoading || loadingInstrumentData || !profile) {
-    return <div></div>;
+    return <SignalLayoutLoader />;
   }
 
   const lastSignal = instrumentData?.[0] || null;
@@ -45,10 +48,13 @@ const SignalLayout = ({ id, userId, isPro }) => {
           {t("signal")}{" "}
           <span className="font-medium md:font-semibold">{id}</span>
         </h2>
+        <AlertNotification instrumentName={instrumentName} userId={userId} />
+        <SignalStatusBar instrumentName={instrumentName} />
         <div className="flex items-center gap-4">
           <h4 className="text-sm font-medium md:text-xl">
             {isPro ? t("signalSettings") : t("upgradeMessage")}
           </h4>
+
           <SignalTool signalId={id} userId={userId} isPro={isPro} />
         </div>
       </div>

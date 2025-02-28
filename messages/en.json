@@ -670,5 +670,28 @@
     "title": "Payment Successful",
     "description": "Thank you for subscribing to our premium plan. Your account has been upgraded and you now have access to all premium features.",
     "button": "Back to Smart Alerts"
+  },
+
+  "SignalOverviewSummary": {
+    "noData": "No smart alert data available",
+    "loading": "Loading...",
+    "status": {
+      "title": "Instrument Status:",
+      "active": "Active",
+      "inactive": "Deactivate",
+      "lastUpdate": "Last updated: {time}"
+    },
+    "summary": {
+      "title": "Signal Summary - last 7 days",
+      "totalTrades": "Total Trades ",
+      "totalMFETicks": "Total MFE Ticks",
+      "totalLossTicks": "Total Loss Ticks",
+      "avgMFETicks": "Avg MFE",
+      "avgLossTicks": "Avg Loss"
+    },
+    "tooltips": {
+      "mfeTicks": "Maximum Favorable Excursion (MFE) tracks the biggest unrealized gain achieved during a trade before it was closed.",
+      "lossTicks": "Shows how many ticks the trade moved against your position."
+    }
   }
 }

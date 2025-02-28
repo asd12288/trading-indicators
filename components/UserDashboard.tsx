@@ -10,6 +10,7 @@ import ProfileCard from "./ProfileCard";
 import ResetPasswordForm from "./ResetPasswordForm";
 import TelegramAuth from "./TelegramAuth";
 import UpgradeAccount from "./UpgradeAccount";
+import ProfileLoader from "./loaders/ProfileLoader";
 
 const UserDashboard = ({ user }) => {
   const searchParams = useSearchParams();
@@ -32,7 +33,7 @@ const UserDashboard = ({ user }) => {
   };
 
   if (isLoading) {
-    return <div>{t("loading")}</div>;
+    return <ProfileLoader />;
   }
 
   const isPro = profile?.plan === "pro";
