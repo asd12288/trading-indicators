@@ -52,8 +52,6 @@ export default function Navbar({ user, profile }) {
               </Link>
             </li>
 
-            
-
             <li>
               <Link href="/blog" className="hover:text-slate-300">
                 {t("blog")}
@@ -131,6 +129,15 @@ export default function Navbar({ user, profile }) {
               onClick={() => setIsMobileOpen(false)}
             >
               {t("blog")}
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/docs/getting-started"
+              className="block w-full hover:text-slate-300"
+              onClick={() => setIsMobileOpen(false)}
+            >
+              Docs
             </Link>
           </li>
           {profile?.role === "admin" && (
