@@ -8,7 +8,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import LanguageSwitcher from "../LanguageSwitcher";
 
 const items = [
   {
@@ -16,28 +17,30 @@ const items = [
     url: "/docs/getting-started",
   },
   {
-    title: "signal-card",
-    url: "/docs/signal-card",
+    title: "introduction",
+    url: "/docs/introduction",
   },
 ];
 
 export function AppSidebar() {
   return (
     <Sidebar>
-      <SidebarContent className="bg-slate-900 text-slate-50">
-        <SidebarHeader>Docs</SidebarHeader>
+      <SidebarContent className="border-r-slate-800 bg-slate-900 text-slate-50">
+        <SidebarHeader className="p-6 text-2xl font-bold">
+          <Link href={"/"}>Trader Map</Link>
+        </SidebarHeader>
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                className="hover:bg-slate-800 hover:text-slate-50"
-                asChild
-              >
-                <Link href={item.url}>{item.title}</Link>
-              </SidebarMenuButton>
+              <Link passHref legacyBehavior href={item.url}>
+                <SidebarMenuButton className="pl-6 hover:bg-slate-700 hover:text-slate-50">
+                  {item.title}
+                </SidebarMenuButton>
+              </Link>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
+        <LanguageSwitcher />
       </SidebarContent>
     </Sidebar>
   );

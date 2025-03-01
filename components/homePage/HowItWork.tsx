@@ -13,35 +13,47 @@ const data = [
   {
     title: "Monitoring",
     content: (
-      <p>
-        Our algorithms scan the market 24/7, looking for technical patterns or
-        momentum signals.
-      </p>
+      <div className="space-y-2 px-24">
+        <h3 className="text-3xl font-semibold">
+          Continuous Monitoring & Analysis
+        </h3>
+        <p>
+          Our algorithms scan the market 24/7, looking for technical patterns or
+          momentum signals.
+        </p>
+      </div>
     ),
   },
+
   {
     title: "Analysis",
     content: (
-      <p>
-        Instruments are analyzed using real-time data and advanced indicators
-        for high-accuracy alerts.
-      </p>
+      <div className="space-y-2 px-24">
+        <h3 className="text-3xl font-semibold">Real-time data processing</h3>
+        <p>
+          Using advanced indicators and in-depth analysis, each signal is
+          assessed to ensure maximum accuracy.
+        </p>
+      </div>
     ),
   },
   {
     title: "Alert Generation",
     content: (
-      <p>
-        Once a setup meets predefined criteria, we push a ‘Smart Alert’ to your
-        dashboard and optional Telegram.
-      </p>
+      <div className="space-y-2 px-24">
+        <h3 className="text-3xl font-semibold">Instant smart alerts </h3>
+        <p>
+          As soon as a relevant signal is detected, an alert is sent directly to
+          your interface and optionally on Telegram.
+        </p>
+      </div>
     ),
   },
 ];
 
 const HowItWork = () => {
   return (
-    <div>
+    <div className="">
       <h2 className="section-title">How It Work</h2>
       <Timeline data={data} />
     </div>

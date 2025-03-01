@@ -8,6 +8,7 @@ import TestimonialsSection from "@/components/homePage/TestimonialsSection";
 import { redirect } from "@/i18n/routing";
 import { createClient } from "@/database/supabase/server";
 import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation";
+import Cta from "@/components/homePage/Cta";
 
 async function page({ params }: { params: { locale: string } }) {
   const supabase = await createClient();
@@ -44,6 +45,10 @@ async function page({ params }: { params: { locale: string } }) {
 
       <section className="z-50 p-2">
         <TestimonialsSection />
+      </section>
+
+      <section>
+        <Cta />
       </section>
 
       <section className="p-2">

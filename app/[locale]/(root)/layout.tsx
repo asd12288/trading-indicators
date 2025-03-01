@@ -30,13 +30,11 @@ export default async function RootLayout({
   const messages = await getMessages({ locale: params.locale });
 
   return (
-    <html lang={params.locale}>
-      <body className={`${poppins.className} antialiased`}>
-        <NextIntlClientProvider locale={params.locale} messages={messages}>
-          {children}
-          <Toaster />
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <>
+      <Header />
+      <main>{children}</main>
+      <Toaster />
+      <Footer />{" "}
+    </>
   );
 }

@@ -5,6 +5,7 @@ import hero from "../../public/hero.png";
 import Stats from "../Stats";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { FlipWords } from "../ui/flip-words";
 
 const Hero = () => {
   const t = useTranslations("HomePage.hero");
@@ -17,14 +18,14 @@ const Hero = () => {
           <p className="my-3 text-center font-thin md:text-left">
             {t("count")}
           </p>
-          <h1 className="text-center text-4xl font-bold text-green-50 md:text-left md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl">
-            {t("mainTitleStart")} <br />
-            <span className="text-green-400">{t("highlightedText")}</span>
-            {t("mainTitleEnd")}{" "}
+          <h1 className="text-center text-4xl font-bold text-green-50 md:text-left md:text-5xl lg:text-6xl xl:text-6xl 2xl:text-7xl">
+            Smart Alert <br /> for active traders
+            <span className="text-green-400"></span>
           </h1>
-          <h2 className="text-md mt-8 text-center font-light text-gray-300 md:pr-10 md:text-left lg:text-xl">
-            {t("subtitle")}
+          <h2 className="mt-4 text-center text-lg font-light md:text-left md:text-2xl lg:text-4xl">
+            React Faster, Trade Smarter
           </h2>
+
           <div className="mt-10 flex justify-center gap-4 md:justify-start">
             <Link href="/signup">
               <button className="rounded-full bg-green-700 px-4 py-2 transition-all hover:bg-green-700 md:px-8 md:py-3 md:font-medium lg:text-xl">

@@ -43,6 +43,17 @@ export default function Navbar({ user, profile }) {
               </Link>
             </li>
 
+            <li className="hover:text-slate-300">
+              <Link
+                href="/docs/getting-started"
+                className="flex items-center gap-2 hover:text-slate-300"
+              >
+                <p>Docs</p>
+              </Link>
+            </li>
+
+            
+
             <li>
               <Link href="/blog" className="hover:text-slate-300">
                 {t("blog")}
