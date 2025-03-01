@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Link } from "@/i18n/routing";
 import LanguageSwitcher from "../LanguageSwitcher";
+import { Button } from "./button";
 
 const items = [
   {
@@ -19,6 +20,10 @@ const items = [
   {
     title: "introduction",
     url: "/docs/introduction",
+  },
+  {
+    title: "Smart Alert",
+    url: "/docs/smart-alert",
   },
 ];
 
@@ -40,7 +45,13 @@ export function AppSidebar() {
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
-        <LanguageSwitcher />
+        <SidebarFooter className="p-6 text-xs text-slate-400">
+          <LanguageSwitcher />
+          <Link href={"/"}>
+            <Button>Get Started</Button>
+          </Link>
+          <p>© 2025 Trader Map</p>
+        </SidebarFooter>
       </SidebarContent>
     </Sidebar>
   );

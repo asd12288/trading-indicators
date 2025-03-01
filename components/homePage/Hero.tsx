@@ -28,12 +28,15 @@ const Hero = () => {
 
           <div className="mt-10 flex justify-center gap-4 md:justify-start">
             <Link href="/signup">
-              <button className="rounded-full bg-green-700 px-4 py-2 transition-all hover:bg-green-700 md:px-8 md:py-3 md:font-medium lg:text-xl">
-                {t("buttons.joinUs")}{" "}
-                <span>
-                  <HiArrowRight className="inline" />
-                </span>
-              </button>
+              <div className="flex flex-col items-center gap-2">
+                <button className="rounded-full bg-green-700 px-4 py-2 transition-all hover:bg-green-700 md:px-8 md:py-3 md:font-medium lg:text-xl">
+                  {t("buttons.joinUs")}{" "}
+                  <span>
+                    <HiArrowRight className="inline" />
+                  </span>
+                </button>
+                <p className="text-xs font-light">No Credit card required</p>
+              </div>
             </Link>
             <Link href="/info">
               <button className="px-3 py-2 text-xs underline transition-all md:px-4 md:py-3 md:font-medium lg:text-xl">

@@ -2,19 +2,16 @@
 title: Introduction to Trader-Map
 ---
 
-# Welcome to Trader-Map 📍
+# Introduction to Trader-Map 📍
 
-Trader-Map is a powerful tool for traders and investors, providing real-time market insights, heatmaps, and AI-powered predictions. Whether you're a beginner or a professional, Trader-Map helps you navigate the financial world with ease.
+Welcome to **Trader-Map**, your intelligent trading assistant. Our platform provides **real-time smart alerts, market insights, and trade performance analysis** to help traders of all levels make informed decisions.
 
-## 🚀 Features
-- **Live Market Heatmap** - Visualize stock market movements in real-time.
-- **AI-Powered Insights** - Get trade recommendations based on market trends.
-- **Custom Watchlists** - Track your favorite assets in one place.
-- **Economic Calendar** - Stay updated on major financial events.
+## 🔥 Why Use Trader-Map?
+- **AI-powered smart alerts** for better trade entries and exits.
+- **Live market data** to stay ahead of trends.
+- **Performance metrics tracking** for refining your trading strategy.
+- **Custom alerts & notifications** to never miss a trade opportunity.
 
-## 🎯 Who is Trader-Map for?
-- **Day Traders** who need fast and accurate market data.
-- **Investors** looking for long-term opportunities.
-- **Crypto Enthusiasts** who want to track digital assets.
+Whether you're a **day trader, swing trader, or investor**, Trader-Map offers the tools you need to stay on top of the markets.
 
-Ready to get started? Check out our [Getting Started](getting-started) guide!
+📌 **Next Steps:** Explore [Core App Sections](core-app-sections).
