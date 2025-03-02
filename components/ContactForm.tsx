@@ -83,7 +83,7 @@ const ContactForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto max-w-md space-y-4 rounded-lg bg-slate-800 p-8 md:w-[500px]"
+        className="mx-auto max-w-md  space-y-4 rounded-lg bg-slate-800 p-8 md:w-[500px]"
       >
         <FormField
           control={form.control}
