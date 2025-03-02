@@ -79,10 +79,12 @@
     "hero": {
       "rating": "⭐⭐⭐⭐⭐",
       "count": "More then 50+ Instruments",
-      "mainTitleStart": "Smart Alerts for active traders",
-      "highlightedText": "React Faster ",
+
+      "mainTitleStart": "for active traders",
+      "highlightedText": " React Faster, Trade Smarter",
       "mainTitleEnd": "Trade Smarter",
       "subtitle": "Stay Ahead of the Market with Automated Insights and Timely Notifications",
+      "noCard": "No credit card required",
       "buttons": {
         "joinUs": "Get Started Now",
         "learnMore": "Learn more"
@@ -152,6 +154,26 @@
         }
       }
     },
+
+    "howItWork": {
+      "title": "How It Works",
+      "monitoring": {
+        "title": "Monitoring",
+        "heading": "24/7 Market Scanning",
+        "description": "Our algorithms scan the market 24/7, looking for technical patterns or momentum signals."
+      },
+      "analysis": {
+        "title": "Analysis",
+        "heading": "Real-time data processing",
+        "description": "Using advanced indicators and in-depth analysis, each signal is assessed to ensure maximum accuracy."
+      },
+      "alertGeneration": {
+        "title": "Alert Generation",
+        "heading": "Instant smart alerts",
+        "description": "As soon as a relevant signal is detected, an alert is sent directly to your interface and optionally on Telegram."
+      }
+    },
+
     "faq": {
       "question1": {
         "question": "What are Smart Alerts, and how can they help me trade?",

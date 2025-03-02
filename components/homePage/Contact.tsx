@@ -1,9 +1,6 @@
 "use client";
-
-import Image from "next/image";
-import hero from "../../public/hero.png";
-import ContactForm from "../ContactForm";
 import { useTranslations } from "next-intl";
+import ContactForm from "../ContactForm";
 import Faq from "./Faq";
 
 const Contact = () => {

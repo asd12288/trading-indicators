@@ -15,7 +15,6 @@ interface RunningSignalCardProps {
 const RunningSignalCard: FC<RunningSignalCardProps> = ({
   instrument,
   isBuy,
-  demo = false,
 }) => {
   const {
     entry_time,

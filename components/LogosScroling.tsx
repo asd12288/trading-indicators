@@ -41,7 +41,8 @@ const LogosScroling: React.FC = () => {
                   key={alt}
                   src={src}
                   alt={alt}
-                  className="h-24 w-auto flex-none"
+                  className="md:h-24 h-12 w-auto flex-none"
+                
                 />
               ))}
             </Fragment>

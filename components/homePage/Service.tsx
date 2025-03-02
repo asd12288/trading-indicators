@@ -1,79 +1,92 @@
+"use client";
+
 import React from "react";
 import { HiBadgeCheck, HiBell, HiChartBar, HiUserGroup } from "react-icons/hi";
 import { useTranslations } from "next-intl";
+import { BackgroundGradient } from "../ui/background-gradient";
 
 const Service = () => {
   const t = useTranslations("HomePage.service");
 
   return (
-    <section className="mt-12 flex flex-col md:space-x-4 lg:items-center lg:justify-between">
-      <div className="w-full lg:w-1/2">
-        <h2 className="section-title text-center">{t("title")}</h2>
-        <p className="my-3 p-2 text-center text-lg font-light lg:pr-3 lg:text-xl">
-          {t("subtitle")}
-        </p>
+    <section className="mt-16 flex flex-col items-center space-y-10 lg:space-y-12">
+      {/* Section Title */}
+      <div className="text-center max-w-2xl">
+        <h2 className="text-3xl font-bold tracking-tight text-slate-200">
+          {t("title")}
+        </h2>
+        <p className="mt-3 text-lg text-slate-400">{t("subtitle")}</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:mt-4 md:grid-cols-2 lg:w-1/2">
+      {/* Features Grid */}
+      <div className="grid w-full max-w-4xl grid-cols-1 gap-8 sm:grid-cols-2">
         {/* Alerts */}
-        <div className="flex items-center gap-4 rounded-lg border-2 border-solid border-slate-500 p-5 md:p-8 lg:flex-col">
-          <div className="rounded-full bg-slate-500 p-2 text-5xl text-slate-50">
-            <HiBell />
+        <BackgroundGradient>
+          <div className="flex flex-col items-center gap-4 p-6 md:p-8">
+            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-slate-600 text-slate-50 text-4xl shadow-md">
+              <HiBell />
+            </div>
+            <div className="text-center space-y-2">
+              <h3 className="text-lg font-semibold text-slate-200">
+                {t("features.alerts.title")}
+              </h3>
+              <p className="text-sm text-slate-400">
+                {t("features.alerts.description")}
+              </p>
+            </div>
           </div>
-          <div className="space-y-2 text-center">
-            <h3 className="text-lg font-medium">
-              {t("features.alerts.title")}
-            </h3>
-            <p className="text-xs font-extralight">
-              {t("features.alerts.description")}
-            </p>
-          </div>
-        </div>
+        </BackgroundGradient>
 
         {/* Analysis */}
-        <div className="flex items-center gap-4 rounded-lg border-2 border-solid border-slate-500 p-5 md:p-8 lg:flex-col">
-          <div className="rounded-full bg-slate-500 p-2 text-5xl text-slate-50">
-            <HiChartBar />
+        <BackgroundGradient>
+          <div className="flex flex-col items-center gap-4 p-6 md:p-8">
+            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-slate-600 text-slate-50 text-4xl shadow-md">
+              <HiChartBar />
+            </div>
+            <div className="text-center space-y-2">
+              <h3 className="text-lg font-semibold text-slate-200">
+                {t("features.analysis.title")}
+              </h3>
+              <p className="text-sm text-slate-400">
+                {t("features.analysis.description")}
+              </p>
+            </div>
           </div>
-          <div className="space-y-2 text-center">
-            <h3 className="text-lg font-medium">
-              {t("features.analysis.title")}
-            </h3>
-            <p className="text-xs font-extralight">
-              {t("features.analysis.description")}
-            </p>
-          </div>
-        </div>
+        </BackgroundGradient>
 
         {/* User-Friendly */}
-        <div className="flex items-center gap-4 rounded-lg border-2 border-solid border-slate-500 p-5 md:p-8 lg:flex-col">
-          <div className="rounded-full bg-slate-500 p-2 text-5xl text-slate-50">
-            <HiUserGroup />
+        <BackgroundGradient>
+          <div className="flex flex-col items-center gap-4 p-6 md:p-8">
+            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-slate-600 text-slate-50 text-4xl shadow-md">
+              <HiUserGroup />
+            </div>
+            <div className="text-center space-y-2">
+              <h3 className="text-lg font-semibold text-slate-200">
+                {t("features.userFriendly.title")}
+              </h3>
+              <p className="text-sm text-slate-400">
+                {t("features.userFriendly.description")}
+              </p>
+            </div>
           </div>
-          <div className="space-y-2 text-center">
-            <h3 className="text-lg font-medium">
-              {t("features.userFriendly.title")}
-            </h3>
-            <p className="text-xs font-extralight">
-              {t("features.userFriendly.description")}
-            </p>
-          </div>
-        </div>
+        </BackgroundGradient>
 
         {/* Multi-Asset */}
-        <div className="flex items-center gap-4 rounded-lg border-2 border-solid border-slate-500 p-5 md:p-8 lg:flex-col">
-          <div className="rounded-full bg-slate-500 p-2 text-5xl text-slate-50">
-            <HiBadgeCheck />
+        <BackgroundGradient>
+          <div className="flex flex-col items-center gap-4 p-6 md:p-8">
+            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-slate-600 text-slate-50 text-4xl shadow-md">
+              <HiBadgeCheck />
+            </div>
+            <div className="text-center space-y-2">
+              <h3 className="text-lg font-semibold text-slate-200">
+                {t("features.multiAsset.title")}
+              </h3>
+              <p className="text-sm text-slate-400">
+                {t("features.multiAsset.description")}
+              </p>
+            </div>
           </div>
-          <div className="space-y-2 text-center">
-            <h3 className="text-lg font-medium">
-              {t("features.multiAsset.title")}
-            </h3>
-            <p className="text-xs font-extralight">
-              {t("features.multiAsset.description")}
-            </p>
-          </div>
-        </div>
+        </BackgroundGradient>
       </div>
     </section>
   );

@@ -28,7 +28,7 @@ async function page({ params }: { params: { locale: string } }) {
       </section>
 
 
-      <section c>
+      <section >
         <Service />
       </section>
 

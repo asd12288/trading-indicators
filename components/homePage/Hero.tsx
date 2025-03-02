@@ -11,7 +11,7 @@ const Hero = () => {
 
   return (
     <section>
-      <div className="flex flex-col  bg-gradient-to-br from-slate-950 to-slate-700 md:grid md:grid-cols-2">
+      <div className="flex flex-col bg-gradient-to-br from-slate-950 to-slate-700 md:grid md:grid-cols-2">
         {/* LEFT COLUMN */}
         <div className="mt-12 w-full py-4 md:py-20 md:pl-20 xl:py-32">
           <p className="text-center md:text-left">{t("rating")}</p>
@@ -19,22 +19,24 @@ const Hero = () => {
             {t("count")}
           </p>
           <h1 className="text-center text-4xl font-bold text-green-50 md:text-left md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl">
-            Smart Alert <br /> for active traders
+            Smart Alert <br /> {t("mainTitleStart")}
           </h1>
           <h2 className="mt-4 text-center text-lg font-light md:text-left md:text-2xl lg:text-4xl">
-            React Faster, Trade Smarter
+            {t("highlightedText")}
           </h2>
 
           <div className="mt-10 flex justify-center gap-4 md:justify-start">
             <Link href="/signup">
               <div className="flex flex-col items-center gap-2">
-                <button className="rounded-full bg-green-700 px-4 py-2 transition-all hover:bg-green-700 md:px-8 md:py-3 md:font-medium lg:text-xl">
+                <button className="rounded-full bg-gradient-to-r from-green-600 to-green-800 px-4 py-2 transition-all hover:bg-green-700 md:px-8 md:py-3 md:font-medium lg:text-xl">
                   {t("buttons.joinUs")}{" "}
                   <span>
                     <HiArrowRight className="inline" />
                   </span>
                 </button>
-                <p className="text-xs font-light">No Credit card required</p>
+                <p className="text-xs font-light">
+                  {t("noCard")}
+                </p>
               </div>
             </Link>
 
@@ -52,7 +54,6 @@ const Hero = () => {
           <div className="w-full items-center justify-center md:relative lg:flex">
             {/* A container to hold both cards, one behind the other */}
             <div className="xs:grid grid-cols-2 md:relative">
-
               <div className="relative z-10">
                 <DemoCard type="es" />
               </div>
@@ -60,8 +61,6 @@ const Hero = () => {
               <div className="z-0 hidden md:absolute md:right-[-95px] md:top-[-95px] lg:block">
                 <DemoCard type="nq" />
               </div>
-
-              
             </div>
           </div>
         </div>
