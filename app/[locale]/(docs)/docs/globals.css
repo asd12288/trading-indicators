@@ -31,7 +31,7 @@
 }
 @layer base {
   :root {
-    background-color: oklch(0.984 0.003 247.858);
+    background-color: ;
     color: #fff;
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;

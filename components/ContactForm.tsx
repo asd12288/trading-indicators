@@ -83,7 +83,7 @@ const ContactForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto max-w-md  space-y-4 rounded-lg bg-slate-800 p-8 md:w-[500px]"
+        className="mx-auto max-w-md space-y-4 rounded-lg bg-slate-800 p-8 md:w-[500px]"
       >
         <FormField
           control={form.control}
@@ -164,7 +164,13 @@ const ContactForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit">{loading ? "Sending" : "Send Message"}</Button>
+        <Button
+          type="submit"
+          className="w-full rounded-lg bg-green-700 px-6 mt-3 py-3 text-lg font-semibold text-white transition  hover:bg-green-800"
+          disabled={loading}
+        >
+          {loading ? "Sending..." : t("button")}
+        </Button>
         {success && (
           <p className="text-center text-sm text-green-500">
             {t("feedback.success")}

@@ -1,14 +1,12 @@
-import React from "react";
-import { Button } from "../ui/button";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
-import { BackgroundGradient } from "../ui/background-gradient";
+import { Button } from "../ui/button";
 
 const Cta = () => {
   const t = useTranslations("HomePage.cta");
 
   return (
-    <BackgroundGradient className="my-8 px-6 py-10 text-center shadow-md">
+    <div className="my-8 px-6 py-10 text-center shadow-md bg-slate-800">
       <h4 className="text-2xl font-extrabold text-slate-200 md:text-4xl">
         {t("title")}
       </h4>
@@ -20,7 +18,7 @@ const Cta = () => {
           {t("button")}
         </Button>
       </Link>
-    </BackgroundGradient>
+    </div>
   );
 };
 
