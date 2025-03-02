@@ -11,14 +11,14 @@ const Hero = () => {
 
   return (
     <section>
-      <div className="flex flex-col bg-gradient-to-br from-slate-950 to-slate-700 md:grid md:grid-cols-2">
+      <div className="flex flex-col  bg-gradient-to-br from-slate-950 to-slate-700 md:grid md:grid-cols-2">
         {/* LEFT COLUMN */}
         <div className="mt-12 w-full py-4 md:py-20 md:pl-20 xl:py-32">
           <p className="text-center md:text-left">{t("rating")}</p>
           <p className="my-3 text-center font-thin md:text-left">
             {t("count")}
           </p>
-          <h1 className="text-center text-5xl font-bold text-green-50 md:text-left md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl">
+          <h1 className="text-center text-4xl font-bold text-green-50 md:text-left md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl">
             Smart Alert <br /> for active traders
           </h1>
           <h2 className="mt-4 text-center text-lg font-light md:text-left md:text-2xl lg:text-4xl">
@@ -47,7 +47,7 @@ const Hero = () => {
         </div>
 
         {/* RIGHT COLUMN */}
-        <div className="mt-0 flex w-full items-center justify-center lg:mt-12">
+        <div className="my-4 flex w-full items-center justify-center lg:mt-12">
           {/* Parent must be relative for absolute positioning inside */}
           <div className="w-full items-center justify-center md:relative lg:flex">
             {/* A container to hold both cards, one behind the other */}
