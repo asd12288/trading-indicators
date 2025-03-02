@@ -2,18 +2,25 @@ import React from "react";
 import { Button } from "../ui/button";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { BackgroundGradient } from "../ui/background-gradient";
 
 const Cta = () => {
   const t = useTranslations("HomePage.cta");
 
   return (
-    <div className="my-4 bg-gradient-to-t from-slate-800 to-slate-700 md:p-12 p-6 text-center">
-      <h4 className="md:text-4xl text-xl font-semibold">{t("title")}</h4>
-      <h5 className="mt-2 md:text-xl ">{t("subtitle")} </h5>
+    <BackgroundGradient className="my-8 px-6 py-10 text-center shadow-md">
+      <h4 className="text-2xl font-extrabold text-slate-200 md:text-4xl">
+        {t("title")}
+      </h4>
+      <h5 className="mt-3 text-base text-slate-400 md:text-lg">
+        {t("subtitle")}
+      </h5>
       <Link href="/signup">
-        <Button className="mt-4 px-6 py-3">{t("button")}</Button>
+        <Button className="mt-6 rounded-full bg-green-700 px-6 py-3 text-lg font-semibold text-white transition hover:scale-105 hover:bg-green-800">
+          {t("button")}
+        </Button>
       </Link>
-    </div>
+    </BackgroundGradient>
   );
 };
 
