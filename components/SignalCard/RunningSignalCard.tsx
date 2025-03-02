@@ -15,6 +15,7 @@ interface RunningSignalCardProps {
 const RunningSignalCard: FC<RunningSignalCardProps> = ({
   instrument,
   isBuy,
+  demo = false,
 }) => {
   const {
     entry_time,
@@ -31,7 +32,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
   const adjustedExitTime = new Date(exitTimeInUserTimezone.getTime());
 
   return (
-    <div className="h-[26rem] w-72 bg-slate-900 shadow-lg">
+    <div className={"h-[26rem] w-72 bg-slate-900"}>
       <div
         className={`flex min-h-24 items-center justify-between ${
           isBuy ? "bg-green-700" : "bg-red-700"

@@ -4,20 +4,21 @@ import Image from "next/image";
 import { HiArrowRight } from "react-icons/hi";
 import hero from "../../public/hero.png";
 import DemoCard from "./DemoCard";
+import LogosScroling from "@/components/LogosScroling";
 
 const Hero = () => {
   const t = useTranslations("HomePage.hero");
 
   return (
     <section>
-      <div className="grid grid-cols-2 bg-gradient-to-br  from-slate-950 to-slate-700">
+      <div className="flex flex-col bg-gradient-to-br from-slate-950 to-slate-700 md:grid md:grid-cols-2">
         {/* LEFT COLUMN */}
-        <div className="w-full py-28 md:py-20 md:pl-20">
+        <div className="mt-12 w-full py-4 md:py-20 md:pl-20 xl:py-32">
           <p className="text-center md:text-left">{t("rating")}</p>
           <p className="my-3 text-center font-thin md:text-left">
             {t("count")}
           </p>
-          <h1 className="text-center text-4xl font-bold text-green-50 md:text-left md:text-4xl lg:text-6xl xl:text-7xl 2xl:text-8xl">
+          <h1 className="text-center text-5xl font-bold text-green-50 md:text-left md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl">
             Smart Alert <br /> for active traders
           </h1>
           <h2 className="mt-4 text-center text-lg font-light md:text-left md:text-2xl lg:text-4xl">
@@ -43,28 +44,29 @@ const Hero = () => {
               </button>
             </Link>
           </div>
-
-          <div className="mt-12 flex justify-center gap-12 md:grid md:grid-cols-3 md:gap-4 lg:w-2/3 lg:justify-between lg:gap-20"></div>
         </div>
 
         {/* RIGHT COLUMN */}
-        <div className="flex w-full items-center justify-center">
+        <div className="mt-0 flex w-full items-center justify-center lg:mt-12">
           {/* Parent must be relative for absolute positioning inside */}
-          <div className="relative hidden w-full items-center justify-center lg:flex">
+          <div className="w-full items-center justify-center md:relative lg:flex">
             {/* A container to hold both cards, one behind the other */}
-            <div className="relative">
-              {/* Foreground (top) card */}
+            <div className="xs:grid grid-cols-2 md:relative">
+
               <div className="relative z-10">
-                <DemoCard type='es' />
+                <DemoCard type="es" />
               </div>
-              {/* Background (behind) card, offset slightly */}
-              <div className="absolute right-[-80px] top-[-80px] z-0">
-                <DemoCard type='nq' />
+
+              <div className="z-0 hidden md:absolute md:right-[-95px] md:top-[-95px] lg:block">
+                <DemoCard type="nq" />
               </div>
+
+              
             </div>
           </div>
         </div>
       </div>
+      <LogosScroling />
     </section>
   );
 };

@@ -12,11 +12,13 @@ import { RxEnter, RxExit } from "react-icons/rx";
 interface FufilledSignalCardProps {
   instrument: Signal;
   isBuy: boolean;
+  demo: boolean;
 }
 
 const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
   instrument,
   isBuy,
+  demo = false,
 }) => {
   const {
     instrument_name,
@@ -47,7 +49,9 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
   });
 
   return (
-    <div className="h-[26rem] w-72 rounded-lg bg-slate-900">
+    <div
+      className={`h-[26rem] w-72 rounded-lg bg-slate-900 ${demo ? "shadow-2xl" : ""}`}
+    >
       <div
         className={`flex items-center justify-between ${
           isBuy ? "bg-green-950" : "bg-red-950"

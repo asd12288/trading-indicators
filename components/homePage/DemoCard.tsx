@@ -83,11 +83,11 @@ const DemoSignalCard: React.FC<DemoSignalCardProps> = ({ type }) => {
   const isBuy = instrument.trade_side.toLowerCase() === "buy";
 
   return (
-    <div className="flex min-h-screen scale-100 transform items-center justify-center lg:scale-110 xl:scale-125">
+    <div className="flex min-h-screen scale-100 transform items-center justify-center lg:scale-110 2xl:scale-125">
       {isRunning ? (
-        <RunningSignalCard instrument={instrument} isBuy={isBuy} />
+        <RunningSignalCard demo={true} instrument={instrument} isBuy={isBuy} />
       ) : (
-        <FufilledSignalCard instrument={instrument} isBuy={isBuy} />
+        <FufilledSignalCard demo={true} instrument={instrument} isBuy={isBuy} />
       )}
     </div>
   );

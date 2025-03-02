@@ -27,10 +27,8 @@ async function page({ params }: { params: { locale: string } }) {
         <Hero />
       </section>
 
-      <section className="p-2">
-      </section>
 
-      <section className="md:p-20">
+      <section c>
         <Service />
       </section>
 

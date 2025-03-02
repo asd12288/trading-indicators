@@ -53,7 +53,7 @@ const data = [
 
 const HowItWork = () => {
   return (
-    <div className="">
+    <div className="mt-10">
       <h2 className="section-title">How It Work</h2>
       <Timeline data={data} />
     </div>

@@ -69,6 +69,6 @@
   }
 
   .section-title {
-    @apply text-center text-3xl font-semibold md:text-5xl lg:pr-8 lg:text-6xl;
+    @apply text-center text-3xl font-semibold md:text-5xl lg:text-6xl;
   }
 }

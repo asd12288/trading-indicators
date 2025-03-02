@@ -124,26 +124,46 @@
         "ctaButton": "Get started for free"
       }
     },
+
+    "cta": {
+      "title": "Ready to start trading?",
+      "subtitle": "Join Trader-Map today and get access to real-time smart alerts, expert analysis, and more.",
+      "button": "Get Started Now"
+    },
     "service": {
-      "title": "Why Choose Our Smart Alerts?",
+      "title": "Benefits of Trader-Map",
       "subtitle": "We choose the best intrumet on the market and made them",
       "features": {
         "alerts": {
-          "title": "Real-Time Alerts",
-          "description": "Get instant updates on market opportunities."
+          "title": "Intuitive and fast interface",
+          "description": "Instantly access key insights with a sleek, optimized interface for quick decision-making."
         },
         "analysis": {
-          "title": "Expert Analysis",
-          "description": "Strategies based on technical and fundamental research."
+          "title": "Smart and adaptive algorithm",
+          "description": "Trader-Map continuously analyzes markets and evolves to provide ever more relevant alerts."
         },
         "userFriendly": {
-          "title": "User-Friendly",
-          "description": "Easy-to-follow smart alerts for all trading levels."
+          "title": "Actionable alerts for all",
+          "description": "Clear, actionable signals tailored to all trading levels, with precise context for each alert."
         },
         "multiAsset": {
-          "title": "Multi-Asset Coverage",
-          "description": "Forex, Crypto, Stocks, and more."
+          "title": "Real-time multi-asset monitoring",
+          "description": "Trader-Map continuously scans multiple futures instruments to detect the best opportunities."
         }
+      }
+    },
+    "faq": {
+      "question1": {
+        "question": "What are Smart Alerts, and how can they help me trade?",
+        "answer": "Smart Alerts are real-time trading signals designed to help traders react quickly to market opportunities. Each alert provides essential trade details, including whether it's a Long or Short trade, entry and exit prices, and key performance metrics like Maximum Favorable Excursion (MFE) and Maximum Adverse Excursion (MAE). With Smart Alerts, you can make informed trading decisions and stay ahead of the market."
+      },
+      "question2": {
+        "question": "How do I receive Smart Alerts notifications?",
+        "answer": "You can receive Smart Alerts through multiple channels: In-App Notifications: Stay updated directly from the Trader Map dashboard. Telegram Notifications (Pro Users Only): Connect your Telegram account to get real-time alerts straight to your phone. Sound Alerts: Enable audio notifications in settings to hear an alert when a trade is triggered."
+      },
+      "question3": {
+        "question": "What is the difference between the Free and Pro plans?",
+        "answer": "The Free Plan provides access to a limited number of Smart Alerts and basic analysis of the instruments. Pro users, on the other hand, get full access to all Smart Alerts, detailed analysis of the instruments, Telegram notifications, alerts on upcoming trades, and custom Smart Alert preferences. "
       }
     },
     "contact": {
