@@ -1,7 +1,7 @@
 import Contact from "@/components/homePage/Contact";
 import Hero from "@/components/homePage/Hero";
 import HowItWork from "@/components/homePage/HowItWork";
-import Offers from "@/components/homePage/Offers";
+import Offers, { FeaturesSectionDemo } from "@/components/homePage/Offers";
 import Plans from "@/components/homePage/Plans";
 import Service from "@/components/homePage/Service";
 import TestimonialsSection from "@/components/homePage/TestimonialsSection";
@@ -23,13 +23,12 @@ async function page({ params }: { params: { locale: string } }) {
 
   return (
     <>
-      <section className="p-2">
+      <section >
         <Hero />
       </section>
 
-      {/* <section className="p-2">
-        <Offers />
-      </section> */}
+      <section className="p-2">
+      </section>
 
       <section className="md:p-20">
         <Service />

@@ -16,7 +16,8 @@ import SignalLayoutLoader from "./loaders/SignalLayoutLoader";
 import SignalStatusBar from "./SignalStatusBar";
 import AlertNotification from "./AlertNotification";
 import SignalSummaryStats from "./SignalSummaryStats";
-import SignalNews from "./SignalNews";
+import SignalNews from "./SignalLatestNews";
+import SignalLatestNews from "./SignalLatestNews";
 
 const SignalLayout = ({ id, userId, isPro }) => {
   const { isLoading, profile } = useProfile(userId);
@@ -69,7 +70,8 @@ const SignalLayout = ({ id, userId, isPro }) => {
           />
 
           <div className="">
-            <SignalNews instrumentName={instrumentName} />
+            <SignalLatestNews symbol={instrumentName} />
+          
           </div>
 
           <div className="">

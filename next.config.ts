@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "auth.trader-map.com",
       },
+      {
+        protocol: "https",
+        hostname: "*",
+      },
     ],
   },
   typescript: {

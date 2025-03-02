@@ -1,26 +1,24 @@
-import Image from "next/image";
-import React from "react";
-import { HiArrowRight } from "react-icons/hi";
-import hero from "../../public/hero.png";
-import Stats from "../Stats";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
-import { FlipWords } from "../ui/flip-words";
+import Image from "next/image";
+import { HiArrowRight } from "react-icons/hi";
+import hero from "../../public/hero.png";
+import DemoCard from "./DemoCard";
 
 const Hero = () => {
   const t = useTranslations("HomePage.hero");
 
   return (
     <section>
-      <div className="flex h-full flex-col items-center justify-center md:flex-row md:items-center md:justify-around md:p-8">
-        <div className="mb-24 w-full p-2 md:p-8 lg:w-3/5">
+      <div className="grid grid-cols-2 bg-gradient-to-br  from-slate-950 to-slate-700">
+        {/* LEFT COLUMN */}
+        <div className="w-full py-28 md:py-20 md:pl-20">
           <p className="text-center md:text-left">{t("rating")}</p>
           <p className="my-3 text-center font-thin md:text-left">
             {t("count")}
           </p>
-          <h1 className="text-center text-4xl font-bold text-green-50 md:text-left md:text-5xl lg:text-6xl xl:text-6xl 2xl:text-7xl">
+          <h1 className="text-center text-4xl font-bold text-green-50 md:text-left md:text-4xl lg:text-6xl xl:text-7xl 2xl:text-8xl">
             Smart Alert <br /> for active traders
-            <span className="text-green-400"></span>
           </h1>
           <h2 className="mt-4 text-center text-lg font-light md:text-left md:text-2xl lg:text-4xl">
             React Faster, Trade Smarter
@@ -38,6 +36,7 @@ const Hero = () => {
                 <p className="text-xs font-light">No Credit card required</p>
               </div>
             </Link>
+
             <Link href="/info">
               <button className="px-3 py-2 text-xs underline transition-all md:px-4 md:py-3 md:font-medium lg:text-xl">
                 {t("buttons.learnMore")}
@@ -45,36 +44,25 @@ const Hero = () => {
             </Link>
           </div>
 
-          <div className="mt-12 flex justify-center gap-12 md:grid md:grid-cols-3 md:gap-4 lg:w-2/3 lg:justify-between lg:gap-20">
-            {/* <Stats
-              text={t("stats.users.label")}
-              num={23}
-              symbol={t("stats.users.symbol")}
-              duration={3}
-            />
-            <Stats
-              text={t("stats.signals.label")}
-              num={t("stats.signals.value")}
-              symbol={t("stats.signals.symbol")}
-              duration={2}
-            />
-            <Stats
-              text={t("stats.winRate.label")}
-              num={t("stats.winRate.value")}
-              symbol={t("stats.winRate.symbol")}
-              duration={4}
-            /> */}
-          </div>
+          <div className="mt-12 flex justify-center gap-12 md:grid md:grid-cols-3 md:gap-4 lg:w-2/3 lg:justify-between lg:gap-20"></div>
         </div>
-        <div className="w- md:w-2/5 md:p-9">
-          <Image
-            className="hidden lg:block"
-            src={hero}
-            width={600}
-            height={800}
-            quality={100}
-            alt="hero-image"
-          />
+
+        {/* RIGHT COLUMN */}
+        <div className="flex w-full items-center justify-center">
+          {/* Parent must be relative for absolute positioning inside */}
+          <div className="relative hidden w-full items-center justify-center lg:flex">
+            {/* A container to hold both cards, one behind the other */}
+            <div className="relative">
+              {/* Foreground (top) card */}
+              <div className="relative z-10">
+                <DemoCard type='es' />
+              </div>
+              {/* Background (behind) card, offset slightly */}
+              <div className="absolute right-[-80px] top-[-80px] z-0">
+                <DemoCard type='nq' />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
