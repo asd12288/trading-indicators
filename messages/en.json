@@ -107,6 +107,10 @@
         }
       }
     },
+    "logos": {
+      "title": "Various Alerts for Different Instruments"
+    },
+
     "offers": {
       "mainTitle": "Live Smart Alerts – Stay Ahead of the Market",
       "subtitle": "Our real-time smart alerts provide you with expert-driven market insights, helping you make informed trading decisions quickly.",
@@ -414,9 +418,10 @@
       }
     }
   },
+
   "TermsAndConditions": {
     "title": "Terms and Conditions",
-    "welcome": "Welcome to Trader Map. By using our website, you agree to comply with the following terms and conditions. Please read them carefully.",
+    "welcome": "Welcome to Trader Map. By using our website and services, you agree to comply with the following terms and conditions. Please read them carefully.",
     "sections": {
       "acceptance": {
         "title": "1. Acceptance of Terms",
@@ -424,7 +429,7 @@
       },
       "use": {
         "title": "2. Use of Services",
-        "content": "Our services are intended for informational purposes only. We do not provide financial or investment advice, and users should exercise caution when making trade decisions."
+        "content": "Our services, including smart alerts, are intended for informational and educational purposes only. We do not provide financial, investment, tax, legal, or accounting advice. Users should exercise caution and consult with licensed professionals before making any financial decisions."
       },
       "account": {
         "title": "3. Account Registration and Security",
@@ -448,7 +453,7 @@
       },
       "liability": {
         "title": "8. Limitation of Liability",
-        "content": "Trader Map is not responsible for any financial losses resulting from the use of our services. Users should conduct their own research before making trade decisions."
+        "content": "Trader Map is not responsible for any financial losses resulting from the use of our services. Users should conduct their own research and consult with licensed professionals before making financial decisions."
       },
       "dispute": {
         "title": "9. Dispute Resolution",
@@ -457,6 +462,10 @@
       "amendments": {
         "title": "10. Amendments",
         "content": "We reserve the right to modify these terms at any time. Users will be notified of significant changes."
+      },
+      "disclaimer": {
+        "title": "11. Disclaimer",
+        "content": "All information, smart alerts, tools, and materials provided by Trader Map are for informational and educational purposes only and do not constitute financial advice. Trader Map is not a registered investment advisor or broker-dealer, and nothing on our platform should be construed as a recommendation to buy or sell securities or any other financial instrument. Users should consult with licensed professionals before making any financial decisions."
       }
     },
     "refund": {
@@ -481,6 +490,7 @@
       }
     }
   },
+
   "UserDashboard": {
     "title": "My Profile",
     "loading": "Loading...",

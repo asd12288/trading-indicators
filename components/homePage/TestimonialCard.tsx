@@ -5,7 +5,7 @@ import avatar from "../../public/avatar.png";
 
 const TestimonialCard = ({ testmonial }) => {
   return (
-    <div className="z-500 m-2 h-56 w-48 md:space-y-5 space-y-2 rounded-lg bg-slate-800 p-6 md:h-96 md:w-96">
+    <div className="z-500 m-2 h-56 w-48 md:space-y-5 space-y-2 rounded-3xl bg-slate-800 p-6 md:h-96 md:w-96">
       <MdFormatQuote className="text-2xl md:text-5xl" />
       <p className="text-left text-xs font-light leading-tight md:text-lg">
         {testmonial.content}

@@ -31,7 +31,7 @@
 }
 @layer base {
   :root {
-    background-color: #000014;
+    background-color: rgb(2 6 23);;
     color: #fff;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;

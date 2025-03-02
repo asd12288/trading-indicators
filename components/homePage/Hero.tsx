@@ -11,9 +11,9 @@ const Hero = () => {
 
   return (
     <section>
-      <div className="flex flex-col bg-gradient-to-br from-slate-950 to-slate-700 md:grid md:grid-cols-2">
+      <div className="flex flex-col bg-gradient-to-b from-slate-950 to-slate-800 md:grid md:grid-cols-2">
         {/* LEFT COLUMN */}
-        <div className="mt-12 w-full py-4 md:py-20 md:pl-20 xl:py-32">
+        <div className="mt-8 w-full py-4 md:py-20 md:pl-20 xl:py-28">
           <p className="text-center md:text-left">{t("rating")}</p>
           <p className="my-3 text-center font-thin md:text-left">
             {t("count")}
