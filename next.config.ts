@@ -5,6 +5,12 @@ const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   /* config options here */
+
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+
   images: {
     remotePatterns: [
       {
@@ -29,6 +35,8 @@ const nextConfig: NextConfig = {
   },
 
   experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ["react-icons", "framer-motion"],
     serverActions: {
       bodySizeLimit: "10mb",
     },

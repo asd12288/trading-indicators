@@ -10,7 +10,7 @@ const PlanCard = () => {
   return (
     <BackgroundGradient className="relative overflow-hidden rounded-xl p-8 shadow-lg">
       {/* Floating Label */}
-      <div className="absolute top-3 right-3 rounded-full bg-green-700 px-3 py-1 text-xs font-medium text-white">
+      <div className="absolute right-3 top-3 rounded-full bg-green-700 px-3 py-1 text-xs font-medium text-white">
         Best Value
       </div>
 
@@ -23,11 +23,21 @@ const PlanCard = () => {
       <p className="text-sm text-slate-400">{t("billed")}</p>
 
       <ul className="mt-6 space-y-4">
-        <Benefit benefit={t("benefit1")} />
-        <Benefit benefit={t("benefit2")} />
-        <Benefit benefit={t("benefit3")} />
-        <Benefit benefit={t("benefit4")} />
-        <Benefit benefit={t("benefit5")} />
+        <li>
+          <Benefit benefit={t("benefit1")} />
+        </li>
+        <li>
+          <Benefit benefit={t("benefit2")} />
+        </li>
+        <li>
+          <Benefit benefit={t("benefit3")} />
+        </li>
+        <li>
+          <Benefit benefit={t("benefit4")} />
+        </li>
+        <li>
+          <Benefit benefit={t("benefit5")} />
+        </li>
       </ul>
 
       <Link href={"/signup"}>
