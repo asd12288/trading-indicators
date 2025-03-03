@@ -15,13 +15,13 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import PaymentDetails from "./PaymentDetails";
+import { toast } from "@/hooks/use-toast";
 
 export default function CryptoPaymentModal({ user }: { user: any }) {
   const [open, setOpen] = useState(false);
   const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
 
-  const currencies = ["usdttrc20", "usdc", "btc", "eth"];
-
+  const currencies = ["usdttrc20", "usdc", "btc", "eth", "tusdtrc20"];
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -39,9 +39,13 @@ export default function CryptoPaymentModal({ user }: { user: any }) {
               <SelectTrigger className="w-full">
                 {selectedCoin ? selectedCoin : "Choose currency"}
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-slate-800">
                 {currencies.map((coin) => (
-                  <SelectItem key={coin} value={coin}>
+                  <SelectItem
+                    key={coin}
+                    value={coin}
+                    className="cursor-pointer hover:bg-slate-700"
+                  >
                     {coin}
                   </SelectItem>
                 ))}
@@ -50,7 +54,10 @@ export default function CryptoPaymentModal({ user }: { user: any }) {
             <button
               onClick={() => {
                 if (!selectedCoin) {
-                  alert("Please select a cryptocurrency");
+                  toast({
+                    title: "Error",
+                    description: "Please select a currency",
+                  });
                 }
               }}
               className="btn-secondary w-full"

@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 
 interface PaymentDetailsProps {
@@ -8,7 +9,11 @@ interface PaymentDetailsProps {
   onClose: () => void;
 }
 
-export default function PaymentDetails({ userId, coin, onClose }: PaymentDetailsProps) {
+export default function PaymentDetails({
+  userId,
+  coin,
+  onClose,
+}: PaymentDetailsProps) {
   const [paymentInfo, setPaymentInfo] = useState<{
     address: string;
     amount: string;
@@ -26,14 +31,14 @@ export default function PaymentDetails({ userId, coin, onClose }: PaymentDetails
         const res = await fetch("/api/create-payment", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId, coin })
+          body: JSON.stringify({ userId, coin }),
         });
         const data = await res.json();
         if (data.success && data.paymentData) {
           setPaymentInfo(data.paymentData);
         } else {
           console.error("Error creating payment:", data.error);
-          alert("Error creating payment. Please try again.");
+          toast({ title: "Error creating payment. ", description: data.error });
           onClose();
         }
       } catch (err) {
@@ -56,7 +61,7 @@ export default function PaymentDetails({ userId, coin, onClose }: PaymentDetails
   const copyAddress = async () => {
     try {
       await navigator.clipboard.writeText(address);
-      alert("Address copied!");
+      toast({ title: "Address copied!" });
     } catch (err) {
       console.error("Copy error:", err);
     }
@@ -65,12 +70,13 @@ export default function PaymentDetails({ userId, coin, onClose }: PaymentDetails
   return (
     <div className="space-y-4">
       <p>
-        Please send <strong>{amount} {currency.toUpperCase()}</strong> to the
-        following address:
+        Please send{" "}
+        <strong>
+          {amount} {currency.toUpperCase()}
+        </strong>{" "}
+        to the following address:
       </p>
-      <div className="bg-gray-100 p-2 rounded break-all text-sm">
-        {address}
-      </div>
+      <div className="break-all rounded bg-gray-100 p-2 text-sm">{address}</div>
       <button onClick={copyAddress} className="btn-secondary">
         Copy Address
       </button>
