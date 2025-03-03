@@ -697,9 +697,7 @@
       "existing": "Already have an account?",
       "login": "Log in"
     },
-    "terms": {
-      
-    }
+    "terms": {}
   },
   "verfiyEmail": {
     "title": "Verify your email",
@@ -759,6 +757,11 @@
     "title": "⚠️ We're currently in maintenance. Some features may be slow or unavailable."
   },
   "SidebarDocs": {
-    "button":"Back to Home"
+    "button": "Back to home",
+    "items": {
+      "gettingStarted": "Getting Started",
+      "introduction": "Introduction",
+      "smartAlert": "Smart Alert"
+    }
   }
 }

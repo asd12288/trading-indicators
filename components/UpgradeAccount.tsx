@@ -8,6 +8,7 @@ import { Link } from "@/i18n/routing";
 import PaypalSubscribeButton from "./PaypalButton";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import Image from "next/image";
+import CryptoSubscribeButton from "./CryptoSubscribeButton";
 
 const UpgradeAccount = ({ user }) => {
   const [checkoutUrl, setCheckoutUrl] = useState("");
@@ -61,18 +62,7 @@ const UpgradeAccount = ({ user }) => {
             {t("upgradeButton")}
           </button> */}
 
-            <a
-              href="https://nowpayments.io/payment/?iid=5908509657"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <Image
-                src="https://nowpayments.io/images/embeds/payment-button-black.svg"
-                alt="Crypto payment button by NOWPayments"
-                width={200}
-                height={50}
-              />
-            </a>
+           <CryptoSubscribeButton user={user} />
           </div>
         </div>
         <div className="p-4 text-slate-100">

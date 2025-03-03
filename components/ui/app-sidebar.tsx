@@ -13,26 +13,24 @@ import LanguageSwitcher from "../LanguageSwitcher";
 import { Button } from "./button";
 import { useTranslations } from "next-intl";
 
-const items = [
-  {
-    title: "Getting Started",
-    url: "/docs/getting-started",
-  },
-  {
-    title: "introduction",
-    url: "/docs/introduction",
-  },
-  {
-    title: "Smart Alert",
-    url: "/docs/smart-alert",
-  },
-];
-
 export function AppSidebar() {
-
   const t = useTranslations("SidebarDocs");
 
-
+  // Move items inside component to access translations
+  const items = [
+    {
+      title: t("items.gettingStarted"),
+      url: "/docs/getting-started",
+    },
+    {
+      title: t("items.introduction"),
+      url: "/docs/introduction",
+    },
+    {
+      title: t("items.smartAlert"),
+      url: "/docs/smart-alert",
+    },
+  ];
 
   return (
     <Sidebar>
@@ -42,7 +40,7 @@ export function AppSidebar() {
         </SidebarHeader>
         <SidebarMenu>
           {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
+            <SidebarMenuItem key={item.url}>
               <Link passHref legacyBehavior href={item.url}>
                 <SidebarMenuButton className="pl-6 hover:bg-slate-700 hover:text-slate-50">
                   {item.title}
@@ -54,7 +52,7 @@ export function AppSidebar() {
         <SidebarFooter className="p-6 text-xs text-slate-400">
           <LanguageSwitcher />
           <Link href={"/"}>
-            <Button>{t('button')}</Button>
+            <Button>{t("button")}</Button>
           </Link>
           <p>© 2025 Trader Map</p>
         </SidebarFooter>
