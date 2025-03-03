@@ -46,9 +46,9 @@ const useAlerts = () => {
         { event: "INSERT", schema: "public", table: "signals_alert" },
         async () => {
           await fetchData();
-          pingSoundRef.current
-            ?.play()
-            .catch((err) => console.warn("Audio playback blocked", err));
+          // pingSoundRef.current
+          //   ?.play()
+          //   .catch((err) => console.warn("Audio playback blocked", err));
         },
       )
       .subscribe();

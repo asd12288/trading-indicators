@@ -9,7 +9,7 @@ export async function POST(request: Request) {
 
     const apiKey = process.env.NOWPAYMENTS_API_KEY!;
     const paymentRequest = {
-      price_amount: 10,            // Subscription cost in USD
+      price_amount: 20,            // Subscription cost in USD
       price_currency: "usd",
       pay_currency: coin,            // e.g. "btc", "usdttrc20", etc.
       order_id: userId,              // Use the user ID for correlation
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
       ipn_callback_url: `${process.env.DEV_URL}/api/webhook`
     };
 
-    const res = await fetch("https://api-sandbox.nowpayments.io/v1/payment", {
+    const res = await fetch("https://api.nowpayments.io/v1/payment", {
       method: "POST",
       headers: {
         "x-api-key": apiKey,
