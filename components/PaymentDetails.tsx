@@ -2,6 +2,7 @@
 
 import { toast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
+import { QRCodeSVG } from "qrcode.react";
 
 interface PaymentDetailsProps {
   userId: string;
@@ -81,7 +82,7 @@ export default function PaymentDetails({
         Copy Address
       </button>
       <div className="flex justify-center">
-        {/* <QrCode value={address} size={128} /> */}
+        <QRCodeSVG value={address} size={128} />
       </div>
       <p className="text-sm text-gray-500">
         Waiting for payment confirmation...
