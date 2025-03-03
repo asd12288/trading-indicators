@@ -84,3 +84,35 @@ a
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
+
+.prose {
+  font-family: "Inter", sans-serif;
+  color: #e2e8f0; /* Light text */
+}
+
+/* Style links */
+.prose a {
+  color: #38bdf8;
+  text-decoration: underline;
+}
+
+/* Style images */
+.prose img {
+  border-radius: 8px;
+  max-width: 100%;
+  margin: 16px 0;
+}
+
+/* Code blocks */
+.prose pre {
+  background: #1e293b;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.prose code {
+  background: #1e293b;
+  padding: 2px 6px;
+  border-radius: 4px;
+}

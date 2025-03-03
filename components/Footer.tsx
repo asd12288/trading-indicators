@@ -6,12 +6,13 @@ const Footer = () => {
   const t = useTranslations("Footer");
 
   return (
-    <section className="bottom-0 flex w-full flex-col items-center justify-center bg-slate-900 p-8 text-center text-white md:flex-row md:justify-between md:text-left">
+    <section className="bottom-0 relative flex w-full flex-col items-center justify-center bg-slate-900 p-8 text-center text-white md:flex-row md:justify-between md:text-left">
       <div>
         <h4 className="text-xl font-semibold md:text-3xl">
           {t("companyName")}
         </h4>
         <p className="text-thin mt-3">{t("copyright")}</p>
+        <p className="text-light mt-3 text-xs">Any question? contact us at support@trader-map.com</p>
       </div>
 
       <div className="flex gap-4">

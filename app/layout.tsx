@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import MaintenanceBanner from "@/components/MaintenanceBanner";
 
 const poppins = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -40,6 +41,7 @@ export default async function RootLayout({
       </head>
       <body className={`${poppins.className} antialiased`}>
         <NextIntlClientProvider locale={params.locale} messages={messages}>
+          <MaintenanceBanner />
           {children}
           <Toaster />
         </NextIntlClientProvider>

@@ -30,11 +30,18 @@ export function SignupForm() {
   const params = useParams();
   const locale = (params.locale as string) || "en";
 
+  // Update the schema to include terms acceptance
   const signupFormSchema = z
     .object({
       email: z.string().email(t("validation.email")),
       password: z.string().min(8, t("validation.password")),
       confirmPassword: z.string().min(8, t("validation.passwordMismatch")),
+      termsAccepted: z.literal(true, {
+        errorMap: () => ({
+          message:
+            t("validation.termsRequired") 
+        }),
+      }),
     })
     .refine((data) => data.password === data.confirmPassword, {
       path: ["confirmPassword"],
@@ -43,12 +50,14 @@ export function SignupForm() {
 
   type SignupFormValues = z.infer<typeof signupFormSchema>;
 
+  // Update the form default values
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupFormSchema),
     defaultValues: {
       email: "",
       password: "",
       confirmPassword: "",
+      termsAccepted: false, 
     },
   });
 
@@ -148,6 +157,35 @@ export function SignupForm() {
                     />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="termsAccepted"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <input
+                      type="checkbox"
+                      className="mt-1 h-4 w-4 rounded border-slate-500 bg-slate-700 text-green-600 focus:ring-green-600"
+                      checked={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel className="text-sm font-normal">
+                     {t('labels.terms')}{" "}
+                      <Link
+                        href="/terms"
+                        className="text-green-400 underline hover:text-green-300"
+                      >
+                        {t("labels.termsLink")}
+                      </Link>
+                    </FormLabel>
+                    <FormMessage />
+                  </div>
                 </FormItem>
               )}
             />

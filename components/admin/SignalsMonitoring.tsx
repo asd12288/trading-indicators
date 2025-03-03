@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useSignalsStatus } from "@/hooks/useSignalsStatus";
+import AdminMaintenance from "./AdminMaintenance"
 
 export default function SignalsMonitoring() {
   const { signalsStatus, loading, error } = useSignalsStatus();
@@ -10,6 +11,10 @@ export default function SignalsMonitoring() {
 
   return (
     <div>
+
+      <AdminMaintenance />
+
+
       <h2 className="mb-4 text-2xl font-bold">Status Monitoring</h2>
       <div className="grid gap-4 p-4 md:grid-cols-4 lg:grid-cols-6">
         {signalsStatus.map((signal) => (

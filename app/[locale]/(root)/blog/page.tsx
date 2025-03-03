@@ -1,7 +1,7 @@
 import BlogList from "@/components/BlogList";
 import { createClient } from "@/database/supabase/server";
 
-async function page() {
+async function page({ params }: { params: { locale: string } }) {
   const supabase = await createClient();
   const { data, error } = await supabase.from("blogs").select("*");
 
@@ -16,7 +16,7 @@ async function page() {
       </h1>
       <div className="my-4 w-full border-t"></div>
       <div className="md:px-32">
-        <BlogList blogs={data} />
+        <BlogList locale={params.locale} />
       </div>
     </div>
   );

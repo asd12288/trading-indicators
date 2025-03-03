@@ -12,7 +12,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="bg-slate-50">
+      <main className="w-full bg-slate-50 text-slate-950">
         <SidebarTrigger />
         {children}
       </main>

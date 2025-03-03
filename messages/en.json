@@ -108,7 +108,7 @@
       }
     },
     "logos": {
-      "title": "Various Alerts for Different Instruments"
+      "title": "Different Alerts for Different Instruments"
     },
 
     "offers": {
@@ -609,9 +609,12 @@
       "home": "Home",
       "signals": "Smart Alerts",
       "profile": "Profile",
-      "blog": "Blog",
+      "blog": "Blogs",
       "logout": "Logout",
       "login": "Login"
+    },
+    "button": {
+      "title": "Upgrade to Pro"
     }
   },
   "ForgotPassword": {
@@ -668,7 +671,9 @@
     "labels": {
       "email": "Email",
       "password": "Password",
-      "confirmPassword": "Confirm Password"
+      "confirmPassword": "Confirm Password",
+      "terms": " I accept the ",
+      "termsLink": "Terms & Conditions"
     },
     "placeholder": {
       "email": "you@example.com",
@@ -678,7 +683,8 @@
     "validation": {
       "email": "Invalid email",
       "password": "Password must be at least 8 characters",
-      "passwordMismatch": "Passwords do not match"
+      "passwordMismatch": "Passwords do not match",
+      "termsRequired": "You must agree to the terms and conditions"
     },
     "buttons": {
       "submit": "Create Account",
@@ -690,6 +696,9 @@
     "account": {
       "existing": "Already have an account?",
       "login": "Log in"
+    },
+    "terms": {
+      
     }
   },
   "verfiyEmail": {
@@ -745,5 +754,8 @@
       "mfeTicks": "Maximum Favorable Excursion (MFE) tracks the biggest unrealized gain achieved during a trade before it was closed.",
       "lossTicks": "Shows how many ticks the trade moved against your position."
     }
+  },
+  "MaintenanceBanner": {
+    "title": "⚠️ We're currently in maintenance. Some features may be slow or unavailable."
   }
 }

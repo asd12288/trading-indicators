@@ -18,12 +18,7 @@ const SignalsLayout = ({ userId }) => {
               </p>
             </Link>
           </div>
-          <p className="text-lg text-gray-400 md:text-2xl">
-          {t('signalStatus')}
-            <span className="animate-pulse text-slate-50 md:text-2xl">
-            {t('live')}
-            </span>
-          </p>
+        
         </div>
         <div className="mt-3 rounded-lg bg-gray-700 p-2">
           <AlertNotification userId={userId} />

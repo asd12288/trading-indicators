@@ -124,7 +124,7 @@ export default function Navbar({ user, profile }) {
           </li>
           <li>
             <Link
-              href="/blog"
+              href="/blogs"
               className="block w-full hover:text-slate-300"
               onClick={() => setIsMobileOpen(false)}
             >
