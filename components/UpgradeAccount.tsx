@@ -7,6 +7,7 @@ import Benefit from "./smallComponents/Benefit";
 import { Link } from "@/i18n/routing";
 import PaypalSubscribeButton from "./PaypalButton";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import Image from "next/image";
 
 const UpgradeAccount = ({ user }) => {
   const [checkoutUrl, setCheckoutUrl] = useState("");
@@ -35,11 +36,11 @@ const UpgradeAccount = ({ user }) => {
         vault: true,
       }}
     >
-      <div className="flex md:items-center flex-col md:flex-row justify-center">
+      <div className="flex flex-col justify-center md:flex-row md:items-center">
         <div className="flex flex-col justify-center">
           <div className="">
             <h1 className="text-3xl font-semibold">{t("title")}</h1>
-            <p className="mt-4 text w-2/3 text-gray-500">{t("subtitle")}</p>
+            <p className="text mt-4 w-2/3 text-gray-500">{t("subtitle")}</p>
           </div>
 
           <div className="w-128 j space-y-4 p-8">
@@ -56,9 +57,22 @@ const UpgradeAccount = ({ user }) => {
                 <Benefit key={index} benefit={benefit} />
               ))}
             </ul>
-              {/* <button className="mt-4 w-80 rounded-lg bg-green-800 px-2 py-2">
+            {/* <button className="mt-4 w-80 rounded-lg bg-green-800 px-2 py-2">
             {t("upgradeButton")}
           </button> */}
+
+            <a
+              href="https://nowpayments.io/payment/?iid=5908509657"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              <Image
+                src="https://nowpayments.io/images/embeds/payment-button-black.svg"
+                alt="Crypto payment button by NOWPayments"
+                width={200}
+                height={50}
+              />
+            </a>
           </div>
         </div>
         <div className="p-4 text-slate-100">

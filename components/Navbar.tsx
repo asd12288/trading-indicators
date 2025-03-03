@@ -53,7 +53,7 @@ export default function Navbar({ user, profile }) {
             </li>
 
             <li>
-              <Link href="/blog" className="hover:text-slate-300">
+              <Link href="/blogs" className="hover:text-slate-300">
                 {t("blog")}
               </Link>
             </li>
