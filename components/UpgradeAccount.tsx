@@ -8,7 +8,7 @@ import { Link } from "@/i18n/routing";
 import PaypalSubscribeButton from "./PaypalButton";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import Image from "next/image";
-import CryptoSubscribeButton from "./CryptoSubscribeButton";
+import CryptoPayButton from "./CryptoPayButton";
 
 const UpgradeAccount = ({ user }) => {
   const [checkoutUrl, setCheckoutUrl] = useState("");
@@ -62,7 +62,7 @@ const UpgradeAccount = ({ user }) => {
             {t("upgradeButton")}
           </button> */}
 
-           <CryptoSubscribeButton user={user} />
+           <CryptoPayButton user={user} />
           </div>
         </div>
         <div className="p-4 text-slate-100">

@@ -2,74 +2,78 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 
-// Disable body parsing to access raw body
+// We want the raw request body to verify the signature
 export const config = {
   runtime: "node",
-  api: { bodyParser: false },
+  api: {
+    bodyParser: false
+  }
 };
 
 export async function POST(request) {
-  // Read raw request body
-  const rawBody = await request.text();
-
-  // Verify signature from NowPayments using the header 'x-nowpayments-sig'
-  const signature = request.headers.get("x-nowpayments-sig");
-  if (!signature) {
-    return NextResponse.json({ error: "Signature missing" }, { status: 400 });
-  }
-  const secret = process.env.NOWPAYMENTS_IPN_SECRET;
-  const hash = crypto
-    .createHmac("sha512", secret)
-    .update(rawBody)
-    .digest("hex");
-  if (hash !== signature) {
-    return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
-  }
-
-  // Parse the JSON body now that we’ve verified the signature
-  let data;
   try {
-    data = JSON.parse(rawBody);
-  } catch (e) {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    // 1. Read raw body for signature verification
+    const rawBody = await request.text();
+
+    // 2. Verify signature
+    const signature = request.headers.get("x-nowpayments-sig");
+    if (!signature) {
+      return NextResponse.json({ error: "Signature missing" }, { status: 400 });
+    }
+    const secret = process.env.NOWPAYMENTS_IPN_SECRET;
+    const hash = crypto.createHmac("sha512", secret).update(rawBody).digest("hex");
+    if (hash !== signature) {
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    }
+
+    // 3. Parse JSON
+    const data = JSON.parse(rawBody);
+    console.log("NowPayments webhook received:", data);
+
+    // 4. Check payment status
+    const { payment_id, payment_status, order_id } = data;
+
+    if (payment_status === "finished" || payment_status === "confirmed") {
+      // Payment is fully confirmed
+      await activateProSubscription(order_id);
+      console.log(`User ${order_id} upgraded to Pro for 30 days. Payment ID: ${payment_id}`);
+    } else if (payment_status === "partially_paid") {
+      console.warn(`Payment ${payment_id} partially paid. Not upgrading user ${order_id}.`);
+    } else if (payment_status === "expired" || payment_status === "failed") {
+      console.warn(`Payment ${payment_id} ${payment_status}. Not upgrading user ${order_id}.`);
+    }
+
+    return NextResponse.json({ status: "OK" });
+  } catch (err) {
+    console.error("NowPayments webhook error:", err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
-
-  console.log("NowPayments IPN received:", data);
-
-  // Extract necessary fields (adjust based on one-time vs recurring)
-  const { payment_id, payment_status, order_id } = data;
-
-  // Example: if finished, update user subscription in Supabase
-  if (payment_status === "finished" || payment_status === "confirmed") {
-    // Call your function to update the user’s subscription using order_id
-    await activateUserSubscription(order_id);
-    console.log(`User ${order_id} activated due to payment ${payment_id}`);
-  } else if (payment_status === "partially_paid") {
-    console.warn(`Payment ${payment_id} partially paid.`);
-  } else if (payment_status === "expired" || payment_status === "failed") {
-    console.warn(`Payment ${payment_id} ${payment_status}.`);
-  }
-
-  return NextResponse.json({ status: "OK" });
 }
 
-// Example Supabase update function (you can adjust based on your DB structure)
-async function activateUserSubscription(userId: string) {
-  // Import your Supabase client configured for server side (e.g. from /lib/supabase)
+// 5. Helper function to update user in Supabase
+async function activateProSubscription(userId) {
+  if (!userId) return;
+  
+  // Lazy-import supabase so it doesn't slow down route import
   const { createClient } = await import("@supabase/supabase-js");
   const supabaseAdmin = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
+
+  // Add 30 days
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 30);
+
   const { error } = await supabaseAdmin
     .from("profiles")
     .update({
       plan: "pro",
-      subscription_status: "active",
-      current_period_end: new Date(
-        Date.now() + 30 * 24 * 60 * 60 * 1000,
-      ).toISOString(),
+      current_period_end: expiresAt.toISOString()
     })
     .eq("id", userId);
-  if (error) console.error("Supabase update error:", error);
+
+  if (error) {
+    console.error("Supabase update error:", error);
+  }
 }
