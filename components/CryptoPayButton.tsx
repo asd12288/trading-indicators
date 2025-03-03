@@ -4,6 +4,8 @@ import { useState } from "react";
 
 export default function CryptoPayButton({ user }) {
   const [loading, setLoading] = useState(false);
+  const [paymentInfo, setPaymentInfo] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const handleCryptoPayment = async () => {
     if (!user?.id) return alert("User not found");
@@ -13,15 +15,18 @@ export default function CryptoPayButton({ user }) {
       const res = await fetch("/api/create-crypto-payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user.id })
+        body: JSON.stringify({ userId: user.id }),
       });
       const data = await res.json();
       if (data.paymentUrl) {
         // Redirect to the NowPayments hosted checkout page
         window.location.href = data.paymentUrl;
+      } else if (data.success && data.paymentData) {
+        // Show crypto payment details on your own page
+        setPaymentInfo(data.paymentData);
+        setShowPaymentModal(true);
       } else {
-        console.error("Payment creation error:", data);
-        alert("Could not create payment. Check console.");
+        alert("Error creating payment: " + JSON.stringify(data.error));
       }
     } catch (err) {
       console.error("handleCryptoPayment error:", err);
@@ -35,7 +40,7 @@ export default function CryptoPayButton({ user }) {
     <button
       onClick={handleCryptoPayment}
       disabled={loading}
-      className="bg-blue-600 text-white p-2 rounded"
+      className="rounded bg-blue-600 p-2 text-white"
     >
       {loading ? "Processing..." : "Pay with Crypto ($25)"}
     </button>
