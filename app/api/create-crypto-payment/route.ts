@@ -4,12 +4,12 @@ import fetch from "node-fetch";
 
 export async function POST(request) {
   const { userId } = await request.json();
-  const apiKey = process.env.NOWPAYMENTS_API_KEY;
+  const apiKey = process.env.NOWPAYMENTS_API_KEY!;
   const paymentRequest = {
     price_amount: 25.0, // Price in USD
     price_currency: "usd",
     pay_currency: "btc", // Change based on user selection (e.g., "btc" or "eth")
-    ipn_callback_url: `${process.env.PUBLIC_BASE_URL}/api/nowpayments-webhook`,
+    ipn_callback_url: `${process.env.DEV_URL}/api/nowpayments-webhook`,
     order_id: userId,
     order_description: "Trading Signals Subscription - 1 Month",
   };
