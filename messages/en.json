@@ -757,5 +757,8 @@
   },
   "MaintenanceBanner": {
     "title": "⚠️ We're currently in maintenance. Some features may be slow or unavailable."
+  },
+  "SidebarDocs": {
+    "button":"Back to Home"
   }
 }

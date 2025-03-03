@@ -11,6 +11,7 @@ import {
 import { Link } from "@/i18n/routing";
 import LanguageSwitcher from "../LanguageSwitcher";
 import { Button } from "./button";
+import { useTranslations } from "next-intl";
 
 const items = [
   {
@@ -28,6 +29,11 @@ const items = [
 ];
 
 export function AppSidebar() {
+
+  const t = useTranslations("SidebarDocs");
+
+
+
   return (
     <Sidebar>
       <SidebarContent className="border-r-slate-800 bg-slate-900 text-slate-50">
@@ -48,7 +54,7 @@ export function AppSidebar() {
         <SidebarFooter className="p-6 text-xs text-slate-400">
           <LanguageSwitcher />
           <Link href={"/"}>
-            <Button>Get Started</Button>
+            <Button>{t('button')}</Button>
           </Link>
           <p>© 2025 Trader Map</p>
         </SidebarFooter>
