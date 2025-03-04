@@ -165,6 +165,20 @@ export default function CryptoPaymentModal({ user }: { user: any }) {
 
       const data = await res.json();
       if (data.success && data.paymentData) {
+        // Get USD amount separately if not included in paymentData
+        if (!data.paymentData.usdAmount) {
+          try {
+            const rateRes = await fetch(
+              `/api/get-rate?fiatAmount=25&cryptoSymbol=${selectedCoin}`,
+            );
+            const rateData = await rateRes.json();
+            if (rateData && !rateData.error) {
+              data.paymentData.usdAmount = "25.00"; // Fixed amount or from your actual subscription price
+            }
+          } catch (error) {
+            console.error("Error fetching rate:", error);
+          }
+        }
         setPaymentData(data.paymentData);
       } else if (data.paymentUrl) {
         window.location.href = data.paymentUrl;
@@ -200,7 +214,7 @@ export default function CryptoPaymentModal({ user }: { user: any }) {
       <DialogTrigger asChild>
         <div className="flex flex-col items-center gap-2">
           <Button className="relative flex items-center gap-2 px-6 py-4">
-            <div className="mr-2 flex -space-x-2 p">
+            <div className="p mr-2 flex -space-x-2">
               <div className="h-6 w-6 rounded-full p-0.5 shadow-sm">
                 <Image
                   src="/images/coins/btc.svg"
@@ -334,6 +348,7 @@ export default function CryptoPaymentModal({ user }: { user: any }) {
             amount={paymentData.amount}
             currency={paymentData.currency}
             expiresAt={paymentData.expiresAt}
+            usdAmount={paymentData.usdAmount || "25.00"} // Pass the USD amount
             onClose={closeModal}
           />
         )}

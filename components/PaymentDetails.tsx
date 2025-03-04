@@ -16,6 +16,7 @@ interface PaymentDetailsProps {
   currency: string;
   address: string;
   expiresAt?: string;
+  usdAmount?: string; // Add this new prop for USD amount
   onClose: () => void;
 }
 
@@ -28,6 +29,7 @@ export default function PaymentDetails({
   address,
   expiresAt,
   onClose,
+  usdAmount,
 }: PaymentDetailsProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [timeLeft, setTimeLeft] = useState<number>(0);
@@ -44,7 +46,7 @@ export default function PaymentDetails({
       const now = new Date();
       const total = expirationDate.getTime() - now.getTime();
       setTotalTime(total);
-      
+
       const interval = setInterval(() => {
         const currentTime = new Date();
         const diff = expirationDate.getTime() - currentTime.getTime();
@@ -116,37 +118,37 @@ export default function PaymentDetails({
         return {
           icon: <Clock className="h-4 w-4 text-amber-400" />,
           text: "Waiting for payment...",
-          color: "text-amber-400"
+          color: "text-amber-400",
         };
       case "confirming":
         return {
-          icon: <Loader2 className="h-4 w-4 text-blue-400 animate-spin" />,
+          icon: <Loader2 className="h-4 w-4 animate-spin text-blue-400" />,
           text: "Payment received. Confirming on blockchain...",
-          color: "text-blue-400"
+          color: "text-blue-400",
         };
       case "finished":
         return {
           icon: <Check className="h-4 w-4 text-green-400" />,
           text: "Payment confirmed! Your subscription is now active.",
-          color: "text-green-400"
+          color: "text-green-400",
         };
       case "failed":
         return {
           icon: <AlertCircle className="h-4 w-4 text-red-400" />,
           text: "Payment failed. Please try again.",
-          color: "text-red-400"
+          color: "text-red-400",
         };
       case "expired":
         return {
           icon: <AlertCircle className="h-4 w-4 text-red-400" />,
           text: "Payment window expired.",
-          color: "text-red-400"
+          color: "text-red-400",
         };
       default:
         return {
           icon: <Clock className="h-4 w-4 text-gray-400" />,
           text: `Status: ${status}`,
-          color: "text-gray-400"
+          color: "text-gray-400",
         };
     }
   };
@@ -167,13 +169,18 @@ export default function PaymentDetails({
   }, [status, onClose, router]);
 
   return (
-    <div className="space-y-4 p-1 h-full overflow-y-auto">
+    <div className="h-full space-y-4 overflow-y-auto p-1">
       {/* Payment Header */}
       <div className="text-center">
-        <h3 className="text-lg font-medium text-slate-200">Complete Your Payment</h3>
-        <p className="text-sm text-slate-400">Send the exact amount to the address below</p>
+        <h3 className="text-lg font-medium text-slate-200">
+          Complete Your Payment
+        </h3>
+        <p className="text-sm text-slate-400">
+          Send the exact amount to the address below
+        </p>
       </div>
 
+      {/* Amount Display */}
       {/* Amount Display */}
       <div className="flex flex-col items-center space-y-2 rounded-lg bg-slate-700 p-4">
         <p className="text-sm font-medium text-slate-300">Amount to Send:</p>
@@ -183,6 +190,13 @@ export default function PaymentDetails({
             {currency}
           </span>
         </div>
+        {usdAmount && (
+          <div className="mt-1 flex items-center gap-1 text-sm text-slate-400">
+            <span>≈</span>
+            <span className="font-medium">${usdAmount}</span>
+            <span>USD</span>
+          </div>
+        )}
       </div>
 
       {/* QR Code */}
@@ -195,10 +209,12 @@ export default function PaymentDetails({
       {/* Address */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-medium text-slate-400">Send to this address:</p>
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <p className="text-xs font-medium text-slate-400">
+            Send to this address:
+          </p>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={copyAddress}
             className="h-7 px-2 text-xs hover:bg-slate-700"
           >
@@ -210,7 +226,7 @@ export default function PaymentDetails({
             {copied ? "Copied" : "Copy"}
           </Button>
         </div>
-        <div className="break-all rounded-md bg-slate-700 p-2.5 text-xs font-mono text-slate-300">
+        <div className="break-all rounded-md bg-slate-700 p-2.5 font-mono text-xs text-slate-300">
           {address}
         </div>
       </div>
@@ -220,11 +236,13 @@ export default function PaymentDetails({
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs">
             <span className="font-medium text-slate-400">Time remaining:</span>
-            <span className="font-mono text-slate-300">{formatTime(timeLeft)}</span>
+            <span className="font-mono text-slate-300">
+              {formatTime(timeLeft)}
+            </span>
           </div>
           <Progress value={timerProgress} className="h-1.5 bg-slate-700">
-            <div 
-              className={`h-full ${timerProgress < 30 ? 'bg-red-500' : timerProgress < 70 ? 'bg-amber-500' : 'bg-emerald-500'}`} 
+            <div
+              className={`h-full ${timerProgress < 30 ? "bg-red-500" : timerProgress < 70 ? "bg-amber-500" : "bg-emerald-500"}`}
               style={{ width: `${timerProgress}%` }}
             ></div>
           </Progress>
@@ -241,7 +259,9 @@ export default function PaymentDetails({
         ) : (
           <div className="flex items-center gap-2">
             {statusDetails.icon}
-            <p className={`text-sm ${statusDetails.color}`}>{statusDetails.text}</p>
+            <p className={`text-sm ${statusDetails.color}`}>
+              {statusDetails.text}
+            </p>
           </div>
         )}
       </div>
@@ -249,14 +269,15 @@ export default function PaymentDetails({
       {/* Error message */}
       {(status === "failed" || status === "expired") && (
         <div className="rounded-md bg-red-900/20 p-3 text-sm text-red-400">
-          Your payment session is no longer valid. Please try again with a new payment.
+          Your payment session is no longer valid. Please try again with a new
+          payment.
         </div>
       )}
 
       {/* Close Button */}
-      <Button 
-        onClick={onClose} 
-        variant="outline" 
+      <Button
+        onClick={onClose}
+        variant="outline"
         className="w-full border-slate-600 bg-slate-700 text-slate-200 hover:bg-slate-600 hover:text-white"
       >
         Close
