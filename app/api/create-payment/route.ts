@@ -13,11 +13,11 @@ export async function POST(request: Request) {
       price_currency: "usd",
       pay_currency: coin,            // e.g. "btc", "usdttrc20", etc.
       order_id: userId,              // Use the user ID for correlation
-      order_description: "Trading Signals - 1 Month Pro",
+      order_description: "Smart Alerts - 1 Month Pro",
       ipn_callback_url: `${process.env.DEV_URL}/api/webhook`
     };
 
-    const res = await fetch("https://api.nowpayments.io/v1/payment", {
+    const res = await fetch("https://api-sandbox.nowpayments.io/v1/payment", {
       method: "POST",
       headers: {
         "x-api-key": apiKey,
