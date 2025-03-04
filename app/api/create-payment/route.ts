@@ -12,7 +12,7 @@ export async function POST(request: Request) {
 
     const apiKey = process.env.NOWPAYMENTS_API_KEY!;
     const paymentRequest = {
-      price_amount: 25, // Subscription cost in USD
+      price_amount: 11, // Subscription cost in USD
       price_currency: "usd",
       pay_currency: coin, // e.g. "btc", "usdttrc20", etc.
       order_id: userId, // Use the user ID for correlation
