@@ -55,7 +55,7 @@ export default function PaypalSubscribeButton({ user }) {
   };
 
   return (
-    <div className="p-4 bg-slate-900 rounded-lg">
+    <div className="p-4 bg-slate-900 rounded-lg z-10">
       <h2 className="font-semibold text-center mb-2 text-slate-50">Payment by</h2>
       <PayPalScriptProvider
         options={{

@@ -62,12 +62,15 @@ const UpgradeAccount = ({ user }) => {
             {/* <button className="mt-4 w-80 rounded-lg bg-green-800 px-2 py-2">
             {t("upgradeButton")}
           </button> */}
-
-           <CryptoPaymentModal user={user} />
           </div>
         </div>
-        <div className="p-4 text-slate-100">
-          <PaypalSubscribeButton user={user} />
+        <div className="flex flex-col gap-4 p-4 text-slate-100">
+          <div className="z-50">
+            <CryptoPaymentModal user={user} />
+          </div>
+          <div className="z-40">
+            <PaypalSubscribeButton user={user} />
+          </div>
         </div>
       </div>
     </PayPalScriptProvider>

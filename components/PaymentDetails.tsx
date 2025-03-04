@@ -1,13 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { QRCodeSVG } from "qrcode.react"; // Make sure you have this package
+import { QRCodeSVG } from "qrcode.react";
 import { toast } from "@/hooks/use-toast";
+import { useRouter } from "@/i18n/routing";
+import { Copy, Check, Clock, AlertCircle, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 
 interface PaymentDetailsProps {
   userId: string;
   coin: string;
-  paymentId: string; // We'll pass the paymentId out here for easier status polling
+  paymentId: string;
   amount: string;
   currency: string;
   address: string;
@@ -27,26 +31,36 @@ export default function PaymentDetails({
 }: PaymentDetailsProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [timeLeft, setTimeLeft] = useState<number>(0);
-  const [status, setStatus] = useState<string>("waiting"); // or "created" initially
+  const [totalTime, setTotalTime] = useState<number>(0);
+  const [copied, setCopied] = useState<boolean>(false);
+  const [status, setStatus] = useState<string>("waiting");
 
-  // Timer logic: update every second until expiration.
+  const router = useRouter();
+
+  // Timer logic: update every second until expiration
   useEffect(() => {
     if (expiresAt) {
       const expirationDate = new Date(expiresAt);
+      const now = new Date();
+      const total = expirationDate.getTime() - now.getTime();
+      setTotalTime(total);
+      
       const interval = setInterval(() => {
-        const now = new Date();
-        const diff = expirationDate.getTime() - now.getTime();
+        const currentTime = new Date();
+        const diff = expirationDate.getTime() - currentTime.getTime();
         if (diff <= 0) {
           clearInterval(interval);
           setTimeLeft(0);
-          // Optionally, you can alert the user or automatically close the modal
+          if (status === "waiting") {
+            setStatus("expired");
+          }
         } else {
           setTimeLeft(diff);
         }
       }, 1000);
       return () => clearInterval(interval);
     }
-  }, [expiresAt]);
+  }, [expiresAt, status]);
 
   // Poll the payment status every 10 seconds
   useEffect(() => {
@@ -54,26 +68,24 @@ export default function PaymentDetails({
       checkPaymentStatus();
     }, 10000);
 
-    // Immediately check once on mount
     checkPaymentStatus();
 
     return () => clearInterval(pollInterval);
   }, [paymentId]);
 
-  // Helper to format milliseconds as mm:ss.
   const formatTime = (ms: number) => {
     const totalSeconds = Math.floor(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${seconds
-      .toString()
-      .padStart(2, "0")}`;
+    return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
   const copyAddress = async () => {
     try {
       await navigator.clipboard.writeText(address);
+      setCopied(true);
       toast({ title: "Address copied!" });
+      setTimeout(() => setCopied(false), 3000);
     } catch (err) {
       console.error("Copy error:", err);
     }
@@ -89,7 +101,6 @@ export default function PaymentDetails({
         console.error("Error fetching payment status:", data.error);
         return;
       }
-      // data.payment_status might be 'waiting', 'confirming', 'finished', 'failed', etc.
       setStatus(data.payment_status || "unknown");
     } catch (err) {
       console.error("checkPaymentStatus error:", err);
@@ -98,76 +109,158 @@ export default function PaymentDetails({
     }
   };
 
-  // Decide UI text based on status
-  const renderStatus = () => {
+  // Get status details (icon, text, color)
+  const getStatusDetails = () => {
     switch (status) {
       case "waiting":
-        return "Waiting for payment...";
+        return {
+          icon: <Clock className="h-4 w-4 text-amber-400" />,
+          text: "Waiting for payment...",
+          color: "text-amber-400"
+        };
       case "confirming":
-        return "Payment received. Confirming on blockchain...";
+        return {
+          icon: <Loader2 className="h-4 w-4 text-blue-400 animate-spin" />,
+          text: "Payment received. Confirming on blockchain...",
+          color: "text-blue-400"
+        };
       case "finished":
-        return "Payment confirmed! Your subscription is now active.";
+        return {
+          icon: <Check className="h-4 w-4 text-green-400" />,
+          text: "Payment confirmed! Your subscription is now active.",
+          color: "text-green-400"
+        };
       case "failed":
-        return "Payment failed. Please try again.";
+        return {
+          icon: <AlertCircle className="h-4 w-4 text-red-400" />,
+          text: "Payment failed. Please try again.",
+          color: "text-red-400"
+        };
       case "expired":
-        return "Payment window expired.";
+        return {
+          icon: <AlertCircle className="h-4 w-4 text-red-400" />,
+          text: "Payment window expired.",
+          color: "text-red-400"
+        };
       default:
-        return `Status: ${status}`;
+        return {
+          icon: <Clock className="h-4 w-4 text-gray-400" />,
+          text: `Status: ${status}`,
+          color: "text-gray-400"
+        };
     }
   };
 
-  // If status is finished, you can optionally auto-close the modal after a short delay
+  // Calculate timer progress percentage
+  const timerProgress = totalTime > 0 ? (timeLeft / totalTime) * 100 : 0;
+  const statusDetails = getStatusDetails();
+
+  // Redirect on success
   useEffect(() => {
     if (status === "finished") {
       const timer = setTimeout(() => {
-        // Refresh or close
+        router.push("/success");
         onClose();
-      }, 3000); // close after 3 seconds
+      }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [status, onClose]);
+  }, [status, onClose, router]);
 
   return (
-    <div className="space-y-4">
-      <p className="text-sm text-gray-300">Please send:</p>
-      <p className="font-bold">
-        {amount} {currency.toUpperCase()}
-      </p>
-
-      <div className="break-all rounded bg-gray-800 p-2 text-sm">
-        {address}
-      </div>
-      <button onClick={copyAddress} className="btn-secondary">
-        Copy Address
-      </button>
-
-      <div className="flex justify-center py-2">
-        <QRCodeSVG value={address} size={128} />
+    <div className="space-y-4 p-1 h-full overflow-y-auto">
+      {/* Payment Header */}
+      <div className="text-center">
+        <h3 className="text-lg font-medium text-slate-200">Complete Your Payment</h3>
+        <p className="text-sm text-slate-400">Send the exact amount to the address below</p>
       </div>
 
-      {expiresAt && (
-        <p className="text-sm text-gray-400">
-          Expires in: {formatTime(timeLeft)}
-        </p>
+      {/* Amount Display */}
+      <div className="flex flex-col items-center space-y-2 rounded-lg bg-slate-700 p-4">
+        <p className="text-sm font-medium text-slate-300">Amount to Send:</p>
+        <div className="flex items-center gap-2">
+          <span className="text-2xl font-bold text-white">{amount}</span>
+          <span className="rounded-full bg-slate-600 px-2 py-1 text-xs font-medium uppercase tracking-wide text-slate-300">
+            {currency}
+          </span>
+        </div>
+      </div>
+
+      {/* QR Code */}
+      <div className="flex justify-center">
+        <div className="rounded-xl bg-white p-3">
+          <QRCodeSVG value={address} size={160} />
+        </div>
+      </div>
+
+      {/* Address */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-medium text-slate-400">Send to this address:</p>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={copyAddress}
+            className="h-7 px-2 text-xs hover:bg-slate-700"
+          >
+            {copied ? (
+              <Check className="mr-1 h-3.5 w-3.5 text-green-500" />
+            ) : (
+              <Copy className="mr-1 h-3.5 w-3.5" />
+            )}
+            {copied ? "Copied" : "Copy"}
+          </Button>
+        </div>
+        <div className="break-all rounded-md bg-slate-700 p-2.5 text-xs font-mono text-slate-300">
+          {address}
+        </div>
+      </div>
+
+      {/* Timer */}
+      {expiresAt && timeLeft > 0 && (
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-medium text-slate-400">Time remaining:</span>
+            <span className="font-mono text-slate-300">{formatTime(timeLeft)}</span>
+          </div>
+          <Progress value={timerProgress} className="h-1.5 bg-slate-700">
+            <div 
+              className={`h-full ${timerProgress < 30 ? 'bg-red-500' : timerProgress < 70 ? 'bg-amber-500' : 'bg-emerald-500'}`} 
+              style={{ width: `${timerProgress}%` }}
+            ></div>
+          </Progress>
+        </div>
       )}
 
-      <div className="mt-2 text-sm">
+      {/* Status */}
+      <div className="flex items-center gap-2 rounded-md bg-slate-700 p-3">
         {loading ? (
-          <p className="text-blue-400">Checking status...</p>
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
+            <p className="text-sm text-blue-400">Checking status...</p>
+          </div>
         ) : (
-          <p className="text-blue-200">{renderStatus()}</p>
+          <div className="flex items-center gap-2">
+            {statusDetails.icon}
+            <p className={`text-sm ${statusDetails.color}`}>{statusDetails.text}</p>
+          </div>
         )}
       </div>
 
-      {status === "failed" || status === "expired" ? (
-        <p className="text-red-400 mt-2">
-          Your payment session is no longer valid. Please try again.
-        </p>
-      ) : null}
+      {/* Error message */}
+      {(status === "failed" || status === "expired") && (
+        <div className="rounded-md bg-red-900/20 p-3 text-sm text-red-400">
+          Your payment session is no longer valid. Please try again with a new payment.
+        </div>
+      )}
 
-      <button onClick={onClose} className="btn-tertiary w-full mt-4">
+      {/* Close Button */}
+      <Button 
+        onClick={onClose} 
+        variant="outline" 
+        className="w-full border-slate-600 bg-slate-700 text-slate-200 hover:bg-slate-600 hover:text-white"
+      >
         Close
-      </button>
+      </Button>
     </div>
   );
 }

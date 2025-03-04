@@ -2,9 +2,12 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const res = await fetch("https://api.nowpayments.io/v1/currencies", {
-      headers: { "x-api-key": process.env.NOWPAYMENTS_API_KEY! },
-    });
+    const res = await fetch(
+      "https://api-sandbox.nowpayments.io/v1/full-currencies",
+      {
+        headers: { "x-api-key": process.env.NOWPAYMENTS_API_KEY! },
+      },
+    );
     if (!res.ok) {
       return NextResponse.json(
         { error: "Failed to fetch currencies" },

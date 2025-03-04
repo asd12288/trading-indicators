@@ -68,6 +68,10 @@ const ManageAccount = ({ profile }) => {
           <span className="font-medium">{profile.subscription_status}</span>
         </p>
 
+        <p>
+          
+        </p>
+
        
 
         <div className="flex items-center gap-4">

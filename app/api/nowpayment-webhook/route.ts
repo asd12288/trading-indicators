@@ -1,9 +1,10 @@
 import crypto from "crypto";
+import { sub } from "date-fns";
 import { NextResponse } from "next/server";
 
 export const config = {
   runtime: "node",
-  api: { bodyParser: false } // to access raw body for signature verification
+  api: { bodyParser: false }, // to access raw body for signature verification
 };
 
 export async function POST(request: Request) {
@@ -14,7 +15,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Signature missing" }, { status: 400 });
     }
     const secret = process.env.NOWPAYMENTS_IPN_SECRET!;
-    const hash = crypto.createHmac("sha512", secret).update(rawBody).digest("hex");
+    const hash = crypto
+      .createHmac("sha512", secret)
+      .update(rawBody)
+      .digest("hex");
     if (hash !== signature) {
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
@@ -26,11 +30,17 @@ export async function POST(request: Request) {
     if (payment_status === "finished" || payment_status === "confirmed") {
       // Update your subscription in the database, e.g. via Supabase.
       await activateProSubscription(order_id);
-      console.log(`User ${order_id} upgraded to Pro. Payment ID: ${payment_id}`);
+      console.log(
+        `User ${order_id} upgraded to Pro. Payment ID: ${payment_id}`,
+      );
     } else if (payment_status === "partially_paid") {
-      console.warn(`Payment ${payment_id} partially paid for user ${order_id}.`);
+      console.warn(
+        `Payment ${payment_id} partially paid for user ${order_id}.`,
+      );
     } else if (payment_status === "expired" || payment_status === "failed") {
-      console.warn(`Payment ${payment_id} ${payment_status} for user ${order_id}.`);
+      console.warn(
+        `Payment ${payment_id} ${payment_status} for user ${order_id}.`,
+      );
     }
 
     return NextResponse.json({ status: "OK" });
@@ -46,7 +56,7 @@ async function activateProSubscription(userId: string) {
   const { createClient } = await import("@supabase/supabase-js");
   const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 30);
@@ -54,7 +64,8 @@ async function activateProSubscription(userId: string) {
     .from("profiles")
     .update({
       plan: "pro",
-      current_period_end: expiresAt.toISOString()
+      current_period_end: expiresAt.toISOString(),
+      subscription_status: "ACTIVE",
     })
     .eq("id", userId);
   if (error) {
