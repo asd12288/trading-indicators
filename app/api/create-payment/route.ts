@@ -4,29 +4,31 @@ export async function POST(request: Request) {
   try {
     const { userId, coin } = await request.json();
     if (!userId || !coin) {
-      return NextResponse.json({ error: "Missing userId or coin" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing userId or coin" },
+        { status: 400 },
+      );
     }
 
     const apiKey = process.env.NOWPAYMENTS_API_KEY!;
     const paymentRequest = {
-      price_amount: 25,            // Subscription cost in USD
+      price_amount: 25, // Subscription cost in USD
       price_currency: "usd",
-      pay_currency: coin,            // e.g. "btc", "usdttrc20", etc.
-      order_id: userId,              // Use the user ID for correlation
+      pay_currency: coin, // e.g. "btc", "usdttrc20", etc.
+      order_id: userId, // Use the user ID for correlation
       order_description: "Smart Alerts - 1 Month Pro",
       // ipn_callback_url: `${process.env.DEV_URL}/api/webhook`
-      
 
-      ipn_callback_url: `https://f4cc-5-29-19-31.ngrok-free.app/api/nowpayment-webhook`
+      ipn_callback_url: `https://trader-map.com/api/nowpayment-webhook`,
     };
 
-    const res = await fetch("https://api-sandbox.nowpayments.io/v1/payment", {
+    const res = await fetch("https://api.nowpayments.io/v1/payment", {
       method: "POST",
       headers: {
         "x-api-key": apiKey,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(paymentRequest)
+      body: JSON.stringify(paymentRequest),
     });
 
     // Handle 429 Too Many Requests explicitly.
@@ -35,7 +37,7 @@ export async function POST(request: Request) {
       console.error("Rate limit exceeded. Retry after:", retryAfter);
       return NextResponse.json(
         { error: `Rate limit exceeded. Please try again after ${retryAfter}.` },
-        { status: 429 }
+        { status: 429 },
       );
     }
 
@@ -51,7 +53,7 @@ export async function POST(request: Request) {
       console.error("JSON parse error:", error);
       return NextResponse.json(
         { error: "Invalid JSON response from NowPayments", raw: rawText },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -64,8 +66,8 @@ export async function POST(request: Request) {
           amount: data.pay_amount,
           currency: data.pay_currency,
           paymentId: data.payment_id,
-          expiresAt: data.expiration_estimate_date
-        }
+          expiresAt: data.expiration_estimate_date,
+        },
       });
     } else if (data && data.payment_url) {
       // Fallback for hosted checkout.
