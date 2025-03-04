@@ -235,7 +235,6 @@ export default function PaymentDetails({
           <QRCodeSVG
             size={180}
             value={`${currency.toLowerCase()}:${address}?amount=${amount}`}
-            viewBox={`0 0 180 180`}
           />
         </div>
         <span className="text-xs text-slate-400">
