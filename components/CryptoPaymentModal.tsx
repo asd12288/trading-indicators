@@ -199,7 +199,35 @@ export default function CryptoPaymentModal({ user }: { user: any }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <div className="flex flex-col items-center gap-2">
-          <Button className="py-4">Pay with Crypto</Button>
+          <Button className="relative flex items-center gap-2 px-6 py-4">
+            <div className="mr-2 flex -space-x-2 p">
+              <div className="h-6 w-6 rounded-full p-0.5 shadow-sm">
+                <Image
+                  src="/images/coins/btc.svg"
+                  alt="Bitcoin"
+                  width={20}
+                  height={20}
+                />
+              </div>
+              <div className="h-6 w-6 rounded-full p-0.5 shadow-sm">
+                <Image
+                  src="/images/coins/eth.svg"
+                  alt="Ethereum"
+                  width={20}
+                  height={20}
+                />
+              </div>
+              <div className="h-6 w-6 rounded-full p-0.5 shadow-sm">
+                <Image
+                  src="/images/coins/usdt.svg"
+                  alt="Tether"
+                  width={20}
+                  height={20}
+                />
+              </div>
+            </div>
+            Pay with Crypto
+          </Button>
           <p className="text-sm">Powered by NowPayments</p>
         </div>
       </DialogTrigger>
@@ -232,7 +260,7 @@ export default function CryptoPaymentModal({ user }: { user: any }) {
                 <RadioGroup
                   value={selectedCoin || ""}
                   onValueChange={setSelectedCoin}
-                  className="flex max-h-[400px] flex-col gap-2 overflow-y-auto py-2 px-6"
+                  className="flex max-h-[400px] flex-col gap-2 overflow-y-auto px-6 py-2"
                 >
                   {sortedOptions.map((coin) => (
                     <div
