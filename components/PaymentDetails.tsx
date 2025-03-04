@@ -6,7 +6,7 @@ import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
 import { Copy, CheckCircle, Clock, AlertCircle, RefreshCw } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import QRCode from "react-qr-code";
+import { QRCodeSVG } from "qrcode.react";
 
 interface PaymentDetailsProps {
   userId: string;
@@ -232,7 +232,7 @@ export default function PaymentDetails({
       {/* QR Code */}
       <div className="flex flex-col items-center space-y-3">
         <div className="rounded-lg bg-white p-3">
-          <QRCode
+          <QRCodeSVG
             size={180}
             value={`${currency.toLowerCase()}:${address}?amount=${amount}`}
             viewBox={`0 0 180 180`}
