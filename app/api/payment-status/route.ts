@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     }
 
     const apiKey = process.env.NOWPAYMENTS_API_KEY!;
-    const statusRes = await fetch(`https://api-sandbox.nowpayments.io/v1/payment/${paymentId}`, {
+    const statusRes = await fetch(`https://api.nowpayments.io/v1/payment/${paymentId}`, {
       method: "GET",
       headers: {
         "x-api-key": apiKey,

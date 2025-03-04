@@ -114,11 +114,11 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
         </div>
       </div>
 
-      <p className="p-2 text-center">
+      <p className="p-2 text-center text-sm">
         {t("tradeDuration")} {tradeDuration}
       </p>
       <div className="border-b-2 border-slate-700"></div>
-      <p className="p-2 text-center">
+      <p className="p-2 bg-slate-900 text-center text-sm">
         {t("startedAt")} {format(parseISO(exit_time), "MM/dd -  HH:mm")}
       </p>
     </div>
