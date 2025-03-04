@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
 import { Copy, CheckCircle, Clock, AlertCircle, RefreshCw } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { QRCodeSVG } from "qrcode.react";
+import { useRouter } from "@/i18n/routing";
 
 interface PaymentDetailsProps {
   userId: string;
@@ -86,19 +86,20 @@ export default function PaymentDetails({
             setConfirmations(data.confirmations);
           }
 
-          if (data.actually_paid !== undefined && data.actually_paid) {
-            setStatus("confirmed");
-            // Handle subscription activation here if needed
-          } else if (data.payment_status === "waiting") {
-            setStatus("waiting");
-          } else if (data.payment_status === "confirming") {
-            setStatus("confirming");
-          } else if (
+          // Redirect to success page when payment is confirmed
+          if (
             data.payment_status === "confirmed" ||
             data.payment_status === "finished"
           ) {
             setStatus("confirmed");
-            // Handle subscription activation here if needed
+            // Wait a moment to show the success state before redirecting
+            setTimeout(() => {
+              router.push(`/success`);
+            }, 2000);
+          } else if (data.payment_status === "waiting") {
+            setStatus("waiting");
+          } else if (data.payment_status === "confirming") {
+            setStatus("confirming");
           } else if (data.payment_status === "expired") {
             setStatus("expired");
           } else if (data.payment_status === "failed") {
