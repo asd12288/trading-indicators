@@ -1,0 +1,15 @@
+name: Check Expired Subscriptions
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight
+
+jobs:
+  check-subscriptions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call subscription check endpoint
+        run: |
+          curl -X GET \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+          ${{ secrets.DEV_URL }}/api/cron

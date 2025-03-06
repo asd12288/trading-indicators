@@ -10,6 +10,7 @@ import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import Image from "next/image";
 import CryptoPayButton from "./CryptoPayButton";
 import CryptoPaymentModal from "./CryptoPaymentModal";
+import NowPaymentsButton from "./NowPaymentsButton";
 
 const UpgradeAccount = ({ user }) => {
   const [checkoutUrl, setCheckoutUrl] = useState("");
@@ -66,7 +67,9 @@ const UpgradeAccount = ({ user }) => {
         </div>
         <div className="flex flex-col gap-4 p-4 text-slate-100">
           <div className="z-50">
-            <CryptoPaymentModal user={user} />
+            {/* <CryptoPaymentModal user={user} /> */}
+
+            <NowPaymentsButton user={user} />
           </div>
           <div className="z-40">
             <PaypalSubscribeButton user={user} />
