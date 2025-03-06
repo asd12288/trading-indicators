@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import supabaseClient from "@/database/supabase/supabase";
 import { createClient } from "@/database/supabase/server";
+import { Resend } from "resend";
+import { NewSubscriptionEmail } from "@/content/emails-templates/welcomeEmail";
+import { sendWelcomeEmail } from "@/lib/email";
 
 // Helper function to sort object keys recursively for consistent signature generation
 function sortObject(obj: any): any {
@@ -128,6 +131,25 @@ export async function POST(request: Request) {
           { error: "Error updating user profile" },
           { status: 500 },
         );
+      }
+
+      // Send welcome email
+      try {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+          from: "Trader Map <noreply@trader-map.com>",
+          to: user.email,
+          subject: "🎉 Welcome to Trader Map Pro!",
+          react: NewSubscriptionEmail({
+            userName: user.full_name || user.email,
+            userEmail: user.email,
+            plan: "Pro",
+            expirationDate: expirationDate.toISOString(),
+          }),
+        });
+      } catch (emailError) {
+        console.error("❌ Error sending welcome email:", emailError);
+        // Continue with webhook processing
       }
 
       // For debugging purposes, let's log this

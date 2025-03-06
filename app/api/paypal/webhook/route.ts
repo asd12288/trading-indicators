@@ -3,6 +3,7 @@
 import { NextResponse } from "next/server";
 import { verifyWebhookSignature } from "@/lib/paypal";
 import supabaseClient from "@/database/supabase/supabase";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export async function POST(req) {
   let event;
@@ -37,6 +38,32 @@ export async function POST(req) {
         .from("profiles")
         .update({ plan: "pro", subscription_status: "Active" })
         .eq("id", userId);
+
+      // Send welcome email
+      const { data: user, error: userError } = await supabaseClient
+        .from("profiles")
+        .select("email")
+        .eq("id", userId)
+        .single();
+
+      if (userError) {
+        console.error("❌ Error fetching user data:", userError);
+      } else {
+        const expirationDate = new Date();
+        expirationDate.setMonth(expirationDate.getMonth() + 1);
+
+        try {
+          await sendWelcomeEmail({
+            userName: user.email,
+            userEmail: user.email,
+            plan: "Pro",
+            expirationDate: expirationDate.toISOString(),
+          });
+        } catch (emailError) {
+          console.error("❌ Error sending welcome email:", emailError);
+          // Continue with webhook processing
+        }
+      }
     } else if (eventType === "BILLING.SUBSCRIPTION.CANCELLED") {
       // This fires when subscription is fully cancelled (after the period ends)
       await supabaseClient

@@ -30,6 +30,10 @@ export function AppSidebar() {
       title: t("items.smartAlert"),
       url: "/docs/smart-alert",
     },
+    {
+      title: t("items.traderMap"),
+      url: "/docs/mfe-mae-trading",
+    },
   ];
 
   return (

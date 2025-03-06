@@ -49,7 +49,7 @@ const ContactForm = () => {
   async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
       setIsLoading(true);
-      const response = await fetch("/api/send", {
+      const response = await fetch("/api/email/form", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -166,7 +166,7 @@ const ContactForm = () => {
         />
         <Button
           type="submit"
-          className="w-full rounded-lg bg-green-700 px-6 mt-3 py-3 text-lg font-semibold text-white transition  hover:bg-green-800"
+          className="mt-3 w-full rounded-lg bg-green-700 px-6 py-3 text-lg font-semibold text-white transition hover:bg-green-800"
           disabled={loading}
         >
           {loading ? "Sending..." : t("button")}
