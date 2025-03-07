@@ -129,9 +129,11 @@
       }
     },
     "cta": {
-      "title": "Ready to start trading?",
+      "title": "Ready to start trading smarter?",
       "subtitle": "Join Trader-Map today and get access to real-time smart alerts, expert analysis, and more.",
-      "button": "Get Started Now"
+      "button": "Get Started Now",
+      "card": " No Credit Card Required",
+      "cancel": "Cancel Anytime"
     },
     "service": {
       "title": "Benefits of Trader-Map",

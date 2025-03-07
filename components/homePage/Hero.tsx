@@ -4,9 +4,16 @@ import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { HiArrowRight } from "react-icons/hi";
 import DemoCard from "./DemoCard";
-import LogosScroling from "@/components/LogosScroling";
 import { motion } from "framer-motion";
-import TimelineSection from "./TimelineSection";
+import dynamic from "next/dynamic";
+
+// Lazy-load these heavier components
+const TimelineSection = dynamic(() => import("./TimelineSection"), {
+  ssr: false,
+});
+const LogosScroling = dynamic(() => import("@/components/LogosScroling"), {
+  ssr: false,
+});
 
 const Hero = () => {
   const t = useTranslations("HomePage.hero");

@@ -8,7 +8,7 @@ const PlanCard = () => {
   const t = useTranslations("HomePage.proPlanCard");
 
   return (
-    <BackgroundGradient className="relative overflow-hidden rounded-xl p-8 shadow-lg">
+    <BackgroundGradient className="relative overflow-hidden rounded-xl p-8 shadow-lg border-4 border-green-400">
       {/* Floating Label */}
       <div className="absolute right-3 top-3 rounded-full bg-green-700 px-3 py-1 text-xs font-medium text-white">
         Best Value

@@ -97,7 +97,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
       </div>
 
       <h3 className="hover:text-primary mt-6 text-slate-400 transition-colors duration-200">
-        <Link href="/signals">{t("allSignals")}...</Link>
+        <Link href="/smart-alerts">{t("allSignals")}...</Link>
       </h3>
     </div>
   );
