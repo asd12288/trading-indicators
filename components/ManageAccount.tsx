@@ -7,6 +7,18 @@ import { useState } from "react";
 import ConfirmDialog from "./ConfirmDialog";
 import { Button } from "./ui/button";
 import { useTranslations } from "next-intl";
+import { Tooltip } from "./ui/tooltip";
+import SignalToolTooltip from "./SignalCard/SignalToolTooltip";
+import { CalendarIcon, CreditCardIcon, AlertTriangleIcon } from "lucide-react";
+import { motion } from "framer-motion";
+import { Badge } from "./ui/badge";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 
 const ManageAccount = ({ profile }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,6 +26,20 @@ const ManageAccount = ({ profile }) => {
   const router = useRouter();
   const { toast } = useToast();
   const t = useTranslations("ManageAccount");
+
+  // Status styling helper
+  const getStatusStyle = (status) => {
+    switch (status?.toUpperCase()) {
+      case "ACTIVE":
+        return "bg-green-600 hover:bg-green-700";
+      case "CANCELLED":
+        return "bg-amber-600 hover:bg-amber-700";
+      case "SUSPENDED":
+        return "bg-red-600 hover:bg-red-700";
+      default:
+        return "bg-slate-600 hover:bg-slate-700";
+    }
+  };
 
   const handleCancelConfirmSubscription = async () => {
     setIsLoading(true);
@@ -52,50 +78,97 @@ const ManageAccount = ({ profile }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 text-lg">
-      <div className="flex flex-col justify-center gap-4">
-        <p className="text-sm font-extralight">
-          {t("plan.memberSince")}{" "}
-          <span className="font-medium">
-            {format(new Date(profile.created_at), "dd/MM/yyyy")}
-          </span>
-        </p>
-        <h3>
-          {t("plan.title")} {profile.plan || t("plan.type")}
-        </h3>
-        <p>
-          {t("plan.status")}{" "}
-          <span className="font-medium">{profile.subscription_status}</span>
-        </p>
-
-        <p>
-          
-        </p>
-
-       
-
-        <div className="flex items-center gap-4">
-          <Button
-            className="bg-red-900 hover:bg-red-950"
-            onClick={() => setAlertOpen(true)}
-            disabled={
-              isLoading ||
-              profile.subscription_status === "CANCELLED"
-            }
-          >
-            {isLoading
-              ? t("buttons.cancelling")
-              : profile.subscription_status === "CANCELLED"
-                ? t("buttons.cancelPending")
-                : t("buttons.cancel")}
-          </Button>
-          <p className="text-sm font-extralight">
-            {profile.subscription_status === "CANCELLED"
-              ? t("messages.alreadyCanceled")
-              : ""}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="mx-auto w-full max-w-md"
+    >
+      <Card className="border border-slate-700 bg-slate-900/50 shadow-lg backdrop-blur-sm">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-xl font-bold text-slate-50">
+              {t("plan.title")} {profile.plan || t("plan.type")}
+            </CardTitle>
+            <Badge className={getStatusStyle(profile.subscription_status)}>
+              {profile.subscription_status || "Unknown"}
+            </Badge>
+          </div>
+          <p className="flex items-center gap-1 text-sm text-slate-400">
+            <CalendarIcon size={14} />
+            {t("plan.memberSince")}{" "}
+            <span className="ml-1 font-medium">
+              {format(new Date(profile.created_at), "dd/MM/yyyy")}
+            </span>
           </p>
-        </div>
-      </div>
+        </CardHeader>
+
+        <CardContent className="space-y-4 p-8 pt-2">
+          <div className="space-y-2 rounded-md bg-slate-800/50 p-8">
+            <h4 className="text-sm font-medium text-slate-300">
+              Subscription Details
+            </h4>
+
+            <div className="flex items-center justify-between gap-10">
+              <p className="text-sm text-slate-400">Payment Method</p>
+              <div className="flex items-center gap-1">
+                <span className="font-medium text-slate-100">
+                  {profile.payment_method || "Not specified"}
+                </span>
+              </div>
+            </div>
+
+            {profile.payment_method === "crypto" && (
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-slate-400">Expires:</p>
+                <div className="flex items-center gap-1">
+                  <CalendarIcon size={14} className="text-slate-100" />
+                  <span className="font-medium text-slate-100">
+                    {format(profile.subscription_expires_at, "dd/MM/yyyy")}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+
+        <CardFooter className="flex flex-col space-y-3 pt-1">
+          <div className="flex w-full items-center gap-3">
+            <SignalToolTooltip text="Canceling the plan is for PayPal subscription only. Your subscription will be cancelled at the end of the billing period.">
+              <div className="w-full">
+                <Button
+                  className="w-full bg-red-900 transition-colors hover:bg-red-800"
+                  onClick={() => setAlertOpen(true)}
+                  disabled={
+                    isLoading ||
+                    profile.subscription_status === "CANCELLED" ||
+                    (profile.payment_method &&
+                      profile.payment_method !== "paypal")
+                  }
+                >
+                  {isLoading ? (
+                    <span className="flex items-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></div>
+                      {t("buttons.cancelling")}
+                    </span>
+                  ) : profile.subscription_status === "CANCELLED" ? (
+                    t("buttons.cancelPending")
+                  ) : (
+                    t("buttons.cancel")
+                  )}
+                </Button>
+              </div>
+            </SignalToolTooltip>
+          </div>
+
+          {profile.subscription_status === "CANCELLED" && (
+            <div className="flex items-center gap-2 text-sm text-amber-400">
+              <AlertTriangleIcon size={16} />
+              <p>{t("messages.alreadyCanceled")}</p>
+            </div>
+          )}
+        </CardFooter>
+      </Card>
 
       <ConfirmDialog
         open={alertOpen}
@@ -104,7 +177,7 @@ const ManageAccount = ({ profile }) => {
         description={t("dialog.description")}
         onConfirm={handleCancelConfirmSubscription}
       />
-    </div>
+    </motion.div>
   );
 };
 

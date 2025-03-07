@@ -17,11 +17,15 @@ const SignalCard: React.FC<SignalCardProps> = ({ signalPassed }) => {
 
   const isBuy = signalPassed.trade_side === "Long" ? true : false;
 
-  return signalPassed.exit_price === null ||
-    signalPassed.exit_price === undefined ? (
-    <RunningSignalCard instrument={signalPassed} isBuy={isBuy} />
-  ) : (
-    <FufilledSignalCard instrument={signalPassed} isBuy={isBuy} />
+  return (
+    <div className="h-full w-full">
+      {signalPassed.exit_price === null ||
+      signalPassed.exit_price === undefined ? (
+        <RunningSignalCard instrument={signalPassed} isBuy={isBuy} />
+      ) : (
+        <FufilledSignalCard instrument={signalPassed} isBuy={isBuy} />
+      )}
+    </div>
   );
 };
 

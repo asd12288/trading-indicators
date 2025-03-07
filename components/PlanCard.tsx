@@ -17,7 +17,7 @@ const PlanCard = () => {
       <h3 className="text-4xl font-bold text-green-400">{t("plan")}</h3>
 
       <div className="mt-4 flex items-baseline gap-2">
-        <h4 className="text-5xl font-extrabold text-white">$65</h4>
+        <h4 className="text-5xl font-extrabold text-white">$35</h4>
         <p className="text-sm text-slate-300">{t("frequency")}</p>
       </div>
       <p className="text-sm text-slate-400">{t("billed")}</p>

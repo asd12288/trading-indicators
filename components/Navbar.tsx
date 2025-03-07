@@ -1,188 +1,309 @@
 "use client";
 import { Link } from "@/i18n/routing";
-import { MapIcon } from "lucide-react";
-import { useState } from "react";
-import { RxHamburgerMenu } from "react-icons/rx";
+import {
+  MapIcon,
+  User,
+  LogOut,
+  Lightbulb,
+  BookOpen,
+  LineChart,
+  ChevronRight,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { RxHamburgerMenu, RxCross1 } from "react-icons/rx";
 import LogoutBtn from "./LogoutBtn";
 import UpgradeButton from "./UpgradeButton";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslations } from "next-intl";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar({ user, profile }) {
   // State to handle mobile menu toggle
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { locale } = useParams<{ locale: string }>();
-
+  const pathname = usePathname();
   const t = useTranslations("Navbar.links");
 
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = () => {
+      if (isMobileOpen) setIsMobileOpen(false);
+    };
+
+    // Close mobile menu when route changes
+    if (isMobileOpen) setIsMobileOpen(false);
+
+    window.addEventListener("click", handleOutsideClick);
+    return () => window.removeEventListener("click", handleOutsideClick);
+  }, [pathname]);
+
+  // Prevent clicks inside the menu from closing it
+  const handleMenuClick = (e) => {
+    e.stopPropagation();
+  };
+
+  // Check if a link is active
+  const isActive = (path) => {
+    return pathname.startsWith(`/${locale}${path}`);
+  };
+
   return (
-    <header className="relative top-0 z-50 mx-auto w-full">
+    <header className="relative w-full">
       {/* Desktop Menu */}
       <div className="hidden lg:block">
-        <ul className="flex items-center justify-between p-8 text-lg font-medium">
-          <li>
-            <Link href="/">
-              <div className="flex items-center gap-2">
-                <h1 className="text-4xl font-semibold">Trader Map</h1>
-                <MapIcon height={35} width={35} />
-              </div>
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-8">
+          <Link
+            href="/"
+            className="flex items-center gap-2 transition-transform hover:scale-105"
+          >
+            <MapIcon height={30} width={30} className="text-blue-400" />
+            <h1 className="text-2xl font-bold tracking-tight text-white">
+              Trader<span className="text-blue-400">Map</span>
+            </h1>
+          </Link>
+
+          <nav className="flex items-center gap-1">
+            <Link
+              href="/smart-alerts"
+              className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium ${
+                isActive("/smart-alerts")
+                  ? "bg-slate-800 text-blue-400"
+                  : "text-slate-300 hover:bg-slate-800/50 hover:text-white"
+              }`}
+            >
+              <LineChart size={18} />
+              <span>{t("signals")}</span>
             </Link>
-          </li>
 
-          <div className="flex items-center gap-12">
-            <li>
-              <LanguageSwitcher />
-            </li>
-            <li className="hover:text-slate-300">
-              <Link
-                href="/smart-alerts"
-                className="flex items-center gap-2 hover:text-slate-300"
-              >
-                <p> {t("signals")}</p>
-              </Link>
-            </li>
+            <Link
+              href="/docs/getting-started"
+              className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium ${
+                isActive("/docs")
+                  ? "bg-slate-800 text-blue-400"
+                  : "text-slate-300 hover:bg-slate-800/50 hover:text-white"
+              }`}
+            >
+              <BookOpen size={18} />
+              <span>Docs</span>
+            </Link>
 
-            <li className="hover:text-slate-300">
-              <Link
-                href="/docs/getting-started"
-                className="flex items-center gap-2 hover:text-slate-300"
-              >
-                <p>Docs</p>
-              </Link>
-            </li>
-
-            <li>
-              <Link href="/blogs" className="hover:text-slate-300">
-                {t("blog")}
-              </Link>
-            </li>
+            <Link
+              href="/blogs"
+              className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium ${
+                isActive("/blogs")
+                  ? "bg-slate-800 text-blue-400"
+                  : "text-slate-300 hover:bg-slate-800/50 hover:text-white"
+              }`}
+            >
+              <Lightbulb size={18} />
+              <span>{t("blog")}</span>
+            </Link>
 
             {profile?.role === "admin" && (
-              <li>
-                <Link href="/admin" className="hover:text-slate-300">
-                  Admin
-                </Link>
-              </li>
+              <Link
+                href="/admin"
+                className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium ${
+                  isActive("/admin")
+                    ? "bg-slate-800 text-blue-400"
+                    : "text-slate-300 hover:bg-slate-800/50 hover:text-white"
+                }`}
+              >
+                <span>Admin</span>
+              </Link>
             )}
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+
+            <div className="mx-3 h-5 w-px bg-slate-700/50"></div>
 
             {user ? (
-              <>
-                <li>
-                  <Link href="/profile" className="hover:text-slate-300">
-                    {t("profile")}
-                  </Link>
-                </li>
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/profile"
+                  className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium ${
+                    isActive("/profile")
+                      ? "bg-slate-800 text-blue-400"
+                      : "text-slate-300 hover:bg-slate-800/50 hover:text-white"
+                  }`}
+                >
+                  <User size={18} />
+                  <span>{t("profile")}</span>
+                </Link>
+
                 <UpgradeButton profile={profile} />
-                <li>
+
+                <div className="group flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800/50 hover:text-white">
+                  <LogOut size={18} />
                   <LogoutBtn locale={locale} />
-                </li>
-              </>
+                </div>
+              </div>
             ) : (
-              <li>
-                <Link href="/login" className="hover:text-slate-300">
-                  <button className="flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 hover:bg-slate-900">
+              <Link href="/login">
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                >
+                  {t("login")}
+                </motion.button>
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Header */}
+      <div className="flex h-16 items-center justify-between px-4 lg:hidden">
+        <Link href="/" className="flex items-center gap-2">
+          <MapIcon height={24} width={24} className="text-blue-400" />
+          <h1 className="text-xl font-bold tracking-tight text-white">
+            Trader<span className="text-blue-400">Map</span>
+          </h1>
+        </Link>
+
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+
+          {/* Mobile Menu Button */}
+          <button
+            className="flex h-9 w-9 items-center justify-center rounded-md bg-slate-800 text-slate-200 focus:outline-none"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMobileOpen(!isMobileOpen);
+            }}
+          >
+            {isMobileOpen ? (
+              <RxCross1 className="text-xl" />
+            ) : (
+              <RxHamburgerMenu className="text-xl" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu - Animated slide-down */}
+      <AnimatePresence>
+        {isMobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden lg:hidden"
+            onClick={handleMenuClick}
+          >
+            <nav className="mx-4 mb-4 space-y-1 rounded-lg bg-slate-800 p-2 shadow-lg">
+              <Link
+                href="/smart-alerts"
+                onClick={() => setIsMobileOpen(false)}
+                className={`flex items-center justify-between rounded-md px-3 py-2.5 ${
+                  isActive("/smart-alerts")
+                    ? "bg-slate-700 text-blue-400"
+                    : "text-slate-200 hover:bg-slate-700/50"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <LineChart size={18} />
+                  <span className="font-medium">{t("signals")}</span>
+                </div>
+                <ChevronRight size={16} className="opacity-50" />
+              </Link>
+
+              <Link
+                href="/docs/getting-started"
+                onClick={() => setIsMobileOpen(false)}
+                className={`flex items-center justify-between rounded-md px-3 py-2.5 ${
+                  isActive("/docs")
+                    ? "bg-slate-700 text-blue-400"
+                    : "text-slate-200 hover:bg-slate-700/50"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <BookOpen size={18} />
+                  <span className="font-medium">Docs</span>
+                </div>
+                <ChevronRight size={16} className="opacity-50" />
+              </Link>
+
+              <Link
+                href="/blogs"
+                onClick={() => setIsMobileOpen(false)}
+                className={`flex items-center justify-between rounded-md px-3 py-2.5 ${
+                  isActive("/blogs")
+                    ? "bg-slate-700 text-blue-400"
+                    : "text-slate-200 hover:bg-slate-700/50"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Lightbulb size={18} />
+                  <span className="font-medium">{t("blog")}</span>
+                </div>
+                <ChevronRight size={16} className="opacity-50" />
+              </Link>
+
+              {profile?.role === "admin" && (
+                <Link
+                  href="/admin"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={`flex items-center justify-between rounded-md px-3 py-2.5 ${
+                    isActive("/admin")
+                      ? "bg-slate-700 text-blue-400"
+                      : "text-slate-200 hover:bg-slate-700/50"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="font-medium">Admin</span>
+                  </div>
+                  <ChevronRight size={16} className="opacity-50" />
+                </Link>
+              )}
+
+              <div className="my-1.5 h-px w-full bg-slate-700/50" />
+
+              {user ? (
+                <>
+                  <Link
+                    href="/profile"
+                    onClick={() => setIsMobileOpen(false)}
+                    className={`flex items-center justify-between rounded-md px-3 py-2.5 ${
+                      isActive("/profile")
+                        ? "bg-slate-700 text-blue-400"
+                        : "text-slate-200 hover:bg-slate-700/50"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <User size={18} />
+                      <span className="font-medium">{t("profile")}</span>
+                    </div>
+                    <ChevronRight size={16} className="opacity-50" />
+                  </Link>
+
+                  <div className="p-2">
+                    <UpgradeButton profile={profile} />
+                  </div>
+
+                  <div className="px-3 py-2">
+                    <LogoutBtn locale={locale} fullWidth />
+                  </div>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setIsMobileOpen(false)}
+                  className="block w-full"
+                >
+                  <button className="mt-1 w-full rounded-md bg-blue-600 px-4 py-2.5 text-center font-medium text-white hover:bg-blue-700">
                     {t("login")}
                   </button>
                 </Link>
-              </li>
-            )}
-          </div>
-        </ul>
-      </div>
-
-      {/* Mobile Menu */}
-      <div className="flex items-center justify-between p-4 lg:hidden">
-        <Link href="/">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold">Trader Map</h1>
-            <MapIcon height={25} width={25} />
-          </div>{" "}
-        </Link>
-
-        {/* Hamburger Button */}
-        <button
-          className="text-slate-200 focus:outline-none"
-          onClick={() => setIsMobileOpen(!isMobileOpen)}
-        >
-          {/* Simple "hamburger" icon using 3 bars */}
-          <RxHamburgerMenu className="text-3xl" />
-        </button>
-      </div>
-
-      {/* Slide-down mobile menu */}
-      {isMobileOpen && (
-        <ul className="transtion mb-3 flex flex-col items-center gap-4 bg-slate-900 px-6 py-4 text-sm ease-in lg:hidden">
-          <li>
-            <Link
-              href="/smart-alerts"
-              className="block w-full hover:text-slate-300"
-              onClick={() => setIsMobileOpen(false)}
-            >
-              {t("signals")}
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/blogs"
-              className="block w-full hover:text-slate-300"
-              onClick={() => setIsMobileOpen(false)}
-            >
-              {t("blog")}
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/docs/getting-started"
-              className="block w-full hover:text-slate-300"
-              onClick={() => setIsMobileOpen(false)}
-            >
-              Docs
-            </Link>
-          </li>
-          {profile?.role === "admin" && (
-            <li>
-              <Link
-                href="/admin"
-                className="block w-full hover:text-slate-300"
-                onClick={() => setIsMobileOpen(false)}
-              >
-                Admin
-              </Link>
-            </li>
-          )}
-
-          {user ? (
-            <>
-              <li>
-                <Link
-                  href="/profile"
-                  className="block w-full hover:text-slate-300"
-                  onClick={() => setIsMobileOpen(false)}
-                >
-                  {t("profile")}
-                </Link>
-              </li>
-
-              <li>
-                <LogoutBtn locale={locale} />
-              </li>
-            </>
-          ) : (
-            <li>
-              <Link
-                href="/login"
-                className="block w-full hover:text-slate-300"
-                onClick={() => setIsMobileOpen(false)}
-              >
-                <button className="mt-1 w-full rounded-lg bg-slate-800 px-4 py-2 text-left hover:bg-slate-900">
-                  {t("login")}
-                </button>
-              </Link>
-            </li>
-          )}
-        </ul>
-      )}
+              )}
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

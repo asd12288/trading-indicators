@@ -24,17 +24,24 @@ export async function POST(req) {
 
     if (fetchError) {
       console.error("Error fetching subscription:", fetchError);
-      return NextResponse.json({ 
-        error: `Database error: ${fetchError.message}`
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          error: `Database error: ${fetchError.message}`,
+        },
+        { status: 500 },
+      );
     }
 
     // Check if we found any active subscription
     if (!subscriptions || subscriptions.length === 0) {
       console.log("No active subscriptions found for user:", userId);
-      return NextResponse.json({ 
-        error: "No active subscription found", userId 
-      }, { status: 404 });
+      return NextResponse.json(
+        {
+          error: "No active subscription found",
+          userId,
+        },
+        { status: 404 },
+      );
     }
 
     // Use the first (most recent) active subscription
@@ -46,9 +53,12 @@ export async function POST(req) {
       await cancelSubscription(subscription.id);
     } catch (paypalError) {
       console.error("PayPal cancellation error:", paypalError);
-      return NextResponse.json({ 
-        error: `PayPal cancellation failed: ${paypalError.message}` 
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          error: `PayPal cancellation failed: ${paypalError.message}`,
+        },
+        { status: 500 },
+      );
     }
 
     // 3. Update subscription status in our database
@@ -57,15 +67,18 @@ export async function POST(req) {
       .from("subscriptions")
       .update({
         status: "CANCEL_AT_PERIOD_END",
-        updated_at: now
+        updated_at: now,
       })
       .eq("id", subscription.id);
 
     if (updateError) {
       console.error("Database update error:", updateError);
-      return NextResponse.json({ 
-        error: `Database update failed: ${updateError.message}` 
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          error: `Database update failed: ${updateError.message}`,
+        },
+        { status: 500 },
+      );
     }
 
     // 4. Update the user's profile to reflect the pending cancellation
@@ -73,7 +86,7 @@ export async function POST(req) {
       .from("profiles")
       .update({
         subscription_status: "CANCELLED",
-        scheduled_change: subscription.current_period_end 
+        scheduled_change: subscription.current_period_end,
       })
       .eq("id", userId);
 
@@ -82,15 +95,16 @@ export async function POST(req) {
       // Continue despite profile update error, as the subscription is already cancelled
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      message: "Subscription will be cancelled at the end of the billing period" 
+    return NextResponse.json({
+      success: true,
+      message:
+        "Subscription will be cancelled at the end of the billing period",
     });
   } catch (err) {
     console.error("Cancel subscription unexpected error:", err);
     return NextResponse.json(
       { error: err.message || "Failed to cancel subscription" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

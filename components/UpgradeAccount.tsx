@@ -1,27 +1,22 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
-import Benefit from "./smallComponents/Benefit";
 import { Link } from "@/i18n/routing";
 import PaypalSubscribeButton from "./PaypalButton";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
-import Image from "next/image";
-import CryptoPayButton from "./CryptoPayButton";
-import CryptoPaymentModal from "./CryptoPaymentModal";
 import NowPaymentsButton from "./NowPaymentsButton";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { CheckCircle2, StarIcon } from "lucide-react";
+import { motion } from "framer-motion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
 const UpgradeAccount = ({ user }) => {
-  const [checkoutUrl, setCheckoutUrl] = useState("");
   const t = useTranslations("UpgradeAccount");
   const params = useParams();
   const locale = params.locale || "en";
-
-  // useEffect(() => {
-  //   const fetchProduct = async () => {
-  //     const Paddle = await loadPaddle()
-  //   }
 
   const benefits = [
     t("benefits.signals"),
@@ -31,6 +26,22 @@ const UpgradeAccount = ({ user }) => {
     t("benefits.preferences"),
   ];
 
+  // Animate the benefits list items sequentially
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 },
+  };
+
   return (
     <PayPalScriptProvider
       options={{
@@ -39,42 +50,109 @@ const UpgradeAccount = ({ user }) => {
         vault: true,
       }}
     >
-      <div className="flex flex-col justify-center md:flex-row md:items-center">
-        <div className="flex flex-col justify-center">
-          <div className="">
-            <h1 className="text-3xl font-semibold">{t("title")}</h1>
-            <p className="text mt-4 w-2/3 text-gray-500">{t("subtitle")}</p>
+      <div className="mx-auto my-auto flex w-full max-w-5xl flex-col justify-center gap-8 py-4 md:flex-row md:items-start md:gap-6 h-full">
+        <motion.div
+          className="flex-1"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <div className="mb-6">
+            <h1 className="bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-3xl font-bold text-transparent md:text-4xl">
+              {t("title")}
+            </h1>
+            <p className="mt-4 text-slate-300">{t("subtitle")}</p>
           </div>
 
-          <div className="w-128 j space-y-4 p-8">
-            <h4 className="text-3xl font-semibold">{t("plan.name")}</h4>
-
-            <div className="flex items-baseline gap-2">
-              <h4 className="text-2xl font-semibold">{t("plan.price")}</h4>
-              <p className="text-sm">{t("plan.period")}</p>
+          <Card className="overflow-hidden border border-slate-700 bg-slate-900/50 shadow-lg backdrop-blur-sm">
+            <div className="absolute right-4 top-4">
+              <Badge className="bg-gradient-to-r from-blue-500 to-indigo-500">
+                {t("plan.recommended")}
+              </Badge>
             </div>
 
-            <p className="text-sm text-gray-400">{t("plan.billing")}</p>
-            <ul className="space-y-2 text-sm">
-              {benefits.map((benefit, index) => (
-                <Benefit key={index} benefit={benefit} />
-              ))}
-            </ul>
-            {/* <button className="mt-4 w-80 rounded-lg bg-green-800 px-2 py-2">
-            {t("upgradeButton")}
-          </button> */}
-          </div>
-        </div>
-        <div className="flex flex-col gap-4 p-4 text-slate-100">
-          <div className="z-50">
-            {/* <CryptoPaymentModal user={user} /> */}
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2">
+                <StarIcon className="h-5 w-5 text-yellow-400" />
+                <CardTitle className="text-xl font-semibold">
+                  {t("plan.name")}
+                </CardTitle>
+              </div>
+              <div className="mt-4 flex items-baseline gap-1">
+                <span className="text-3xl font-bold text-slate-50">{t("plan.price")}</span>
+                <span className="text-sm text-slate-400">
+                  {t("plan.period")}
+                </span>
+              </div>
+              <p className="text-sm text-slate-400">{t("plan.billing")}</p>
+            </CardHeader>
 
-            <NowPaymentsButton user={user} />
+            <CardContent>
+              <motion.ul
+                className="mt-6 space-y-3"
+                variants={container}
+                initial="hidden"
+                animate="show"
+              >
+                {benefits.map((benefit, index) => (
+                  <motion.li
+                    key={index}
+                    variants={item}
+                    className="flex items-start gap-2 text-slate-200"
+                  >
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-500" />
+                    <span className="text-sm">{benefit}</span>
+                  </motion.li>
+                ))}
+              </motion.ul>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          className="flex-1"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Card className="border border-slate-700 bg-slate-800/30 p-6 shadow-lg backdrop-blur-sm">
+            <CardHeader className="p-0 pb-4">
+              <CardTitle className="text-xl font-semibold text-slate-100">
+                Payment Method
+              </CardTitle>
+              <p className="text-sm text-slate-300">
+                Choose your preferred payment option
+              </p>
+            </CardHeader>
+
+            <CardContent className="p-0">
+              <Tabs defaultValue="paypal" className="w-full">
+                <TabsList className="mb-4 grid w-full grid-cols-2 bg-slate-800/40">
+                  <TabsTrigger value="paypal">PayPal</TabsTrigger>
+                  <TabsTrigger value="crypto">Crypto</TabsTrigger>
+                </TabsList>
+                <TabsContent value="paypal" className="mt-0">
+                  <PaypalSubscribeButton user={user} />
+                </TabsContent>
+                <TabsContent value="crypto" className="mt-0">
+                  <NowPaymentsButton user={user} />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+
+          <div className="mt-4 rounded-lg bg-blue-950/40 p-4 text-xs text-slate-300">
+            <p>
+              Need help with your subscription? Contact our support team at{" "}
+              <a
+                href="mailto:support@trader-map.com"
+                className="text-blue-400 hover:underline"
+              >
+                support@trader-map.com
+              </a>
+            </p>
           </div>
-          <div className="z-40">
-            <PaypalSubscribeButton user={user} />
-          </div>
-        </div>
+        </motion.div>
       </div>
     </PayPalScriptProvider>
   );

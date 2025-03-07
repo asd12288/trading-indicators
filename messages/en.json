@@ -250,11 +250,23 @@
     "noAlertsPro": "No alerts available. Turn on notifications on smart alerts to get alerts",
     "messages": {
       "noRecentAlerts": "No recent alerts available",
+      "noAlertsForInstrument": "No alerts for {instrument}",
       "alert": "Alert: Potential",
       "opportunity": "Opportunity on",
       "level": "Level",
       "stayVigilant": "Stay vigilant"
-    }
+    },
+    "priority": {
+      "high": "High Priority",
+      "medium": "Medium Priority",
+      "low": "Low Priority"
+    },
+    "type": {
+      "price_level": "Price Alert",
+      "trend_change": "Trend Change",
+      "volatility": "Volatility Alert"
+    },
+    "volume": "Volume"
   },
   "RunningSignalCard": {
     "started": "Started:",
@@ -265,7 +277,20 @@
     "invalidation": "Invalidation",
     "objective": "Objective",
     "tradeDuration": "Trade Duration:",
-    "startedAt": "Started at:"
+    "startedAt": "Started at:",
+    "active": "Active",
+    "livePosition": "Live Position Status",
+    "currentPrice": "Current Price",
+    "unrealizedPL": "Unrealized P/L",
+    "distanceToTarget": "Distance to Target",
+    "distanceToStop": "Distance to Stop",
+    "breakEven": "Break-even Point",
+    "marketCondition": "Market Condition",
+    "bullish": "Bullish",
+    "bearish": "Bearish",
+    "volatility": "Volatility",
+    "liveTracking": "LIVE TRACKING",
+    "signalActive": "SIGNAL ACTIVE"
   },
   "FufilledSignalCard": {
     "finished": "Finished:",
@@ -277,7 +302,13 @@
     "mae": "MAE:",
     "mfe": "MFE:",
     "tradeDuration": "Trade Duration:",
-    "startedAt": "Started at:"
+    "startedAt": "Started at:",
+    "result": "Result",
+    "profit": "PROFIT",
+    "loss": "LOSS",
+    "completed": "COMPLETED",
+    "gain": "gain",
+    "priceDifference": "price difference"
   },
   "SignalLayout": {
     "allSignals": "All Smart Alerts",
@@ -536,9 +567,10 @@
     "subtitle": "Unlock more features and benefits by upgrading your account",
     "plan": {
       "name": "Premium Plan",
-      "price": "65$",
+      "price": "35$",
       "period": "per month",
-      "billing": "Billed monthly"
+      "billing": "Billed monthly",
+      "recommended": "Recommended"
     },
     "benefits": {
       "signals": "Access to all smart alerts",
