@@ -69,7 +69,7 @@ export async function sendReceiptEmail({
           </tr>
           <tr>
             <td style="padding:10px; color:#475569;"><strong>Amount</strong></td>
-            <td style="padding:10px; color:#475569;">${amount}</td>
+            <td style="padding:10px; color:#475569;">${amount}$</td>
           </tr>
           <tr>
             <td style="padding:10px; color:#475569;"><strong>Payment Method</strong></td>

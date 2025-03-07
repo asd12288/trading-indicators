@@ -7,8 +7,6 @@ const URL = isDev
   ? "https://api-sandbox.nowpayments.io/v1/invoice"
   : "https://api.nowpayments.io/v1/invoice";
 
-const BASE_URL = isDev ? process.env.DEV_URL : process.env.PROD_URL;
-
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -18,11 +16,14 @@ export async function POST(request: Request) {
       price_currency: "usd",
       order_id: body.user.id,
       order_description: "Pro Account for 1 month",
-      ipn_callback_url: `${BASE_URL}/api/now-payment/webhook`,
-      success_url: `${BASE_URL}/${body.locale}/success`,
+      ipn_callback_url: `${process.env.DEV_URL}/api/now-payment/webhook`,
+      success_url: `${process.env.DEV_URL}/${body.locale}/success`,
     };
 
-    console.log(`Sending request to ${isDev ? "Sandbox" : "Production"} NowPayments API`, payload);
+    console.log(
+      `Sending request to ${isDev ? "Sandbox" : "Production"} NowPayments API`,
+      payload,
+    );
 
     const res = await fetch(URL, {
       method: "POST",
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
     console.error("Unexpected error:", err);
     return NextResponse.json(
       { message: err.message || "Error creating an invoice" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
