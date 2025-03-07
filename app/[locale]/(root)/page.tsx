@@ -10,6 +10,8 @@ import { createClient } from "@/database/supabase/server";
 import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation";
 import Cta from "@/components/homePage/Cta";
 import Head from "next/head";
+import TradingLoader from "@/components/ui/TradingLoader";
+import GeneralLoader from "@/components/ui/GeneralLoader";
 
 async function page({ params }: { params: { locale: string } }) {
   const supabase = await createClient();
@@ -55,6 +57,7 @@ async function page({ params }: { params: { locale: string } }) {
       <section className="p-2">
         <Contact />
       </section>
+
     </>
   );
 }

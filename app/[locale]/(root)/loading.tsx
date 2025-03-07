@@ -1,13 +1,16 @@
-import React from "react";
+"use client";
 
-const loading = () => {
-  return (
-    <div className="bg-[#000014] h-screen">
-      <div className="flex h-full items-center justify-center">
-        <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-slate-50"></div>
-      </div>
-    </div>
-  );
+import React from "react";
+import dynamic from "next/dynamic";
+import GeneralLoader from "@/components/ui/GeneralLoader";
+
+// Import dynamically to ensure client-side only rendering
+const TradingLoader = dynamic(() => import("@/components/ui/TradingLoader"), {
+  ssr: false,
+});
+
+const Loading = () => {
+  return <GeneralLoader fullScreen text="Loading trading platform..." />;
 };
 
-export default loading;
+export default Loading;
