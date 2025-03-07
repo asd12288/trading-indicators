@@ -390,6 +390,13 @@
       "cumulativePotential": "Cumulative Potential Ticks"
     }
   },
+  "CumulativePotentialTicksChart": {
+    "loading": "Loading chart...",
+    "title": "Cumulative Potential Ticks",
+    "legend": {
+      "cumulativePotential": "Cumulative Potential Ticks"
+    }
+  },
   "SignalInfo": {
     "loading": "Loading instrument info...",
     "error": "Error loading instrument info",
@@ -738,7 +745,15 @@
   },
   "UpgradePrompt": {
     "title": "Upgrade to view all smart alerts and add favorites.",
-    "button": "Upgrade Now"
+    "button": "Upgrade Now",
+    "description": "Get access to all premium features and signals with a PRO subscription.",
+    "price": "$35",
+    "features": {
+      "access": "Access to all signals",
+      "alerts": "Unlimited alerts",
+      "filters": "Advanced filters",
+      "support": "Priority support"
+    }
   },
   "TelegramAuth": {
     "title": "Telegram Notifications",
@@ -794,6 +809,19 @@
       "gettingStarted": "Getting Started",
       "introduction": "Introduction",
       "smartAlert": "Smart Alert"
+      
     }
+  },
+  "SignalsGrid": {
+    "noSignals": "No signals available",
+    "noSignalsDescription": "There are no signals matching your current filters or selection.",
+    "viewing": "Viewing",
+    "signal": "signal",
+    "signals": "signals",
+    "gridView": "Grid view",
+    "listView": "List view",
+    "sort": "Sort",
+    "sortByName": "Sort by name",
+    "sortByTime": "Sort by time"
   }
 }

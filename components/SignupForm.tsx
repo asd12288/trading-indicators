@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { signup } from "@/app/[locale]/(auth)/signup/actions";
 import { OAuthButtons } from "./OauthSignin";
 import { Link, useRouter } from "@/i18n/routing";
+import { motion } from "framer-motion";
 
 export function SignupForm() {
   const router = useRouter();
@@ -38,8 +39,7 @@ export function SignupForm() {
       confirmPassword: z.string().min(8, t("validation.passwordMismatch")),
       termsAccepted: z.literal(true, {
         errorMap: () => ({
-          message:
-            t("validation.termsRequired") 
+          message: t("validation.termsRequired"),
         }),
       }),
     })
@@ -57,7 +57,7 @@ export function SignupForm() {
       email: "",
       password: "",
       confirmPassword: "",
-      termsAccepted: false, 
+      termsAccepted: false,
     },
   });
 
@@ -81,44 +81,58 @@ export function SignupForm() {
   }
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="mx-auto w-full max-w-md px-4"
+    >
       <Link href="/">
-        <div className="mb-4 flex items-center gap-2">
+        <motion.div
+          className="mb-6 flex items-center gap-2 text-slate-300 hover:text-white"
+          whileHover={{ x: -3 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+        >
           <FaArrowLeft className="text-lg" />
-          <p className="text-sm font-light hover:cursor-pointer hover:underline">
+          <p className="text-sm font-medium hover:underline">
             {t("navigation.backHome")}
           </p>
-        </div>
+        </motion.div>
       </Link>
-      <h1 className="mb-4 text-3xl font-bold">{t("title")}</h1>
-      <div className="max-y-96 w-96 space-y-6 rounded-lg bg-slate-800 p-8 text-slate-50">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="text-center">
-              <p className="text-sm text-slate-50">{t("subtitle")}</p>
-            </div>
+      <h1 className="mb-2 text-4xl font-bold text-slate-50">{t("title")}</h1>
+      <p className="mb-6 text-slate-400">{t("subtitle")}</p>
 
+      <div className="space-y-6 rounded-xl border border-slate-700/30 bg-gradient-to-b from-slate-800 to-slate-900 p-6 text-slate-50 shadow-xl sm:p-8">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             {serverError && (
-              <div className="rounded border border-red-500 bg-red-100 p-2 text-center text-sm text-red-900">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-center text-sm text-red-200"
+              >
                 {serverError}
-              </div>
+              </motion.div>
             )}
 
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("labels.email")}</FormLabel>
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-sm font-medium text-slate-200">
+                    {t("labels.email")}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder={t("placeholder.email")}
                       type="email"
                       autoComplete="email"
+                      className="border-slate-700 bg-slate-800/50 text-slate-100 placeholder:text-slate-500 focus:border-green-500/50 focus:ring focus:ring-green-500/20"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs font-medium text-red-400" />
                 </FormItem>
               )}
             />
@@ -127,17 +141,20 @@ export function SignupForm() {
               control={form.control}
               name="password"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("labels.password")}</FormLabel>
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-sm font-medium text-slate-200">
+                    {t("labels.password")}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="password"
                       autoComplete="new-password"
                       placeholder={t("placeholder.password")}
+                      className="border-slate-700 bg-slate-800/50 text-slate-100 placeholder:text-slate-500 focus:border-green-500/50 focus:ring focus:ring-green-500/20"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs font-medium text-red-400" />
                 </FormItem>
               )}
             />
@@ -146,17 +163,20 @@ export function SignupForm() {
               control={form.control}
               name="confirmPassword"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("labels.confirmPassword")}</FormLabel>
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-sm font-medium text-slate-200">
+                    {t("labels.confirmPassword")}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="password"
                       autoComplete="new-password"
                       placeholder={t("placeholder.confirmPassword")}
+                      className="border-slate-700 bg-slate-800/50 text-slate-100 placeholder:text-slate-500 focus:border-green-500/50 focus:ring focus:ring-green-500/20"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-xs font-medium text-red-400" />
                 </FormItem>
               )}
             />
@@ -165,53 +185,100 @@ export function SignupForm() {
               control={form.control}
               name="termsAccepted"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-slate-700/40 bg-slate-800/20 p-3">
                   <FormControl>
-                    <input
-                      type="checkbox"
-                      className="mt-1 h-4 w-4 rounded border-slate-500 bg-slate-700 text-green-600 focus:ring-green-600"
-                      checked={field.value}
-                      onChange={field.onChange}
-                    />
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-slate-600 bg-slate-700 text-green-500 focus:ring-1 focus:ring-green-500 focus:ring-offset-0"
+                        checked={field.value}
+                        onChange={field.onChange}
+                      />
+                      {field.value && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute inset-0 flex items-center justify-center"
+                        />
+                      )}
+                    </div>
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel className="text-sm font-normal">
-                     {t('labels.terms')}{" "}
+                    <FormLabel className="text-sm font-normal text-slate-300">
+                      {t("labels.terms")}{" "}
                       <Link
                         href="/terms"
-                        className="text-green-400 underline hover:text-green-300"
+                        className="font-medium text-green-400 underline decoration-green-400/30 underline-offset-2 hover:text-green-300 hover:decoration-green-300/50"
                       >
                         {t("labels.termsLink")}
                       </Link>
                     </FormLabel>
-                    <FormMessage />
+                    <FormMessage className="text-xs font-medium text-red-400" />
                   </div>
                 </FormItem>
               )}
             />
 
-            <Button
-              type="submit"
-              className="w-full bg-green-800 text-white hover:bg-green-900"
-              disabled={isPending}
+            <motion.div
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              className="mt-2"
             >
-              {isPending ? t("buttons.creating") : t("buttons.submit")}
-            </Button>
+              <Button
+                type="submit"
+                className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white shadow-md transition-all duration-200 hover:from-green-500 hover:to-green-600 hover:shadow-lg disabled:opacity-70"
+                disabled={isPending}
+              >
+                {isPending ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    {t("buttons.creating")}
+                  </span>
+                ) : (
+                  t("buttons.submit")
+                )}
+              </Button>
+            </motion.div>
           </form>
         </Form>
 
-        <div className="flex flex-col gap-2">
-          <p className="text-sm font-light"> {t("dividers.or")}</p>
+        <div className="relative flex items-center py-1.5">
+          <div className="flex-grow border-t border-slate-700/50"></div>
+          <span className="mx-4 flex-shrink text-xs font-light text-slate-400">
+            {t("dividers.or")}
+          </span>
+          <div className="flex-grow border-t border-slate-700/50"></div>
+        </div>
+
+        <div className="flex flex-col gap-2 pt-1">
           <OAuthButtons />
         </div>
 
-        <div className="text-center text-sm font-light">
+        <div className="pt-2 text-center text-sm font-light">
           {t("account.existing")}{" "}
-          <Link href="/login" className="underline">
+          <Link
+            href="/login"
+            className="font-medium text-green-400 underline decoration-green-400/30 underline-offset-2 hover:text-green-300"
+          >
             {t("account.login")}
           </Link>
         </div>
       </div>
-    </>
+    </motion.div>
   );
 }

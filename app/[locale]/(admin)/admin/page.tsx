@@ -2,21 +2,14 @@ import BlogTable from "@/components/admin/BlogTable";
 import SignalsMonitoring from "@/components/admin/SignalsMonitoring";
 import SignalsTable from "@/components/admin/SignalsTable";
 import UsersTable from "@/components/admin/UsersTable";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
-import { TabsContent } from "@radix-ui/react-tabs";
 import { Metadata } from "next";
-
 
 export const metadata: Metadata = {
   title: "Admin",
-}
-   
-  
-
-
-
+};
 
 const page = async ({ params }: { params: { locale: string } }) => {
   const supabase = await createClient();
@@ -36,7 +29,9 @@ const page = async ({ params }: { params: { locale: string } }) => {
 
   const isAdmin = profile?.role === "admin" ? true : false;
 
-  if (!isAdmin) redirect("/");
+  if (!isAdmin) {
+    return redirect("/");
+  }
 
   const { data: users } = await supabase.from("profiles").select("*");
   const { data: signals } = await supabase

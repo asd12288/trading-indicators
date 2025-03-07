@@ -1,9 +1,8 @@
 "use client";
 
-import SignalPerformenceChart from "@/components/charts/SignalPerformenceChart";
-import SignalWinRateChart from "@/components/charts/SignalWinRateChart";
+import CumulativePotentialTicksChart from "@/components/charts/CumulativePotentialTicksChart";
 import SignalTool from "@/components/SignalCard/SignalTool";
-import SignalTable from "@/components/SignalTable";
+import SignalTable from "@/components/SignalsTable";
 import useInstrumentData from "@/hooks/useInstrumentData";
 import useProfile from "@/hooks/useProfile";
 import { Link } from "@/i18n/routing";
@@ -16,7 +15,6 @@ import SignalLayoutLoader from "./loaders/SignalLayoutLoader";
 import SignalStatusBar from "./SignalStatusBar";
 import AlertNotification from "./AlertNotification";
 import SignalSummaryStats from "./SignalSummaryStats";
-import SignalNews from "./SignalLatestNews";
 import SignalLatestNews from "./SignalLatestNews";
 
 const SignalLayout = ({ id, userId, isPro }) => {
@@ -62,8 +60,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
-
-        <div className="grid grid-cols-1 gap-4 grid-span-1 md:col-span-1">
+        <div className="grid-span-1 grid grid-cols-1 gap-4 md:col-span-1">
           <SignalOverview
             instrumentData={instrumentData}
             signalPassed={lastSignal}
@@ -71,7 +68,6 @@ const SignalLayout = ({ id, userId, isPro }) => {
 
           <div className="">
             <SignalLatestNews symbol={instrumentName} />
-          
           </div>
 
           <div className="">
@@ -90,7 +86,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
             </div>
 
             <div className="">
-              <SignalPerformenceChart allSignal={instrumentData} />
+              <CumulativePotentialTicksChart allSignal={instrumentData} />
             </div>
           </div>
         </div>

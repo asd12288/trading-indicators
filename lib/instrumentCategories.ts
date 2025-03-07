@@ -80,15 +80,27 @@ export const instrumentCategoryMap: Record<string, string> = {
   USDT: "crypto",
   BNB: "crypto",
   SOL: "crypto",
+
+  // Additional Instruments
+  "BTC/USD": "crypto",
+  "ETH/USD": "crypto",
+  "SOL/USD": "crypto",
+  AAPL: "stocks",
+  MSFT: "stocks",
+  GOOGL: "stocks",
+  GOLD: "commodities",
+  OIL: "commodities",
+  SILVER: "commodities",
 };
 
-// For the <Select> dropdown, you likely just want the top-level categories:
 export const CATEGORIES = [
   { label: "All", value: "all" },
   { label: "Futures", value: "futures" },
   { label: "Micro Futures", value: "micro_futures" },
   { label: "Forex (Spot Market)", value: "forex" },
   { label: "Cryptocurrencies", value: "crypto" },
+  { id: "stocks", name: "Stocks" },
+  { id: "commodities", name: "Commodities" },
 ];
 
 export const SUBCATEGORIESFUTURE = [
@@ -106,3 +118,7 @@ export const SUBCATEGORIESFUTURE = [
   },
   { label: "Interest Rate Futures", value: "interest_rate_futures" },
 ];
+
+export function getInstrumentCategory(instrumentName: string): string {
+  return instrumentCategoryMap[instrumentName] || "unknown";
+}

@@ -11,7 +11,22 @@ export default async function BlogPostPage({
   params: { locale: string; slug: string };
 }) {
   const { locale, slug } = params;
-  const blogData = getBlogContent(slug, locale);
+  const blogData = await getBlogContent(slug, locale);
+
+  if (!blogData || !blogData.content) {
+    return (
+      <div className="min-h-screen px-6 py-10 md:px-20 lg:px-32">
+        <div className="mx-auto max-w-4xl rounded-lg bg-slate-900 p-8 text-white shadow-lg">
+          <h1 className="text-4xl font-extrabold text-red-400 md:text-5xl">
+            Blog Not Found
+          </h1>
+          <p className="mt-4 text-xl">
+            Sorry, we couldn't find the blog you're looking for.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen px-6 py-10 md:px-20 lg:px-32">

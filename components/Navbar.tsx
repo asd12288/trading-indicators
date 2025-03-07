@@ -133,7 +133,8 @@ export default function Navbar({ user, profile }) {
                   <span>{t("profile")}</span>
                 </Link>
 
-                <UpgradeButton profile={profile} />
+                {/* Updated UpgradeButton with no wrapper */}
+                <UpgradeButton profile={profile} variant="default" />
 
                 <div className="group flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800/50 hover:text-white">
                   <LogOut size={18} />
@@ -281,8 +282,9 @@ export default function Navbar({ user, profile }) {
                     <ChevronRight size={16} className="opacity-50" />
                   </Link>
 
-                  <div className="p-2">
-                    <UpgradeButton profile={profile} />
+                  {/* Updated UpgradeButton for mobile */}
+                  <div className="mt-3 px-1">
+                    <UpgradeButton profile={profile} variant="mobile" />
                   </div>
 
                   <div className="px-3 py-2">

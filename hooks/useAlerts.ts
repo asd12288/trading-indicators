@@ -19,8 +19,8 @@ const useAlerts = () => {
         const { data, error } = await supabaseClient
           .from("signals_alert")
           .select("*")
-          .order("created_at", { ascending: false })
-          .limit(200);
+          .order("time_utc", { ascending: false })
+          .limit(20);
 
         if (error) {
           throw new Error(error.message);
@@ -38,24 +38,21 @@ const useAlerts = () => {
 
     fetchData();
 
-    // Subscribe to changes in the "signals_alert" table
+    // Subscribe to changes in the "alerts" table
     const subscription = supabaseClient
-      .channel("signals_alert_changes")
+      .channel("alerts-channel")
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "signals_alert" },
-        async () => {
-          await fetchData();
-          // pingSoundRef.current
-          //   ?.play()
-          //   .catch((err) => console.warn("Audio playback blocked", err));
+        { event: "INSERT", schema: "public", table: "alerts" },
+        (payload) => {
+          setAlerts((current) => [payload.new as Alert, ...current]);
         },
       )
       .subscribe();
 
     // Cleanup: remove subscription when unmounting
     return () => {
-      supabaseClient.removeChannel(subscription);
+      subscription.unsubscribe();
     };
   }, []);
 

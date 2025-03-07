@@ -2,36 +2,57 @@ import Image from "next/image";
 import React from "react";
 import { Button } from "./ui/button";
 import { Link } from "@/i18n/routing";
+import { motion } from "framer-motion";
+import { Calendar, ArrowRight } from "lucide-react";
 
 function BlogCard({ blog }) {
   return (
-    <div className="mx-auto my-4 w-96 max-w-lg overflow-hidden rounded-lg border border-slate-700 bg-slate-800 shadow-lg transition-all hover:shadow-xl">
-      <Link href={`/blog/${blog.id}`}>
-        <div className="relative h-56 w-full">
+    <motion.div
+      whileHover={{ y: -5 }}
+      className="group mb-5 overflow-hidden rounded-xl border border-slate-700/50 bg-gradient-to-b from-slate-800 to-slate-900 shadow-lg transition-all duration-300 hover:border-blue-500/30 hover:shadow-xl hover:shadow-blue-500/10"
+    >
+      <Link href={`/blogs/${blog.id}`} className="block overflow-hidden">
+        <div className="relative h-56 w-full overflow-hidden">
           <Image
-            className="object-cover"
-            src={blog.imageUrl}
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            src={blog.imageUrl || "/images/placeholder-blog.jpg"}
             alt={`${blog.title} image`}
-            layout="fill"
+            fill
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-60"></div>
         </div>
       </Link>
-      <div className="p-5">
-        <h5 className="mb-2 text-xl font-semibold text-slate-100">
-          {blog.title.slice(0, 50)}...
-        </h5>
-        <p className="mb-4 text-sm text-slate-300">
-          {blog.subTitle && blog.subTitle.length > 100
-            ? blog.subTitle.slice(0, 100) + "..."
-            : blog.subTitle}
+
+      <div className="p-6">
+        {/* Date indicator */}
+        <div className="mb-3 flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-blue-400" />
+          <span className="text-xs text-slate-400">
+            {blog.date || "No date"}
+          </span>
+        </div>
+
+        <Link href={`/blogs/${blog.id}`}>
+          <h3 className="mb-3 line-clamp-2 text-xl font-bold text-white transition-colors duration-200 group-hover:text-blue-400">
+            {blog.title || "Untitled Blog Post"}
+          </h3>
+        </Link>
+
+        <p className="mb-4 line-clamp-3 text-sm text-slate-300">
+          {blog.subTitle || "No description available for this blog post."}
         </p>
-        <Link href={`/blog/${blog.id}`}>
-          <Button className="rounded-lg bg-slate-600 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">
-            Read more
+
+        <Link href={`/blogs/${blog.id}`}>
+          <Button
+            variant="outline"
+            className="mt-2 w-full border-slate-700 bg-slate-800/50 text-blue-400 transition-all duration-200 hover:border-blue-500/50 hover:bg-blue-900/20 hover:text-blue-300"
+          >
+            <span>Read article</span>
+            <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

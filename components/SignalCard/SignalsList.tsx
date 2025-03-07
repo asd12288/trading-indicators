@@ -60,10 +60,10 @@ const SignalsList = ({ userId }: SignalsListProps) => {
   // Loading state
   if (isLoadingSignals || isLoadingPrefs) {
     return (
-      <div className="space-y-4">
-        <div className="flex animate-pulse items-center justify-between rounded-lg bg-slate-800 p-4">
-          <div className="h-8 w-48 rounded bg-slate-700"></div>
-          <div className="h-8 w-32 rounded bg-slate-700"></div>
+      <div className="space-y-6">
+        <div className="flex animate-pulse items-center justify-between rounded-lg bg-slate-800 p-5">
+          <div className="h-9 w-56 rounded bg-slate-700"></div>
+          <div className="h-9 w-36 rounded bg-slate-700"></div>
         </div>
         <LoaderCards />
       </div>
@@ -75,10 +75,10 @@ const SignalsList = ({ userId }: SignalsListProps) => {
     return (
       <Alert
         variant="destructive"
-        className="border-red-800 bg-red-950/50 text-red-200"
+        className="border-red-800 bg-red-950/50 p-6 text-red-200"
       >
-        <AlertOctagon className="h-4 w-4" />
-        <AlertTitle>Error loading signals</AlertTitle>
+        <AlertOctagon className="h-5 w-5" />
+        <AlertTitle className="text-lg">Error loading signals</AlertTitle>
         <AlertDescription>
           {error}. Please try refreshing the page.
         </AlertDescription>
@@ -91,7 +91,7 @@ const SignalsList = ({ userId }: SignalsListProps) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="space-y-6 rounded-lg bg-slate-800/80 p-0 backdrop-blur-sm md:p-8"
+      className="space-y-8 p-0 backdrop-blur-sm"
     >
       {/* Favorites section */}
       {isPro && favouriteSignals.length > 0 && (
@@ -99,6 +99,7 @@ const SignalsList = ({ userId }: SignalsListProps) => {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+          className="rounded-xl border border-slate-700/30 bg-gradient-to-b from-slate-800 to-slate-900 p-5 shadow-md"
         >
           <FavoriteSignals favouriteSignals={favouriteSignals} />
         </motion.div>
@@ -121,11 +122,11 @@ const SignalsList = ({ userId }: SignalsListProps) => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="rounded-lg bg-slate-900/50 p-4 shadow-md"
+          className="rounded-xl bg-slate-900/50 p-5 shadow-md"
         >
-          <div className="mb-3 flex items-center gap-2">
-            <Filter className="h-4 w-4 text-slate-400" />
-            <h3 className="text-sm font-medium text-slate-300">
+          <div className="mb-4 flex items-center gap-2">
+            <Filter className="h-5 w-5 text-slate-400" />
+            <h3 className="text-base font-medium text-slate-300">
               Filter Signals
             </h3>
           </div>
@@ -140,10 +141,10 @@ const SignalsList = ({ userId }: SignalsListProps) => {
 
       {/* No results message */}
       {displaySignals && displaySignals.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-lg bg-slate-900/50 p-8 text-center">
-          <Search className="mb-2 h-8 w-8 text-slate-500" />
-          <p className="text-lg font-medium text-slate-400">{t("noResult")}</p>
-          <p className="mt-2 text-sm text-slate-500">
+        <div className="flex flex-col items-center justify-center rounded-xl bg-slate-900/50 p-10 text-center">
+          <Search className="mb-3 h-10 w-10 text-slate-500" />
+          <p className="text-xl font-medium text-slate-400">{t("noResult")}</p>
+          <p className="mt-3 text-base text-slate-500">
             Try adjusting your search or filters to find what you're looking
             for.
           </p>
@@ -155,12 +156,12 @@ const SignalsList = ({ userId }: SignalsListProps) => {
 
       {/* Footer - if needed */}
       {!isPro && displaySignals.length >= 5 && (
-        <div className="mt-4 rounded-lg bg-blue-950/30 p-4 text-center">
-          <p className="text-sm text-slate-300">
+        <div className="mt-4 rounded-lg bg-blue-950/30 p-5 text-center">
+          <p className="text-base text-slate-300">
             Viewing 5 of {filteredSignals.length} signals.
             <Link
               href="/pricing"
-              className="ml-1 font-medium text-blue-400 hover:underline"
+              className="ml-2 font-medium text-blue-400 hover:underline"
             >
               Upgrade to PRO
             </Link>{" "}

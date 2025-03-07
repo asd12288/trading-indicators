@@ -62,9 +62,9 @@ export async function emailLogin(formData: FormData) {
   }
 }
 
+
 export async function logout(formData: FormData) {
   const locale = (formData.get("locale") as string) ?? "en";
-
   const supabase = await createClient();
   await supabase.auth.signOut();
 

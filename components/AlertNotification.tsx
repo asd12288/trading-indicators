@@ -18,7 +18,12 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-const AlertNotification = ({ userId, instrumentName = "" }) => {
+interface AlertNotificationProps {
+  userId: string;
+  instrumentName?: string;
+}
+
+const AlertNotification = ({ userId, instrumentName = "" }: AlertNotificationProps) => {
   const { alerts, isLoading } = useAlerts();
   const { notificationsOn } = usePreferences(userId);
   const { isPro } = useProfile(userId);

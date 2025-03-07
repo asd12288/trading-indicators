@@ -59,7 +59,6 @@ const Hero = () => {
               </div>
 
               <div className="z-0 hidden md:absolute md:right-[-95px] md:top-[-95px] lg:block">
-                <DemoCard type="nq" />
               </div>
             </div>
           </div>

@@ -22,41 +22,31 @@ const defaultProfile: Profile = {
 const useProfile = (userId: string) => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [isPro, setIsPro] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (!userId) {
-        setIsLoading(false);
-        return;
-      }
+    if (!userId) {
+      setIsLoading(false);
+      return;
+    }
 
+    const fetchProfile = async () => {
       try {
+        setIsLoading(true);
         const { data, error } = await supabaseClient
           .from("profiles")
           .select("*")
           .eq("id", userId)
           .single();
 
-        if (error) {
-          console.error("Error fetching profile:", error);
-          setError(error.message);
-          setProfile({
-            ...defaultProfile,
-            id: userId,
-          });
-        } else {
-          // Ensure profile has preferences object
-          setProfile({
-            ...data,
-            preferences: data?.preferences || defaultProfile.preferences,
-          });
-        }
+        if (error) throw new Error(error.message);
+
+        setProfile(data);
+        setIsPro(data?.plan === "pro" || data?.plan === "premium");
       } catch (err) {
-        console.error("Profile fetch error:", err);
-        setError(err instanceof Error ? err.message : "An error occurred");
-        setProfile({ ...defaultProfile, id: userId });
+        console.error("Error fetching profile:", err);
+        setError(err instanceof Error ? err.message : "Failed to load profile");
       } finally {
         setIsLoading(false);
       }
@@ -65,10 +55,7 @@ const useProfile = (userId: string) => {
     fetchProfile();
   }, [userId]);
 
-  const isPro = profile?.plan === "pro";
-  const isAdmin = profile?.role === "admin";
-
-  return { profile, isLoading, isPro, isAdmin };
+  return { profile, isPro, isLoading, error };
 };
 
 export default useProfile;

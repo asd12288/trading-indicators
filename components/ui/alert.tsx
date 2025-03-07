@@ -3,19 +3,18 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const alertVariants = cva(
-  "relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground",
+  "relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-slate-400",
   {
     variants: {
       variant: {
-        default:
-          "bg-slate-950 text-slate-50 border-slate-800 [&>svg]:text-slate-400",
+        default: "bg-slate-900 border-slate-700 text-slate-50",
         destructive:
-          "border-red-900/50 text-red-50 dark:border-red-900 [&>svg]:text-red-400",
-        success:
-          "border-green-900/50 bg-green-950/50 text-green-50 [&>svg]:text-green-400",
+          "border-red-500/50 bg-red-950/30 text-red-300 dark:border-red-500 [&>svg]:text-red-400",
         warning:
-          "border-yellow-900/50 bg-yellow-950/50 text-yellow-50 [&>svg]:text-yellow-400",
-        info: "border-blue-900/50 bg-blue-950/50 text-blue-50 [&>svg]:text-blue-400",
+          "border-amber-500/50 bg-amber-950/30 text-amber-300 [&>svg]:text-amber-400",
+        success:
+          "border-green-500/50 bg-green-950/30 text-green-300 [&>svg]:text-green-400",
+        info: "border-blue-500/50 bg-blue-950/30 text-blue-300 [&>svg]:text-blue-400",
       },
     },
     defaultVariants: {
