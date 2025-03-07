@@ -93,17 +93,32 @@ const useSignals = (preferences: PreferencesMap = {}) => {
           ) {
             setSignals((current) => {
               const updatedSignal = payload.new as Signal;
-              const existingIndex = current.findIndex(
-                (s) => s.id === updatedSignal.id,
+
+              // First check if this instrument already exists
+              const existingInstrumentIndex = current.findIndex(
+                (s) => s.instrument_name === updatedSignal.instrument_name,
               );
 
-              if (existingIndex >= 0) {
-                const updated = [...current];
-                updated[existingIndex] = updatedSignal;
-                return updated;
+              // Create a copy of the current signals
+              const updated = [...current];
+
+              if (existingInstrumentIndex >= 0) {
+                // Check if the new signal is more recent than the existing one
+                const existingTime = new Date(
+                  current[existingInstrumentIndex].entry_time,
+                ).getTime();
+                const newTime = new Date(updatedSignal.entry_time).getTime();
+
+                if (newTime >= existingTime) {
+                  // Update the existing signal
+                  updated[existingInstrumentIndex] = updatedSignal;
+                }
               } else {
-                return [updatedSignal, ...current];
+                // Add the new signal
+                updated.unshift(updatedSignal);
               }
+
+              return updated;
             });
           } else if (payload.eventType === "DELETE") {
             setSignals((current) =>
@@ -111,8 +126,7 @@ const useSignals = (preferences: PreferencesMap = {}) => {
             );
           }
 
-          // Re-fetch the data
-          fetchData();
+          // Removed the fetchData() call as it was causing a full reload
         },
       )
       .subscribe();

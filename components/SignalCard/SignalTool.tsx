@@ -61,54 +61,75 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
     await updatePreference(signalId, { favorite: newValue });
   }
 
+  const buttonClasses = `relative rounded-full p-2.5 transition-all duration-200 ${
+    isPro
+      ? "hover:bg-slate-700/70 active:scale-95"
+      : "text-slate-700 cursor-not-allowed"
+  }`;
+
+  const iconClasses = `text-2xl ${isPro ? "" : "opacity-50"}`;
+
   return (
-    <div className="flex items-center space-x-4 border-l-2 pl-4">
+    <div className="flex items-center space-x-3 border-l border-slate-700/70 pl-4">
       {!isLoading && (
         <>
           <SignalToolTooltip text={t("notifications.tooltip")}>
-            <button onClick={handleNotifications} disabled={!isPro}>
+            <button
+              onClick={handleNotifications}
+              disabled={!isPro}
+              className={buttonClasses}
+            >
               {notifications ? (
-                <IoIosNotifications
-                  className={`${!isPro ? "text-4xl text-slate-700" : "text-4xl"}`}
-                />
+                <IoIosNotifications className={iconClasses} />
               ) : (
-                <IoIosNotificationsOff
-                  className={`${!isPro ? "text-4xl text-slate-700" : "text-4xl"}`}
-                />
+                <IoIosNotificationsOff className={iconClasses} />
+              )}
+              {!isPro && (
+                <span className="absolute inset-0 rounded-full border border-slate-700/50"></span>
               )}
             </button>
           </SignalToolTooltip>
 
           <SignalToolTooltip text={t("volume.tooltip")}>
-            <button onClick={handleVolume} disabled={!isPro}>
+            <button
+              onClick={handleVolume}
+              disabled={!isPro}
+              className={buttonClasses}
+            >
               {volume ? (
-                <FaVolumeUp
-                  className={`${!isPro ? "text-4xl text-slate-700" : "text-4xl"}`}
-                />
+                <FaVolumeUp className={iconClasses} />
               ) : (
-                <FaVolumeMute
-                  className={`${!isPro ? "text-4xl text-slate-700" : "text-4xl"}`}
-                />
+                <FaVolumeMute className={iconClasses} />
+              )}
+              {!isPro && (
+                <span className="absolute inset-0 rounded-full border border-slate-700/50"></span>
               )}
             </button>
           </SignalToolTooltip>
 
           <SignalToolTooltip text={t("favorite.tooltip")}>
-            <button onClick={handleFavorite} disabled={!isPro}>
+            <button
+              onClick={handleFavorite}
+              disabled={!isPro}
+              className={buttonClasses}
+            >
               {favorite ? (
                 <MdFavorite
-                  className={`${!isPro ? "text-4xl text-slate-700" : "text-4xl"}`}
+                  className={`${iconClasses} ${favorite ? "text-rose-500" : ""}`}
                 />
               ) : (
-                <MdFavoriteBorder
-                  className={`${!isPro ? "text-4xl text-slate-700" : "text-4xl"}`}
-                />
+                <MdFavoriteBorder className={iconClasses} />
+              )}
+              {!isPro && (
+                <span className="absolute inset-0 rounded-full border border-slate-700/50"></span>
               )}
             </button>
           </SignalToolTooltip>
         </>
       )}
-      {isLoading && <div></div>}
+      {isLoading && (
+        <div className="h-8 w-24 animate-pulse rounded-full bg-slate-700/50"></div>
+      )}
     </div>
   );
 }

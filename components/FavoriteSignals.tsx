@@ -1,13 +1,9 @@
 import React from "react";
 import { Star, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-
-interface Signal {
-  instrument_name: string;
-  price?: number;
-  change_24h?: number;
-  // Add other signal properties as needed
-}
+import SignalCard from "./SignalCard/SignalCard";
+import { Signal } from "@/lib/types";
+import { Link } from "@/i18n/routing";
 
 interface FavoriteSignalsProps {
   favouriteSignals: Signal[];
@@ -30,28 +26,35 @@ const FavoriteSignals: React.FC<FavoriteSignalsProps> = ({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="flex items-center justify-between rounded-lg border border-yellow-500/20 bg-slate-800/60 p-3 shadow-sm hover:bg-slate-800/80"
+            className="rounded-lg border border-yellow-500/20 bg-slate-800/60 shadow-sm hover:bg-slate-800/80"
           >
-            <div className="flex items-center gap-2">
-              <Star className="h-4 w-4 text-yellow-400" />
-              <span className="font-medium text-slate-200">
-                {signal.instrument_name}
-              </span>
-            </div>
-
-            {signal.price && (
-              <div className="text-sm font-medium">
-                <span className="text-slate-300">{signal.price}</span>
-                {signal.change_24h && (
-                  <span
-                    className={`ml-2 ${signal.change_24h > 0 ? "text-green-400" : "text-red-400"}`}
-                  >
-                    {signal.change_24h > 0 ? "+" : ""}
-                    {signal.change_24h.toFixed(2)}%
-                  </span>
-                )}
+            <div className="flex items-center justify-between border-b border-yellow-500/20 p-3">
+              <div className="flex items-center gap-2">
+                <Star className="h-4 w-4 text-yellow-400" />
+                <span className="font-medium text-slate-200">
+                  {signal.instrument_name}
+                </span>
               </div>
-            )}
+
+              {signal.price && (
+                <div className="text-sm font-medium">
+                  <span className="text-slate-300">{signal.price}</span>
+                  {signal.change_24h && (
+                    <span
+                      className={`ml-2 ${signal.change_24h > 0 ? "text-green-400" : "text-red-400"}`}
+                    >
+                      {signal.change_24h > 0 ? "+" : ""}
+                      {signal.change_24h.toFixed(2)}%
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="p-3">
+              <Link href={`/smart-alerts/${signal.instrument_name}`}>
+                <SignalCard signalPassed={signal} />
+              </Link>
+            </div>
           </motion.div>
         ))}
       </div>

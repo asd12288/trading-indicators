@@ -55,7 +55,7 @@ export default async function Page({
   const isPro = profile?.plan === "pro" ? true : false;
 
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-950">
       <SignalLayout id={params.id} userId={user.id} isPro={isPro} />
     </div>
   );

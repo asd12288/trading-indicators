@@ -46,10 +46,6 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
 
   const t = useTranslations("FufilledSignalCard");
 
-  // Debug logging - uncomment to see what data is coming through
-  useEffect(() => {
-    console.log("FufilledSignalCard received instrument:", instrument);
-  }, [instrument]);
 
   // Early validation for critical fields
   if (!exit_time || !entry_time || !entry_price || !exit_price) {

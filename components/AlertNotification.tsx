@@ -23,11 +23,18 @@ interface AlertNotificationProps {
   instrumentName?: string;
 }
 
-const AlertNotification = ({ userId, instrumentName = "" }: AlertNotificationProps) => {
+const AlertNotification = ({
+  userId,
+  instrumentName = "",
+}: AlertNotificationProps) => {
   const { alerts, isLoading } = useAlerts();
   const { notificationsOn } = usePreferences(userId);
   const { isPro } = useProfile(userId);
   const t = useTranslations("Alert");
+
+  // Add debug logging
+  console.log("Alerts in component:", alerts);
+  console.log("User preferences:", { isPro, notificationsOn, instrumentName });
 
   if (isLoading) {
     return (
@@ -47,6 +54,8 @@ const AlertNotification = ({ userId, instrumentName = "" }: AlertNotificationPro
         )
       : alerts;
 
+  console.log("Filtered alerts:", filteredAlerts);
+
   // Check if we have any alerts to display
   if (!filteredAlerts || filteredAlerts.length === 0) {
     return (
@@ -62,11 +71,15 @@ const AlertNotification = ({ userId, instrumentName = "" }: AlertNotificationPro
 
   const lastAlert = filteredAlerts[0];
 
-  if (lastAlert.time) {
+  // Use time_utc instead of time if that's how the field is named in your database
+  if (lastAlert.time_utc || lastAlert.time) {
     const now = new Date();
-    const alertTime = new Date(lastAlert.time);
+    const alertTime = new Date(lastAlert.time_utc || lastAlert.time);
     const minutesDiff = (now.getTime() - alertTime.getTime()) / (1000 * 60);
 
+    console.log("Alert time check:", { now, alertTime, minutesDiff });
+
+    // Optionally increase this threshold if needed
     if (minutesDiff > 5) {
       return (
         <div className="flex h-16 w-full items-center justify-center rounded-lg bg-slate-800/80 px-4 text-sm text-slate-300">
@@ -76,7 +89,9 @@ const AlertNotification = ({ userId, instrumentName = "" }: AlertNotificationPro
     }
   }
 
-  const { instrument_name, price, time, trade_direction } = lastAlert;
+  // Make sure we're using the right field names that match your database schema
+  const { instrument_name, price, time_utc, time, trade_direction } = lastAlert;
+  const actualTime = time_utc || time;
   const isLong = trade_direction === "LONG";
 
   // New: Extract additional information (mock data for illustration)
@@ -142,7 +157,7 @@ const AlertNotification = ({ userId, instrumentName = "" }: AlertNotificationPro
 
             <div className="flex items-center text-xs text-slate-400">
               <Clock className="mr-1 h-3 w-3" />
-              {time && format(new Date(time), "HH:mm")}
+              {actualTime && format(new Date(actualTime), "HH:mm")}
             </div>
           </div>
 

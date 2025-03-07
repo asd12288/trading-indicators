@@ -13,7 +13,7 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 
-const SignalsTable = ({ allSignal }) => {
+const SignalTable = ({ allSignal }) => {
   const t = useTranslations("SignalTable");
   const [tableData, setTableData] = useState([]);
   const [summary, setSummary] = useState({
@@ -180,4 +180,4 @@ const SignalsTable = ({ allSignal }) => {
   );
 };
 
-export default SignalsTable;
+export default SignalTable;

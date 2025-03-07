@@ -2,7 +2,7 @@
 
 import CumulativePotentialTicksChart from "@/components/charts/CumulativePotentialTicksChart";
 import SignalTool from "@/components/SignalCard/SignalTool";
-import SignalTable from "@/components/SignalsTable";
+import SignalTable from "@/components/SignalTable";
 import useInstrumentData from "@/hooks/useInstrumentData";
 import useProfile from "@/hooks/useProfile";
 import { Link } from "@/i18n/routing";
@@ -36,22 +36,30 @@ const SignalLayout = ({ id, userId, isPro }) => {
   }
 
   return (
-    <div className="mb-8 flex flex-col p-2 md:p-12">
+    <div className="mx-auto mb-8 flex max-w-7xl flex-col p-3 md:p-8 lg:p-12">
       <Link href="/smart-alerts">
-        <div className="flex cursor-pointer items-center gap-4 hover:text-slate-400">
-          <ArrowLeft size={24} />
-          <p className="my-2 text-xl">{t("allSignals")}</p>
+        <div className="hover:text-primary mb-6 flex cursor-pointer items-center gap-3 transition-colors duration-200">
+          <ArrowLeft size={20} />
+          <p className="text-lg font-medium">{t("allSignals")}</p>
         </div>
       </Link>
 
-      <div className="flex w-full flex-col items-center gap-4 rounded-xl bg-slate-800 p-6 md:flex-row md:items-center md:justify-between">
-        <h2 className="relative mb-2 text-left text-2xl md:text-4xl">
-          {t("signal")}{" "}
-          <span className="font-medium md:font-semibold">{id}</span>
-        </h2>
-        <AlertNotification instrumentName={instrumentName} userId={userId} />
+      <div className="flex w-full flex-col items-center gap-5 rounded-xl border border-slate-700/50 bg-slate-800/90 p-6 shadow-lg backdrop-blur-sm md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center">
+          <h2 className="relative text-left text-2xl font-light md:text-3xl">
+            {t("signal")}{" "}
+            <span className="text-primary font-semibold">{id}</span>
+          </h2>
+          <div className="ml-4">
+            <AlertNotification
+              instrumentName={instrumentName}
+              userId={userId}
+            />
+          </div>
+        </div>
+
         <div className="flex items-center gap-4">
-          <h4 className="text-sm font-medium md:text-xl">
+          <h4 className="text-sm font-medium text-slate-300 md:text-base">
             {isPro ? t("signalSettings") : t("upgradeMessage")}
           </h4>
 
@@ -59,40 +67,36 @@ const SignalLayout = ({ id, userId, isPro }) => {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div className="grid-span-1 grid grid-cols-1 gap-4 md:col-span-1">
+      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="flex flex-col gap-6 md:col-span-1">
           <SignalOverview
             instrumentData={instrumentData}
             signalPassed={lastSignal}
           />
 
-          <div className="">
+          <div className="overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/90 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
             <SignalLatestNews symbol={instrumentName} />
           </div>
 
-          <div className="">
+          <div className="overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/90 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
             <SignalInfo instrumentName={instrumentName} />
           </div>
         </div>
 
-        <div className="col-span-2">
-          <div className="grid grid-cols-1 gap-4">
-            <div>
-              <SignalSummaryStats data={instrumentData} />
-            </div>
-
-            <div className="">
+        <div className="md:col-span-2">
+          <div className="grid grid-cols-1 gap-6">
+            <div className="overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/90 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
               <SignalTable allSignal={instrumentData} />
             </div>
 
-            <div className="">
+            <div className="overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/90 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
               <CumulativePotentialTicksChart allSignal={instrumentData} />
             </div>
           </div>
         </div>
       </div>
 
-      <h3 className="mt-4 text-slate-400 hover:underline">
+      <h3 className="hover:text-primary mt-6 text-slate-400 transition-colors duration-200">
         <Link href="/signals">{t("allSignals")}...</Link>
       </h3>
     </div>

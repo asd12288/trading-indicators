@@ -378,6 +378,7 @@
   "SignalWinRateChart": {
     "title": "MFE vs Negative Ticks",
     "loading": "Loading...",
+    "subtitle": "Win Rate: {winRate}%",
     "chart": {
       "mfeTicks": "MFE Ticks",
       "negativeTicks": "Negative Ticks"
@@ -386,6 +387,8 @@
   "SignalPerformanceChart": {
     "loading": "Loading chart...",
     "title": "Cumulative Potential Ticks",
+    "subtitle": "Based on {count} trades",
+    "performance": "Performance",
     "legend": {
       "cumulativePotential": "Cumulative Potential Ticks"
     }
@@ -809,7 +812,6 @@
       "gettingStarted": "Getting Started",
       "introduction": "Introduction",
       "smartAlert": "Smart Alert"
-      
     }
   },
   "SignalsGrid": {
