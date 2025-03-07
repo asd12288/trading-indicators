@@ -21,7 +21,7 @@ const Hero = () => {
 
   return (
     <section className="overflow-hidden">
-      <div className="container mx-auto flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800  md:grid md:min-h-[85vh] md:grid-cols-12 md:gap-4 md:px-6 lg:px-12">
+      <div className="mx-auto flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 md:grid md:min-h-[85vh] md:grid-cols-12 md:gap-4 md:px-6">
         {/* LEFT COLUMN */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -90,7 +90,7 @@ const Hero = () => {
           <div className="w-full items-center justify-center md:relative lg:flex">
             {/* A container to hold both cards, one behind the other */}
             <div className="xs:grid grid-cols-2 md:relative">
-              <div className="relative z-10 transform transition-all md:hover:rotate-2 ">
+              <div className="relative z-10 transform transition-all md:hover:rotate-2">
                 <DemoCard type="es" />
               </div>
             </div>

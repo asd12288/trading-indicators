@@ -9,6 +9,7 @@ import { redirect } from "@/i18n/routing";
 import { createClient } from "@/database/supabase/server";
 import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation";
 import Cta from "@/components/homePage/Cta";
+import Head from "next/head";
 
 async function page({ params }: { params: { locale: string } }) {
   const supabase = await createClient();
@@ -24,13 +25,13 @@ async function page({ params }: { params: { locale: string } }) {
   return (
     <>
       <section>
-        <div className="container mx-auto px-4">
+        <div>
           <Hero />
         </div>
       </section>
 
       <section>
-        <div className="container mx-auto px-4">
+        <div>
           <Service />
         </div>
       </section>
