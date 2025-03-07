@@ -3,9 +3,9 @@
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { HiArrowRight } from "react-icons/hi";
-import DemoCard from "./DemoCard";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
+import React from "react";
 
 // Lazy-load these heavier components
 const TimelineSection = dynamic(() => import("./TimelineSection"), {
@@ -14,13 +14,14 @@ const TimelineSection = dynamic(() => import("./TimelineSection"), {
 const LogosScroling = dynamic(() => import("@/components/LogosScroling"), {
   ssr: false,
 });
+const DemoCard = dynamic(() => import("./DemoCard"), { ssr: false });
 
 const Hero = () => {
   const t = useTranslations("HomePage.hero");
 
   return (
     <section className="overflow-hidden">
-      <div className="flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 md:grid md:min-h-[85vh] md:grid-cols-12 md:gap-4 md:px-6 lg:px-12">
+      <div className="container mx-auto flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800  md:grid md:min-h-[85vh] md:grid-cols-12 md:gap-4 md:px-6 lg:px-12">
         {/* LEFT COLUMN */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -89,7 +90,7 @@ const Hero = () => {
           <div className="w-full items-center justify-center md:relative lg:flex">
             {/* A container to hold both cards, one behind the other */}
             <div className="xs:grid grid-cols-2 md:relative">
-              <div className="relative z-10 transform transition-all hover:rotate-2 hover:scale-105">
+              <div className="relative z-10 transform transition-all md:hover:rotate-2 ">
                 <DemoCard type="es" />
               </div>
             </div>
@@ -102,4 +103,4 @@ const Hero = () => {
   );
 };
 
-export default Hero;
+export default React.memo(Hero);

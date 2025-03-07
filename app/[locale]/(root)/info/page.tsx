@@ -30,8 +30,8 @@ export default function FeatureDocsPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-slate-950 to-slate-900 p-6 text-slate-50 md:p-12">
-      <div className="mx-auto max-w-6xl rounded-2xl bg-slate-900/70 p-8 shadow-xl backdrop-blur-sm md:p-10">
+    <div className="min-h-screen w-full bg-gradient-to-br from-slate-950 to-slate-900 md:p-6 text-slate-50 md:p-12">
+      <div className="container mx-auto max-w-6xl rounded-2xl bg-slate-900/70 p-8 px-4 shadow-xl backdrop-blur-sm md:p-10 md:px-8">
         {/* Page Header */}
         <header className="mb-16 text-center">
           <div className="inline-block rounded-lg bg-indigo-500/10 px-3 py-1 text-sm font-medium text-indigo-400">
@@ -47,7 +47,7 @@ export default function FeatureDocsPage() {
         </header>
 
         {/* Section: Core Features */}
-        <section className="mb-16 rounded-xl bg-slate-800/50 p-8 backdrop-blur-sm transition-all hover:bg-slate-800/70">
+        <section className="mb-16 rounded-xl bg-slate-800/50 p-2 backdrop-blur-sm transition-all hover:bg-slate-800/70 md:p-8">
           <div className="mb-6 flex items-center">
             <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500">
               <svg
@@ -88,7 +88,7 @@ export default function FeatureDocsPage() {
                 </svg>
               </div>
               <strong className="text-lg text-white">Trader Map</strong>
-              <p className="mt-2 text-slate-300">
+              <p className="mt-2 text-sm md:text-[1rem] text-slate-300">
                 {t("sections.coreFeatures.items.traderMap")}
               </p>
             </li>
@@ -109,7 +109,7 @@ export default function FeatureDocsPage() {
                 </svg>
               </div>
               <strong className="text-lg text-white">Signals</strong>
-              <p className="mt-2 text-slate-300">
+              <p className="mt-2 text-sm md:text-[1rem] text-slate-300">
                 {t("sections.coreFeatures.items.signals")}
               </p>
             </li>
@@ -131,7 +131,7 @@ export default function FeatureDocsPage() {
                 </svg>
               </div>
               <strong className="text-lg text-white">Profile</strong>
-              <p className="mt-2 text-slate-300">
+              <p className="mt-2 text-sm md:text-[1rem] text-slate-300">
                 {t("sections.coreFeatures.items.profile")}
               </p>
             </li>
@@ -139,7 +139,7 @@ export default function FeatureDocsPage() {
         </section>
 
         {/* Section: Trading Terms */}
-        <section className="mb-16 rounded-xl bg-slate-800/50 p-8 backdrop-blur-sm transition-all hover:bg-slate-800/70">
+        <section className="mb-16 rounded-xl bg-slate-800/50 md:p-8 p-2 backdrop-blur-sm transition-all hover:bg-slate-800/70">
           <div className="mb-6 flex items-center">
             <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500">
               <svg
@@ -157,7 +157,7 @@ export default function FeatureDocsPage() {
                 <path d="M12 8v4l3 3" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-white">
+            <h2 className="md:text-2xl text-xl font-bold text-white">
               {t("sections.tradingTerms.title")}
             </h2>
           </div>
@@ -165,15 +165,15 @@ export default function FeatureDocsPage() {
             {["mae", "mfe", "exitPrice", "tradeDuration"].map((term) => (
               <div
                 key={term}
-                className="rounded-lg bg-slate-700/40 p-6 transition-all hover:-translate-y-1 hover:bg-slate-700/60 hover:shadow-lg"
+                className="rounded-lg bg-slate-700/40 md:p-6 p-2 transition-all hover:-translate-y-1 hover:bg-slate-700/60 hover:shadow-lg"
               >
-                <h3 className="flex items-center text-lg font-semibold text-white">
+                <h3 className="flex items-center  text-lg font-semibold text-white">
                   <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500/20 text-xs font-bold text-indigo-400">
                     {term.charAt(0).toUpperCase()}
                   </span>
                   {t(`sections.tradingTerms.terms.${term}.title`)}
                 </h3>
-                <p className="mt-3 text-slate-300">
+                <p className="mt-3 text-sm md:text-[1rem] text-slate-300">
                   {t(`sections.tradingTerms.terms.${term}.description`)}
                 </p>
               </div>
@@ -182,7 +182,7 @@ export default function FeatureDocsPage() {
         </section>
 
         {/* Signal Cards Section (Client Component) */}
-        <section className="mb-16 rounded-xl bg-slate-800/50 p-8 backdrop-blur-sm transition-all hover:bg-slate-800/70">
+        <section className="mb-16 rounded-xl bg-slate-800/50 md:p-8 p-2 backdrop-blur-sm transition-all hover:bg-slate-800/70">
           <div className="mb-6 flex items-center">
             <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-green-500">
               <svg
@@ -203,7 +203,7 @@ export default function FeatureDocsPage() {
               {t("sections.signalCards.title")}
             </h2>
           </div>
-          <p className="mt-2 text-slate-300">
+          <p className="mt-2 text-sm md:text-[1rem] text-slate-300">
             {t("sections.signalCards.description")}
           </p>
 

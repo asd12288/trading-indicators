@@ -23,13 +23,16 @@ async function page({ params }: { params: { locale: string } }) {
 
   return (
     <>
-      <section >
-        <Hero />
+      <section>
+        <div className="container mx-auto px-4">
+          <Hero />
+        </div>
       </section>
 
-
-      <section >
-        <Service />
+      <section>
+        <div className="container mx-auto px-4">
+          <Service />
+        </div>
       </section>
 
       <section>
