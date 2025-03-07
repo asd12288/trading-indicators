@@ -2,59 +2,90 @@
 
 import { useRouter, Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { CheckCircle, ArrowRight } from "lucide-react";
 
 export default function SuccessPage() {
   const router = useRouter();
+  const t = useTranslations("SuccessPayment");
+  const [progress, setProgress] = useState(100);
 
-  const t = useTranslations('SuccessPayment');
   useEffect(() => {
-    // Force a router refresh to ensure all server components
-    // fetch fresh data from the database
     router.refresh();
 
-    // Optional: redirect to dashboard after a delay
+    const redirectTime = 5000; // 5 seconds
+    const interval = 50; // Update interval in ms
+    const steps = redirectTime / interval;
+    const decrementValue = 100 / steps;
+
+    const progressInterval = setInterval(() => {
+      setProgress((prevProgress) => {
+        const newProgress = prevProgress - decrementValue;
+        return newProgress < 0 ? 0 : newProgress;
+      });
+    }, interval);
+
     const timeout = setTimeout(() => {
       router.push("/smart-alerts");
-    }, 5000); // 5 seconds
+    }, redirectTime);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(progressInterval);
+    };
   }, [router]);
 
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-      <div className="max-w-md space-y-6">
-        <div className="mx-auto inline-block rounded-full bg-green-100 p-3 text-green-600">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
+    <div className="flex min-h-[80vh] flex-col items-center justify-center bg-gradient-to-b from-slate-900 to-slate-950 p-6">
+      <div className="w-full max-w-md rounded-2xl bg-slate-800/80 p-8 text-center shadow-2xl backdrop-blur-sm">
+        <div className="mb-6 flex justify-center">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <CheckCircle className="h-16 w-16 text-green-500" />
+            </div>
+            <svg className="h-24 w-24 rotate-[-90deg]">
+              <circle
+                className="text-slate-700"
+                strokeWidth="4"
+                stroke="currentColor"
+                fill="transparent"
+                r="40"
+                cx="48"
+                cy="48"
+              />
+              <circle
+                className="text-green-500 transition-all duration-300 ease-in-out"
+                strokeWidth="4"
+                strokeDasharray={251.2}
+                strokeDashoffset={251.2 * (1 - progress / 100)}
+                strokeLinecap="round"
+                stroke="currentColor"
+                fill="transparent"
+                r="40"
+                cx="48"
+                cy="48"
+              />
+            </svg>
+          </div>
         </div>
 
-        <h1 className="text-3xl font-bold">{t('title')}</h1>
+        <h1 className="mb-3 text-3xl font-bold text-white">{t("title")}</h1>
 
-        <p className="text-gray-500">
-        {t('description')}
+        <p className="mb-8 leading-relaxed text-slate-400">
+          {t("description")}
         </p>
 
-        <div className="pt-4">
-          <Link
-            href="/signals"
-            className="bg-primary hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-6 py-2 font-medium text-white"
-          >
-              {t('button')}
-          </Link>
+        <div className="mb-6 text-sm text-slate-500">
+          Redirecting in {Math.ceil(progress / 20)} seconds...
         </div>
+
+        <Link
+          href="/signals"
+          className="bg-primary hover:bg-primary/90 inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 font-medium text-white transition-all"
+        >
+          {t("button")}
+          <ArrowRight className="h-4 w-4" />
+        </Link>
       </div>
     </div>
   );

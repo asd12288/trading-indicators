@@ -79,7 +79,6 @@
     "hero": {
       "rating": "⭐⭐⭐⭐⭐",
       "count": "More then 50+ Instruments",
-
       "mainTitleStart": "for active traders",
       "highlightedText": " React Faster, Trade Smarter",
       "mainTitleEnd": "Trade Smarter",
@@ -110,7 +109,6 @@
     "logos": {
       "title": "Different Alerts for Different Instruments"
     },
-
     "offers": {
       "mainTitle": "Live Smart Alerts – Stay Ahead of the Market",
       "subtitle": "Our real-time smart alerts provide you with expert-driven market insights, helping you make informed trading decisions quickly.",
@@ -130,7 +128,6 @@
         "ctaButton": "Get started for free"
       }
     },
-
     "cta": {
       "title": "Ready to start trading?",
       "subtitle": "Join Trader-Map today and get access to real-time smart alerts, expert analysis, and more.",
@@ -158,7 +155,6 @@
         }
       }
     },
-
     "howItWork": {
       "title": "How It Works",
       "monitoring": {
@@ -177,8 +173,11 @@
         "description": "As soon as a relevant signal is detected, an alert is sent directly to your interface and optionally on Telegram."
       }
     },
-
     "faq": {
+      "title": "Frequently Asked Questions",
+      "searchPlaceholder": "Search questions...",
+      "moreQuestions": "Can't find what you're looking for?",
+      "contactSupport": "Contact our support team",
       "question1": {
         "question": "What are Smart Alerts, and how can they help me trade?",
         "answer": "Smart Alerts are real-time trading signals designed to help traders react quickly to market opportunities. Each alert provides essential trade details, including whether it's a Long or Short trade, entry and exit prices, and key performance metrics like Maximum Favorable Excursion (MFE) and Maximum Adverse Excursion (MAE). With Smart Alerts, you can make informed trading decisions and stay ahead of the market."
@@ -194,7 +193,9 @@
     },
     "contact": {
       "title": "Get in Touch",
-      "subtitle": "Have a question? what to contact us?"
+      "subtitle": "Have a question? what to contact us?",
+      "sectionTitle": "Get in Touch",
+      "sectionDescription": "We're here to help with any questions you might have about our service."
     },
     "freePlanCard": {
       "plan": "Free Plan",
@@ -207,7 +208,6 @@
       "plan": "Pro Plan",
       "frequency": "Per Month",
       "billed": "Billed monthly",
-
       "button": "Get Started",
       "benefit1": "Access to all smart alerts",
       "benefit2": "Analysis of the instruments",
@@ -234,6 +234,23 @@
         "success": "Thank you for contacting us! We'll get back to you shortly.",
         "error": "An error occurred while sending your message. Please try again."
       }
+    },
+    "timelineSection": {
+      "title": "How It Works",
+      "items": [
+        {
+          "title": "Market Analysis",
+          "content": "Our advanced algorithms continuously monitor the markets to identify potential trading opportunities."
+        },
+        {
+          "title": "Signal Generation",
+          "content": "When a significant pattern is detected, our system creates a Smart Alert with precise entry and exit points."
+        },
+        {
+          "title": "Real-time Delivery",
+          "content": "Smart Alerts are instantly delivered to your dashboard and optionally via Telegram for immediate action."
+        }
+      ]
     }
   },
   "Signals": {
@@ -459,7 +476,6 @@
       }
     }
   },
-
   "TermsAndConditions": {
     "title": "Terms and Conditions",
     "welcome": "Welcome to Trader Map. By using our website and services, you agree to comply with the following terms and conditions. Please read them carefully.",
@@ -531,7 +547,6 @@
       }
     }
   },
-
   "UserDashboard": {
     "title": "My Profile",
     "loading": "Loading...",
@@ -780,7 +795,6 @@
     "description": "Thank you for subscribing to our premium plan. Your account has been upgraded and you now have access to all premium features.",
     "button": "Back to Smart Alerts"
   },
-
   "SignalOverviewSummary": {
     "noData": "No smart alert data available",
     "loading": "Loading...",
