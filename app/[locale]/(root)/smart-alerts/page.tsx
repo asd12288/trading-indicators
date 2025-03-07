@@ -10,17 +10,19 @@ export const metadata: Metadata = {
 async function page({ params }: { params: { locale: string } }) {
   const supabase = await createClient();
 
+  const { locale } = await params;
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect({ href: "/login", locale: params.locale });
+    redirect({ href: "/login", locale: locale });
   }
 
   return (
     <div>
-      <SignalsLayout userId={user?.id} key={params.locale} />
+      <SignalsLayout userId={user?.id} key={locale} />
     </div>
   );
 }

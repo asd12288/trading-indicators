@@ -3,7 +3,7 @@
 import { NextResponse } from "next/server";
 import { verifyWebhookSignature } from "@/lib/paypal";
 import supabaseClient from "@/database/supabase/supabase";
-import { sendWelcomeEmail } from "@/lib/email";
+import { publishToQueue } from "@/lib/upstash";
 
 export async function POST(req) {
   let event;
@@ -46,24 +46,28 @@ export async function POST(req) {
         .eq("id", userId)
         .single();
 
+      const expirationDate = new Date();
+
       if (userError) {
         console.error("❌ Error fetching user data:", userError);
       } else {
-        const expirationDate = new Date();
         expirationDate.setMonth(expirationDate.getMonth() + 1);
-
-        try {
-          await sendWelcomeEmail({
-            userName: user.email,
-            userEmail: user.email,
-            plan: "Pro",
-            expirationDate: expirationDate.toISOString(),
-          });
-        } catch (emailError) {
-          console.error("❌ Error sending welcome email:", emailError);
-          // Continue with webhook processing
-        }
       }
+
+      await publishToQueue(`${process.env.DEV_URL}/api/qstash/welcome-pro`, {
+        userName: user?.email,
+        userEmail: user?.email,
+        expirationDate: expirationDate.toISOString(),
+      });
+
+      await publishToQueue(`${process.env.DEV_URL}/api/qstash/receipt`, {
+        userName: user?.email,
+        userEmail: user?.email,
+        paymentId: subscriptionId,
+        amount: sub.billing_info.last_payment.amount.value,
+        paymentMethod: "PayPal",
+        date: sub.billing_info.last_payment.time,
+      });
     } else if (eventType === "BILLING.SUBSCRIPTION.CANCELLED") {
       // This fires when subscription is fully cancelled (after the period ends)
       await supabaseClient
