@@ -15,6 +15,7 @@ import {
   Eye,
   ChevronRight,
   Layers,
+  Lock,
 } from "lucide-react";
 import SignalInfo from "./SignalInfo";
 import SignalOverview from "./SignalOverview";
@@ -25,13 +26,16 @@ import SignalLayoutLoader from "./loaders/SignalLayoutLoader";
 import AlertNotification from "./AlertNotification";
 import SignalLatestNews from "./SignalLatestNews";
 import InstrumentStatusCard from "./InstrumentStatusCard";
+import BlurOverlay from "./BlurOverlay";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 // Tab type definition
 interface Tab {
   id: string;
   label: string;
   icon: React.ReactNode;
+  isPremium?: boolean;
 }
 
 const SignalLayout = ({ id, userId, isPro }) => {
@@ -39,6 +43,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
   const { instrumentData, isLoading: loadingInstrumentData } =
     useInstrumentData(id);
   const t = useTranslations("SignalLayout");
+  const router = useRouter();
 
   // Tab state management
   const [activeTab, setActiveTab] = useState("overview");
@@ -55,7 +60,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
     notFound();
   }
 
-  // Define our tabs
+  // Define our tabs and mark premium ones
   const tabs: Tab[] = [
     { id: "overview", label: t("tabs.overview"), icon: <Eye size={16} /> },
     {
@@ -63,9 +68,23 @@ const SignalLayout = ({ id, userId, isPro }) => {
       label: t("tabs.performance"),
       icon: <Activity size={16} />,
     },
-    { id: "details", label: t("tabs.details"), icon: <Info size={16} /> },
-    { id: "news", label: t("tabs.news"), icon: <Newspaper size={16} /> },
+    {
+      id: "details",
+      label: t("tabs.details"),
+      icon: <Info size={16} />,
+      isPremium: true,
+    },
+    {
+      id: "news",
+      label: t("tabs.news"),
+      icon: <Newspaper size={16} />,
+      isPremium: true,
+    },
   ];
+
+  const handleUpgradeClick = () => {
+    router.push("/upgrade");
+  };
 
   return (
     <div className="mx-auto mb-8 flex max-w-7xl flex-col p-3 md:p-8 lg:p-12">
@@ -115,6 +134,9 @@ const SignalLayout = ({ id, userId, isPro }) => {
             >
               <span className="flex items-center gap-2">
                 {tab.icon} {tab.label}
+                {tab.isPremium && !isPro && (
+                  <Lock size={12} className="text-amber-400" />
+                )}
               </span>
               {activeTab === tab.id && (
                 <motion.div
@@ -132,7 +154,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
 
       {/* Tab content */}
       <div className="min-h-[600px]">
-        {/* Overview Tab */}
+        {/* Overview Tab - Available to all users */}
         {activeTab === "overview" && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -150,14 +172,24 @@ const SignalLayout = ({ id, userId, isPro }) => {
             </div>
 
             <div className="flex flex-col gap-6">
-              <div className="overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/90 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
-                <InstrumentStatusCard instrumentName={instrumentName} />
+              <div className="relative overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/90 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
+                {/* Show blur overlay for free users */}
+                {!isPro && (
+                  <BlurOverlay
+                    title={t("premium.statusTitle")}
+                    description={t("premium.statusDescription")}
+                    onUpgradeClick={handleUpgradeClick}
+                  />
+                )}
+                <div className={!isPro ? "blur-sm" : ""}>
+                  <InstrumentStatusCard instrumentName={instrumentName} />
+                </div>
               </div>
             </div>
           </motion.div>
         )}
 
-        {/* Performance Tab */}
+        {/* Performance Tab - Premium content */}
         {activeTab === "performance" && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -165,37 +197,60 @@ const SignalLayout = ({ id, userId, isPro }) => {
             transition={{ duration: 0.2 }}
             className="flex flex-col gap-6"
           >
-            <div className="overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/90 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
-              <SignalTable allSignal={instrumentData} />
+            <div className="relative overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/90 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
+              <div>
+                <SignalTable allSignal={instrumentData} />
+              </div>
             </div>
 
-            <div className="overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/90 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
-              <CumulativePotentialTicksChart allSignal={instrumentData} />
+            <div className="relative overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/90 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
+              {!isPro && <div className="absolute inset-0 bg-slate-900/30" />}
+              <div>
+                <CumulativePotentialTicksChart allSignal={instrumentData} />
+              </div>
             </div>
           </motion.div>
         )}
 
-        {/* Details Tab */}
+        {/* Details Tab - Premium content */}
         {activeTab === "details" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
-            className="overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/90 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl"
+            className="relative overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/90 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl"
           >
-            <SignalInfo instrumentName={instrumentName} />
+            {!isPro && (
+              <BlurOverlay
+                title={t("premium.detailsTitle")}
+                description={t("premium.detailsDescription")}
+                onUpgradeClick={handleUpgradeClick}
+              />
+            )}
+            <div className={!isPro ? "blur-sm" : ""}>
+              <SignalInfo instrumentName={instrumentName} />
+            </div>
           </motion.div>
         )}
 
-        {/* News Tab */}
+        {/* News Tab - Premium content */}
         {activeTab === "news" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
-            className="overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/90 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl"
+            className="relative overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/90 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl"
           >
-            <SignalLatestNews symbol={instrumentName} />
+            {!isPro && (
+              <BlurOverlay
+                title={t("premium.newsTitle")}
+                description={t("premium.newsDescription")}
+                onUpgradeClick={handleUpgradeClick}
+              />
+            )}
+            <div className={!isPro ? "blur-sm" : ""}>
+              <SignalLatestNews symbol={instrumentName} />
+            </div>
           </motion.div>
         )}
       </div>

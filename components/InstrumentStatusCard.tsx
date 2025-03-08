@@ -74,8 +74,8 @@ const InstrumentStatusCard = ({
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <div className="flex animate-pulse flex-col gap-4">
+      <div className="flex h-full flex-col items-center justify-center space-y-5 rounded-xl border border-slate-700/50 bg-slate-800/90 p-5 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
+        <div className="flex w-full animate-pulse flex-col gap-4">
           <div className="h-7 w-1/3 rounded bg-slate-700"></div>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <div className="h-20 rounded bg-slate-700"></div>
@@ -90,7 +90,7 @@ const InstrumentStatusCard = ({
 
   if (error) {
     return (
-      <div className="p-6">
+      <div className="flex h-full flex-col items-center justify-center space-y-5 rounded-xl border border-slate-700/50 bg-slate-800/90 p-5 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
         <div className="flex items-center space-x-2 text-amber-500">
           <AlertTriangle size={20} />
           <h3 className="text-lg font-medium">{t("errorLoading")}</h3>
@@ -102,7 +102,7 @@ const InstrumentStatusCard = ({
 
   if (!data || data.length === 0) {
     return (
-      <div className="p-6">
+      <div className="flex h-full flex-col items-center justify-center space-y-5 rounded-xl border border-slate-700/50 bg-slate-800/90 p-5 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
         <div className="flex items-center space-x-2 text-slate-400">
           <AlertTriangle size={20} />
           <h3 className="text-lg font-medium">{t("noData")}</h3>
@@ -118,10 +118,12 @@ const InstrumentStatusCard = ({
   const latestTimestamp = compositeData.latestTimestamp || data[0]?.timestamp;
 
   return (
-    <div className="p-6">
-      <div className="mb-4 flex items-center justify-between">
+    <div className="flex h-full flex-col justify-between rounded-xl border border-slate-700/50 bg-slate-800/90 p-5 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
+      <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="text-xl font-semibold">{t("instrumentStatus")}</h3>
+          <h3 className="text-lg font-semibold text-slate-100">
+            {t("instrumentStatus")}
+          </h3>
           {compositeData.last?.value !== undefined && (
             <span className="flex h-2 w-2 items-center">
               <span className="absolute inline-flex h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75"></span>
@@ -138,7 +140,7 @@ const InstrumentStatusCard = ({
       </div>
 
       {/* Trend and Last Price - Featured Section */}
-      <div className="mb-5 flex flex-col rounded-lg bg-gradient-to-br from-slate-800 to-slate-900 p-4 shadow-lg md:flex-row md:items-center md:justify-between">
+      <div className="mb-4 flex flex-col rounded-lg bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-4 shadow-md md:flex-row md:items-center md:justify-between">
         <div className="flex items-center">
           {getTrendIcon(trend)}
           <div className="ml-3">
@@ -160,7 +162,7 @@ const InstrumentStatusCard = ({
           </div>
         </div>
 
-        <div className="mt-4 flex items-center md:mt-0">
+        <div className="mt-3 flex items-center md:mt-0">
           <div className="text-right">
             <div className="flex items-center justify-end gap-1">
               <SignalToolTooltip text={t("lastPriceTooltip")}>
@@ -184,72 +186,74 @@ const InstrumentStatusCard = ({
         </div>
       </div>
 
-      {/* Price Levels Grid */}
-      <div className="mb-5 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatCard
-          label={t("high")}
-          tooltip={t("highTooltip")}
-          value={compositeData.high?.value}
-          isFlashing={flashField === "high"}
-          t={t}
-        />
+      <div className="flex-grow">
+        {/* Price Levels Grid */}
+        <div className="mb-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+          <StatCard
+            label={t("high")}
+            tooltip={t("highTooltip")}
+            value={compositeData.high?.value}
+            isFlashing={flashField === "high"}
+            t={t}
+          />
 
-        <StatCard
-          label={t("low")}
-          tooltip={t("lowTooltip")}
-          value={compositeData.low?.value}
-          isFlashing={flashField === "low"}
-          t={t}
-        />
+          <StatCard
+            label={t("low")}
+            tooltip={t("lowTooltip")}
+            value={compositeData.low?.value}
+            isFlashing={flashField === "low"}
+            t={t}
+          />
 
-        <StatCard
-          label="VWAP"
-          tooltip={t("vwapTooltip")}
-          value={compositeData.vwap?.value}
-          isFlashing={flashField === "vwap"}
-          t={t}
-        />
+          <StatCard
+            label="VWAP"
+            tooltip={t("vwapTooltip")}
+            value={compositeData.vwap?.value}
+            isFlashing={flashField === "vwap"}
+            t={t}
+          />
 
-        <StatCard
-          label="POC"
-          tooltip={t("pocTooltip")}
-          value={compositeData.poc?.value}
-          isFlashing={flashField === "poc"}
-          t={t}
-        />
+          <StatCard
+            label="POC"
+            tooltip={t("pocTooltip")}
+            value={compositeData.poc?.value}
+            isFlashing={flashField === "poc"}
+            t={t}
+          />
+        </div>
+
+        {/* Value Areas */}
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+          <StatCard
+            label="VAH"
+            tooltip={t("vahTooltip")}
+            value={compositeData.vah?.value}
+            isFlashing={flashField === "vah"}
+            isSmaller
+            t={t}
+          />
+
+          <StatCard
+            label="VAL"
+            tooltip={t("valTooltip")}
+            value={compositeData.val?.value}
+            isFlashing={flashField === "val"}
+            isSmaller
+            t={t}
+          />
+
+          <StatCard
+            label="VPOC"
+            tooltip={t("vpocTooltip")}
+            value={compositeData.vpoc?.value}
+            isFlashing={flashField === "vpoc"}
+            isSmaller
+            t={t}
+          />
+        </div>
       </div>
 
-      {/* Value Areas */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatCard
-          label="VAH"
-          tooltip={t("vahTooltip")}
-          value={compositeData.vah?.value}
-          isFlashing={flashField === "vah"}
-          isSmaller
-          t={t}
-        />
-
-        <StatCard
-          label="VAL"
-          tooltip={t("valTooltip")}
-          value={compositeData.val?.value}
-          isFlashing={flashField === "val"}
-          isSmaller
-          t={t}
-        />
-
-        <StatCard
-          label="VPOC"
-          tooltip={t("vpocTooltip")}
-          value={compositeData.vpoc?.value}
-          isFlashing={flashField === "vpoc"}
-          isSmaller
-          t={t}
-        />
-      </div>
-
-      <div className="mt-4 flex items-center justify-end text-xs text-slate-500">
+      <div className="mt-3 flex items-center justify-end text-xs text-slate-500">
         {t("lastUpdated")}:{" "}
         {latestTimestamp
           ? new Date(latestTimestamp).toLocaleString()
@@ -279,7 +283,9 @@ const StatCard = ({
 }: StatCardProps) => {
   return (
     <div
-      className={`rounded-lg ${isSmaller ? "bg-slate-800/50" : "bg-slate-700/50"} p-3 shadow-sm`}
+      className={`rounded-lg ${
+        isSmaller ? "bg-slate-800/70" : "bg-slate-700/60"
+      } p-2.5 shadow-sm backdrop-blur-sm transition-colors duration-200 hover:bg-slate-700/80`}
     >
       <SignalToolTooltip text={tooltip}>
         <p className="flex cursor-help items-center gap-1 text-sm text-slate-400">

@@ -363,6 +363,16 @@
       "performance": "Performance",
       "details": "Instrument Details",
       "news": "Latest News"
+    },
+    "premium": {
+      "performanceTitle": "Unlock Performance Analytics",
+      "performanceDescription": "Get access to detailed performance metrics, trade history, and cumulative profit tracking to optimize your trading strategy.",
+      "detailsTitle": "Access Full Instrument Details",
+      "detailsDescription": "Explore comprehensive instrument information including trading hours, contract specifications, and volatility metrics.",
+      "newsTitle": "Stay Ahead with Latest News",
+      "newsDescription": "Get real-time market news and analysis that impacts your trading decisions for this instrument.",
+      "statusTitle": "Unlock Live Market Status",
+      "statusDescription": "Get real-time price updates, trend analysis, and key market levels for more informed trading decisions."
     }
   },
   "SignalTool": {
@@ -891,5 +901,316 @@
     "vpocTooltip": "Volume Point of Control. Similar to POC but specifically focuses on the price level with the largest volume concentration.",
     "vahTooltip": "Value Area High. The upper boundary of the price range where 70% of trading volume occurred, indicating significant activity.",
     "valTooltip": "Value Area Low. The lower boundary of the price range where 70% of trading volume occurred, indicating significant activity."
+  },
+  "SignalLatestNews": {
+    "title": "Latest News on {symbol}",
+    "refreshing": "Refreshing...",
+    "refresh": "Refresh",
+    "loading": "Loading news...",
+    "error": "Failed to load news. Please try again.",
+    "noNews": "No recent news available for {symbol}.",
+    "tryAgain": "Try again",
+    "readFullStory": "Read full story",
+    "externalLink": "External link"
+  },
+  "BlurOverlay": {
+    "title": "Upgrade to Pro",
+    "description": "This premium feature helps you make better trading decisions and maximize your profits.",
+    "upgradeButton": "Upgrade Now"
+  },
+  "AffiliatePage": {
+    "hero": {
+      "title": "Grow with Trader Map Affiliate Program",
+      "subtitle": "Earn generous commissions by referring traders to our premium market analysis and smart alerts platform",
+      "features": {
+        "commission": {
+          "title": "Earn Up to 40% Commission",
+          "description": "Get up to 40% recurring commission on every referred subscription, with monthly payouts via your preferred method."
+        },
+        "conversion": {
+          "title": "High Conversion Rates",
+          "description": "Our well-optimized funnels and valuable tools lead to industry-leading conversion rates and higher earnings for you."
+        },
+        "support": {
+          "title": "Dedicated Partner Success",
+          "description": "Work with our partner success team to optimize your marketing efforts and maximize your affiliate revenue."
+        }
+      },
+      "cta": "Apply to Become an Affiliate"
+    },
+    "benefits": {
+      "title": "Affiliate Benefits",
+      "subtitle": "Why partnering with Trader Map is your best choice",
+      "items": {
+        "recurrentCommissions": {
+          "title": "Recurring Commissions",
+          "description": "Earn month after month on all subscription renewals, creating a reliable passive income stream."
+        },
+        "highConversion": {
+          "title": "High Conversion Rate",
+          "description": "Our platform's proven value leads to excellent trial-to-paid conversion rates and low churn."
+        },
+        "dedicatedSupport": {
+          "title": "Dedicated Support",
+          "description": "Get personalized assistance from our affiliate team to maximize your performance."
+        },
+        "marketingMaterials": {
+          "title": "Marketing Materials",
+          "description": "Access professional banners, landing pages, email templates, and other marketing resources."
+        },
+        "detailedReporting": {
+          "title": "Detailed Analytics",
+          "description": "Track your performance with comprehensive real-time reporting and insights."
+        },
+        "competitiveRates": {
+          "title": "Competitive Rates",
+          "description": "Enjoy some of the highest commission rates in the trading tool industry."
+        },
+        "quickPayouts": {
+          "title": "Quick Payouts",
+          "description": "Receive your earnings reliably every month with low minimum payout thresholds."
+        },
+        "exclusivePromos": {
+          "title": "Exclusive Promotions",
+          "description": "Get access to special offers and promotions to share with your audience."
+        }
+      },
+      "commission": {
+        "title": "Commission Structure",
+        "standard": "Standard Tier (0-10 referrals/month)",
+        "premium": "Premium Tier (11-25 referrals/month)",
+        "vip": "VIP Tier (26+ referrals/month)",
+        "recommended": "MOST POPULAR"
+      }
+    },
+    "howItWorks": {
+      "title": "How Our Affiliate Program Works",
+      "subtitle": "Start earning in just four simple steps",
+      "steps": {
+        "signup": "Sign Up",
+        "signupDescription": "Complete our application form and get approved to join the program.",
+        "promote": "Promote",
+        "promoteDescription": "Share your unique tracking links through your channels and campaigns.",
+        "track": "Track",
+        "trackDescription": "Monitor your referrals, conversions, and earnings through your dashboard.",
+        "earn": "Earn",
+        "earnDescription": "Receive monthly payments for all the subscriptions you've referred."
+      },
+      "note": "Our commission structure is designed to reward both quality and quantity. The more qualified users you refer, the higher your commission rate becomes."
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "subtitle": "Everything you need to know about our affiliate program",
+      "questions": {
+        "eligibility": "Who can become an affiliate?",
+        "tracking": "How does tracking work?",
+        "payment": "When and how do I get paid?",
+        "materials": "What marketing materials do you provide?",
+        "terms": "What are the terms of the affiliate agreement?",
+        "support": "How can I get support as an affiliate?"
+      },
+      "answers": {
+        "eligibilityAnswer": "Our affiliate program is open to traders, financial bloggers, trading educators, financial influencers, and website owners with relevant audiences. We review all applications to ensure alignment with our product and values.",
+        "trackingAnswer": "We use reliable affiliate tracking software that assigns unique tracking links to each affiliate. When someone clicks your link, they're tracked for 30 days, and you earn commission on any subscription they purchase during that period.",
+        "paymentAnswer": "Commissions are calculated monthly and paid on the 15th of the following month via PayPal, bank transfer, or crypto (minimum payout threshold: $50). You'll earn from 20-40% of the subscription value depending on your tier.",
+        "materialsAnswer": "We provide banners, text links, landing pages, email templates, product images, and demo videos. We also offer custom materials for high-performing affiliates and can work with you to create targeted campaigns.",
+        "termsAnswer": "Our agreement requires ethical promotion without misleading claims or spam tactics. Affiliates cannot bid on our branded terms in paid search. Commission cookies last 30 days, and we reserve the right to reject applications or terminate partnerships that don't align with our policies.",
+        "supportAnswer": "You'll have access to our affiliate support team via email and chat. High-volume affiliates get dedicated account managers. We also provide regular updates, optimization tips, and training materials to help maximize your success."
+      },
+      "moreQuestions": "Have more questions about the affiliate program?",
+      "contactUs": "Contact our affiliate team"
+    },
+    "signupForm": {
+      "title": "Apply to Join Our Affiliate Program",
+      "subtitle": "Fill out the form below to start your application",
+      "nameLabel": "Full Name",
+      "namePlaceholder": "Your full name",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "your@email.com",
+      "websiteLabel": "Website or Social Media URL",
+      "websitePlaceholder": "https://",
+      "experienceLabel": "Affiliate Marketing Experience",
+      "experienceSelect": "Select your experience level",
+      "experienceNone": "No Experience",
+      "experienceBeginner": "Beginner (0-1 years)",
+      "experienceIntermediate": "Intermediate (1-3 years)",
+      "experienceAdvanced": "Advanced (3+ years)",
+      "messageLabel": "Tell us about your audience and promotion strategy",
+      "messagePlaceholder": "Share information about your audience, traffic sources, and how you plan to promote Trader Map...",
+      "termsLabel": "I agree to the Affiliate Program Terms and Conditions",
+      "termsLink": "Read Terms",
+      "submitButton": "Submit Application",
+      "submitting": "Submitting...",
+      "requiredFields": "* Required fields",
+      "successTitle": "Application Received!",
+      "successMessage": "Thank you for applying to our affiliate program. We'll review your application and respond within 2-3 business days.",
+      "successContact": "If you have any questions, please contact affiliate@trader-map.com",
+      "errors": {
+        "terms": "You must agree to the terms and conditions",
+        "general": "Something went wrong. Please try again."
+      }
+    }
+  },
+  "ContactPage": {
+    "title": "Contact Us",
+    "subtitle": "Have questions about our platform? Our team is here to help!",
+    "supportEmailTitle": "Support",
+    "supportEmailDescription": "Need help with your account or have technical questions? Our support team is ready to assist.",
+    "partnershipsTitle": "Business Partnerships",
+    "partnershipsDescription": "Interested in partnering with us? Reach out to our business development team.",
+    "affiliateTitle": "Affiliate Program",
+    "affiliateDescription": "Join our affiliate program and earn commission for referring new traders.",
+    "affiliateLink": "Learn more about our affiliate program",
+    "form": {
+      "title": "Send us a message",
+      "nameLabel": "Full Name",
+      "namePlaceholder": "Your full name",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "your@email.com",
+      "titleLabel": "Your Role",
+      "titleSelect": "Select your role",
+      "titleTrader": "Trader",
+      "titleInvestor": "Investor",
+      "titleBroker": "Broker",
+      "titleOther": "Other",
+      "messageLabel": "Message",
+      "messagePlaceholder": "How can we help you? Please provide details about your inquiry...",
+      "buttonSubmit": "Send Message",
+      "buttonSubmitting": "Sending...",
+      "feedback": {
+        "success": "Thank you for your message! We'll get back to you shortly.",
+        "error": "An error occurred while sending your message. Please try again."
+      }
+    }
+  },
+  "AboutUs": {
+    "hero": {
+      "title": "About Trader Map",
+      "subtitle": "We're on a mission to empower traders with intelligent market insights and real-time alerts."
+    },
+    "story": {
+      "title": "Our Story",
+      "paragraph1": "Trader Map was founded in 2022 by a team of passionate traders and technologists who recognized the need for more intelligent trading tools in an increasingly complex market landscape.",
+      "paragraph2": "What began as an internal tool to enhance our own trading has evolved into a comprehensive platform used by traders worldwide. We've spent thousands of hours researching, testing, and refining our algorithms to create smart alerts that actually work.",
+      "paragraph3": "Today, our team continues to innovate at the intersection of trading and technology, with the goal of giving every trader—from beginners to professionals—the insights they need to make more informed decisions."
+    },
+    "stats": {
+      "title": "Trader Map by the Numbers",
+      "instruments": "Instruments Covered",
+      "monitoring": "Market Monitoring",
+      "alerts": "Smart Alerts Generated",
+      "uptime": "Platform Uptime"
+    },
+    "values": {
+      "title": "Our Values",
+      "subtitle": "These core principles guide everything we do at Trader Map",
+      "innovation": {
+        "title": "Innovation",
+        "description": "We constantly push boundaries to create trading tools that solve real problems and deliver actionable insights."
+      },
+      "integrity": {
+        "title": "Integrity",
+        "description": "We believe in transparency, honesty, and ethical practices in all our operations and communications."
+      },
+      "community": {
+        "title": "Community",
+        "description": "We're building more than a platform—we're creating a community of traders who support each other's success."
+      }
+    },
+    "team": {
+      "title": "Meet Our Team",
+      "subtitle": "The people behind Trader Map are passionate about markets, technology, and trader success",
+      "roles": {
+        "ceo": "Founder & CEO",
+        "cto": "Chief Technology Officer",
+        "head_of_research": "Head of Research"
+      },
+      "descriptions": {
+        "ceo": "With over 15 years of trading experience across multiple markets, Alex leads our company vision and strategic direction.",
+        "cto": "Maria oversees our technical infrastructure and leads our development team in creating innovative solutions for traders.",
+        "head_of_research": "David leads our research initiatives, developing and refining the algorithms behind our smart alerts system."
+      }
+    },
+    "cta": {
+      "title": "Ready to Elevate Your Trading?",
+      "description": "Join thousands of traders who rely on Trader Map for real-time insights and intelligent alerts.",
+      "contact_us": "Contact Us",
+      "get_started": "Get Started"
+    }
+  },
+  "PricingPage": {
+    "hero": {
+      "title": "Simple, Transparent Pricing",
+      "subtitle": "Choose the plan that's right for your trading style. All plans include full access to our premium features."
+    },
+    "plans": {
+      "monthly": {
+        "name": "Monthly Plan",
+        "description": "Full access to all features with convenient monthly billing",
+        "features": {
+          "feature1": "Unlimited smart alerts",
+          "feature2": "Advanced pattern recognition",
+          "feature3": "Priority 24/7 support",
+          "feature4": "Telegram notifications",
+          "feature5": "Advanced customization options",
+          "feature6": "Real-time performance analytics"
+        },
+        "cta": "Start Monthly Plan"
+      },
+      "lifetime": {
+        "name": "Lifetime Access",
+        "description": "One-time payment for unlimited lifetime access to all features",
+        "features": {
+          "feature1": "All Monthly Plan features",
+          "feature2": "Lifetime access - no recurring fees",
+          "feature3": "All future updates and features",
+          "feature4": "VIP priority support",
+          "feature5": "Exclusive trading community access",
+          "feature6": "Early access to new features"
+        },
+        "cta": "Get Lifetime Access"
+      }
+    },
+    "payments": {
+      "title": "Flexible Payment Options",
+      "subtitle": "Choose your preferred payment method. We support both traditional payment methods and cryptocurrencies for your convenience.",
+      "securePayment": "All payments are secured with industry-standard encryption",
+      "traditional": {
+        "title": "Traditional Methods",
+        "description": "Pay with your credit card, debit card, or PayPal account."
+      },
+      "crypto": {
+        "title": "Cryptocurrency",
+        "description": "Pay with your preferred cryptocurrency for enhanced privacy and lower fees.",
+        "discount": "5% discount when paying with crypto"
+      }
+    },
+    "enterprise": {
+      "title": "Enterprise Solutions",
+      "description": "Looking for custom solutions for your trading firm or team? Contact us to discuss enterprise pricing, custom features, and dedicated support.",
+      "cta": "Contact Sales"
+    },
+    "noRefund": {
+      "title": "Payment Policy",
+      "description": "Please note that all purchases are final. Due to the nature of our digital service and the immediate access to premium trading insights, we do not offer refunds. By purchasing, you agree to this no-refund policy."
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "subtitle": "Find answers to common questions about our pricing and features",
+      "questions": {
+        "differences": "What's the difference between Monthly and Lifetime plans?",
+        "cancel": "Can I cancel my subscription at any time?",
+        "refund": "What is your refund policy?",
+        "cryptoPayment": "How do I pay with cryptocurrency?",
+        "teamPlans": "Do you offer team or company plans?"
+      },
+      "answers": {
+        "differencesAnswer": "The Monthly plan gives you full access to all features for $65 per month with the flexibility to cancel anytime. The Lifetime plan is a one-time payment of $800 that gives you permanent access to the platform and all future updates with no recurring fees - making it the best value for serious traders.",
+        "cancelAnswer": "Yes, you can cancel your monthly subscription at any time from your account settings. If you cancel, you'll continue to have access to your paid features until the end of your current billing period.",
+        "refundAnswer": "All sales are final. Due to the nature of our digital products and immediate access to premium content, we do not offer refunds. Please choose your plan carefully before making a purchase.",
+        "cryptoPaymentAnswer": "During checkout, select the cryptocurrency payment option and you'll be redirected to our secure crypto payment processor. You can pay with Bitcoin, Ethereum, USDC, or USDT. After payment confirmation (typically within minutes), your account will be upgraded automatically. We also offer a 5% discount on all plans when paying with cryptocurrency.",
+        "teamPlansAnswer": "Yes, we offer special pricing for trading firms and teams of 5 or more users. Our team plans include additional features like collaborative workspaces, shared alert libraries, and a dedicated account manager. Please contact our sales team for a custom quote."
+      }
+    }
   }
 }

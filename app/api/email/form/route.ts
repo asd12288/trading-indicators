@@ -1,4 +1,4 @@
-import { EmailTemplate } from "@/components/EmailContactTemplate";
+import { EmailContactTemplate } from "@/components/EmailContactTemplate";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -11,7 +11,7 @@ export async function POST(request: Request) {
       from: "Acme <onboarding@resend.dev>",
       to: ["support@trader-map.com"],
       subject: `New Contact Form Submission from ${name}`,
-      react: EmailTemplate({
+      react: EmailContactTemplate({
         name,
         email,
         message,
