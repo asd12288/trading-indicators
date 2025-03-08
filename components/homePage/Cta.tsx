@@ -27,7 +27,7 @@ const Cta = () => {
       <div className="relative px-6 py-16 text-center md:py-20">
         <div className="mx-auto max-w-3xl">
           <span className="mb-3 inline-block rounded-full bg-green-500/20 px-4 py-1 text-sm font-medium text-green-300">
-            {t("subtitle")}
+            {t("tag")}
           </span>
 
           <h4 className="font-heading mt-2 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-3xl font-extrabold text-transparent md:text-5xl">

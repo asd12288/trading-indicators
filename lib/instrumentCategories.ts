@@ -93,14 +93,24 @@ export const instrumentCategoryMap: Record<string, string> = {
   SILVER: "commodities",
 };
 
+// Standardizing categories format
+export const instrumentCategories = [
+  "futures",
+  "micro_futures",
+  "forex",
+  "crypto",
+  "stocks",
+  "commodities",
+];
+
 export const CATEGORIES = [
   { label: "All", value: "all" },
   { label: "Futures", value: "futures" },
   { label: "Micro Futures", value: "micro_futures" },
-  { label: "Forex (Spot Market)", value: "forex" },
-  { label: "Cryptocurrencies", value: "crypto" },
-  { id: "stocks", name: "Stocks" },
-  { id: "commodities", name: "Commodities" },
+  { label: "Forex", value: "forex" },
+  { label: "Crypto", value: "crypto" },
+  { label: "Stocks", value: "stocks" },
+  { label: "Commodities", value: "commodities" },
 ];
 
 export const SUBCATEGORIESFUTURE = [

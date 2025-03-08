@@ -1,7 +1,7 @@
 import { Signal } from "@/lib/types";
 import { format, formatDistanceToNow, parseISO } from "date-fns";
 import { useTranslations } from "next-intl";
-import { FC, useEffect } from "react";
+import { FC, useEffect, memo, useMemo } from "react";
 import {
   ArrowDown,
   ArrowUp,
@@ -24,6 +24,14 @@ interface RunningSignalCardProps {
   isBuy: boolean;
 }
 
+// Simple animation variants to improve performance
+const pulseAnimation = {
+  animate: {
+    opacity: [1, 0.3, 1],
+    transition: { duration: 1.5, repeat: Infinity },
+  },
+};
+
 const RunningSignalCard: FC<RunningSignalCardProps> = ({
   instrument,
   isBuy,
@@ -38,9 +46,11 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
     stop_loss_price,
   } = instrument;
 
-  // Debug logging to see what data is coming through
+  // Remove debug logging in production
   useEffect(() => {
-    console.log("RunningSignalCard received instrument:", instrument);
+    if (process.env.NODE_ENV !== "production") {
+      console.log("RunningSignalCard received instrument:", instrument);
+    }
   }, [instrument]);
 
   // Validate required fields
@@ -52,14 +62,6 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
         <p className="mt-1 text-sm text-slate-400">
           {instrument_name || "Signal"} is missing required data fields
         </p>
-        <div className="mt-2 text-left text-xs text-slate-500">
-          <p>
-            Missing: {!entry_time ? "entry_time, " : ""}
-            {!entry_price ? "entry_price, " : ""}
-            {!take_profit_price ? "take_profit_price, " : ""}
-            {!stop_loss_price ? "stop_loss_price" : ""}
-          </p>
-        </div>
       </div>
     );
   }
@@ -67,29 +69,44 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
   const t = useTranslations("RunningSignalCard");
 
   try {
-    const exitTimeInUserTimezone = parseISO(entry_time);
-    const adjustedExitTime = new Date(exitTimeInUserTimezone.getTime());
-    const timeDistance = formatDistanceToNow(adjustedExitTime, {
-      addSuffix: true,
-    });
+    // Use useMemo for expensive calculations
+    const cardData = useMemo(() => {
+      const exitTimeInUserTimezone = parseISO(entry_time);
+      const adjustedExitTime = new Date(exitTimeInUserTimezone.getTime());
+      const timeDistance = formatDistanceToNow(adjustedExitTime, {
+        addSuffix: true,
+      });
 
-    // Calculate potential profit percentage with safety checks
-    const potentialProfit =
-      isBuy && take_profit_price && entry_price
-        ? ((take_profit_price - entry_price) / entry_price) * 100
-        : !isBuy && take_profit_price && entry_price
-          ? ((entry_price - take_profit_price) / entry_price) * 100
-          : 0;
+      // Calculate potential profit percentage with safety checks
+      const potentialProfit =
+        isBuy && take_profit_price && entry_price
+          ? ((take_profit_price - entry_price) / entry_price) * 100
+          : !isBuy && take_profit_price && entry_price
+            ? ((entry_price - take_profit_price) / entry_price) * 100
+            : 0;
 
-    // Calculate potential loss percentage with safety checks
-    const potentialLoss =
-      isBuy && stop_loss_price && entry_price
-        ? ((entry_price - stop_loss_price) / entry_price) * 100
-        : !isBuy && stop_loss_price && entry_price
-          ? ((stop_loss_price - entry_price) / entry_price) * 100
-          : 0;
+      // Calculate potential loss percentage with safety checks
+      const potentialLoss =
+        isBuy && stop_loss_price && entry_price
+          ? ((entry_price - stop_loss_price) / entry_price) * 100
+          : !isBuy && stop_loss_price && entry_price
+            ? ((stop_loss_price - entry_price) / entry_price) * 100
+            : 0;
 
-    // Format numbers for better readability
+      const formattedDate = format(
+        parseISO(entry_time),
+        "MMM dd, yyyy - HH:mm",
+      );
+
+      return {
+        timeDistance,
+        potentialProfit,
+        potentialLoss,
+        formattedDate,
+      };
+    }, [entry_time, entry_price, take_profit_price, stop_loss_price, isBuy]);
+
+    // Format numbers for better readability - move outside render cycle
     const formatNumber = (num) => {
       if (num === null || num === undefined) return "N/A";
       return new Intl.NumberFormat("en-US", {
@@ -112,13 +129,12 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
               : "border-rose-500 bg-gradient-to-b from-violet-950/20 to-slate-900"
           } shadow-lg`}
         >
-          {/* Live pulse effect */}
+          {/* Live pulse effect - simplified animation */}
           <div className="absolute left-0 right-0 top-0 h-[2px]">
             <motion.div
               className={`h-full ${isBuy ? "bg-emerald-500" : "bg-rose-500"}`}
               animate={{
                 width: ["0%", "100%"],
-                x: [-10, 0],
                 opacity: [0.5, 1, 0],
               }}
               transition={{
@@ -129,23 +145,13 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
             />
           </div>
 
-          {/* Enhanced LIVE Status Indicator */}
+          {/* Enhanced LIVE Status Indicator - simplified animation */}
           <div className="absolute right-0 top-0 z-20">
-            <motion.div
-              animate={{
-                boxShadow: [
-                  "0 0 0px rgba(37, 99, 235, 0)",
-                  "0 0 12px rgba(37, 99, 235, 0.7)",
-                  "0 0 0px rgba(37, 99, 235, 0)",
-                ],
-              }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="flex items-center gap-2 rounded-bl-lg bg-blue-600 px-3 py-1.5 shadow-md"
-            >
+            <div className="flex items-center gap-2 rounded-bl-lg bg-blue-600 px-3 py-1.5 shadow-md">
               <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
+                animate={{ scale: [1, 1.15, 1] }}
                 transition={{
-                  duration: 1.5,
+                  duration: 2,
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
@@ -153,7 +159,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
                 <Zap className="h-5 w-5 text-white" />
               </motion.div>
               <span className="font-bold tracking-wider text-white">LIVE</span>
-            </motion.div>
+            </div>
           </div>
 
           {/* Header with improved design */}
@@ -163,8 +169,8 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
               <span className="mr-2 inline-flex items-center rounded-full bg-blue-900/50 px-2.5 py-0.5 text-xs font-medium text-blue-300">
                 <motion.span
                   className="mr-1.5 h-2 w-2 rounded-full bg-blue-400"
-                  animate={{ opacity: [1, 0.3, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
+                  variants={pulseAnimation}
+                  animate="animate"
                 />
                 LIVE
               </span>
@@ -195,11 +201,11 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
 
             <div className="flex items-center gap-1.5 text-xs text-slate-300">
               <Calendar className="h-3.5 w-3.5 text-slate-400" />
-              {t("started")} {timeDistance}
+              {t("started")} {cardData.timeDistance}
               <motion.span
+                variants={pulseAnimation}
+                animate="animate"
                 className="ml-2 inline-block h-1.5 w-1.5 rounded-full bg-blue-400"
-                animate={{ opacity: [1, 0.3, 1] }}
-                transition={{ duration: 1.2, repeat: Infinity }}
               />
             </div>
 
@@ -274,7 +280,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
                   {formatNumber(stop_loss_price)}
                 </span>
                 <span className="text-sm font-medium text-rose-400">
-                  (-{potentialLoss.toFixed(1)}%)
+                  (-{cardData.potentialLoss.toFixed(1)}%)
                 </span>
               </div>
             </div>
@@ -293,7 +299,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
                   {formatNumber(take_profit_price)}
                 </span>
                 <span className="text-sm font-medium text-emerald-400">
-                  (+{potentialProfit.toFixed(1)}%)
+                  (+{cardData.potentialProfit.toFixed(1)}%)
                 </span>
               </div>
             </div>
@@ -404,13 +410,13 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
           {/* Footer with actual time and live indicator */}
           <div className="flex items-center justify-between bg-blue-900/10 p-3">
             <span className="text-xs font-medium text-slate-400">
-              {format(parseISO(entry_time), "MMM dd, yyyy - HH:mm")}
+              {cardData.formattedDate}
             </span>
 
             <div className="flex items-center">
               <motion.div
-                animate={{ opacity: [1, 0.4, 1] }}
-                transition={{ duration: 1.2, repeat: Infinity }}
+                variants={pulseAnimation}
+                animate="animate"
                 className="mr-1.5 h-2 w-2 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50"
               />
               <span className="text-xs font-bold tracking-wide text-blue-400">
@@ -435,4 +441,4 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
   }
 };
 
-export default RunningSignalCard;
+export default memo(RunningSignalCard);

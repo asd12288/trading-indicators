@@ -21,6 +21,11 @@ interface SignalsListProps {
 }
 
 const SignalsList = ({ userId }: SignalsListProps) => {
+  // Move all hooks to the top - don't add any hooks after this section
+  const t = useTranslations("Signals");
+  const [searchedSignal, setSearchedSignal] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
   const {
     preferences,
     isLoading: isLoadingPrefs,
@@ -30,11 +35,7 @@ const SignalsList = ({ userId }: SignalsListProps) => {
   const { signals, isLoading: isLoadingSignals } = useSignals(preferences);
   const { isPro } = useProfile(userId);
 
-  const [searchedSignal, setSearchedSignal] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-
-  const t = useTranslations("Signals");
-
+  // Derived state using useMemo
   const filteredSignals = useMemo(() => {
     if (!signals) return [];
 
@@ -57,9 +58,11 @@ const SignalsList = ({ userId }: SignalsListProps) => {
     signals?.filter((signal) => favorites.includes(signal.instrument_name)) ??
     [];
 
-  // Loading state
+  // Instead of early returns, use conditional rendering with content variable
+  let content;
+
   if (isLoadingSignals || isLoadingPrefs) {
-    return (
+    content = (
       <div className="space-y-6">
         <div className="flex animate-pulse items-center justify-between rounded-lg bg-slate-800 p-5">
           <div className="h-9 w-56 rounded bg-slate-700"></div>
@@ -68,11 +71,8 @@ const SignalsList = ({ userId }: SignalsListProps) => {
         <LoaderCards />
       </div>
     );
-  }
-
-  // Error state
-  if (error) {
-    return (
+  } else if (error) {
+    content = (
       <Alert
         variant="destructive"
         className="border-red-800 bg-red-950/50 p-6 text-red-200"
@@ -84,93 +84,101 @@ const SignalsList = ({ userId }: SignalsListProps) => {
         </AlertDescription>
       </Alert>
     );
+  } else {
+    content = (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
+        className="space-y-8 p-0 backdrop-blur-sm"
+      >
+        {/* Favorites section */}
+        {isPro && favouriteSignals.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="rounded-xl border border-slate-700/30 bg-gradient-to-b from-slate-800 to-slate-900 p-5 shadow-md"
+          >
+            <FavoriteSignals
+              favouriteSignals={favouriteSignals}
+              isLoading={isLoadingSignals}
+            />
+          </motion.div>
+        )}
+
+        {/* PRO upgrade prompt */}
+        {!isPro && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 }}
+          >
+            <UpgradePrompt />
+          </motion.div>
+        )}
+
+        {/* Filters section with animation */}
+        {isPro && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="rounded-xl bg-slate-900/50 p-5 shadow-md"
+          >
+            <div className="mb-4 flex items-center gap-2">
+              <Filter className="h-5 w-5 text-slate-400" />
+              <h3 className="text-base font-medium text-slate-300">
+                Filter Signals
+              </h3>
+            </div>
+            <SignalsFilters
+              searchedSignal={searchedSignal}
+              setSearchedSignal={setSearchedSignal}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+            />
+          </motion.div>
+        )}
+
+        {/* No results message */}
+        {displaySignals && displaySignals.length === 0 && (
+          <div className="flex flex-col items-center justify-center rounded-xl bg-slate-900/50 p-10 text-center">
+            <Search className="mb-3 h-10 w-10 text-slate-500" />
+            <p className="text-xl font-medium text-slate-400">
+              {t("noResult")}
+            </p>
+            <p className="mt-3 text-base text-slate-500">
+              Try adjusting your search or filters to find what you're looking
+              for.
+            </p>
+          </div>
+        )}
+
+        {/* Signal grid */}
+        <SignalsGrid signals={displaySignals} isLoading={isLoadingSignals} />
+
+        {/* Footer - if needed */}
+        {!isPro && displaySignals.length >= 5 && filteredSignals.length > 5 && (
+          <div className="mt-4 rounded-lg bg-blue-950/30 p-5 text-center">
+            <p className="text-base text-slate-300">
+              Viewing 5 of {filteredSignals.length} signals.
+              <Link
+                href="/profile?tab=upgrade"
+                className="ml-2 font-medium text-blue-400 hover:underline"
+              >
+                Upgrade to PRO
+              </Link>{" "}
+              to see all signals.
+            </p>
+          </div>
+        )}
+      </motion.div>
+    );
   }
 
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-      className="space-y-8 p-0 backdrop-blur-sm"
-    >
-      {/* Favorites section */}
-      {isPro && favouriteSignals.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="rounded-xl border border-slate-700/30 bg-gradient-to-b from-slate-800 to-slate-900 p-5 shadow-md"
-        >
-          <FavoriteSignals favouriteSignals={favouriteSignals} />
-        </motion.div>
-      )}
-
-      {/* PRO upgrade prompt */}
-      {!isPro && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 }}
-        >
-          <UpgradePrompt />
-        </motion.div>
-      )}
-
-      {/* Filters section with animation */}
-      {isPro && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="rounded-xl bg-slate-900/50 p-5 shadow-md"
-        >
-          <div className="mb-4 flex items-center gap-2">
-            <Filter className="h-5 w-5 text-slate-400" />
-            <h3 className="text-base font-medium text-slate-300">
-              Filter Signals
-            </h3>
-          </div>
-          <SignalsFilters
-            searchedSignal={searchedSignal}
-            setSearchedSignal={setSearchedSignal}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-          />
-        </motion.div>
-      )}
-
-      {/* No results message */}
-      {displaySignals && displaySignals.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-xl bg-slate-900/50 p-10 text-center">
-          <Search className="mb-3 h-10 w-10 text-slate-500" />
-          <p className="text-xl font-medium text-slate-400">{t("noResult")}</p>
-          <p className="mt-3 text-base text-slate-500">
-            Try adjusting your search or filters to find what you're looking
-            for.
-          </p>
-        </div>
-      )}
-
-      {/* Signal grid */}
-      <SignalsGrid signals={displaySignals} />
-
-      {/* Footer - if needed */}
-      {!isPro && displaySignals.length >= 5 && (
-        <div className="mt-4 rounded-lg bg-blue-950/30 p-5 text-center">
-          <p className="text-base text-slate-300">
-            Viewing 5 of {filteredSignals.length} signals.
-            <Link
-              href="/pricing"
-              className="ml-2 font-medium text-blue-400 hover:underline"
-            >
-              Upgrade to PRO
-            </Link>{" "}
-            to see all signals.
-          </p>
-        </div>
-      )}
-    </motion.div>
-  );
+  // Always return content at the end
+  return content;
 };
 
 export default SignalsList;

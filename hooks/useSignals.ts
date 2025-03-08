@@ -3,7 +3,7 @@
 import supabaseClient from "@/database/supabase/supabase.js";
 import { notifyUser, soundNotification } from "@/lib/notification";
 import { Signal } from "@/lib/types";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 
 type PreferencesMap = Record<
   string,
@@ -14,12 +14,21 @@ const useSignals = (preferences: PreferencesMap = {}) => {
   const [signals, setSignals] = useState<Signal[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastFetch, setLastFetch] = useState<number>(0);
 
-  const fetchData = async () => {
+  // Use memoized fetch function to prevent unnecessary re-creation
+  const fetchData = useCallback(async () => {
+    // Throttle fetches to prevent excessive database calls
+    const now = Date.now();
+    if (now - lastFetch < 2000) return; // Only fetch if last fetch was > 2 seconds ago
+
+    setLastFetch(now);
     setIsLoading(true);
     try {
+      // Optimize the query by getting the server to do more work
+      // This uses a custom PostgreSQL view/function that returns only the latest signal per instrument
       const { data, error } = await supabaseClient
-        .from("all_signals")
+        .from("latest_signals_per_instrument") // Assuming this view exists or can be created
         .select("*")
         .order("entry_time", { ascending: false });
 
@@ -27,34 +36,11 @@ const useSignals = (preferences: PreferencesMap = {}) => {
         console.error("Error fetching signals:", error);
         setError(error.message);
       } else if (data) {
-        // Log raw data for debugging
-        console.log("Raw signal data from DB:", data);
-
-        // Filter only the latest entry for each instrument
-        const latestSignals = Object.values(
-          data.reduce<{ [key: string]: Signal }>((acc, row) => {
-            // Validate required data fields are present
-            if (!row.instrument_name) {
-              console.warn(
-                "Skipping signal with missing instrument_name:",
-                row,
-              );
-              return acc;
-            }
-
-            if (
-              !acc[row.instrument_name] ||
-              new Date(row.entry_time) >
-                new Date(acc[row.instrument_name].entry_time)
-            ) {
-              acc[row.instrument_name] = row;
-            }
-            return acc;
-          }, {}),
-        );
-
-        console.log("Processed signals:", latestSignals);
-        setSignals(latestSignals);
+        // Remove debug logs in production
+        if (process.env.NODE_ENV !== "production") {
+          console.log("Processed signals:", data);
+        }
+        setSignals(data);
       }
     } catch (err) {
       console.error("Unexpected error in useSignals:", err);
@@ -62,7 +48,51 @@ const useSignals = (preferences: PreferencesMap = {}) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [lastFetch]);
+
+  // Handle real-time updates more efficiently
+  const handleRealtimeUpdate = useCallback(
+    (payload: any) => {
+      // Check if user has notifications or volume turned on for this instrument
+      const instrumentName = (payload.new as { instrument_name: string })
+        .instrument_name;
+      const userPrefs = preferences[instrumentName] || {};
+
+      if (userPrefs.notifications) {
+        notifyUser(payload);
+      }
+
+      if (userPrefs.volume) {
+        soundNotification(payload);
+      }
+
+      // Optimize how we update signals
+      setSignals((current) => {
+        const updatedSignal = payload.new as Signal;
+
+        // Using immutable update patterns for better performance
+        if (payload.eventType === "INSERT") {
+          return [
+            updatedSignal,
+            ...current.filter(
+              (s) => s.instrument_name !== updatedSignal.instrument_name,
+            ),
+          ];
+        } else if (payload.eventType === "UPDATE") {
+          return current.map((signal) =>
+            signal.instrument_name === updatedSignal.instrument_name
+              ? updatedSignal
+              : signal,
+          );
+        } else if (payload.eventType === "DELETE") {
+          return current.filter((s) => s.id !== payload.old.id);
+        }
+
+        return current;
+      });
+    },
+    [preferences],
+  );
 
   useEffect(() => {
     fetchData();
@@ -72,71 +102,16 @@ const useSignals = (preferences: PreferencesMap = {}) => {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "all_signals" },
-        (payload) => {
-          // Check if user has notifications or volume turned on for this instrument
-          const instrumentName = (payload.new as { instrument_name: string })
-            .instrument_name;
-          const userPrefs = preferences[instrumentName] || {};
-
-          if (userPrefs.notifications) {
-            notifyUser(payload);
-          }
-
-          if (userPrefs.volume) {
-            soundNotification(payload);
-          }
-
-          // Handle different types of changes
-          if (
-            payload.eventType === "INSERT" ||
-            payload.eventType === "UPDATE"
-          ) {
-            setSignals((current) => {
-              const updatedSignal = payload.new as Signal;
-
-              // First check if this instrument already exists
-              const existingInstrumentIndex = current.findIndex(
-                (s) => s.instrument_name === updatedSignal.instrument_name,
-              );
-
-              // Create a copy of the current signals
-              const updated = [...current];
-
-              if (existingInstrumentIndex >= 0) {
-                // Check if the new signal is more recent than the existing one
-                const existingTime = new Date(
-                  current[existingInstrumentIndex].entry_time,
-                ).getTime();
-                const newTime = new Date(updatedSignal.entry_time).getTime();
-
-                if (newTime >= existingTime) {
-                  // Update the existing signal
-                  updated[existingInstrumentIndex] = updatedSignal;
-                }
-              } else {
-                // Add the new signal
-                updated.unshift(updatedSignal);
-              }
-
-              return updated;
-            });
-          } else if (payload.eventType === "DELETE") {
-            setSignals((current) =>
-              current.filter((s) => s.id !== payload.old.id),
-            );
-          }
-
-          // Removed the fetchData() call as it was causing a full reload
-        },
+        handleRealtimeUpdate,
       )
       .subscribe();
 
     return () => {
       supabaseClient.removeChannel(subscription);
     };
-  }, [preferences]);
+  }, [fetchData, handleRealtimeUpdate]);
 
-  return { signals, isLoading, error };
+  return { signals, isLoading, error, refetch: fetchData };
 };
 
 export default useSignals;

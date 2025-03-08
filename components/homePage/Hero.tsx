@@ -29,7 +29,7 @@ const Hero = () => {
           transition={{ duration: 0.8 }}
           className="mt-8 w-full px-4 py-4 md:col-span-6 md:py-20 md:pl-8 lg:pl-16 xl:py-28"
         >
-          <div className="inline-block rounded-full bg-emerald-900/30 px-4 py-1 backdrop-blur-sm">
+          <div className="inline-block md:items-start items-center rounded-full bg-emerald-900/30 px-4 py-1 backdrop-blur-sm">
             <p className="text-center text-sm text-emerald-400 md:text-left">
               {t("rating")}
             </p>
