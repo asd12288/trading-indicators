@@ -57,25 +57,53 @@ export async function createSubscription(
   subscriberEmail = null,
   customId = null,
 ) {
-  const accessToken = await getPayPalAccessToken();
-  const body = { plan_id: planId };
-  if (customId) body.custom_id = customId; // attach our user ID for reference (appears in webhook events)
-  if (subscriberEmail) {
-    body.subscriber = { email_address: subscriberEmail };
+  try {
+    console.log(`Creating PayPal subscription for plan ID: ${planId}`);
+    const accessToken = await getPayPalAccessToken();
+    
+    const body = { plan_id: planId };
+    if (customId) body.custom_id = customId; // attach our user ID for reference (appears in webhook events)
+    if (subscriberEmail) {
+      body.subscriber = { email_address: subscriberEmail };
+    }
+    
+    console.log(`PayPal subscription request body:`, JSON.stringify(body));
+    
+    const res = await fetch(`${PAYPAL_BASE_URL}/v1/billing/subscriptions`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "PayPal-Request-Id": `sub-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`,
+      },
+      body: JSON.stringify(body),
+    });
+    
+    // Get the response as text first to handle it properly
+    const responseText = await res.text();
+    
+    if (!res.ok) {
+      // Try to parse as JSON for better error reporting
+      try {
+        const errorJson = JSON.parse(responseText);
+        console.error("PayPal API error response:", errorJson);
+        
+        throw new Error(
+          `PayPal subscription creation failed: ${errorJson.name} - ${errorJson.message}` +
+          (errorJson.details ? ` - ${errorJson.details.map(d => d.description).join(', ')}` : '')
+        );
+      } catch (parseError) {
+        // If parsing fails, use the raw text
+        throw new Error(`PayPal subscription creation failed: ${responseText}`);
+      }
+    }
+    
+    // If we got a successful response, parse it as JSON
+    return JSON.parse(responseText);
+  } catch (error) {
+    console.error("Error in createSubscription:", error);
+    throw error;
   }
-  const res = await fetch(`${PAYPAL_BASE_URL}/v1/billing/subscriptions`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`PayPal create subscription failed: ${err}`);
-  }
-  return res.json(); // returns subscription data (including an 'id')
 }
 
 // 3. Verify a webhook signature (to ensure webhook is from PayPal)

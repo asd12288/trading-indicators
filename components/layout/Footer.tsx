@@ -2,7 +2,6 @@ import { useTranslations } from "next-intl";
 import { Mail, Twitter, Facebook, Instagram, Globe } from "lucide-react";
 import { Link } from "@/i18n/routing";
 
-
 const Footer = () => {
   const t = useTranslations("Footer");
   const currentYear = new Date().getFullYear();
@@ -108,14 +107,6 @@ const Footer = () => {
                   FAQ
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/support"
-                  className="hover:text-primary text-slate-300 transition-colors"
-                >
-                  Support
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -140,7 +131,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/refund-policy"
+                  href="/terms-and-conditions"
                   className="hover:text-primary text-slate-300 transition-colors"
                 >
                   Refund Policy
@@ -168,24 +159,13 @@ const Footer = () => {
                   Pricing
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/upgrade"
-                  className="hover:text-primary text-slate-300 transition-colors"
-                >
-                  Upgrade to Pro
-                </Link>
-              </li>
             </ul>
           </div>
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 text-center text-sm text-slate-500 md:flex-row">
           <div>{t("copyright").replace("2025", currentYear.toString())}</div>
-          <div className="flex items-center gap-2">
-            <Globe size={14} />
-            <span>English</span>
-          </div>
+         
         </div>
       </div>
     </footer>

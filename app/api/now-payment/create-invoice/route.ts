@@ -9,15 +9,29 @@ const URL = isDev
 
 export async function POST(request: Request) {
   try {
+    // Expect user, locale, and plan in the body
     const body = await request.json();
+    const { user, locale, plan } = body;
+
+    console.log(`Creating ${plan} invoice for user ${user.id}`);
+
+    // Set price and description based on the plan type
+    let price_amount, order_description;
+    if (plan === "lifetime") {
+      price_amount = "800";
+      order_description = "Lifetime Pro Account - Permanent Access";
+    } else {
+      price_amount = "65"; // monthly plan updated to $65
+      order_description = "Pro Account for 1 month - Monthly Subscription";
+    }
 
     const payload = {
-      price_amount: "11",
+      price_amount,
       price_currency: "usd",
-      order_id: body.user.id,
-      order_description: "Pro Account for 1 month",
+      order_id: user.id,
+      order_description,
       ipn_callback_url: `${process.env.DEV_URL}/api/now-payment/webhook`,
-      success_url: `${process.env.DEV_URL}/${body.locale}/success`,
+      success_url: `${process.env.DEV_URL}/${locale}/success`,
     };
 
     console.log(

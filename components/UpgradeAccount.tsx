@@ -9,7 +9,7 @@ import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import NowPaymentsButton from "./NowPaymentsButton";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
-import { CheckCircle2, StarIcon } from "lucide-react";
+import { CheckCircle2, StarIcon, Infinity } from "lucide-react";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
@@ -17,14 +17,41 @@ const UpgradeAccount = ({ user }) => {
   const t = useTranslations("UpgradeAccount");
   const params = useParams();
   const locale = params.locale || "en";
+  // Add state for plan selection
+  const [selectedPlan, setSelectedPlan] = useState("monthly");
 
-  const benefits = [
-    t("benefits.signals"),
-    t("benefits.analysis"),
-    t("benefits.telegram"),
-    t("benefits.alerts"),
-    t("benefits.preferences"),
-  ];
+  // Define plan-specific details
+  const plans = {
+    monthly: {
+      price: "$65",
+      period: t("plan.period"), // "per month"
+      billing: t("plan.billing"), // "Billed monthly"
+      features: [
+        t("benefits.signals"),
+        t("benefits.analysis"),
+        t("benefits.telegram"),
+        t("benefits.alerts"),
+        t("benefits.preferences"),
+      ],
+    },
+    lifetime: {
+      price: "$800",
+      period: "one-time payment",
+      billing: "No recurring charges",
+      features: [
+        t("benefits.signals"),
+        t("benefits.analysis"),
+        t("benefits.telegram"),
+        t("benefits.alerts"),
+        t("benefits.preferences"),
+        "Lifetime access - never pay again",
+        "All future updates included",
+      ],
+    },
+  };
+
+  // Get the current plan details
+  const currentPlan = plans[selectedPlan];
 
   // Animate the benefits list items sequentially
   const container = {
@@ -50,7 +77,7 @@ const UpgradeAccount = ({ user }) => {
         vault: true,
       }}
     >
-      <div className="mx-auto my-auto flex w-full max-w-5xl flex-col justify-center gap-8 py-4 md:flex-row md:items-start md:gap-6 h-full">
+      <div className="mx-auto my-auto flex h-full w-full max-w-5xl flex-col justify-center gap-8 py-4 md:flex-row md:items-start md:gap-6">
         <motion.div
           className="flex-1"
           initial={{ opacity: 0, x: -20 }}
@@ -64,27 +91,56 @@ const UpgradeAccount = ({ user }) => {
             <p className="mt-4 text-slate-300">{t("subtitle")}</p>
           </div>
 
+          {/* Plan selection tabs */}
+          <div className="mb-6">
+            <Tabs
+              defaultValue="monthly"
+              value={selectedPlan}
+              onValueChange={setSelectedPlan}
+              className="w-full"
+            >
+              <TabsList className="mb-6 grid w-full grid-cols-2">
+                <TabsTrigger value="monthly" className="text-sm">
+                  Monthly Plan
+                </TabsTrigger>
+                <TabsTrigger value="lifetime" className="text-sm">
+                  Lifetime Access
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
           <Card className="overflow-hidden border border-slate-700 bg-slate-900/50 shadow-lg backdrop-blur-sm">
             <div className="absolute right-4 top-4">
               <Badge className="bg-gradient-to-r from-blue-500 to-indigo-500">
-                {t("plan.recommended")}
+                {selectedPlan === "lifetime"
+                  ? "BEST VALUE"
+                  : t("plan.recommended")}
               </Badge>
             </div>
 
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2">
-                <StarIcon className="h-5 w-5 text-yellow-400" />
+                {selectedPlan === "lifetime" ? (
+                  <Infinity className="h-5 w-5 text-yellow-400" />
+                ) : (
+                  <StarIcon className="h-5 w-5 text-yellow-400" />
+                )}
                 <CardTitle className="text-xl font-semibold">
-                  {t("plan.name")}
+                  {selectedPlan === "lifetime"
+                    ? "Lifetime Access"
+                    : t("plan.name")}
                 </CardTitle>
               </div>
               <div className="mt-4 flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-slate-50">{t("plan.price")}</span>
+                <span className="text-3xl font-bold text-slate-50">
+                  {currentPlan.price}
+                </span>
                 <span className="text-sm text-slate-400">
-                  {t("plan.period")}
+                  {currentPlan.period}
                 </span>
               </div>
-              <p className="text-sm text-slate-400">{t("plan.billing")}</p>
+              <p className="text-sm text-slate-400">{currentPlan.billing}</p>
             </CardHeader>
 
             <CardContent>
@@ -93,8 +149,9 @@ const UpgradeAccount = ({ user }) => {
                 variants={container}
                 initial="hidden"
                 animate="show"
+                key={selectedPlan} // Re-run animation when plan changes
               >
-                {benefits.map((benefit, index) => (
+                {currentPlan.features.map((benefit, index) => (
                   <motion.li
                     key={index}
                     variants={item}
@@ -121,7 +178,9 @@ const UpgradeAccount = ({ user }) => {
                 Payment Method
               </CardTitle>
               <p className="text-sm text-slate-300">
-                Choose your preferred payment option
+                {selectedPlan === "lifetime"
+                  ? "Pay once, use forever - no recurring fees"
+                  : "Choose your preferred payment option"}
               </p>
             </CardHeader>
 
@@ -132,10 +191,10 @@ const UpgradeAccount = ({ user }) => {
                   <TabsTrigger value="crypto">Crypto</TabsTrigger>
                 </TabsList>
                 <TabsContent value="paypal" className="mt-0">
-                  <PaypalSubscribeButton user={user} />
+                  <PaypalSubscribeButton user={user} plan={selectedPlan} />
                 </TabsContent>
                 <TabsContent value="crypto" className="mt-0">
-                  <NowPaymentsButton user={user} />
+                  <NowPaymentsButton user={user} plan={selectedPlan} />
                 </TabsContent>
               </Tabs>
             </CardContent>

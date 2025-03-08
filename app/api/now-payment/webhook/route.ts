@@ -78,7 +78,22 @@ export async function POST(request: Request) {
     }
 
     // Process the payment data
-    const { payment_id, payment_status, order_id } = paymentData;
+    const {
+      payment_id,
+      payment_status,
+      order_id,
+      order_description,
+      price_amount,
+    } = paymentData;
+
+    console.log("💰 Payment details:", {
+      payment_id,
+      payment_status,
+      order_id,
+      order_description,
+      price_amount,
+      price_currency: paymentData.price_currency,
+    });
 
     // Handle different payment statuses
     if (payment_status === "finished" || payment_status === "confirmed") {
@@ -109,18 +124,61 @@ export async function POST(request: Request) {
 
       const user = profile[0];
 
-      // Update the user's subscription status
-      const expirationDate = new Date();
-      expirationDate.setDate(expirationDate.getDate() + 30); // Add 30 days
+      // Improved lifetime plan detection - check both description and amount
+      // Check multiple ways since the data could come in different formats
+      const isLifetimePlan =
+        order_description?.toLowerCase().includes("lifetime") ||
+        price_amount === 800 ||
+        price_amount === "800" ||
+        parseFloat(price_amount) === 800 ||
+        parseFloat(price_amount) >= 700; // Rough check for lifetime price
 
+      console.log(
+        `🔍 Plan detection: isLifetimePlan=${isLifetimePlan}, amount=${price_amount}, description=${order_description}`,
+      );
+
+      // Set appropriate expiration date based on plan
+      let expirationDate;
+      if (isLifetimePlan) {
+        // Set a far future date for lifetime subscriptions (e.g., +100 years)
+        expirationDate = new Date();
+        expirationDate.setFullYear(expirationDate.getFullYear() + 100);
+        console.log(
+          "🔄 Setting LIFETIME access with expiration:",
+          expirationDate.toISOString(),
+        );
+      } else {
+        // Regular monthly plan - 30 days
+        expirationDate = new Date();
+        expirationDate.setDate(expirationDate.getDate() + 30);
+        console.log(
+          "🔄 Setting MONTHLY access with expiration:",
+          expirationDate.toISOString(),
+        );
+      }
+
+      // Update the user's subscription status
       const { error: userError } = await supabase
         .from("profiles")
         .update({
           subscription_status: "ACTIVE",
           plan: "pro",
-          subscription_expires_at: expirationDate.toISOString(), // Convert to ISO string for database storage
+          subscription_expires_at: expirationDate.toISOString(),
+          is_lifetime: isLifetimePlan, // Important flag to mark lifetime subscriptions
+          updated_at: new Date().toISOString(),
         })
         .eq("id", user.id);
+
+      // Also record this in the subscriptions table for better tracking
+      await supabase.from("subscriptions").insert({
+        id: payment_id,
+        user_id: user.id,
+        plan: isLifetimePlan ? "lifetime" : "monthly",
+        status: "ACTIVE",
+        payment_provider: "nowpayments",
+        start_time: new Date().toISOString(),
+        last_payment: new Date().toISOString(),
+      });
 
       if (userError) {
         console.error("❌ Error updating user profile:", userError.message);
@@ -130,24 +188,29 @@ export async function POST(request: Request) {
         );
       }
 
-      // After successful crypto payment (inside your existing handler)
+      // After successful crypto payment
       await publishToQueue(`${process.env.DEV_URL}/api/qstash/welcome-pro`, {
         userName: user.email,
         userEmail: user.email,
-        expirationDate: expirationDate.toISOString(),
+        expirationDate: isLifetimePlan
+          ? "Never (Lifetime Access)"
+          : expirationDate.toISOString(),
+        isLifetime: isLifetimePlan,
       });
 
       await publishToQueue(`${process.env.DEV_URL}/api/qstash/receipt`, {
         userName: user.email,
         userEmail: user.email,
         paymentId: payment_id,
-        amount: paymentData.price_amount,
+        amount: price_amount,
         paymentMethod: paymentData.pay_currency,
         date: new Date().toISOString(),
+        planType: isLifetimePlan ? "lifetime" : "monthly",
       });
 
-      // For debugging purposes, let's log this
-      console.log(`📝 Would update subscription for user with ID: ${order_id}`);
+      console.log(
+        `📝 Updated subscription for user ${order_id}. Is lifetime: ${isLifetimePlan}`,
+      );
     } else {
       console.log(
         `Payment status is ${payment_status}, not activating subscription yet`,

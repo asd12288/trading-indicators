@@ -28,15 +28,39 @@ export async function POST(req) {
 
   try {
     if (eventType === "BILLING.SUBSCRIPTION.ACTIVATED") {
+      // Get subscription details to determine the plan type
+      const { data: subscriptionData } = await supabaseClient
+        .from("subscriptions")
+        .select("plan")
+        .eq("id", subscriptionId)
+        .single();
+
+      const isLifetimePlan = subscriptionData?.plan === "lifetime";
+
       // Mark subscription as active
       await supabaseClient
         .from("subscriptions")
         .update({ status: "ACTIVE" })
         .eq("id", subscriptionId);
 
+      // Set appropriate expiration for lifetime vs monthly plans
+      let expirationDate;
+      if (isLifetimePlan) {
+        expirationDate = new Date();
+        expirationDate.setFullYear(expirationDate.getFullYear() + 100);
+      } else {
+        expirationDate = new Date();
+        expirationDate.setMonth(expirationDate.getMonth() + 1);
+      }
+
       await supabaseClient
         .from("profiles")
-        .update({ plan: "pro", subscription_status: "Active" })
+        .update({
+          plan: "pro",
+          subscription_status: "Active",
+          is_lifetime: isLifetimePlan,
+          subscription_expires_at: expirationDate.toISOString(),
+        })
         .eq("id", userId);
 
       // Send welcome email
@@ -46,57 +70,86 @@ export async function POST(req) {
         .eq("id", userId)
         .single();
 
-      const expirationDate = new Date();
-
       if (userError) {
         console.error("❌ Error fetching user data:", userError);
       } else {
-        expirationDate.setMonth(expirationDate.getMonth() + 1);
+        await publishToQueue(`${process.env.DEV_URL}/api/qstash/welcome-pro`, {
+          userName: user?.email,
+          userEmail: user?.email,
+          expirationDate: isLifetimePlan
+            ? "Never (Lifetime Access)"
+            : expirationDate.toISOString(),
+          isLifetime: isLifetimePlan,
+        });
+
+        await publishToQueue(`${process.env.DEV_URL}/api/qstash/receipt`, {
+          userName: user?.email,
+          userEmail: user?.email,
+          paymentId: subscriptionId,
+          amount: isLifetimePlan ? "800.00" : "65.00",
+          paymentMethod: "PayPal",
+          date: sub.billing_info.last_payment.time,
+          planType: isLifetimePlan ? "lifetime" : "monthly",
+        });
       }
-
-      await publishToQueue(`${process.env.DEV_URL}/api/qstash/welcome-pro`, {
-        userName: user?.email,
-        userEmail: user?.email,
-        expirationDate: expirationDate.toISOString(),
-      });
-
-      await publishToQueue(`${process.env.DEV_URL}/api/qstash/receipt`, {
-        userName: user?.email,
-        userEmail: user?.email,
-        paymentId: subscriptionId,
-        amount: sub.billing_info.last_payment.amount.value,
-        paymentMethod: "PayPal",
-        date: sub.billing_info.last_payment.time,
-      });
     } else if (eventType === "BILLING.SUBSCRIPTION.CANCELLED") {
-      // This fires when subscription is fully cancelled (after the period ends)
-      await supabaseClient
+      // Check if this is a lifetime plan before downgrading
+      const { data: subscriptionData } = await supabaseClient
         .from("subscriptions")
-        .update({
-          status: "CANCELLED",
-          scheduled_change: new Date().toISOString(),
-        })
-        .eq("id", subscriptionId);
+        .select("plan")
+        .eq("id", subscriptionId)
+        .single();
 
-      // Downgrade user plan
-      await supabaseClient
-        .from("profiles")
-        .update({ plan: "free" })
-        .eq("id", userId);
+      // Don't downgrade lifetime plans - they remain "pro" forever
+      if (subscriptionData?.plan === "lifetime") {
+        console.log("Lifetime plan cancellation - maintaining Pro status");
+
+        await supabaseClient
+          .from("subscriptions")
+          .update({
+            status: "LIFETIME_COMPLETED",
+            scheduled_change: new Date().toISOString(),
+          })
+          .eq("id", subscriptionId);
+      } else {
+        // Regular monthly plan cancellation
+        await supabaseClient
+          .from("subscriptions")
+          .update({
+            status: "CANCELLED",
+            scheduled_change: new Date().toISOString(),
+          })
+          .eq("id", subscriptionId);
+
+        // Downgrade user plan only for non-lifetime plans
+        await supabaseClient
+          .from("profiles")
+          .update({ plan: "free" })
+          .eq("id", userId);
+      }
     } else if (
       eventType === "BILLING.SUBSCRIPTION.SUSPENDED" ||
       eventType === "BILLING.SUBSCRIPTION.EXPIRED"
     ) {
-      await supabaseClient
+      // Similar check as above for lifetime plans
+      const { data: subscriptionData } = await supabaseClient
         .from("subscriptions")
-        .update({ status: "EXPIRED" })
-        .eq("id", subscriptionId);
+        .select("plan")
+        .eq("id", subscriptionId)
+        .single();
 
-      // Downgrade user plan
-      await supabaseClient
-        .from("profiles")
-        .update({ plan: "free" })
-        .eq("id", userId);
+      if (subscriptionData?.plan !== "lifetime") {
+        await supabaseClient
+          .from("subscriptions")
+          .update({ status: "EXPIRED" })
+          .eq("id", subscriptionId);
+
+        // Downgrade user plan only for non-lifetime plans
+        await supabaseClient
+          .from("profiles")
+          .update({ plan: "free" })
+          .eq("id", userId);
+      }
     } else if (eventType === "BILLING.SUBSCRIPTION.UPDATED") {
       // Check if the update is related to cancellation
       if (

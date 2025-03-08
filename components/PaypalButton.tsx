@@ -5,10 +5,10 @@ import { useRouter } from "@/i18n/routing";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { CircleDollarSignIcon, AlertCircle } from "lucide-react";
+import { CircleDollarSignIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function PaypalSubscribeButton({ user }) {
+export default function PaypalSubscribeButton({ user, plan = "monthly" }) {
   const [userId, setUserId] = useState(user.id);
   const [sdkReady, setSdkReady] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
@@ -57,6 +57,12 @@ export default function PaypalSubscribeButton({ user }) {
     });
   };
 
+  // Dynamic title and description based on plan
+  const planTitle =
+    plan === "lifetime" ? "Lifetime Access" : "Monthly Subscription";
+  const planPrice =
+    plan === "lifetime" ? "$800 one-time payment" : "$65 per month";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -68,11 +74,14 @@ export default function PaypalSubscribeButton({ user }) {
           <div className="flex items-center gap-2">
             <CircleDollarSignIcon className="h-5 w-5 text-blue-400" />
             <CardTitle className="text-lg font-medium text-slate-50">
-              PayPal Subscription
+              PayPal {planTitle}
             </CardTitle>
           </div>
           <p className="text-sm text-slate-400">
-            Secure monthly billing via PayPal
+            {plan === "lifetime"
+              ? "One-time payment for lifetime access"
+              : "Secure monthly billing via PayPal"}{" "}
+            ({planPrice})
           </p>
         </CardHeader>
         <CardContent className="p-6">
@@ -107,7 +116,8 @@ export default function PaypalSubscribeButton({ user }) {
                         headers: {
                           "Content-Type": "application/json",
                         },
-                        body: JSON.stringify({ userId: userId }),
+                        // Include plan parameter to determine which subscription to create
+                        body: JSON.stringify({ userId: userId, plan }),
                       })
                         .then((res) => {
                           if (!res.ok)
