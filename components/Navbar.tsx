@@ -17,6 +17,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslations } from "next-intl";
 import { useParams, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import NotificationBell from "@/components/NotificationBell";
 
 export default function Navbar({ user, profile }) {
   // State to handle mobile menu toggle
@@ -114,10 +115,13 @@ export default function Navbar({ user, profile }) {
             )}
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <LanguageSwitcher />
 
             <div className="mx-3 h-5 w-px bg-slate-700/50"></div>
+
+            {/* Pass userId to NotificationBell */}
+            <NotificationBell userId={user?.id} />
 
             {user ? (
               <div className="flex items-center gap-3">

@@ -46,7 +46,7 @@ const UpgradePrompt = () => {
 
         <div className="flex flex-col items-center justify-center">
           <div className="mb-3 text-center">
-            <span className="text-3xl font-bold text-white">$35</span>
+            <span className="text-3xl font-bold text-white">$65</span>
             <span className="text-slate-400">/month</span>
           </div>
 

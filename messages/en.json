@@ -254,6 +254,42 @@
           "content": "Smart Alerts are instantly delivered to your dashboard and optionally via Telegram for immediate action."
         }
       ]
+    },
+    "planCards": {
+      "free": {
+        "name": "Free Plan",
+        "description": "Perfect for beginners",
+        "features": {
+          "feature1": "Access 5 Smart Alerts",
+          "feature2": "Analysis of the instruments",
+          "feature3": "Alerts on upcoming trades"
+        },
+        "cta": "Get started for free"
+      },
+      "monthly": {
+        "name": "Monthly Plan",
+        "description": "Full access to all features",
+        "features": {
+          "feature1": "Access to all smart alerts",
+          "feature2": "Analysis of the instruments",
+          "feature3": "Alerts on upcoming trades",
+          "feature4": "Telegram notifications",
+          "feature5": "Custom smart alert preferences"
+        },
+        "cta": "Start Monthly Plan"
+      },
+      "lifetime": {
+        "name": "Lifetime Access",
+        "description": "One-time payment for unlimited access",
+        "features": {
+          "feature1": "All Monthly Plan features",
+          "feature2": "Lifetime access - no recurring fees",
+          "feature3": "All future updates and features",
+          "feature4": "VIP priority support",
+          "feature5": "Early access to new features"
+        },
+        "cta": "Get Lifetime Access"
+      }
     }
   },
   "Signals": {
@@ -1211,6 +1247,110 @@
         "cryptoPaymentAnswer": "During checkout, select the cryptocurrency payment option and you'll be redirected to our secure crypto payment processor. You can pay with Bitcoin, Ethereum, USDC, or USDT. After payment confirmation (typically within minutes), your account will be upgraded automatically. We also offer a 5% discount on all plans when paying with cryptocurrency.",
         "teamPlansAnswer": "Yes, we offer special pricing for trading firms and teams of 5 or more users. Our team plans include additional features like collaborative workspaces, shared alert libraries, and a dedicated account manager. Please contact our sales team for a custom quote."
       }
+    }
+  },
+  "Faq": {
+    "title": "Frequently Asked Questions",
+    "description": "Find answers to common questions about Trader Map, our smart alerts, pricing plans, and features.",
+    "searchPlaceholder": "Search for answers...",
+    "categories": {
+      "all": "All FAQs",
+      "getting_started": "Getting Started",
+      "pricing_plans": "Plans & Pricing",
+      "features": "Features",
+      "technical": "Technical"
+    },
+    "noResults": {
+      "title": "No results found",
+      "message": "Try searching with different keywords or browse through our categories."
+    },
+    "support": {
+      "title": "Still need help?",
+      "description": "If you can't find an answer to your question, our support team is ready to help.",
+      "button": "Contact Support"
+    },
+    "questions": {
+      "q1": {
+        "question": "What is Trader Map?",
+        "answer": "Trader Map is a specialized platform for traders that provides real-time smart alerts for various financial instruments. Our system continuously monitors markets and sends you actionable trading signals based on technical analysis and market patterns."
+      },
+      "q2": {
+        "question": "How do I get started with Trader Map?",
+        "answer": "Getting started is easy:<br><ol><li>Create a free account</li><li>Explore the available smart alerts in the dashboard</li><li>Set up your notification preferences</li><li>Optionally, upgrade to a Pro plan for full access</li></ol>"
+      },
+      "q3": {
+        "question": "Do I need trading experience to use Trader Map?",
+        "answer": "While Trader Map is designed to be user-friendly for traders of all levels, having a basic understanding of trading concepts will help you get the most out of our smart alerts. We provide educational resources to help beginners understand our alerts and how to use them in their trading strategies."
+      },
+      "q4": {
+        "question": "What's the difference between Monthly and Lifetime plans?",
+        "answer": "The Monthly plan gives you full access to all features for $65 per month with the flexibility to cancel anytime. The Lifetime plan is a one-time payment of $800 that gives you permanent access to the platform and all future updates with no recurring fees - making it the best value for serious traders."
+      },
+      "q5": {
+        "question": "Can I cancel my subscription at any time?",
+        "answer": "Yes, you can cancel your monthly subscription at any time from your account settings. If you cancel, you'll continue to have access to your paid features until the end of your current billing period. There are no refunds for partial months."
+      },
+      "q6": {
+        "question": "What payment methods do you accept?",
+        "answer": "We accept payment through PayPal (which supports most credit/debit cards) and various cryptocurrencies through our integration with NowPayments. This gives you flexibility in how you prefer to pay for your subscription."
+      },
+      "q7": {
+        "question": "What are Smart Alerts and how do they work?",
+        "answer": "Smart Alerts are our proprietary trading signals that identify potential trading opportunities based on technical analysis, price action, and market patterns. Each alert provides key information including:<br><ul><li>Entry price recommendations</li><li>Stop-loss levels</li><li>Target price levels</li><li>Risk/reward ratio</li><li>Performance metrics like MAE (Maximum Adverse Excursion) and MFE (Maximum Favorable Excursion)</li></ul>"
+      },
+      "q8": {
+        "question": "What instruments do your Smart Alerts cover?",
+        "answer": "Our Smart Alerts cover over 50 different trading instruments including:<br><ul><li>Major futures markets (ES, NQ, YM, RTY)</li><li>Commodities (Gold, Oil, Natural Gas)</li><li>Forex pairs</li><li>And more</li></ul>Both free and Pro plans have access to different instruments, with the Pro plan offering a complete range."
+      },
+      "q9": {
+        "question": "How are Smart Alerts delivered to me?",
+        "answer": "Smart Alerts are delivered through multiple channels:<br><ul><li>Directly in the Trader Map platform</li><li>Via Telegram notifications (Pro users only)</li><li>Optional sound alerts in the web application</li></ul>You can customize your notification preferences in your account settings."
+      },
+      "q10": {
+        "question": "Is Trader Map available on mobile devices?",
+        "answer": "Yes, Trader Map is fully responsive and works on all modern mobile devices. You can access all features through your mobile browser. Additionally, Pro users can receive alerts via Telegram, making it even easier to stay updated while on the go."
+      },
+      "q11": {
+        "question": "How secure is my data with Trader Map?",
+        "answer": "We take data security very seriously. All connections to our platform are encrypted using SSL. We don't store any sensitive payment information - all payments are processed through our trusted partners (PayPal and NowPayments). Your account credentials are securely hashed, and we implement industry-standard security practices to protect your data."
+      },
+      "q12": {
+        "question": "Can I connect Trader Map to my trading platform?",
+        "answer": "Currently, Trader Map operates as a standalone alert system. While we don't offer direct integration with trading platforms, you can easily take the information from our Smart Alerts and implement trades in your preferred trading platform. We may introduce API access and platform integrations in future updates."
+      }
+    }
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all read",
+    "markAsRead": "Mark as read",
+    "delete": "Delete",
+    "clear": "Clear all",
+    "viewAll": "View all notifications",
+    "aria": {
+      "notifications": "Notifications"
+    },
+    "pageTitle": "Notifications",
+    "pageDescription": "View and manage all your alerts and notifications",
+    "empty": {
+      "title": "No notifications",
+      "description": "You're all caught up! We'll notify you when there's something new.",
+      "filtered": {
+        "title": "No matching notifications",
+        "description": "Try changing your filters or check back later for new notifications"
+      }
+    },
+    "filters": {
+      "all": "All",
+      "read": "Read",
+      "unread": "Unread",
+      "readStatus": "Status"
+    },
+    "types": {
+      "alert": "Alerts",
+      "signal": "Signals",
+      "account": "Account",
+      "system": "System"
     }
   }
 }

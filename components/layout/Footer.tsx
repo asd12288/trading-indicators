@@ -99,14 +99,6 @@ const Footer = () => {
                   Blog
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/faq"
-                  className="hover:text-primary text-slate-300 transition-colors"
-                >
-                  FAQ
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -165,7 +157,6 @@ const Footer = () => {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 text-center text-sm text-slate-500 md:flex-row">
           <div>{t("copyright").replace("2025", currentYear.toString())}</div>
-         
         </div>
       </div>
     </footer>

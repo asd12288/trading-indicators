@@ -15,10 +15,10 @@ const PaymentMethods = () => {
 
   // Payment method logos
   const cryptoMethods = [
-    { name: "Bitcoin", logo: "/images/payment/bitcoin.svg" },
-    { name: "Ethereum", logo: "/images/payment/ethereum.svg" },
-    { name: "USDC", logo: "/images/payment/usdc.svg" },
-    { name: "USDT", logo: "/images/payment/tether.svg" },
+    { name: "Bitcoin", logo: "public/images/coins/btc.svg" },
+    { name: "Ethereum", logo: "public/images/coins/eth.svg" },
+    { name: "USDC", logo: "public/images/coins/usdc.svg" },
+    { name: "USDT", logo: "public/images/coins/udst.svg" },
   ];
 
   const traditionalMethods = [

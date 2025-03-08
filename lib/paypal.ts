@@ -60,15 +60,15 @@ export async function createSubscription(
   try {
     console.log(`Creating PayPal subscription for plan ID: ${planId}`);
     const accessToken = await getPayPalAccessToken();
-    
+
     const body = { plan_id: planId };
     if (customId) body.custom_id = customId; // attach our user ID for reference (appears in webhook events)
     if (subscriberEmail) {
       body.subscriber = { email_address: subscriberEmail };
     }
-    
+
     console.log(`PayPal subscription request body:`, JSON.stringify(body));
-    
+
     const res = await fetch(`${PAYPAL_BASE_URL}/v1/billing/subscriptions`, {
       method: "POST",
       headers: {
@@ -78,26 +78,28 @@ export async function createSubscription(
       },
       body: JSON.stringify(body),
     });
-    
+
     // Get the response as text first to handle it properly
     const responseText = await res.text();
-    
+
     if (!res.ok) {
       // Try to parse as JSON for better error reporting
       try {
         const errorJson = JSON.parse(responseText);
         console.error("PayPal API error response:", errorJson);
-        
+
         throw new Error(
           `PayPal subscription creation failed: ${errorJson.name} - ${errorJson.message}` +
-          (errorJson.details ? ` - ${errorJson.details.map(d => d.description).join(', ')}` : '')
+            (errorJson.details
+              ? ` - ${errorJson.details.map((d) => d.description).join(", ")}`
+              : ""),
         );
       } catch (parseError) {
         // If parsing fails, use the raw text
         throw new Error(`PayPal subscription creation failed: ${responseText}`);
       }
     }
-    
+
     // If we got a successful response, parse it as JSON
     return JSON.parse(responseText);
   } catch (error) {
