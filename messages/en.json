@@ -129,7 +129,7 @@
       }
     },
     "cta": {
-      "tag": "Join us", 
+      "tag": "Join us",
       "title": "Ready to start trading smarter?",
       "subtitle": "Join Trader-Map today and get access to real-time smart alerts, expert analysis, and more.",
       "button": "Get Started Now",
@@ -310,7 +310,18 @@
     "bearish": "Bearish",
     "volatility": "Volatility",
     "liveTracking": "LIVE TRACKING",
-    "signalActive": "SIGNAL ACTIVE"
+    "signalActive": "SIGNAL ACTIVE",
+    "live": "LIVE",
+    "entryPrice": "Entry Price",
+    "objective": "Objective",
+    "stopLoss": "Stop Loss",
+    "stop": "Stop",
+    "entry": "Entry",
+    "target": "Target",
+    "riskReward": "Risk/Reward",
+    "direction": "Direction",
+    "long": "Long",
+    "short": "Short"
   },
   "FufilledSignalCard": {
     "finished": "Finished:",
@@ -328,14 +339,31 @@
     "loss": "LOSS",
     "completed": "COMPLETED",
     "gain": "gain",
-    "priceDifference": "price difference"
+    "priceDifference": "price difference",
+    "win": "WIN",
+    "loss": "LOSS",
+    "tradePotential": "Trade Potential",
+    "mfe": "MFE",
+    "mae": "MAE",
+    "entryPrice": "Entry Price",
+    "exitPrice": "Exit Price",
+    "entry": "Entry",
+    "maximum": "Maximum",
+    "potentialGain": "Potential gain",
+    "maxAdversity": "Maximum adversity"
   },
   "SignalLayout": {
     "allSignals": "All Smart Alerts",
     "signal": "Smart Alert:",
     "signalSettings": "Smart Alert Settings:",
     "upgradeMessage": "Upgrade to add notifications and favoriting",
-    "noSignalData": "No smart alert data available"
+    "noSignalData": "No smart alert data available",
+    "tabs": {
+      "overview": "Overview",
+      "performance": "Performance",
+      "details": "Instrument Details",
+      "news": "Latest News"
+    }
   },
   "SignalTool": {
     "notifications": {
@@ -842,5 +870,26 @@
     "sort": "Sort",
     "sortByName": "Sort by name",
     "sortByTime": "Sort by time"
+  },
+  "InstrumentStatusCard": {
+    "instrumentStatus": "Instrument Status",
+    "trend": "Trend",
+    "lastPrice": "Last Price",
+    "high": "High",
+    "low": "Low",
+    "unknown": "Unknown",
+    "n/a": "N/A",
+    "lastUpdated": "Last Updated",
+    "errorLoading": "Error Loading Status",
+    "noData": "No Status Data Available",
+    "trendTooltip": "Market trend direction derived from technical analysis. Bullish indicates upward momentum, Bearish indicates downward momentum, and Neutral indicates sideways movement.",
+    "lastPriceTooltip": "The most recent price at which the instrument traded. Updated in real-time as new trades occur.",
+    "highTooltip": "The highest price the instrument has reached during the current session or time period.",
+    "lowTooltip": "The lowest price the instrument has reached during the current session or time period.",
+    "vwapTooltip": "Volume-Weighted Average Price. A trading indicator that shows the average price of an instrument weighted by volume, helping identify fair value.",
+    "pocTooltip": "Point of Control. The price level with the highest traded volume, representing the price where most trading activity occurred.",
+    "vpocTooltip": "Volume Point of Control. Similar to POC but specifically focuses on the price level with the largest volume concentration.",
+    "vahTooltip": "Value Area High. The upper boundary of the price range where 70% of trading volume occurred, indicating significant activity.",
+    "valTooltip": "Value Area Low. The lower boundary of the price range where 70% of trading volume occurred, indicating significant activity."
   }
 }

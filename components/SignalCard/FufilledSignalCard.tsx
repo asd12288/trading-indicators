@@ -1,258 +1,198 @@
 import { Signal } from "@/lib/types";
-import {
-  format,
-  formatDistance,
-  formatDistanceToNow,
-  parseISO,
-} from "date-fns";
+import { format, formatDistance, parseISO } from "date-fns";
 import { useTranslations } from "next-intl";
 import {
   CheckCircle,
-  Clock,
-  ArrowDown,
+  XCircle,
   ArrowUp,
-  TrendingDown,
+  ArrowDown,
+  Clock,
   TrendingUp,
-  Flag,
-  AlertCircle,
-  Calendar,
+  TrendingDown,
 } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { useEffect } from "react";
 
 interface FufilledSignalCardProps {
   instrument: Signal;
   isBuy: boolean;
-  demo: boolean;
 }
 
 const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
   instrument,
   isBuy,
-  demo = false,
 }) => {
   const {
     instrument_name,
     trade_side,
     entry_price,
     exit_price,
+    entry_time,
     exit_time,
     mae,
     mfe,
-    entry_time,
   } = instrument;
 
   const t = useTranslations("FufilledSignalCard");
 
-
-  // Early validation for critical fields
+  // Early validation
   if (!exit_time || !entry_time || !entry_price || !exit_price) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center rounded-lg border border-yellow-500 bg-yellow-950/10 p-4 text-center">
-        <AlertCircle className="mb-2 h-8 w-8 text-yellow-500" />
-        <h3 className="text-lg font-medium text-yellow-500">Incomplete Data</h3>
-        <p className="mt-1 text-sm text-slate-400">
-          {instrument_name || "Signal"} is missing required data fields
+      <div className="flex h-full w-full flex-col items-center justify-center rounded-lg border border-yellow-500 bg-yellow-950/10 p-3 text-center">
+        <XCircle className="h-6 w-6 text-yellow-500" />
+        <p className="mt-1 text-xs text-slate-400">
+          Incomplete data for {instrument_name}
         </p>
       </div>
     );
   }
 
-  const exitTimeInUserTimezone = parseISO(exit_time);
-  const adjustedExitTime = new Date(exitTimeInUserTimezone.getTime());
-  const start = parseISO(entry_time);
-  const end = parseISO(exit_time);
-  const tradeDuration = formatDistance(start, end);
-
-  const timeAgo = formatDistanceToNow(adjustedExitTime, {
-    addSuffix: true,
-    includeSeconds: true,
-  });
-
-  // Calculate profit/loss percentage
-  const priceDiff = exit_price - entry_price;
-  const pctChange = isBuy
-    ? (priceDiff / entry_price) * 100
-    : (-priceDiff / entry_price) * 100;
-  const isProfitable = isBuy ? priceDiff > 0 : priceDiff < 0;
-
-  // Format numbers for better readability
+  // Format numbers consistently
   const formatNumber = (num) => {
+    if (num === null || num === undefined) return "N/A";
     return new Intl.NumberFormat("en-US", {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      maximumFractionDigits: 5,
     }).format(num);
   };
 
+  // Process data
+  const start = parseISO(entry_time);
+  const end = parseISO(exit_time);
+  const tradeDuration = formatDistance(start, end, { includeSeconds: true });
+
+  // Calculate profit/loss
+  const priceDiff = exit_price - entry_price;
+  const isProfitable = isBuy ? priceDiff > 0 : priceDiff < 0;
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-      className="h-full w-full"
-    >
+    <div className="h-full">
       <div
-        className={`relative h-full overflow-hidden rounded-xl border-2 shadow-lg transition-all hover:shadow-xl ${
-          isProfitable
-            ? "border-emerald-500/30 bg-gradient-to-b from-emerald-950/20 to-slate-900"
-            : "border-rose-500/30 bg-gradient-to-b from-rose-950/20 to-slate-900"
-        }`}
+        className={cn(
+          "h-full rounded-lg border-t-4 bg-slate-900 shadow-md transition-all hover:shadow-lg",
+          isBuy ? "border-t-emerald-500" : "border-t-rose-500",
+        )}
       >
-        {/* Status ribbon */}
-        <div
-          className={`absolute -right-10 top-5 z-10 rotate-45 ${
-            isProfitable
-              ? "bg-gradient-to-r from-emerald-600 to-emerald-500"
-              : "bg-gradient-to-r from-rose-600 to-rose-500"
-          } px-10 py-1 shadow-md`}
-        >
-          <span className="text-xs font-bold tracking-wider text-white">
-            COMPLETED
-          </span>
+        {/* Status badge */}
+        <div className="relative">
+          <div
+            className={cn(
+              "absolute right-3 top-3 rounded-full px-2 py-1 text-xs font-medium",
+              isProfitable
+                ? "bg-blue-500/20 text-blue-400"
+                : "bg-amber-500/20 text-amber-400",
+            )}
+          >
+            {isProfitable ? t("win") : t("loss")}
+          </div>
         </div>
 
-        {/* Card Header with enhanced styling */}
-        <div className="relative p-5">
-          <div className="mb-2 flex items-center justify-between">
-            <h3 className="text-xl font-bold text-slate-50">
-              {instrument_name || "Unknown Instrument"}
-            </h3>
+        {/* Card header */}
+        <div className="p-4">
+          <div className="mb-1 flex items-center gap-2">
+            <h3 className="text-lg font-bold text-white">{instrument_name}</h3>
             <Badge
               className={cn(
-                "px-3 py-1 font-medium shadow-sm",
-                isProfitable
-                  ? "bg-gradient-to-r from-emerald-600 to-emerald-500"
-                  : "bg-gradient-to-r from-rose-600 to-rose-500",
+                "text-xs font-medium",
+                isBuy
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : "bg-rose-600 hover:bg-rose-700",
               )}
-            >
-              {isProfitable ? t("profit") : t("loss")}
-            </Badge>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <Calendar className="h-3.5 w-3.5 text-slate-400" />
-              <p className="text-xs font-medium text-slate-400">{timeAgo}</p>
-            </div>
-            <Badge
-              variant="outline"
-              className="border-slate-600 bg-slate-800/50 text-slate-300 shadow-sm"
             >
               {trade_side}
             </Badge>
           </div>
 
-          {/* Enhanced Result Section with better visual hierarchy */}
-          <div className="my-4 overflow-hidden rounded-xl bg-slate-800/60 shadow-inner backdrop-blur-sm">
-            <div className="border-b border-slate-700/50 p-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-300">
-                  {t("result")}
-                </span>
-                <div className="flex items-center gap-1.5 rounded-full bg-slate-700/50 px-2.5 py-0.5">
-                  <Clock className="h-3.5 w-3.5 text-slate-400" />
-                  <span className="text-xs font-medium text-slate-400">
-                    {tradeDuration}
-                  </span>
-                </div>
-              </div>
-            </div>
+          <div className="mb-3 flex items-center gap-1.5 text-xs text-slate-400">
+            <Clock className="h-3.5 w-3.5" />
+            <span>{format(parseISO(entry_time), "MMM d, HH:mm")}</span>
+            <span>•</span>
+            <span>{tradeDuration}</span>
+          </div>
 
+          {/* MFE Highlight - Trade Potential */}
+          <div className="mb-4 overflow-hidden rounded-md bg-slate-800">
+            <div className="border-b border-slate-700 bg-slate-700/30 px-3 py-2">
+              <span className="text-sm font-medium text-slate-300">
+                {t("tradePotential")}
+              </span>
+            </div>
             <div className="p-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-baseline gap-2">
-                  <span
-                    className={`text-3xl font-bold tabular-nums tracking-tight ${
-                      isProfitable ? "text-emerald-400" : "text-rose-400"
-                    }`}
-                  >
-                    {pctChange.toFixed(2)}%
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-emerald-400" />
+                  <span className="text-sm font-medium text-slate-300">
+                    {t("mfe")}
                   </span>
-                  {isProfitable ? (
-                    <TrendingUp className="h-6 w-6 text-emerald-400" />
-                  ) : (
-                    <TrendingDown className="h-6 w-6 text-rose-400" />
-                  )}
                 </div>
+                <div className="text-xl font-bold text-emerald-400">
+                  {formatNumber(mfe)}
+                </div>
+              </div>
 
-                <div className="flex items-center rounded-full bg-slate-700/40 px-3 py-1">
-                  <Flag
-                    className={`mr-1.5 h-4 w-4 ${isProfitable ? "text-emerald-400" : "text-rose-400"}`}
-                  />
-                  <span
-                    className={`text-sm font-medium ${isProfitable ? "text-emerald-300" : "text-rose-300"}`}
-                  >
-                    {formatNumber(Math.abs(exit_price - entry_price))}{" "}
-                    {t("priceDifference")}
-                  </span>
-                </div>
+              {/* Visual representation of MFE vs MAE */}
+              <div className="mt-3 h-2 rounded-full bg-slate-700">
+                <div
+                  className="h-2 rounded-full bg-emerald-500"
+                  style={{
+                    width: `${Math.min(Math.max((mfe / (mfe + mae)) * 100, 10), 90)}%`,
+                  }}
+                ></div>
+              </div>
+              <div className="mt-1.5 flex justify-between text-xs text-slate-400">
+                <span>{t("entry")}</span>
+                <span>{t("maximum")}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Price data */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <div className="text-xs text-slate-400">{t("entryPrice")}</div>
+              <div className="text-sm font-medium text-white">
+                {formatNumber(entry_price)}
+              </div>
+            </div>
+            <div>
+              <div className="text-xs text-slate-400">{t("exitPrice")}</div>
+              <div className="text-sm font-medium text-white">
+                {formatNumber(exit_price)}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Price Data Grid - Modernized */}
-        <div className="grid grid-cols-2 gap-1.5 p-3">
-          <div className="flex flex-col rounded-xl bg-slate-800/70 p-3 shadow-inner">
-            <span className="mb-1 text-xs font-medium text-slate-400">
-              {t("entryPrice")}
-            </span>
-            <span className="text-lg font-semibold tabular-nums tracking-wide text-slate-100">
-              {formatNumber(entry_price)}
-            </span>
-          </div>
-
-          <div className="flex flex-col rounded-xl bg-slate-800/70 p-3 shadow-inner">
-            <span className="mb-1 text-xs font-medium text-slate-400">
-              {t("exitPrice")}
-            </span>
-            <div className="flex items-baseline gap-2">
-              <span className="text-lg font-semibold tabular-nums tracking-wide text-slate-100">
-                {formatNumber(exit_price)}
-              </span>
-              {isProfitable ? (
-                <ArrowUp className="h-4 w-4 text-emerald-400" />
-              ) : (
-                <ArrowDown className="h-4 w-4 text-rose-400" />
-              )}
+        {/* MFE and MAE metrics */}
+        <div className="grid grid-cols-2 gap-2 border-t border-slate-800 p-3">
+          <div className="flex flex-col rounded-md bg-slate-800 p-2">
+            <div className="flex items-center gap-1">
+              <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
+              <span className="text-xs text-slate-400">{t("mfe")}</span>
             </div>
-          </div>
-        </div>
-
-        {/* MAE/MFE Data with better visualization */}
-        <div className="grid grid-cols-2 gap-1.5 p-3 pt-0">
-          <div className="flex flex-col rounded-xl bg-slate-800/70 p-3 shadow-inner">
-            <span className="mb-1 flex items-center gap-1 text-xs font-medium text-slate-400">
-              <span className="h-2 w-2 rounded-full bg-rose-500"></span>
-              {t("mae")}
-            </span>
-            <span className="text-base font-medium tabular-nums text-rose-300">
-              {formatNumber(mae)}
-            </span>
-          </div>
-
-          <div className="flex flex-col rounded-xl bg-slate-800/70 p-3 shadow-inner">
-            <span className="mb-1 flex items-center gap-1 text-xs font-medium text-slate-400">
-              <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
-              {t("mfe")}
-            </span>
-            <span className="text-base font-medium tabular-nums text-emerald-300">
+            <span className="mt-1 text-lg font-bold text-emerald-400">
               {formatNumber(mfe)}
             </span>
+            <span className="mt-0.5 text-xs text-slate-500">
+              {t("potentialGain")}
+            </span>
+          </div>
+
+          <div className="flex flex-col rounded-md bg-slate-800 p-2">
+            <div className="flex items-center gap-1">
+              <div className="h-2 w-2 rounded-full bg-rose-500"></div>
+              <span className="text-xs text-slate-400">{t("mae")}</span>
+            </div>
+            <span className="mt-1 text-sm font-medium text-rose-400">
+              {formatNumber(mae)}
+            </span>
+            <span className="mt-0.5 text-xs text-slate-500">
+              {t("maxAdversity")}
+            </span>
           </div>
         </div>
-
-        {/* Footer with improved design */}
-        <div className="mt-1 flex items-center justify-center border-t border-slate-700/30 bg-slate-800/30 p-3 text-center">
-          <CheckCircle className="mr-1.5 h-4 w-4 text-slate-400" />
-          <span className="text-xs font-medium text-slate-400">
-            {format(parseISO(entry_time), "MMM dd, yyyy - HH:mm")}
-          </span>
-        </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
