@@ -52,6 +52,7 @@
     "critters": "^0.0.23",
     "date-fns": "^4.1.0",
     "fast-xml-parser": "^4.5.1",
+    "finnhub": "^1.2.19",
     "form": "^0.2.5",
     "framer-motion": "^12.4.7",
     "gray-matter": "^4.0.3",

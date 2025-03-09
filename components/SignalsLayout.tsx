@@ -7,6 +7,7 @@ import { Info } from "lucide-react";
 import { motion } from "framer-motion";
 import AlertNotification from "./AlertNotification";
 import SignalsList from "./SignalCard/SignalsList";
+import EconomicCalendar from "./EconomicCalendar";
 
 const SignalsLayout = ({ userId }) => {
   const t = useTranslations("Signals");
