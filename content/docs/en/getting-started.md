@@ -1,24 +1,57 @@
 ---
-title: Getting Started with Trader-Map
+title: Getting Started with Trader Map
+description: Learn how to set up and start using Trader Map in minutes
 ---
 
-# Getting Started 🚀
+# Getting Started with Trader Map 🚀
 
-Welcome to Trader-Map! Follow this guide to set up your account and start analyzing markets.
+Welcome to Trader Map! This guide will help you get up and running quickly with our platform.
 
-## 🛠️ Installation
-1. **Sign Up** at [Trader-Map.com](https://trader-map.com).
-2. **Download the App** (Windows, Mac, iOS, Android).
-3. **Log In** with your credentials.
+## Quick Setup Guide
 
-## 📊 Setting Up Your First Market View
-1. Go to **Dashboard**.
-2. Select **Market Heatmap** to visualize trends.
-3. Add assets to your **Watchlist**.
+Follow these simple steps to start using Trader Map:
 
-## 🔥 Pro Tips
-- Use the **AI Trade Signals** feature to get instant recommendations.
-- Customize your dashboard to display relevant charts.
-- Set **Price Alerts** for your favorite stocks.
+1. **Create an Account**: Visit our [signup page](https://trader-map.com/signup) to create your account.
+2. **Choose Your Plan**: Select the subscription plan that best fits your trading needs.
+3. **Connect Your Trading Account**: Connect your brokerage account using our secure API integrations.
+4. **Set Your Preferences**: Configure your notification settings and alert preferences.
+5. **Start Trading**: Begin using Smart Alerts and tracking your performance!
 
-Ready to explore more? Head to the [API Reference](api-reference) for developer features!
+## System Requirements
+
+Trader Map is a web-based platform that works on most modern browsers:
+
+- Chrome (recommended): version 90+
+- Firefox: version 88+
+- Safari: version 14+
+- Edge: version 90+
+
+## First Steps in the Platform
+
+Once you've signed in, we recommend:
+
+### 1. Explore the Dashboard
+
+The dashboard provides a quick overview of your active signals, market status, and account performance.
+
+### 2. Set Up Your First Alert
+
+Try creating a Smart Alert by:
+- Selecting an instrument
+- Choosing alert conditions
+- Setting your notification preferences
+
+### 3. Review the Documentation
+
+Spend some time exploring our documentation to understand the full capabilities of the platform.
+
+## Getting Help
+
+If you need assistance, we offer multiple support channels:
+
+- **Live Chat**: Available during market hours
+- **Email Support**: support@trader-map.com
+- **Knowledge Base**: [help.trader-map.com](https://help.trader-map.com)
+- **Community Forum**: Connect with other traders
+
+Ready to start? Head to your [Dashboard](/dashboard) now!
