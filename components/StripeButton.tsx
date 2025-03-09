@@ -6,7 +6,12 @@ import { CreditCardIcon, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import { useRouter } from "@/i18n/routing";
-import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import {
+  Elements,
+  PaymentElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useParams } from "next/navigation";
 
@@ -25,16 +30,16 @@ function CheckoutForm({ user, plan }) {
   const elements = useElements();
   const router = useRouter();
   const { toast } = useToast();
-  
+
   const handleStripeCheckout = async () => {
     try {
       setIsLoading(true);
       setPaymentStatus("processing");
-      
+
       if (!stripe || !elements) {
         throw new Error("Stripe has not been properly initialized");
       }
-      
+
       // Create checkout session on the server
       const response = await fetch("/api/stripe/create-checkout", {
         method: "POST",
@@ -45,12 +50,12 @@ function CheckoutForm({ user, plan }) {
           userId: user.id,
           plan,
           userEmail: user.email,
-          locale
+          locale,
         }),
       });
 
       const { sessionId, error } = await response.json();
-      
+
       if (error) {
         setPaymentStatus("error");
         throw new Error(error);
@@ -62,15 +67,15 @@ function CheckoutForm({ user, plan }) {
         description: "You'll be taken to Stripe's secure checkout page...",
         duration: 3000,
       });
-      
+
       setPaymentStatus("redirecting");
 
       // Brief delay for visual feedback
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise((resolve) => setTimeout(resolve, 800));
 
       // Redirect to Stripe Checkout
       const { error: stripeError } = await stripe.redirectToCheckout({
-        sessionId
+        sessionId,
       });
 
       if (stripeError) {
@@ -91,11 +96,11 @@ function CheckoutForm({ user, plan }) {
   };
 
   return (
-    <Button 
+    <Button
       onClick={handleStripeCheckout}
       disabled={isLoading || !stripe || paymentStatus === "redirecting"}
       className={`w-full transition-all duration-300 ${
-        paymentStatus === "redirecting" 
+        paymentStatus === "redirecting"
           ? "bg-emerald-600 hover:bg-emerald-700"
           : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
       }`}

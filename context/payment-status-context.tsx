@@ -20,9 +20,9 @@ type PaymentStatusContextType = {
   acknowledgePaymentInfo: () => void;
 };
 
-const PaymentStatusContext = createContext<PaymentStatusContextType | undefined>(
-  undefined
-);
+const PaymentStatusContext = createContext<
+  PaymentStatusContextType | undefined
+>(undefined);
 
 export function PaymentStatusProvider({ children }) {
   const [paymentInfo, setPaymentInfo] = useState<PaymentInfo | null>(null);
@@ -78,7 +78,7 @@ export function usePaymentStatus() {
   const context = useContext(PaymentStatusContext);
   if (context === undefined) {
     throw new Error(
-      "usePaymentStatus must be used within a PaymentStatusProvider"
+      "usePaymentStatus must be used within a PaymentStatusProvider",
     );
   }
   return context;

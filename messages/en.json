@@ -1219,6 +1219,10 @@
         "title": "Cryptocurrency",
         "description": "Pay with your preferred cryptocurrency for enhanced privacy and lower fees.",
         "discount": "5% discount when paying with crypto"
+      },
+      "stripe": {
+        "title": "Credit Card",
+        "description": "Secure payment with Visa, Mastercard, American Express and more."
       }
     },
     "enterprise": {
@@ -1352,5 +1356,65 @@
       "account": "Account",
       "system": "System"
     }
+  },
+  "Success": {
+    "title": "Payment Successful!",
+    "titleWithName": "Thank you, {name}!",
+    "subtitle": "Your account has been upgraded successfully. You now have access to all premium features.",
+    "steps": {
+      "payment": {
+        "title": "Payment Complete",
+        "description": "Your payment has been processed and confirmed successfully."
+      },
+      "access": {
+        "title": "Pro Access Enabled",
+        "description": "All premium features are now unlocked and ready for you to explore."
+      },
+      "start": {
+        "title": "Start Trading",
+        "description": "Head to your dashboard to begin using your new premium features."
+      }
+    },
+    "buttons": {
+      "home": "Back to Home",
+      "dashboard": "Go to Dashboard"
+    },
+    "help": "Need help? Contact us at"
+  },
+  "WelcomeBanner": {
+    "title": "Welcome to Trader Map Pro!",
+    "activated": "Your {planType} is now active.",
+    "viewDetails": "View subscription details",
+    "hideDetails": "Hide details",
+    "labels": {
+      "paymentMethod": "Payment method",
+      "amount": "Amount",
+      "date": "Date",
+      "planType": "Plan type"
+    },
+    "actions": {
+      "tutorial": "View Tutorial",
+      "dashboard": "Go to Dashboard"
+    }
+  },
+  "PaymentStatus": {
+    "redirecting": "Redirecting to secure payment",
+    "redirectDescription": "You'll be taken to Stripe's secure checkout page...",
+    "error": "Checkout Error",
+    "errorDescription": "Could not initialize payment. Please try again.",
+    "secureNotice": "Secured by Stripe. We never store your card details."
+  },
+  "StripeButton": {
+    "payWithCard": "Pay with Card",
+    "processing": "Processing...",
+    "redirecting": "Redirecting...",
+    "tryAgain": "Try Again",
+    "monthlyTitle": "Monthly Subscription",
+    "lifetimeTitle": "Lifetime Access",
+    "monthlyDescription": "Secure monthly billing via Stripe",
+    "lifetimeDescription": "One-time payment for lifetime access"
+  },
+  "NewFeatureHighlight": {
+    "dismiss": "Dismiss"
   }
 }

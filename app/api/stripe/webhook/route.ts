@@ -110,17 +110,15 @@ export async function POST(req) {
         // After success processing, store payment info in the user's session
         try {
           // Store payment information in a specialized table for displaying in UI
-          await supabaseClient
-            .from("payment_notifications")
-            .insert({
-              user_id: userId,
-              success: true,
-              method: "Credit Card (Stripe)",
-              amount: isLifetimePlan ? "$800.00" : "$65.00",
-              date: new Date().toISOString(),
-              plan_type: isLifetimePlan ? "lifetime" : "monthly",
-              acknowledged: false,
-            });
+          await supabaseClient.from("payment_notifications").insert({
+            user_id: userId,
+            success: true,
+            method: "Credit Card (Stripe)",
+            amount: isLifetimePlan ? "$800.00" : "$65.00",
+            date: new Date().toISOString(),
+            plan_type: isLifetimePlan ? "lifetime" : "monthly",
+            acknowledged: false,
+          });
         } catch (notifyError) {
           console.error("Failed to save payment notification:", notifyError);
         }

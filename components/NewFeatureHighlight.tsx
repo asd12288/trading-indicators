@@ -4,14 +4,14 @@ import { motion } from "framer-motion";
 import { Sparkles, X } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 
-export default function NewFeatureHighlight({ 
-  title, 
-  description, 
+export default function NewFeatureHighlight({
+  title,
+  description,
   featureId,
-  children 
+  children,
 }) {
   const [visible, setVisible] = useState(false);
-  
+
   useEffect(() => {
     // Check if this feature has been dismissed before
     const dismissed = localStorage.getItem(`feature_seen_${featureId}`);
@@ -19,14 +19,14 @@ export default function NewFeatureHighlight({
       setVisible(true);
     }
   }, [featureId]);
-  
+
   const dismiss = () => {
     setVisible(false);
-    localStorage.setItem(`feature_seen_${featureId}`, 'true');
+    localStorage.setItem(`feature_seen_${featureId}`, "true");
   };
-  
+
   if (!visible) return null;
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -35,7 +35,7 @@ export default function NewFeatureHighlight({
       className="relative mb-6"
     >
       <Card className="border border-yellow-500/30 bg-gradient-to-r from-slate-900 to-slate-800/90 shadow-lg">
-        <button 
+        <button
           onClick={dismiss}
           className="absolute right-2 top-2 rounded-full p-1 text-slate-400 hover:bg-slate-800 hover:text-white"
         >

@@ -10,7 +10,7 @@ export default function WelcomeBanner() {
   const { paymentInfo, acknowledgePaymentInfo } = usePaymentStatus();
   const [isExpanded, setIsExpanded] = useState(false);
   const [visible, setVisible] = useState(false);
-  
+
   useEffect(() => {
     // Show banner if there's unacknowledged payment info
     if (paymentInfo && !paymentInfo.acknowledged) {
@@ -18,23 +18,24 @@ export default function WelcomeBanner() {
       const timer = setTimeout(() => {
         setVisible(true);
       }, 1000);
-      
+
       return () => clearTimeout(timer);
     }
   }, [paymentInfo]);
-  
+
   const handleClose = () => {
     setVisible(false);
     acknowledgePaymentInfo();
   };
 
   if (!visible || !paymentInfo) return null;
-  
-  const planTypeDisplay = paymentInfo.planType === 'lifetime' ? 'Lifetime Access' : 'Monthly Plan';
-  
+
+  const planTypeDisplay =
+    paymentInfo.planType === "lifetime" ? "Lifetime Access" : "Monthly Plan";
+
   return (
     <AnimatePresence>
-      <motion.div 
+      <motion.div
         className="fixed bottom-0 left-0 right-0 z-50 mx-auto mb-4 max-w-3xl px-4"
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -49,18 +50,20 @@ export default function WelcomeBanner() {
                   <Gift className="h-6 w-6 text-emerald-400" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium text-white">Welcome to Trader Map Pro!</h3>
+                  <h3 className="text-lg font-medium text-white">
+                    Welcome to Trader Map Pro!
+                  </h3>
                   <p className="text-sm text-slate-300">
                     Your {planTypeDisplay} is now active.
                   </p>
                 </div>
               </div>
-              
+
               <Button variant="ghost" size="sm" onClick={handleClose}>
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            
+
             <div className="mt-2">
               <Button
                 variant="ghost"
@@ -71,9 +74,13 @@ export default function WelcomeBanner() {
                 <span>
                   {isExpanded ? "Hide details" : "View subscription details"}
                 </span>
-                {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                {isExpanded ? (
+                  <ChevronUp size={14} />
+                ) : (
+                  <ChevronDown size={14} />
+                )}
               </Button>
-              
+
               {isExpanded && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
@@ -84,33 +91,49 @@ export default function WelcomeBanner() {
                   <dl className="divide-y divide-slate-700/50 px-4 py-3 text-sm">
                     <div className="flex justify-between py-2">
                       <dt className="text-slate-400">Payment method</dt>
-                      <dd className="font-medium text-slate-200">{paymentInfo.method || "Credit Card"}</dd>
+                      <dd className="font-medium text-slate-200">
+                        {paymentInfo.method || "Credit Card"}
+                      </dd>
                     </div>
                     <div className="flex justify-between py-2">
                       <dt className="text-slate-400">Amount</dt>
-                      <dd className="font-medium text-slate-200">{paymentInfo.amount || "-"}</dd>
+                      <dd className="font-medium text-slate-200">
+                        {paymentInfo.amount || "-"}
+                      </dd>
                     </div>
                     <div className="flex justify-between py-2">
                       <dt className="text-slate-400">Date</dt>
                       <dd className="font-medium text-slate-200">
-                        {paymentInfo.date 
-                          ? new Date(paymentInfo.date).toLocaleDateString() 
+                        {paymentInfo.date
+                          ? new Date(paymentInfo.date).toLocaleDateString()
                           : new Date().toLocaleDateString()}
                       </dd>
                     </div>
                     <div className="flex justify-between py-2">
                       <dt className="text-slate-400">Plan type</dt>
-                      <dd className="font-medium text-slate-200">{planTypeDisplay}</dd>
+                      <dd className="font-medium text-slate-200">
+                        {planTypeDisplay}
+                      </dd>
                     </div>
                   </dl>
                 </motion.div>
               )}
-              
+
               <div className="mt-4 flex flex-wrap gap-2">
-                <Button variant="outline" size="sm" className="flex-1 border-slate-700" asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 border-slate-700"
+                  asChild
+                >
                   <a href="/tutorial">View Tutorial</a>
                 </Button>
-                <Button variant="default" size="sm" className="flex-1 bg-emerald-600 hover:bg-emerald-700" asChild>
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                  asChild
+                >
                   <a href="/smart-alerts">Go to Dashboard</a>
                 </Button>
               </div>
