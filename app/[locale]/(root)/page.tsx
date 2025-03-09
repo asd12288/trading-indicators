@@ -1,17 +1,12 @@
 import Contact from "@/components/homePage/Contact";
+import Cta from "@/components/homePage/Cta";
 import Hero from "@/components/homePage/Hero";
 import HowItWork from "@/components/homePage/HowItWork";
-import Offers, { FeaturesSectionDemo } from "@/components/homePage/Offers";
 import Plans from "@/components/homePage/Plans";
 import Service from "@/components/homePage/Service";
 import TestimonialsSection from "@/components/homePage/TestimonialsSection";
-import { redirect } from "@/i18n/routing";
 import { createClient } from "@/database/supabase/server";
-import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation";
-import Cta from "@/components/homePage/Cta";
-import Head from "next/head";
-import TradingLoader from "@/components/ui/TradingLoader";
-import GeneralLoader from "@/components/ui/GeneralLoader";
+import { redirect } from "@/i18n/routing";
 
 async function page({ params }: { params: { locale: string } }) {
   const supabase = await createClient();

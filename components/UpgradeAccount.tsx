@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { motion } from "framer-motion";
+import { CheckCircle2, Infinity, StarIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
-import { Link } from "@/i18n/routing";
-import PaypalSubscribeButton from "./PaypalButton";
-import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { useState } from "react";
 import NowPaymentsButton from "./NowPaymentsButton";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import PaypalSubscribeButton from "./PaypalButton";
+import StripeButton from "./StripeButton";
 import { Badge } from "./ui/badge";
-import { CheckCircle2, StarIcon, Infinity } from "lucide-react";
-import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
 const UpgradeAccount = ({ user }) => {
@@ -185,11 +185,15 @@ const UpgradeAccount = ({ user }) => {
             </CardHeader>
 
             <CardContent className="p-0">
-              <Tabs defaultValue="paypal" className="w-full">
-                <TabsList className="mb-4 grid w-full grid-cols-2 bg-slate-800/40">
+              <Tabs defaultValue="card" className="w-full">
+                <TabsList className="mb-4 grid w-full grid-cols-3 bg-slate-800/40">
+                  <TabsTrigger value="card">Card</TabsTrigger>
                   <TabsTrigger value="paypal">PayPal</TabsTrigger>
                   <TabsTrigger value="crypto">Crypto</TabsTrigger>
                 </TabsList>
+                <TabsContent value="card" className="mt-0">
+                  <StripeButton user={user} plan={selectedPlan} />
+                </TabsContent>
                 <TabsContent value="paypal" className="mt-0">
                   <PaypalSubscribeButton user={user} plan={selectedPlan} />
                 </TabsContent>
