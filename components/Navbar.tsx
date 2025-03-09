@@ -78,18 +78,6 @@ export default function Navbar({ user, profile }) {
             </Link>
 
             <Link
-              href="/docs/getting-started"
-              className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium ${
-                isActive("/docs")
-                  ? "bg-slate-800 text-blue-400"
-                  : "text-slate-300 hover:bg-slate-800/50 hover:text-white"
-              }`}
-            >
-              <BookOpen size={18} />
-              <span>Docs</span>
-            </Link>
-
-            <Link
               href="/blogs"
               className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium ${
                 isActive("/blogs")
@@ -213,22 +201,6 @@ export default function Navbar({ user, profile }) {
                 <div className="flex items-center gap-3">
                   <LineChart size={18} />
                   <span className="font-medium">{t("signals")}</span>
-                </div>
-                <ChevronRight size={16} className="opacity-50" />
-              </Link>
-
-              <Link
-                href="/docs/getting-started"
-                onClick={() => setIsMobileOpen(false)}
-                className={`flex items-center justify-between rounded-md px-3 py-2.5 ${
-                  isActive("/docs")
-                    ? "bg-slate-700 text-blue-400"
-                    : "text-slate-200 hover:bg-slate-700/50"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <BookOpen size={18} />
-                  <span className="font-medium">Docs</span>
                 </div>
                 <ChevronRight size={16} className="opacity-50" />
               </Link>

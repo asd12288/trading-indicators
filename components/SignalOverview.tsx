@@ -7,16 +7,22 @@ const SignalOverview = ({ signalPassed, instrumentData }) => {
   const t = useTranslations("SignalOverviewSummary");
 
   if (!signalPassed || !instrumentData) {
-    return <div className="p-6 text-center text-slate-400">{t("noData")}</div>;
+    return (
+      <div className="flex h-[600px] items-center justify-center p-6 text-center text-slate-400">
+        {t("noData")}
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center space-y-5 rounded-xl border border-slate-700/50 bg-slate-800/90 p-5 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
+    <div className="flex h-[600px] w-full flex-col space-y-5 p-6">
       <SignalStatusBar instrumentName={signalPassed.instrument_name} />
       <div className="w-full">
         <SignalCard signalPassed={signalPassed} />
       </div>
-      <SignalSummaryStats instrumentData={instrumentData} />
+      <div className="flex-grow">
+        <SignalSummaryStats instrumentData={instrumentData} />
+      </div>
     </div>
   );
 };

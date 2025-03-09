@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Info } from "lucide-react";
+import { ArrowUp, ArrowDown, Info, Minus } from "lucide-react";
 import useLast from "@/hooks/useLast";
 import SignalToolTooltip from "./SignalCard/SignalToolTooltip";
 
@@ -24,6 +24,9 @@ const LastPriceDisplay = ({
     useLast(instrumentName);
   const t = useTranslations("InstrumentStatusCard");
   const [isFlashing, setIsFlashing] = useState(false);
+  const [priceDirection, setPriceDirection] = useState<
+    "up" | "down" | "neutral"
+  >("neutral");
   const prevPriceRef = useRef<number | null>(null);
 
   // Debug counter to show component is alive
@@ -39,6 +42,18 @@ const LastPriceDisplay = ({
       console.log(
         `⚡ Price update: ${prevPriceRef.current} → ${lastPrice.last}`,
       );
+
+      // Determine price direction
+      if (prevPriceRef.current !== null) {
+        if (lastPrice.last > prevPriceRef.current) {
+          setPriceDirection("up");
+        } else if (lastPrice.last < prevPriceRef.current) {
+          setPriceDirection("down");
+        } else {
+          setPriceDirection("neutral");
+        }
+      }
+
       setIsFlashing(true);
       const timer = setTimeout(() => setIsFlashing(false), 1000);
       prevPriceRef.current = lastPrice.last;
@@ -57,9 +72,9 @@ const LastPriceDisplay = ({
 
   // Format number to always show 2 decimal places
   const formatPrice = (price: number): string => {
-    return price.toLocaleString(undefined, { 
-      minimumFractionDigits: 2, 
-      maximumFractionDigits: 2 
+    return price.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     });
   };
 
@@ -70,12 +85,20 @@ const LastPriceDisplay = ({
     large: "text-3xl md:text-4xl",
   }[size];
 
+  // Direction-based colors
+  const directionColor = {
+    up: "text-green-400",
+    down: "text-red-400",
+    neutral: "text-primary",
+  }[priceDirection];
+
   if (isLoading) {
     return (
-      <div className="animate-pulse">
-        <div
-          className={`h-8 w-24 rounded bg-slate-700 ${showLabel ? "mt-6" : ""}`}
-        ></div>
+      <div className={`animate-pulse ${className}`}>
+        {showLabel && (
+          <div className="mb-1 h-4 w-24 self-end rounded bg-slate-700"></div>
+        )}
+        <div className="h-8 w-32 rounded-md bg-slate-700"></div>
       </div>
     );
   }
@@ -85,40 +108,57 @@ const LastPriceDisplay = ({
   }
 
   return (
-    <div className={className}>
+    <div className={`flex flex-col ${className}`}>
       {showLabel && (
-        <div className="flex items-center justify-end gap-1">
+        <div className="mb-1 flex items-center justify-end gap-1">
           <SignalToolTooltip text={t("lastPriceTooltip")}>
-            <div className="flex cursor-help items-center text-sm font-medium text-slate-400">
+            <div className="flex cursor-help items-center gap-1 text-sm font-medium text-slate-400">
               {t("lastPrice")}
-              <Info size={12} className="ml-1 opacity-70" />
+              <Info size={12} className="opacity-70" />
             </div>
           </SignalToolTooltip>
         </div>
       )}
 
-      <motion.div
-        className={`font-bold ${fontSizeClass} text-primary`}
-        animate={{
-          opacity: isFlashing ? [1, 0.5, 1] : 1,
-          scale: isFlashing ? [1, 1.03, 1] : 1,
-        }}
-        transition={{ duration: 0.5 }}
-      >
-        {lastPrice?.last !== undefined
-          ? formatPrice(lastPrice.last)
-          : t("n/a")}
-      </motion.div>
+      <div className="flex items-center space-x-2">
+        <motion.div
+          className={`font-bold ${fontSizeClass} ${directionColor}`}
+          animate={{
+            opacity: isFlashing ? [1, 0.5, 1] : 1,
+            scale: isFlashing ? [1, 1.03, 1] : 1,
+          }}
+          transition={{ duration: 0.5 }}
+        >
+          {lastPrice?.last !== undefined
+            ? formatPrice(lastPrice.last)
+            : t("n/a")}
+        </motion.div>
 
-      {/* Optional debug info - remove in production */}
-      {process.env.NODE_ENV !== "production" && (
-        <div className="mt-1 text-xs text-slate-500 opacity-50">
-          {lastUpdated?.toLocaleTimeString()}
-        </div>
-      )}
+        {/* Price direction indicator */}
+        {priceDirection !== "neutral" && (
+          <motion.div
+            initial={{ opacity: 0, y: priceDirection === "up" ? 10 : -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center"
+          >
+            {priceDirection === "up" ? (
+              <ArrowUp
+                size={size === "large" ? 20 : 16}
+                className="text-green-400"
+              />
+            ) : (
+              <ArrowDown
+                size={size === "large" ? 20 : 16}
+                className="text-red-400"
+              />
+            )}
+          </motion.div>
+        )}
+      </div>
 
+ 
       {size === "large" && lastUpdated && (
-        <div className="mt-1 text-xs text-slate-500">
+        <div className="mt-2 text-xs text-slate-500">
           Updated: {lastUpdated.toLocaleTimeString()}
         </div>
       )}

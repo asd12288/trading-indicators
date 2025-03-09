@@ -6,29 +6,18 @@ import SignalTable from "@/components/SignalTable";
 import useInstrumentData from "@/hooks/useInstrumentData";
 import useProfile from "@/hooks/useProfile";
 import { Link } from "@/i18n/routing";
-import {
-  ArrowLeft,
-  BarChart2,
-  Info,
-  Activity,
-  Newspaper,
-  Eye,
-  ChevronRight,
-  Layers,
-  Lock,
-} from "lucide-react";
-import SignalInfo from "./SignalInfo";
-import SignalOverview from "./SignalOverview";
-import { useTranslations } from "next-intl";
-import { notFound } from "next/navigation";
-import { useState } from "react";
-import SignalLayoutLoader from "./loaders/SignalLayoutLoader";
-import AlertNotification from "./AlertNotification";
-import SignalLatestNews from "./SignalLatestNews";
-import InstrumentStatusCard from "./InstrumentStatusCard";
-import BlurOverlay from "./BlurOverlay";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { Activity, ArrowLeft, Eye, Info, Lock, Newspaper } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { notFound, useRouter } from "next/navigation";
+import { useState } from "react";
+import AlertNotification from "./AlertNotification";
+import BlurOverlay from "./BlurOverlay";
+import InstrumentStatusCard from "./InstrumentStatusCard";
+import SignalLayoutLoader from "./loaders/SignalLayoutLoader";
+import SignalInfo from "./SignalInfo";
+import SignalLatestNews from "./SignalLatestNews";
+import SignalOverview from "./SignalOverview";
 
 // Tab type definition
 interface Tab {
@@ -172,7 +161,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
             </div>
 
             <div className="flex flex-col gap-6">
-              <div className="relative overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/90 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
+              <div className="overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/90 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
                 {/* Show blur overlay for free users */}
                 {!isPro && (
                   <BlurOverlay

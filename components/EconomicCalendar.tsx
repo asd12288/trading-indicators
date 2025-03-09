@@ -4,7 +4,9 @@ import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { format, parseISO } from "date-fns";
-import useEconomicCalendar, { EconomicEvent } from "@/hooks/useEconomicCalendar";
+import useEconomicCalendar, {
+  EconomicEvent,
+} from "@/hooks/useEconomicCalendar";
 import {
   Calendar,
   Clock,
@@ -12,7 +14,7 @@ import {
   BarChart3,
   ChevronRight,
   AlertTriangle,
-  Gauge
+  Gauge,
 } from "lucide-react";
 
 interface EconomicCalendarProps {
@@ -31,7 +33,7 @@ const EconomicCalendar = ({
 }: EconomicCalendarProps) => {
   const { events, isLoading, error } = useEconomicCalendar(country, maxEvents);
   const [currentTime] = useState(new Date());
-  
+
   // You can create translations for this component
   // For now, we'll use hardcoded strings
   // const t = useTranslations("EconomicCalendar");
@@ -42,7 +44,7 @@ const EconomicCalendar = ({
       // This helps with showing how much time is left until the event
       // We don't update state to avoid re-renders
     }, 60000);
-    
+
     return () => clearInterval(timer);
   }, []);
 
@@ -76,18 +78,18 @@ const EconomicCalendar = ({
     try {
       // Parse the date and time
       const eventDate = parseISO(`${dateStr}T${timeStr}`);
-      
+
       // Check if the event is today
       const today = new Date();
-      const isToday = 
+      const isToday =
         eventDate.getDate() === today.getDate() &&
         eventDate.getMonth() === today.getMonth() &&
         eventDate.getFullYear() === today.getFullYear();
-      
+
       if (isToday) {
-        return `Today at ${format(eventDate, 'HH:mm')}`;
+        return `Today at ${format(eventDate, "HH:mm")}`;
       } else {
-        return format(eventDate, 'EEE, MMM d • HH:mm');
+        return format(eventDate, "EEE, MMM d • HH:mm");
       }
     } catch (e) {
       return `${dateStr} ${timeStr}`;
@@ -104,7 +106,7 @@ const EconomicCalendar = ({
           </h3>
         </div>
       )}
-      
+
       <div className="space-y-3">
         {events.map((event) => (
           <EventCard key={event.id} event={event} />
@@ -119,25 +121,29 @@ const EventCard = ({ event }: { event: EconomicEvent }) => {
   // Get impact color
   const getImpactColor = (impact: string) => {
     switch (impact) {
-      case 'high': return 'bg-red-500';
-      case 'medium': return 'bg-amber-500';
-      case 'low': return 'bg-slate-500';
-      default: return 'bg-slate-500';
+      case "high":
+        return "bg-red-500";
+      case "medium":
+        return "bg-amber-500";
+      case "low":
+        return "bg-slate-500";
+      default:
+        return "bg-slate-500";
     }
   };
 
   // Format the difference between forecast and previous
   const formatChange = (forecast?: string, previous?: string) => {
     if (!forecast || !previous) return null;
-    
+
     const forecastNum = parseFloat(forecast);
     const previousNum = parseFloat(previous);
-    
+
     if (isNaN(forecastNum) || isNaN(previousNum)) return null;
-    
+
     const diff = forecastNum - previousNum;
     const percentage = (diff / previousNum) * 100;
-    
+
     if (diff > 0) {
       return (
         <span className="text-green-400">
@@ -151,9 +157,7 @@ const EventCard = ({ event }: { event: EconomicEvent }) => {
         </span>
       );
     } else {
-      return (
-        <span className="text-slate-400">0%</span>
-      );
+      return <span className="text-slate-400">0%</span>;
     }
   };
 
@@ -171,7 +175,7 @@ const EventCard = ({ event }: { event: EconomicEvent }) => {
           className={`absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full ${getImpactColor(event.impact)} ring-1 ring-slate-900`}
         ></div>
       </div>
-      
+
       <div className="flex flex-1 flex-col">
         {/* Event and country */}
         <div className="mb-0.5 flex items-start justify-between">
@@ -181,24 +185,24 @@ const EventCard = ({ event }: { event: EconomicEvent }) => {
             <span className="text-slate-300">{event.country}</span>
           </div>
         </div>
-        
+
         {/* Time and forecast */}
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center text-slate-400">
             <Clock className="mr-1 h-3 w-3" />
             <span>{formatEventTime(event.date, event.time)}</span>
           </div>
-          
+
           <div className="flex items-center gap-2">
             {event.forecast && (
               <div className="flex items-center">
                 <span className="mr-1 text-slate-400">Forecast:</span>
                 <span className="font-medium text-white">
-                  {event.forecast} {event.unit || ''}
+                  {event.forecast} {event.unit || ""}
                 </span>
               </div>
             )}
-            
+
             {formatChange(event.forecast, event.previous) && (
               <div className="flex items-center">
                 <BarChart3 className="mr-1 h-3 w-3 text-slate-400" />
@@ -207,16 +211,18 @@ const EventCard = ({ event }: { event: EconomicEvent }) => {
             )}
           </div>
         </div>
-        
+
         {/* Previous value */}
         {event.previous && (
           <div className="mt-1 flex items-center justify-end text-xs text-slate-400">
             <span className="mr-1">Previous:</span>
-            <span>{event.previous} {event.unit || ''}</span>
+            <span>
+              {event.previous} {event.unit || ""}
+            </span>
           </div>
         )}
       </div>
-      
+
       <ChevronRight className="ml-2 h-4 w-4 text-slate-500 opacity-0 transition-opacity group-hover:opacity-100" />
     </motion.div>
   );

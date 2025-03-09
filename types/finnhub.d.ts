@@ -1,4 +1,4 @@
-declare module 'finnhub' {
+declare module "finnhub" {
   export interface EconomicCalendarItem {
     actual?: number | string;
     country: string;
@@ -17,7 +17,7 @@ declare module 'finnhub' {
 
   export class DefaultApi {
     apiKey: string;
-    
+
     /**
      * Get economic calendar events
      * @param from - From date YYYY-MM-DD
@@ -28,10 +28,10 @@ declare module 'finnhub' {
       from: string,
       to: string,
       callback: (
-        error: Error | null, 
+        error: Error | null,
         data: EconomicCalendarResponse,
-        response: any
-      ) => void
+        response: any,
+      ) => void,
     ): void;
 
     // Add other Finnhub methods as needed
@@ -41,6 +41,6 @@ declare module 'finnhub' {
   const finnhub: {
     DefaultApi: typeof DefaultApi;
   };
-  
+
   export default finnhub;
 }

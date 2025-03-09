@@ -876,7 +876,7 @@
     "noData": "No smart alert data available",
     "loading": "Loading...",
     "status": {
-      "title": "Instrument Status:",
+      "title": "Smart Alert Status:",
       "active": "Active",
       "inactive": "Deactivate",
       "lastUpdate": "Last updated: {time}"
