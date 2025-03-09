@@ -11,8 +11,9 @@ import {
   AlertTriangle,
   Info,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import SignalToolTooltip from "./SignalCard/SignalToolTooltip";
+import LastPriceDisplay from "./LastPriceDisplay";
 
 interface InstrumentStatusCardProps {
   instrumentName: string;
@@ -21,8 +22,13 @@ interface InstrumentStatusCardProps {
 const InstrumentStatusCard = ({
   instrumentName,
 }: InstrumentStatusCardProps) => {
-  const { data, compositeData, isLoading, error } =
-    useInstrumentStatus(instrumentName);
+  const {
+    data,
+    compositeData,
+    isLoading: statusLoading,
+    error: statusError,
+  } = useInstrumentStatus(instrumentName);
+
   const t = useTranslations("InstrumentStatusCard");
   const [flashField, setFlashField] = useState<string | null>(null);
   const [prevValues, setPrevValues] = useState<Record<string, any>>({});
@@ -32,7 +38,6 @@ const InstrumentStatusCard = ({
   useEffect(() => {
     if (compositeData) {
       const fieldsToCheck = [
-        "last",
         "trend",
         "high",
         "low",
@@ -45,7 +50,6 @@ const InstrumentStatusCard = ({
       const currentTime = Date.now();
 
       // Only process animations if it's been at least 500ms since the last update
-      // This prevents too many animations firing at once
       if (currentTime - lastUpdateRef.current > 500) {
         for (const field of fieldsToCheck) {
           if (
@@ -72,7 +76,7 @@ const InstrumentStatusCard = ({
     }
   }, [compositeData]);
 
-  if (isLoading) {
+  if (statusLoading) {
     return (
       <div className="flex h-full flex-col items-center justify-center space-y-5 rounded-xl border border-slate-700/50 bg-slate-800/90 p-5 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
         <div className="flex w-full animate-pulse flex-col gap-4">
@@ -88,14 +92,14 @@ const InstrumentStatusCard = ({
     );
   }
 
-  if (error) {
+  if (statusError) {
     return (
       <div className="flex h-full flex-col items-center justify-center space-y-5 rounded-xl border border-slate-700/50 bg-slate-800/90 p-5 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
         <div className="flex items-center space-x-2 text-amber-500">
           <AlertTriangle size={20} />
           <h3 className="text-lg font-medium">{t("errorLoading")}</h3>
         </div>
-        <p className="mt-2 text-slate-400">{error.message}</p>
+        <p className="mt-2 text-slate-400">{statusError.message}</p>
       </div>
     );
   }
@@ -112,10 +116,8 @@ const InstrumentStatusCard = ({
   }
 
   const trend = compositeData.trend?.value || "";
-  const lastPrice = compositeData.last?.value;
-
-  // Get the most recent timestamp for display
-  const latestTimestamp = compositeData.latestTimestamp || data[0]?.timestamp;
+  const compositeTimestamp =
+    compositeData.latestTimestamp || (data && data[0]?.timestamp);
 
   return (
     <div className="flex h-full flex-col justify-between rounded-xl border border-slate-700/50 bg-slate-800/90 p-5 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl">
@@ -124,17 +126,15 @@ const InstrumentStatusCard = ({
           <h3 className="text-lg font-semibold text-slate-100">
             {t("instrumentStatus")}
           </h3>
-          {compositeData.last?.value !== undefined && (
-            <span className="flex h-2 w-2 items-center">
-              <span className="absolute inline-flex h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
-            </span>
-          )}
+          <span className="flex h-2 w-2 items-center">
+            <span className="absolute inline-flex h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
+          </span>
         </div>
         <div className="flex items-center text-xs text-slate-400">
           <Clock size={14} className="mr-1" />
-          {latestTimestamp
-            ? new Date(latestTimestamp).toLocaleTimeString()
+          {compositeTimestamp
+            ? new Date(compositeTimestamp).toLocaleTimeString()
             : t("n/a")}
         </div>
       </div>
@@ -163,26 +163,11 @@ const InstrumentStatusCard = ({
         </div>
 
         <div className="mt-3 flex items-center md:mt-0">
-          <div className="text-right">
-            <div className="flex items-center justify-end gap-1">
-              <SignalToolTooltip text={t("lastPriceTooltip")}>
-                <div className="flex cursor-help items-center text-sm font-medium text-slate-400">
-                  {t("lastPrice")}
-                  <Info size={12} className="ml-1 opacity-70" />
-                </div>
-              </SignalToolTooltip>
-            </div>
-            <motion.div
-              className="text-primary text-2xl font-bold"
-              animate={{
-                opacity: flashField === "last" ? [1, 0.5, 1] : 1,
-                scale: flashField === "last" ? [1, 1.03, 1] : 1,
-              }}
-              transition={{ duration: 0.5 }}
-            >
-              {lastPrice !== undefined ? lastPrice.toLocaleString() : t("n/a")}
-            </motion.div>
-          </div>
+          {/* Replace the old last price display with our new component */}
+          <LastPriceDisplay
+            instrumentName={instrumentName}
+            className="text-right"
+          />
         </div>
       </div>
 
@@ -255,8 +240,8 @@ const InstrumentStatusCard = ({
 
       <div className="mt-3 flex items-center justify-end text-xs text-slate-500">
         {t("lastUpdated")}:{" "}
-        {latestTimestamp
-          ? new Date(latestTimestamp).toLocaleString()
+        {compositeTimestamp
+          ? new Date(compositeTimestamp).toLocaleString()
           : t("n/a")}
       </div>
     </div>

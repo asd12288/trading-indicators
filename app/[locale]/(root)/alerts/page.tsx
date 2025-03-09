@@ -20,6 +20,8 @@ const page = async ({ params }: { params: { locale: string } }) => {
   }
   return (
     <div>
+
+      
       <AlertsTable />
     </div>
   );
