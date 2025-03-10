@@ -1332,6 +1332,12 @@
     "delete": "Delete",
     "clear": "Clear all",
     "viewAll": "View all notifications",
+    "seeAll": "See all",
+    "clearAllConfirmTitle": "Clear all notifications?",
+    "clearAllConfirmDescription": "This will remove all notifications from your list. Are you sure you want to proceed?",
+    "cancel": "Cancel",
+    "clearAll": "Clear All",
+
     "aria": {
       "notifications": "Notifications"
     },

@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+"use client";
+
+import { useState, useEffect, useRef, useCallback } from "react";
 import supabaseClient from "@/database/supabase/supabase";
 import { Notification } from "@/lib/notification-types";
 import { toast } from "@/hooks/use-toast";
@@ -14,84 +16,124 @@ export function useNotifications(passedUserId?: string) {
   // Use passed userId directly instead of depending on the useUser hook
   const userId = passedUserId;
 
-  // Calculate unread count
+  // Calculate unread count - make sure this is accurate
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  // Initialize notification sound - similar to useAlerts pattern
+  // Initialize notification sound with better error handling
   useEffect(() => {
-    notificationSoundRef.current = new Audio("/audio/notification.mp3");
+    // Create audio element with explicit error handling
+    try {
+      // Check if Audio API is available
+      if (typeof Audio !== 'undefined') {
+        notificationSoundRef.current = new Audio("/audio/notification.mp3");
+        
+        // Add proper error handling
+        notificationSoundRef.current.addEventListener('error', (e) => {
+          console.error("Error loading notification sound:", e.target.error?.message || 'Unknown audio error');
+          notificationSoundRef.current = null;
+        });
+        
+        // Preload the audio file
+        notificationSoundRef.current.preload = 'auto';
+        notificationSoundRef.current.load();
+      } else {
+        console.log("Audio API not available in this browser");
+      }
+    } catch (err) {
+      console.error("Failed to initialize notification sound:", err);
+      notificationSoundRef.current = null;
+    }
 
     return () => {
       if (notificationSoundRef.current) {
-        notificationSoundRef.current.pause();
-        notificationSoundRef.current = null;
+        try {
+          notificationSoundRef.current.pause();
+          notificationSoundRef.current = null;
+        } catch (err) {
+          console.warn("Error cleaning up audio:", err);
+        }
       }
     };
   }, []);
 
-  // Function to fetch notifications
-  const fetchNotifications = async () => {
-    if (!userId) {
-      console.log("No user ID available.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { data, error } = await supabaseClient
-        .from("notifications")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(20);
-
-      if (error) {
-        console.warn("Error fetching notifications:", error);
-        setError("Failed to load notifications");
+  // Make fetchNotifications a callback to ensure stable reference
+  const fetchNotifications = useCallback(
+    async (silent = false) => {
+      if (!userId) {
+        console.log("No user ID available.");
         return;
       }
 
-      if (data && data.length > 0) {
-        // Transform data to match Notification interface
-        const transformedData: Notification[] = data.map((item) => ({
-          id: item.id,
-          type: item.type as "alert" | "signal" | "account" | "system",
-          title: item.title,
-          message: item.message,
-          timestamp: item.created_at,
-          read: item.read,
-          link: item.link || undefined,
-          data: item.additional_data || undefined,
-        }));
+      if (!silent) setLoading(true);
+      try {
+        console.log(
+          `[useNotifications] Fetching notifications for user ${userId}`,
+        );
+        const { data, error } = await supabaseClient
+          .from("notifications")
+          .select("*")
+          .eq("user_id", userId)
+          .order("created_at", { ascending: false })
+          .limit(20);
 
-        setNotifications(transformedData);
-      } else {
-        // Set empty array if no notifications found
-        setNotifications([]);
+        if (error) {
+          console.warn("Error fetching notifications:", error);
+          setError("Failed to load notifications");
+          return;
+        }
+
+        if (data && data.length > 0) {
+          // Transform data to match Notification interface
+          const transformedData: Notification[] = data.map((item) => ({
+            id: item.id,
+            type: item.type as "alert" | "signal" | "account" | "system",
+            title: item.title,
+            message: item.message,
+            timestamp: item.created_at,
+            read: item.read,
+            link: item.link || undefined,
+            data: item.additional_data || undefined,
+          }));
+
+          setNotifications(transformedData);
+          // Log the count of unread notifications for debugging
+          const unreadCount = transformedData.filter((n) => !n.read).length;
+          console.log(
+            `[useNotifications] Found ${transformedData.length} notifications, ${unreadCount} unread`,
+          );
+        } else {
+          // Set empty array if no notifications found
+          setNotifications([]);
+        }
+      } catch (err) {
+        console.error("Unexpected error fetching notifications:", err);
+        if (!silent) setError("An unexpected error occurred");
+      } finally {
+        if (!silent) setLoading(false);
       }
-    } catch (err) {
-      console.error("Unexpected error fetching notifications:", err);
-      setError("An unexpected error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [userId],
+  );
 
   // Initial fetch effect
   useEffect(() => {
     if (userId) {
       fetchNotifications();
     }
-  }, [userId]);
+  }, [userId, fetchNotifications]);
 
-  // Set up subscriptions to tables that can generate notifications
+  // Enhanced real-time subscription with better error handling
   useEffect(() => {
     if (!userId) return;
 
     try {
+      // Create a unique channel name to avoid conflicts
+      const channelName = `notifications-${userId}-${Date.now()}`;
+      console.log(`[useNotifications] Setting up channel: ${channelName}`);
+
       // 1. Subscription to notifications table
       const notificationsSubscription = supabaseClient
-        .channel("notifications_changes")
+        .channel(channelName)
         .on(
           "postgres_changes",
           {
@@ -101,6 +143,11 @@ export function useNotifications(passedUserId?: string) {
             filter: `user_id=eq.${userId}`,
           },
           (payload) => {
+            console.log(
+              `[useNotifications] Received real-time event:`,
+              payload.eventType,
+            );
+
             if (payload.eventType === "INSERT") {
               // Add new notification to state
               const newNotification = payload.new as any;
@@ -112,31 +159,42 @@ export function useNotifications(passedUserId?: string) {
                 title: newNotification.title,
                 message: newNotification.message,
                 timestamp: newNotification.created_at,
-                read: newNotification.read,
+                read: newNotification.read || false, // Ensure read status is properly set
                 link: newNotification.link,
                 data: newNotification.additional_data,
               };
 
-              setNotifications((prev) => [notification, ...prev]);
+              console.log(
+                `[useNotifications] Adding new notification:`,
+                notification,
+              );
 
-              // Play sound for new notification (like in useAlerts)
+              // Play sound with better error handling
               if (notificationSoundRef.current) {
-                notificationSoundRef.current
-                  .play()
-                  .catch((err) =>
-                    console.error("Failed to play notification sound:", err),
-                  );
+                try {
+                  // Reset the position
+                  notificationSoundRef.current.currentTime = 0;
+                  
+                  // Use a silent catch for the play promise to avoid console errors
+                  const playPromise = notificationSoundRef.current.play();
+                  if (playPromise !== undefined) {
+                    playPromise.catch((err) => {
+                      // Most browsers require user interaction before playing audio
+                      console.log("Audio play prevented (user interaction may be needed)");
+                    });
+                  }
+                } catch (err) {
+                  console.warn("Could not play notification sound - silent fail");
+                }
               }
 
-              // Show toast for new notification
-              toast({
-                title: notification.title,
-                description: notification.message,
-                variant:
-                  notification.type === "alert" ? "destructive" : "default",
-              });
             } else if (payload.eventType === "UPDATE") {
               // Update existing notification
+              console.log(
+                `[useNotifications] Updating notification:`,
+                payload.new.id,
+              );
+
               setNotifications((prev) =>
                 prev.map((n) =>
                   n.id === payload.new.id
@@ -151,13 +209,20 @@ export function useNotifications(passedUserId?: string) {
               );
             } else if (payload.eventType === "DELETE") {
               // Remove deleted notification
+              console.log(
+                `[useNotifications] Removing notification:`,
+                payload.old.id,
+              );
+
               setNotifications((prev) =>
                 prev.filter((n) => n.id !== payload.old.id),
               );
             }
           },
         )
-        .subscribe();
+        .subscribe((status) => {
+          console.log(`[useNotifications] Subscription status:`, status);
+        });
 
       // 2. Generate notifications from signals
       // Similar pattern to useSignals but creating notifications instead
@@ -184,7 +249,7 @@ export function useNotifications(passedUserId?: string) {
                   title: `New Signal: ${signal.instrument_name}`,
                   message: `${signal.signal_type} signal detected at ${signal.price}`,
                   read: false,
-                  link: `/signals/${signal.instrument_name}`,
+                  link: `/smart-alerts/${signal.instrument_name}`,
                   additional_data: {
                     instrument: signal.instrument_name,
                     price: signal.price,
@@ -277,6 +342,7 @@ export function useNotifications(passedUserId?: string) {
         .subscribe();
 
       return () => {
+        console.log(`[useNotifications] Cleaning up channel: ${channelName}`);
         supabaseClient.removeChannel(notificationsSubscription);
         supabaseClient.removeChannel(signalsSubscription);
         supabaseClient.removeChannel(alertsSubscription);

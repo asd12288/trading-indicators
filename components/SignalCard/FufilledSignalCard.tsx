@@ -1,9 +1,12 @@
+'use client'
+
 import { Signal } from "@/lib/types";
 import { format, formatDistance, parseISO } from "date-fns";
 import { useTranslations } from "next-intl";
 import { XCircle, ArrowUp, ArrowDown, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/context/theme-context";
+import useInstrumentInfo from "@/hooks/useInstrumentInfo";
 
 interface FufilledSignalCardProps {
   instrument: Signal;
@@ -25,6 +28,9 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
     mae,
     mfe,
   } = instrument;
+
+  // Get instrument information
+  const { instrumentInfo } = useInstrumentInfo(instrument_name);
 
   const t = useTranslations("FufilledSignalCard");
 
@@ -79,18 +85,25 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
         </div>
 
         <div className="p-4">
-          {/* Card header with softer direction indicator */}
+          {/* Card header with enhanced title */}
           <div className="mb-4">
             <div className="flex items-center justify-between">
               <h3
                 className={cn(
-                  "text-lg font-bold",
+                  "text-xl font-bold", // Increased size from text-lg to text-xl
                   theme === "dark" ? "text-white" : "text-slate-900",
                 )}
               >
                 {instrument_name}
               </h3>
             </div>
+
+            {/* Full instrument name display */}
+            {instrumentInfo && (
+              <div className="mt-1 text-sm text-slate-400">
+                {instrumentInfo.full_name || ""}
+              </div>
+            )}
 
             {/* Softer direction indicator */}
             <div className="mt-2 flex items-center">

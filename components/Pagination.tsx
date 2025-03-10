@@ -108,7 +108,7 @@ export default function Pagination({
         )}
 
         <Button
-          variant="outline"
+          
           size="icon"
           className="h-8 w-8"
           onClick={() => onPageChange(currentPage + 1)}

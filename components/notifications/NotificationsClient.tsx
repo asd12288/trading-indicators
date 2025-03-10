@@ -134,7 +134,7 @@ export default function NotificationsClient({
 
           <Button
             size="sm"
-            variant="outline"
+            
             className="text-xs"
             onClick={handleMarkAllAsRead}
             disabled={loading || filteredNotifications.every((n) => n.read)}

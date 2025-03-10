@@ -1,4 +1,5 @@
 import BlogTable from "@/components/admin/BlogTable";
+import SendNotificationForm from "@/components/admin/SendNotificationForm";
 import SignalDebugTab from "@/components/admin/SignalDebugTab";
 import SignalsMonitoring from "@/components/admin/SignalsMonitoring";
 import SignalsTable from "@/components/admin/SignalsTable";
@@ -51,6 +52,7 @@ const page = async ({ params }: { params: { locale: string } }) => {
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="signals">Signals</TabsTrigger>
               <TabsTrigger value="blogs">Blogs</TabsTrigger>
+              <TabsTrigger value="notifications">Notifications</TabsTrigger>
               <TabsTrigger value="monitoring">Debugging</TabsTrigger>
               <TabsTrigger value="debug">Signal Debug</TabsTrigger>
             </TabsList>
@@ -65,6 +67,12 @@ const page = async ({ params }: { params: { locale: string } }) => {
 
             <TabsContent value="blogs">
               <BlogTable posts={posts} />
+            </TabsContent>
+
+            <TabsContent value="notifications">
+              <div className="space-y-6">
+                <SendNotificationForm />
+              </div>
             </TabsContent>
 
             <TabsContent value="debug">

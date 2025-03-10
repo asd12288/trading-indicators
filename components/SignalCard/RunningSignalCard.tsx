@@ -17,6 +17,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/context/theme-context";
 import useLast from "@/hooks/useLast";
+import useInstrumentInfo from "@/hooks/useInstrumentInfo";
 
 interface RunningSignalCardProps {
   instrument: Signal;
@@ -37,6 +38,10 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
 
     // Get real-time last price
     const { lastPrice, isLoading } = useLast(instrument_name);
+
+    // Get instrument information
+    const { instrumentInfo, loading: infoLoading } =
+      useInstrumentInfo(instrument_name);
 
     const t = useTranslations("RunningSignalCard");
 
@@ -76,25 +81,29 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
     const pnlPercentage = currentPnL
       ? ((Math.abs(currentPnL) / entry_price) * 100).toFixed(2)
       : null;
-      
+
     // Helper function to safely calculate position percentages
     const calculatePosition = (price) => {
       if (!price) return null;
-      
+
       const range = take_profit_price - stop_loss_price;
       if (range === 0) return 50; // Prevent division by zero
-      
+
       const position = ((price - stop_loss_price) / range) * 100;
       // Constrain to 0-100% to ensure visibility within the bar
       return Math.min(Math.max(position, 0), 100);
     };
-    
+
     const entryPosition = calculatePosition(entry_price);
     const currentPosition = calculatePosition(currentPrice);
-    
+
     // Format the profit target and stop loss as percentages from entry
-    const profitTargetPercent = Math.abs(((take_profit_price - entry_price) / entry_price) * 100).toFixed(1);
-    const stopLossPercent = Math.abs(((stop_loss_price - entry_price) / entry_price) * 100).toFixed(1);
+    const profitTargetPercent = Math.abs(
+      ((take_profit_price - entry_price) / entry_price) * 100,
+    ).toFixed(1);
+    const stopLossPercent = Math.abs(
+      ((stop_loss_price - entry_price) / entry_price) * 100,
+    ).toFixed(1);
 
     return (
       <div className="h-full">
@@ -124,31 +133,40 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
 
           {/* Main content area */}
           <div className="p-4">
-            {/* Header */}
-            <div className="mb-3 flex items-center justify-between">
-              <h3
-                className={cn(
-                  "text-lg font-bold",
-                  theme === "dark" ? "text-white" : "text-slate-900",
-                )}
-              >
-                {instrument_name}
-              </h3>
-              <Badge
-                className={cn(
-                  "flex items-center gap-1",
-                  isBuy
-                    ? "bg-emerald-600 hover:bg-emerald-700"
-                    : "bg-rose-600 hover:bg-rose-700",
-                )}
-              >
-                {isBuy ? (
-                  <ArrowUp className="h-3 w-3" />
-                ) : (
-                  <ArrowDown className="h-3 w-3" />
-                )}
-                {trade_side}
-              </Badge>
+            {/* Enhanced Header with full name */}
+            <div className="mb-4">
+              <div className="flex items-center justify-between">
+                <h3
+                  className={cn(
+                    "text-xl font-bold", // Increased size from text-lg to text-xl
+                    theme === "dark" ? "text-white" : "text-slate-900",
+                  )}
+                >
+                  {instrument_name}
+                </h3>
+                <Badge
+                  className={cn(
+                    "flex items-center gap-1",
+                    isBuy
+                      ? "bg-emerald-600 hover:bg-emerald-700"
+                      : "bg-rose-600 hover:bg-rose-700",
+                  )}
+                >
+                  {isBuy ? (
+                    <ArrowUp className="h-3 w-3" />
+                  ) : (
+                    <ArrowDown className="h-3 w-3" />
+                  )}
+                  {trade_side}
+                </Badge>
+              </div>
+
+              {/* Full instrument name display */}
+              {instrumentInfo && (
+                <div className="mt-1 text-sm text-slate-400">
+                  {instrumentInfo.full_name || ""}
+                </div>
+              )}
             </div>
 
             {/* Time info - simplified */}
@@ -234,7 +252,9 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
                 <div className="font-medium">
                   {formatNumber(take_profit_price)}
                 </div>
-                <div className="mt-0.5 text-xs opacity-80">+{profitTargetPercent}%</div>
+                <div className="mt-0.5 text-xs opacity-80">
+                  +{profitTargetPercent}%
+                </div>
               </div>
 
               {/* Stop Loss */}
@@ -249,18 +269,20 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
                 <div className="font-medium">
                   {formatNumber(stop_loss_price)}
                 </div>
-                <div className="mt-0.5 text-xs opacity-80">-{stopLossPercent}%</div>
+                <div className="mt-0.5 text-xs opacity-80">
+                  -{stopLossPercent}%
+                </div>
               </div>
             </div>
 
             {/* Improved Price scale visualization */}
             <div className="mb-5">
-              <div className="relative h-8 rounded-lg bg-slate-200 dark:bg-slate-700">
+              <div className="relative h-8 rounded-lg bg-slate-400 dark:bg-slate-700">
                 {/* Progress range for entry price */}
                 <div
                   className={cn(
                     "absolute bottom-0 left-0 top-0 opacity-20",
-                    isBuy ? "bg-emerald-500" : "bg-rose-500",
+                    isBuy ? "bg-emerald-500" : "bg-rose-600",
                   )}
                   style={{
                     width: `${entryPosition}%`,
@@ -272,7 +294,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
                   <div
                     className={cn(
                       "absolute bottom-0 top-0 opacity-40",
-                      isProfitable ? "bg-emerald-500" : "bg-rose-500",
+                      isProfitable ? "bg-emerald-500" : "bg-rose-600",
                     )}
                     style={{
                       left: `${Math.min(entryPosition, currentPosition)}%`,
@@ -283,7 +305,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
 
                 {/* Stop Loss marker */}
                 <div className="absolute bottom-0 left-0 top-0 flex items-center">
-                  <div className="h-8 w-2 rounded-l-lg bg-rose-500" />
+                  <div className="h-8 w-2 rounded-l-lg bg-rose-600" />
                 </div>
 
                 {/* Entry price marker */}
@@ -310,25 +332,35 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
 
                 {/* Take profit marker */}
                 <div className="absolute bottom-0 right-0 top-0 flex items-center">
-                  <div className="h-8 w-2 rounded-r-lg bg-emerald-500" />
+                  <div className="h-8 w-2 rounded-r-lg bg-emerald-600" />
                 </div>
               </div>
 
               {/* Labels for the scale */}
               <div className="mt-1 flex justify-between text-xs">
                 <div className="flex flex-col items-start">
-                  <span className="text-rose-500 font-medium">{t("stop")}</span>
-                  <span className="text-slate-400">{formatNumber(stop_loss_price)}</span>
+                  <span className="font-medium text-rose-500">{t("stop")}</span>
+                  <span className="text-slate-400">
+                    {formatNumber(stop_loss_price)}
+                  </span>
                 </div>
-                
+
                 <div className="flex flex-col items-center">
-                  <span className="text-blue-500 font-medium">{t("entry")}</span>
-                  <span className="text-slate-400">{formatNumber(entry_price)}</span>
+                  <span className="font-medium text-blue-500">
+                    {t("entry")}
+                  </span>
+                  <span className="text-slate-400">
+                    {formatNumber(entry_price)}
+                  </span>
                 </div>
-                
+
                 <div className="flex flex-col items-end">
-                  <span className="text-emerald-500 font-medium">{t("target")}</span>
-                  <span className="text-slate-400">{formatNumber(take_profit_price)}</span>
+                  <span className="font-medium text-emerald-600">
+                    {t("target")}
+                  </span>
+                  <span className="text-slate-400">
+                    {formatNumber(take_profit_price)}
+                  </span>
                 </div>
               </div>
             </div>
