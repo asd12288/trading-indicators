@@ -24,17 +24,20 @@ export function useNotifications(passedUserId?: string) {
     // Create audio element with explicit error handling
     try {
       // Check if Audio API is available
-      if (typeof Audio !== 'undefined') {
+      if (typeof Audio !== "undefined") {
         notificationSoundRef.current = new Audio("/audio/notification.mp3");
-        
+
         // Add proper error handling
-        notificationSoundRef.current.addEventListener('error', (e) => {
-          console.error("Error loading notification sound:", e.target.error?.message || 'Unknown audio error');
+        notificationSoundRef.current.addEventListener("error", (e) => {
+          console.error(
+            "Error loading notification sound:",
+            e.target.error?.message || "Unknown audio error",
+          );
           notificationSoundRef.current = null;
         });
-        
+
         // Preload the audio file
-        notificationSoundRef.current.preload = 'auto';
+        notificationSoundRef.current.preload = "auto";
         notificationSoundRef.current.load();
       } else {
         console.log("Audio API not available in this browser");
@@ -174,20 +177,23 @@ export function useNotifications(passedUserId?: string) {
                 try {
                   // Reset the position
                   notificationSoundRef.current.currentTime = 0;
-                  
+
                   // Use a silent catch for the play promise to avoid console errors
                   const playPromise = notificationSoundRef.current.play();
                   if (playPromise !== undefined) {
                     playPromise.catch((err) => {
                       // Most browsers require user interaction before playing audio
-                      console.log("Audio play prevented (user interaction may be needed)");
+                      console.log(
+                        "Audio play prevented (user interaction may be needed)",
+                      );
                     });
                   }
                 } catch (err) {
-                  console.warn("Could not play notification sound - silent fail");
+                  console.warn(
+                    "Could not play notification sound - silent fail",
+                  );
                 }
               }
-
             } else if (payload.eventType === "UPDATE") {
               // Update existing notification
               console.log(

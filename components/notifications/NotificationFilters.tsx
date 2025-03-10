@@ -26,10 +26,16 @@ export default function NotificationFilters({
         <SelectTrigger className="h-8 w-[130px] text-xs">
           <SelectValue placeholder={t("filters.readStatus")} />
         </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">{t("filters.all")}</SelectItem>
-          <SelectItem value="read">{t("filters.read")}</SelectItem>
-          <SelectItem value="unread">{t("filters.unread")}</SelectItem>
+        <SelectContent className="bg-slate-800">
+          <SelectItem value="all" className="cursor-pointer">
+            {t("filters.all")}
+          </SelectItem>
+          <SelectItem value="read" className="cursor-pointer">
+            {t("filters.read")}
+          </SelectItem>
+          <SelectItem value="unread" className="cursor-pointer">
+            {t("filters.unread")}
+          </SelectItem>
         </SelectContent>
       </Select>
     </div>

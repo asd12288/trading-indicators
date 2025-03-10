@@ -23,6 +23,11 @@ import {
   Link as LinkIcon,
   ExternalLink,
   ShieldAlert,
+  ChevronDown,
+  ChevronUp,
+  Eye,
+  Settings,
+  Sliders,
 } from "lucide-react";
 import supabaseClient from "@/database/supabase/supabase";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -34,11 +39,16 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Separator } from "@/components/ui/separator";
 
 export default function SendNotificationForm() {
   const [title, setTitle] = useState("");
@@ -54,6 +64,9 @@ export default function SendNotificationForm() {
     type: "success" | "error" | null;
     message: string;
   }>({ type: null, message: "" });
+
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [previewVisible, setPreviewVisible] = useState(false);
 
   // Function to send notification to all users
   const sendNotificationToAllUsers = async (e: React.FormEvent) => {
@@ -195,142 +208,174 @@ export default function SendNotificationForm() {
             Admin Only
           </Badge>
         </div>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="basic" className="space-y-6">
-          <TabsList className="bg-slate-700">
-            <TabsTrigger value="basic">Basic Info</TabsTrigger>
-            <TabsTrigger value="advanced">Advanced Options</TabsTrigger>
-            <TabsTrigger value="preview">Preview</TabsTrigger>
-          </TabsList>
 
-          <TabsContent value="basic" className="space-y-6">
-            {status.type && (
-              <Alert
-                className={
-                  status.type === "success"
-                    ? "border-green-800 bg-green-900/20 text-green-400"
-                    : "border-red-800 bg-red-900/20 text-red-400"
-                }
-              >
-                {status.type === "success" ? (
-                  <CheckCircle className="h-4 w-4" />
-                ) : (
-                  <AlertTriangle className="h-4 w-4" />
-                )}
-                <AlertTitle>
-                  {status.type === "success" ? "Success" : "Error"}
-                </AlertTitle>
-                <AlertDescription>{status.message}</AlertDescription>
-              </Alert>
+        {/* Status Alert */}
+        {status.type && (
+          <Alert
+            className={
+              status.type === "success"
+                ? "mt-4 border-green-800 bg-green-900/20 text-green-400"
+                : "mt-4 border-red-800 bg-red-900/20 text-red-400"
+            }
+          >
+            {status.type === "success" ? (
+              <CheckCircle className="h-4 w-4" />
+            ) : (
+              <AlertTriangle className="h-4 w-4" />
             )}
+            <AlertTitle>
+              {status.type === "success" ? "Success" : "Error"}
+            </AlertTitle>
+            <AlertDescription>{status.message}</AlertDescription>
+          </Alert>
+        )}
+      </CardHeader>
 
-            <div className="grid gap-6">
-              {/* Notification Type */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-300">
-                  Notification Type
-                </Label>
-                <Select
-                  value={notificationType}
-                  onValueChange={setNotificationType}
-                >
-                  <SelectTrigger className="border-slate-700 bg-slate-900">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent className="border-slate-700 bg-slate-900">
-                    <SelectItem value="system">System</SelectItem>
-                    <SelectItem value="alert">Alert</SelectItem>
-                    <SelectItem value="account">Account</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-slate-500">
-                  Determines the appearance and categorization of the
-                  notification
-                </p>
-              </div>
+      <CardContent className="space-y-6">
+        {/* Main Form Section */}
+        <div className="bg-slate-850 rounded-md p-5">
+          <h2 className="mb-4 flex items-center text-lg font-semibold text-slate-100">
+            <Info className="mr-2 h-5 w-5 text-blue-400" />
+            Basic Information
+          </h2>
 
-              {/* Title */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-300">
-                  Title <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  placeholder="Enter notification title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="border-slate-700 bg-slate-900"
-                  required
-                />
-              </div>
-
-              {/* Message */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-300">
-                  Message <span className="text-red-500">*</span>
-                </Label>
-                <Textarea
-                  placeholder="Enter your notification message"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  rows={5}
-                  className="border-slate-700 bg-slate-900"
-                  required
-                />
-                <p className="text-xs text-slate-500">
-                  Clear, concise message that will be shown to all users
-                </p>
-              </div>
+          <div className="grid gap-5">
+            {/* Notification Type */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-slate-300">
+                Notification Type
+              </Label>
+              <Select
+                value={notificationType}
+                onValueChange={setNotificationType}
+              >
+                <SelectTrigger className="border-slate-700 bg-slate-900 text-slate-50">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent className="border-slate-700 bg-slate-900">
+                  <SelectItem value="system">System</SelectItem>
+                  <SelectItem value="alert">Alert</SelectItem>
+                  <SelectItem value="account">Account</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-slate-500">
+                Determines the appearance and categorization of the notification
+              </p>
             </div>
-          </TabsContent>
 
-          <TabsContent value="advanced" className="space-y-6">
-            <div className="grid gap-6">
-              {/* Priority */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-300">
-                  Priority
-                </Label>
-                <RadioGroup
-                  value={priority}
-                  onValueChange={setPriority}
-                  className="flex space-x-2"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="low"
-                      id="low"
-                      className="bg-slate-700"
-                    />
-                    <Label htmlFor="low" className="text-slate-400">
-                      Low
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="normal"
-                      id="normal"
-                      className="bg-slate-700"
-                    />
-                    <Label htmlFor="normal" className="text-slate-300">
-                      Normal
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="high"
-                      id="high"
-                      className="bg-slate-700"
-                    />
-                    <Label htmlFor="high" className="text-amber-300">
-                      High
-                    </Label>
-                  </div>
-                </RadioGroup>
+            {/* Title */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-slate-300">
+                Title <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                placeholder="Enter notification title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="border-slate-700 bg-slate-900 text-slate-50"
+                required
+              />
+            </div>
+
+            {/* Message */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-slate-300">
+                Message <span className="text-red-500">*</span>
+              </Label>
+              <Textarea
+                placeholder="Enter your notification message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                rows={5}
+                className="border-slate-700 bg-slate-900 text-slate-50"
+                required
+              />
+              <p className="text-xs text-slate-500">
+                Clear, concise message that will be shown to all users
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Advanced Options - Collapsible */}
+        <Collapsible
+          open={advancedOpen}
+          onOpenChange={setAdvancedOpen}
+          className="bg-slate-850 rounded-md border border-slate-700"
+        >
+          <CollapsibleTrigger asChild>
+            <Button
+              variant="ghost"
+              className="hover:bg-slate-750 flex w-full items-center justify-between rounded-md p-5 focus:outline-none"
+            >
+              <div className="flex items-center">
+                <Sliders className="mr-2 h-5 w-5 text-amber-400" />
+                <span className="font-semibold text-slate-100">
+                  Advanced Options
+                </span>
               </div>
+              <div className="flex items-center">
+                <Badge variant="outline" className="mr-2">
+                  Optional
+                </Badge>
+                {advancedOpen ? (
+                  <ChevronUp className="h-5 w-5" />
+                ) : (
+                  <ChevronDown className="h-5 w-5" />
+                )}
+              </div>
+            </Button>
+          </CollapsibleTrigger>
 
-              {/* Add Link Toggle */}
+          <CollapsibleContent className="space-y-5 px-5 pb-5 pt-1">
+            <Separator className="mb-3 bg-slate-700" />
+
+            {/* Priority */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-slate-300">
+                Priority
+              </Label>
+              <RadioGroup
+                value={priority}
+                onValueChange={setPriority}
+                className="flex space-x-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="low"
+                    id="low"
+                    className="bg-slate-700"
+                  />
+                  <Label htmlFor="low" className="text-slate-400">
+                    Low
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="normal"
+                    id="normal"
+                    className="bg-slate-700"
+                  />
+                  <Label htmlFor="normal" className="text-slate-300">
+                    Normal
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="high"
+                    id="high"
+                    className="bg-slate-700"
+                  />
+                  <Label htmlFor="high" className="text-amber-300">
+                    High
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* Add Link Toggle */}
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label className="text-sm font-medium text-slate-300">
@@ -340,7 +385,7 @@ export default function SendNotificationForm() {
                     Add a clickable link to your notification
                   </p>
                 </div>
-                <Switch checked={addLink} onCheckedChange={setAddLink} />
+                <Switch checked={addLink} onCheckedChange={setAddLink}  />
               </div>
 
               {/* Link URL and text fields (conditionally shown) */}
@@ -376,47 +421,61 @@ export default function SendNotificationForm() {
                   </div>
                 </div>
               )}
-
-              {/* Expiry option */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-300">
-                  Notification Expiry
-                </Label>
-                <Select value={expiresAfter} onValueChange={setExpiresAfter}>
-                  <SelectTrigger className="border-slate-700 bg-slate-900">
-                    <SelectValue placeholder="Select expiry" />
-                  </SelectTrigger>
-                  <SelectContent className="border-slate-700 bg-slate-900">
-                    <SelectItem value="never">Never expire</SelectItem>
-                    <SelectItem value="1">1 day</SelectItem>
-                    <SelectItem value="3">3 days</SelectItem>
-                    <SelectItem value="7">7 days</SelectItem>
-                    <SelectItem value="14">14 days</SelectItem>
-                    <SelectItem value="30">30 days</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-slate-500">
-                  When the notification should automatically be removed
-                </p>
-              </div>
             </div>
-          </TabsContent>
 
-          <TabsContent value="preview" className="space-y-6">
-            <div className="rounded-lg border border-slate-600 bg-slate-900 p-4">
-              <div className="mb-4">
-                <h3 className="text-sm font-medium text-slate-300">
-                  Notification Preview
-                </h3>
-                <p className="text-xs text-slate-500">
-                  This is how your notification will appear to users
-                </p>
-              </div>
+            {/* Expiry option */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-slate-300">
+                Notification Expiry
+              </Label>
+              <Select value={expiresAfter} onValueChange={setExpiresAfter}>
+                <SelectTrigger className="border-slate-700 bg-slate-900 text-slate-50">
+                  <SelectValue placeholder="Select expiry" />
+                </SelectTrigger>
+                <SelectContent className="border-slate-700 bg-slate-900 ">
+                  <SelectItem value="never">Never expire</SelectItem>
+                  <SelectItem value="1">1 day</SelectItem>
+                  <SelectItem value="3">3 days</SelectItem>
+                  <SelectItem value="7">7 days</SelectItem>
+                  <SelectItem value="14">14 days</SelectItem>
+                  <SelectItem value="30">30 days</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-slate-500">
+                When the notification should automatically be removed
+              </p>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
 
-              {/* Notification preview */}
+        {/* Preview Section - Toggle Button + Preview Area */}
+        <div className="bg-slate-850 overflow-hidden rounded-md border border-slate-700">
+          <Button
+            variant="ghost"
+            className="hover:bg-slate-750 flex w-full items-center justify-between rounded-t-md p-5 focus:outline-none"
+            onClick={() => setPreviewVisible(!previewVisible)}
+          >
+            <div className="flex items-center">
+              <Eye className="mr-2 h-5 w-5 text-blue-400" />
+              <span className="font-semibold text-slate-100">
+                Preview Notification
+              </span>
+            </div>
+            <div className="flex items-center">
+              {previewVisible ? (
+                <ChevronUp className="h-5 w-5" />
+              ) : (
+                <ChevronDown className="h-5 w-5" />
+              )}
+            </div>
+          </Button>
+
+          {previewVisible && (
+            <div className="p-5">
               <div className="rounded-md bg-slate-800 p-4">
                 <div className="flex items-start gap-4">
                   <div className="rounded-full bg-slate-700 p-2">
+                    {/* Use the existing getNotificationTypeIcon function */}
                     {getNotificationTypeIcon()}
                   </div>
                   <div className="flex-1">
@@ -451,8 +510,8 @@ export default function SendNotificationForm() {
                 </div>
               </div>
             </div>
-          </TabsContent>
-        </Tabs>
+          )}
+        </div>
       </CardContent>
 
       <CardFooter className="flex justify-between border-t border-slate-700 pt-4">
