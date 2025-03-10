@@ -19,10 +19,10 @@ const SignalCard: React.FC<SignalCardProps> = React.memo(
   ({ signalPassed }) => {
     // Add state to track market status
     const [isMarketCurrentlyOpen, setIsMarketCurrentlyOpen] = useState(true);
-    
+
     // Get alert system status
     const { isSystemActive } = useAlertHours(
-      signalPassed?.instrument_name || undefined
+      signalPassed?.instrument_name || undefined,
     );
 
     // Check market hours whenever instrument changes
@@ -53,7 +53,7 @@ const SignalCard: React.FC<SignalCardProps> = React.memo(
     if (!isMarketCurrentlyOpen) {
       return <MarketClosedCard instrumentName={signalPassed.instrument_name} />;
     }
-    
+
     if (!isSystemActive) {
       return <SystemClosedCard instrumentName={signalPassed.instrument_name} />;
     }

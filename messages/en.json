@@ -392,6 +392,9 @@
   "SignalLayout": {
     "allSignals": "All Smart Alerts",
     "signal": "Smart Alert:",
+    "signalStatusTitle": "Smart Alert Card:",
+    "instrumentStatusTitle": "Instrument Status:",
+    "tradingHoursTitle": "Trading Hours:",
     "signalSettings": "Smart Alert Settings:",
     "upgradeMessage": "Upgrade to add notifications and favoriting",
     "noSignalData": "No smart alert data available",
@@ -876,11 +879,17 @@
   "SignalOverviewSummary": {
     "noData": "No smart alert data available",
     "loading": "Loading...",
+    "overview": "Signal Overview",
+    "overviewDescription": "Current status and trading session information",
+    "signalStatus": "Signal Status",
+    "tradingHours": "Trading Hours",
+    
     "status": {
       "title": "Smart Alert Status:",
       "active": "Active",
       "inactive": "Deactivate",
       "lastUpdate": "Last updated: {time}"
+      
     },
     "summary": {
       "title": "Signal Summary - last 7 days",
@@ -1440,5 +1449,21 @@
     "alertSessions": "Scheduled Alert Sessions",
     "session": "Session",
     "noSessionsConfigured": "No alert sessions configured for this instrument"
+  },
+  "SignalHoursInfo": {
+   "marketHours": "Market Hours",
+    "alertHours": "Alert Hours",
+    "marketDescription": "When this instrument is traded on exchanges",
+    "alertDescription": "When our system actively monitors this instrument",
+    "marketSchedule": "Market Schedule",
+    "open": "Market Open",
+    "closed": "Market Closed",
+    "active": "Alerts Active",
+    "inactive": "Alerts Inactive",
+    "tradingDays": "Trading Days",
+    "session": "Session",
+    "disabled": "Disabled",
+    "nextActiveSession": "Next active session",
+    "noAlertHours": "No alert hours configured for this instrument"
   }
 }

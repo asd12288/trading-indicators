@@ -78,23 +78,18 @@ const InstrumentStatusCard = ({
 
   if (statusLoading) {
     return (
-      <div className="flex h-[800px] w-full flex-col items-center justify-center p-6">
-        <div className="flex w-full animate-pulse flex-col gap-6">
+      <div className="flex h-[500px] w-full flex-col items-center justify-center p-4">
+        <div className="flex w-full animate-pulse flex-col gap-4">
           <div className="flex items-center justify-between">
-            <div className="h-8 w-1/3 rounded-md bg-slate-700"></div>
-            <div className="h-6 w-20 rounded-md bg-slate-700"></div>
+            <div className="h-6 w-1/3 rounded-md bg-slate-700"></div>
+            <div className="h-5 w-16 rounded-md bg-slate-700"></div>
           </div>
-          <div className="h-24 rounded-lg bg-slate-700"></div>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            <div className="h-24 rounded-xl bg-slate-700"></div>
-            <div className="h-24 rounded-xl bg-slate-700"></div>
-            <div className="h-24 rounded-xl bg-slate-700"></div>
-            <div className="h-24 rounded-xl bg-slate-700"></div>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="h-20 rounded-lg bg-slate-700"></div>
-            <div className="h-20 rounded-lg bg-slate-700"></div>
-            <div className="h-20 rounded-lg bg-slate-700"></div>
+          <div className="h-20 rounded-lg bg-slate-700"></div>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div className="h-16 rounded-xl bg-slate-700"></div>
+            <div className="h-16 rounded-xl bg-slate-700"></div>
+            <div className="h-16 rounded-xl bg-slate-700"></div>
+            <div className="h-16 rounded-xl bg-slate-700"></div>
           </div>
         </div>
       </div>
@@ -103,7 +98,7 @@ const InstrumentStatusCard = ({
 
   if (statusError || !data || data.length === 0) {
     return (
-      <div className="flex h-[800px] w-full flex-col items-center justify-center p-6">
+      <div className="flex h-[400px] w-full flex-col items-center justify-center p-4">
         <div className="flex items-center space-x-3 text-amber-500">
           <AlertTriangle size={24} />
           <h3 className="text-xl font-medium">
@@ -122,11 +117,11 @@ const InstrumentStatusCard = ({
     compositeData.latestTimestamp || (data && data[0]?.timestamp);
 
   return (
-    <div className="flex h-[800px] w-full flex-col p-6">
+    <div className="flex w-full flex-col p-4">
       {/* Header with status and time */}
-      <div className="mb-5 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="text-xl font-semibold text-slate-100">
+          <h3 className="text-lg font-semibold text-slate-100">
             {t("instrumentStatus")}
           </h3>
           <span className="flex h-2.5 w-2.5 items-center">
@@ -142,12 +137,15 @@ const InstrumentStatusCard = ({
         </div>
       </div>
 
-      {/* Featured Price and Trend Section */}
-      <div className="mb-6 overflow-hidden rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 p-5 shadow-lg">
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          {/* Trend Section */}
-          <div className="flex items-center space-x-4">
-            {getTrendIcon(trend)}
+      {/* REDESIGNED Featured Price and Trend Section - MUCH LARGER */}
+      <div className="mb-6 overflow-hidden rounded-xl bg-gradient-to-br from-slate-800 via-slate-800/90 to-slate-900 p-6 shadow-lg">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {/* Trend Section - Enhanced */}
+          <div className="flex items-center space-x-5">
+            <div className="relative">
+              {getTrendIcon(trend, false)} {/* Using larger icon size */}
+              <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-slate-800 ring-2 ring-slate-900"></div>
+            </div>
             <div>
               <div className="mb-1 flex items-center gap-1">
                 <SignalToolTooltip text={t("trendTooltip")}>
@@ -158,7 +156,7 @@ const InstrumentStatusCard = ({
                 </SignalToolTooltip>
               </div>
               <motion.div
-                className={`text-2xl font-bold ${getTrendColor(trend)}`}
+                className={`text-3xl font-bold tracking-tight ${getTrendColor(trend)}`}
                 animate={{ opacity: flashField === "trend" ? [1, 0.5, 1] : 1 }}
                 transition={{ duration: 0.6 }}
               >
@@ -167,7 +165,7 @@ const InstrumentStatusCard = ({
             </div>
           </div>
 
-          {/* Last Price Section */}
+          {/* Last Price Section - Enhanced */}
           <div className="flex items-center justify-end">
             <LastPriceDisplay
               instrumentName={instrumentName}
@@ -177,29 +175,38 @@ const InstrumentStatusCard = ({
             />
           </div>
         </div>
+
+        {/* Add decorative elements */}
+        <div className="absolute -bottom-6 -right-6 h-24 w-24 rounded-full bg-blue-500/5"></div>
+        <div className="absolute -left-6 -top-6 h-16 w-16 rounded-full bg-purple-500/5"></div>
       </div>
 
-      {/* Main Stats Grid */}
-
+      {/* Main Stats Grid - REDESIGNED with cards */}
       <div className="flex flex-col gap-4">
-        <StatCard
-          label={t("high")}
-          tooltip={t("highTooltip")}
-          value={compositeData.high?.value}
-          isFlashing={flashField === "high"}
-          t={t}
-          icon={<ArrowUp size={16} className="text-green-400" />}
-        />
+        {/* High/VAH row */}
+        <div className="grid grid-cols-2 gap-4">
+          <StatCard
+            label={t("high")}
+            tooltip={t("highTooltip")}
+            value={compositeData.high?.value}
+            isFlashing={flashField === "high"}
+            t={t}
+            icon={<ArrowUp size={18} className="text-green-400" />}
+            theme="green"
+          />
 
-        <StatCard
-          label="VAH"
-          tooltip={t("vahTooltip")}
-          value={compositeData.vah?.value}
-          isFlashing={flashField === "vah"}
-          variant="secondary"
-          t={t}
-        />
+          <StatCard
+            label="VAH"
+            tooltip={t("vahTooltip")}
+            value={compositeData.vah?.value}
+            isFlashing={flashField === "vah"}
+            variant="secondary"
+            t={t}
+            theme="blue"
+          />
+        </div>
 
+        {/* Middle row - 3 columns */}
         <div className="grid grid-cols-3 gap-4">
           <StatCard
             label="VWAP"
@@ -207,6 +214,7 @@ const InstrumentStatusCard = ({
             value={compositeData.vwap?.value}
             isFlashing={flashField === "vwap"}
             t={t}
+            theme="violet"
           />
 
           <StatCard
@@ -215,9 +223,9 @@ const InstrumentStatusCard = ({
             value={compositeData.poc?.value}
             isFlashing={flashField === "poc"}
             t={t}
+            theme="amber"
           />
 
-          {/* Value Area Stats */}
           <StatCard
             label="VPOC"
             tooltip={t("vpocTooltip")}
@@ -225,31 +233,36 @@ const InstrumentStatusCard = ({
             isFlashing={flashField === "vpoc"}
             variant="secondary"
             t={t}
+            theme="cyan"
           />
         </div>
 
-        <StatCard
-          label="VAL"
-          tooltip={t("valTooltip")}
-          value={compositeData.val?.value}
-          isFlashing={flashField === "val"}
-          variant="secondary"
-          t={t}
-        />
+        {/* Low/VAL row */}
+        <div className="grid grid-cols-2 gap-4">
+          <StatCard
+            label="VAL"
+            tooltip={t("valTooltip")}
+            value={compositeData.val?.value}
+            isFlashing={flashField === "val"}
+            variant="secondary"
+            t={t}
+            theme="indigo"
+          />
 
-        <StatCard
-          label={t("low")}
-          tooltip={t("lowTooltip")}
-          value={compositeData.low?.value}
-          isFlashing={flashField === "low"}
-          t={t}
-          icon={<ArrowDown size={16} className="text-red-400" />}
-        />
+          <StatCard
+            label={t("low")}
+            tooltip={t("lowTooltip")}
+            value={compositeData.low?.value}
+            isFlashing={flashField === "low"}
+            t={t}
+            icon={<ArrowDown size={18} className="text-red-400" />}
+            theme="red"
+          />
+        </div>
       </div>
 
       {/* Footer with timestamp */}
-      <div className="mt-auto flex items-center justify-end pt-4 text-xs text-slate-500">
-        {t("lastUpdated")}:{" "}
+      <div className="mt-4 flex items-center justify-end pt-1 text-xs text-slate-500">
         {compositeTimestamp
           ? new Date(compositeTimestamp).toLocaleString()
           : t("n/a")}
@@ -258,7 +271,7 @@ const InstrumentStatusCard = ({
   );
 };
 
-// Helper components
+// Helper components - now with compact option
 interface StatCardProps {
   label: string;
   tooltip: string;
@@ -267,6 +280,8 @@ interface StatCardProps {
   variant?: "primary" | "secondary";
   icon?: React.ReactNode;
   t: any;
+  theme?: "blue" | "green" | "red" | "amber" | "violet" | "cyan" | "indigo";
+  compact?: boolean;
 }
 
 const StatCard = ({
@@ -277,38 +292,57 @@ const StatCard = ({
   variant = "primary",
   icon,
   t,
+  theme = "blue",
+  compact = false,
 }: StatCardProps) => {
   const isPrimary = variant === "primary";
 
+  // Get theme-specific classes
+  const getThemeClasses = () => {
+    const themeMap = {
+      blue: "from-blue-800/20 to-blue-900/10 hover:from-blue-800/30 hover:to-blue-900/20",
+      green:
+        "from-green-800/20 to-green-900/10 hover:from-green-800/30 hover:to-green-900/20",
+      red: "from-red-800/20 to-red-900/10 hover:from-red-800/30 hover:to-red-900/20",
+      amber:
+        "from-amber-800/20 to-amber-900/10 hover:from-amber-800/30 hover:to-amber-900/20",
+      violet:
+        "from-violet-800/20 to-violet-900/10 hover:from-violet-800/30 hover:to-violet-900/20",
+      cyan: "from-cyan-800/20 to-cyan-900/10 hover:from-cyan-800/30 hover:to-cyan-900/20",
+      indigo:
+        "from-indigo-800/20 to-indigo-900/10 hover:from-indigo-800/30 hover:to-indigo-900/20",
+    };
+
+    return themeMap[theme] || themeMap.blue;
+  };
+
   return (
     <div
-      className={`"bg-gradient-to-br to-slate-800/70" flex flex-col justify-between rounded-xl from-slate-800/70 p-4 shadow-md backdrop-blur-sm transition-all duration-200 hover:shadow-lg ${isFlashing ? "ring-1 ring-slate-400/30" : ""}`}
+      className={`flex flex-col justify-between rounded-xl bg-gradient-to-br ${getThemeClasses()} p-3.5 shadow-lg transition-all duration-300 hover:shadow-xl ${isFlashing ? `ring-1 ring-${theme}-400/30` : ""}`}
     >
       <div className="mb-2 flex items-center justify-between">
         <SignalToolTooltip text={tooltip}>
-          <div className="flex cursor-help items-center gap-1 text-sm font-medium text-slate-400">
+          <div className="flex cursor-help items-center gap-1 text-sm font-medium">
+            {icon && <span className="mr-1">{icon}</span>}
             {label}
-            {icon && <span className="ml-1">{icon}</span>}
             <Info size={12} className="ml-0.5 opacity-60" />
           </div>
         </SignalToolTooltip>
 
-        {/* Visual indicator dot */}
-        <div
-          className={`h-1 w-1 rounded-full ${value !== undefined ? "bg-slate-400/30" : "bg-slate-600/30"}`}
-        ></div>
-      </div>
+        {/* Add a visual indicator dot */}
+        <div className={`h-1.5 w-1.5 rounded-full bg-${theme}-500/50`}></div>
 
-      <motion.div
-        className={`text-xl font-bold tracking-tight ${isPrimary ? "" : "text-slate-300"}`}
-        animate={{
-          opacity: isFlashing ? [1, 0.5, 1] : 1,
-          scale: isFlashing ? [1, 1.02, 1] : 1,
-        }}
-        transition={{ duration: 0.5 }}
-      >
-        {value !== undefined ? value.toLocaleString() : t("n/a")}
-      </motion.div>
+        <motion.div
+          className={`text-xl font-bold tracking-tight ${isPrimary ? "" : "text-slate-300"}`}
+          animate={{
+            opacity: isFlashing ? [1, 0.5, 1] : 1,
+            scale: isFlashing ? [1, 1.02, 1] : 1,
+          }}
+          transition={{ duration: 0.5 }}
+        >
+          {value !== undefined ? value.toLocaleString() : t("n/a")}
+        </motion.div>
+      </div>
     </div>
   );
 };
@@ -329,33 +363,48 @@ function getTrendColor(trend?: string): string {
   }
 }
 
-// Helper function to get trend icon
-function getTrendIcon(trend?: string) {
+// Get trend icon with improved visuals
+function getTrendIcon(trend?: string, small: boolean = false) {
+  const iconSize = small ? 18 : 34; // Increased size
+  const containerSize = small ? "h-8 w-8" : "h-16 w-16"; // Increased size
+
   if (!trend) {
-    return <ArrowRight size={24} className="text-slate-400" />;
+    return <ArrowRight size={iconSize} className="text-slate-400" />;
   }
 
   switch (trend.toLowerCase()) {
     case "bullish":
       return (
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/20 shadow-md shadow-green-900/10">
-          <ArrowUp size={24} className="text-green-400" />
+        <div
+          className={`relative flex ${containerSize} items-center justify-center rounded-full bg-gradient-to-br from-green-500/30 to-green-800/20 shadow-lg shadow-green-900/10`}
+        >
+          <ArrowUp size={iconSize} className="text-green-400" />
+          {/* Add decorative elements */}
+          <div className="absolute inset-0 rounded-full border border-green-400/10"></div>
         </div>
       );
     case "bearish":
       return (
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/20 shadow-md shadow-red-900/10">
-          <ArrowDown size={24} className="text-red-400" />
+        <div
+          className={`relative flex ${containerSize} items-center justify-center rounded-full bg-gradient-to-br from-red-500/30 to-red-800/20 shadow-lg shadow-red-900/10`}
+        >
+          <ArrowDown size={iconSize} className="text-red-400" />
+          {/* Add decorative elements */}
+          <div className="absolute inset-0 rounded-full border border-red-400/10"></div>
         </div>
       );
     case "neutral":
       return (
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500/20 shadow-md shadow-yellow-900/10">
-          <ArrowRight size={24} className="text-yellow-400" />
+        <div
+          className={`relative flex ${containerSize} items-center justify-center rounded-full bg-gradient-to-br from-yellow-500/30 to-yellow-800/20 shadow-lg shadow-yellow-900/10`}
+        >
+          <ArrowRight size={iconSize} className="text-yellow-400" />
+          {/* Add decorative elements */}
+          <div className="absolute inset-0 rounded-full border border-yellow-400/10"></div>
         </div>
       );
     default:
-      return <ArrowRight size={24} className="text-slate-400" />;
+      return <ArrowRight size={iconSize} className="text-slate-400" />;
   }
 }
 

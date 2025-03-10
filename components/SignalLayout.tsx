@@ -3,27 +3,24 @@
 import CumulativePotentialTicksChart from "@/components/charts/CumulativePotentialTicksChart";
 import SignalTool from "@/components/SignalCard/SignalTool";
 import SignalTable from "@/components/SignalTable";
+import { useTheme } from "@/context/theme-context";
 import useInstrumentData from "@/hooks/useInstrumentData";
 import useProfile from "@/hooks/useProfile";
 import { Link } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Activity, ArrowLeft, Eye, Info, Lock, Newspaper } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { notFound, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AlertNotification from "./AlertNotification";
 import BlurOverlay from "./BlurOverlay";
 import InstrumentStatusCard from "./InstrumentStatusCard";
 import SignalLayoutLoader from "./loaders/SignalLayoutLoader";
 import SignalInfo from "./SignalInfo";
 import SignalLatestNews from "./SignalLatestNews";
-import SignalOverview from "./SignalOverview";
-import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
-import RunningSignalCard from "./SignalCard/RunningSignalCard";
-import FufilledSignalCard from "./SignalCard/FufilledSignalCard";
-import MarketClosedCard from "./SignalCard/MarketClosedCard"; // Import the new component
-import { isMarketOpen } from "@/lib/market-hours"; // Import the market hours utility
+import SignalCard from "./SignalCard/SignalCard";
+import SignalHoursInfo from "./SignalHoursInfo";
 
 // Tab type definition
 interface Tab {
@@ -184,38 +181,52 @@ const SignalLayout = ({ id, userId, isPro }) => {
       </div>
 
       {/* Tab content */}
-      <div className="min-h-[800px]">
-        {/* Overview Tab - Available to all users */}
+      <div className="min-h-[500px]">
+        {/* Overview Tab - Available to all users - SWAPPED COMPONENTS */}
         {activeTab === "overview" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
-            className="grid grid-cols-1 gap-6 md:grid-cols-2"
           >
-            <div className="flex flex-col gap-6">
+            {/* Main container with responsive grid setup - adjusted gap and height */}
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              {/* Left column - Signal Status */}
               <div
                 className={cn(
-                  "overflow-hidden rounded-xl border shadow-lg transition-all duration-300 hover:shadow-xl",
+                  "rounded-xl border shadow-lg transition-all",
                   theme === "dark"
                     ? "border-slate-700/50 bg-slate-800/90 backdrop-blur-sm"
                     : "border-slate-200 bg-white",
                 )}
               >
-                <SignalOverview
-                  instrumentData={instrumentData}
-                  signalPassed={lastSignal}
-                />
-              </div>
-              
-              {/* Signal Card - Now handled within the SignalCard component */}
-           
-            </div>
+                {/* Reduced padding */}
+                <div className="p-4">
+                  <div className="mb-3 flex items-center">
+                    <div
+                      className={cn(
+                        "mr-2 h-3 w-3 rounded-full",
+                        theme === "dark" ? "bg-blue-400" : "bg-blue-500",
+                      )}
+                    ></div>
+                    <h3
+                      className={cn(
+                        "text-sm font-medium uppercase tracking-wider",
+                        theme === "dark" ? "text-slate-300" : "text-slate-700",
+                      )}
+                    >
+                      {t("signalStatusTitle")}
+                    </h3>
+                  </div>
 
-            <div className="flex flex-col gap-6">
+                  <SignalCard signalPassed={lastSignal} />
+                </div>
+              </div>
+
+              {/* Right column - Instrument Status */}
               <div
                 className={cn(
-                  "overflow-hidden rounded-xl border shadow-lg transition-all duration-300 hover:shadow-xl",
+                  "relative rounded-xl border shadow-lg transition-all",
                   theme === "dark"
                     ? "border-slate-700/50 bg-slate-800/90 backdrop-blur-sm"
                     : "border-slate-200 bg-white",
@@ -229,8 +240,60 @@ const SignalLayout = ({ id, userId, isPro }) => {
                     onUpgradeClick={handleUpgradeClick}
                   />
                 )}
+
                 <div className={!isPro ? "blur-sm" : ""}>
+                  {/* Removed padding wrapper to avoid double padding */}
+                  <div className="mb-3 flex items-center px-4 pt-4">
+                    <div
+                      className={cn(
+                        "mr-2 h-3 w-3 rounded-full",
+                        theme === "dark" ? "bg-amber-400" : "bg-amber-500",
+                      )}
+                    ></div>
+                    <h3
+                      className={cn(
+                        "text-sm font-medium uppercase tracking-wider",
+                        theme === "dark"
+                          ? "text-slate-300"
+                          : "text-slate-700",
+                      )}
+                    >
+                      {t("instrumentStatusTitle")}
+                    </h3>
+                  </div>
+
                   <InstrumentStatusCard instrumentName={instrumentName} />
+                </div>
+              </div>
+
+              {/* Full width section - Trading Hours */}
+              <div
+                className={cn(
+                  "relative rounded-xl border shadow-lg transition-all lg:col-span-2",
+                  theme === "dark"
+                    ? "border-slate-700/50 bg-slate-800/90 backdrop-blur-sm"
+                    : "border-slate-200 bg-white",
+                )}
+              >
+                <div className="p-4">
+                  <div className="mb-3 flex items-center">
+                    <div
+                      className={cn(
+                        "mr-2 h-3 w-3 rounded-full",
+                        theme === "dark" ? "bg-violet-400" : "bg-violet-500",
+                      )}
+                    ></div>
+                    <h3
+                      className={cn(
+                        "text-sm font-medium uppercase tracking-wider",
+                        theme === "dark" ? "text-slate-300" : "text-slate-700",
+                      )}
+                    >
+                      {t("tradingHoursTitle")}
+                    </h3>
+                  </div>
+
+                  <SignalHoursInfo instrumentName={instrumentName} />
                 </div>
               </div>
             </div>
@@ -293,7 +356,8 @@ const SignalLayout = ({ id, userId, isPro }) => {
                 description={t("premium.detailsDescription")}
                 onUpgradeClick={handleUpgradeClick}
               />
-            )}
+            )
+            }
             <div className={!isPro ? "blur-sm" : ""}>
               <SignalInfo instrumentName={instrumentName} />
             </div>
