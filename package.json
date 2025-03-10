@@ -55,7 +55,7 @@
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "cmdk": "^1.0.0",
+    "cmdk": "^0.2.0",
     "cobe": "^0.6.3",
     "critters": "^0.0.23",
     "date-fns": "^4.1.0",
@@ -113,5 +113,8 @@
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
+  },
+  "resolutions": {
+    "cmdk/react": "^19.0.0"
   }
 }
