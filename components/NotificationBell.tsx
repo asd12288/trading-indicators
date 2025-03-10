@@ -14,22 +14,22 @@ import NotificationPanel from "./NotificationPanel";
 
 export default function NotificationBell({ userId }: { userId?: string }) {
   const t = useTranslations("Notifications");
-  const { 
-    notifications, 
-    unreadCount, 
-    markAllAsRead, 
-    loading, 
+  const {
+    notifications,
+    unreadCount,
+    markAllAsRead,
+    loading,
     refetch,
-    bulkDelete 
+    bulkDelete,
   } = useNotifications(userId);
   const [hasPulse, setHasPulse] = useState(false);
 
   // Handle clearing all notifications
   const handleClearAll = async () => {
     if (!notifications || notifications.length === 0) return;
-    
+
     // Get all notification IDs
-    const notificationIds = notifications.map(n => n.id);
+    const notificationIds = notifications.map((n) => n.id);
     await bulkDelete(notificationIds);
   };
 
@@ -57,6 +57,13 @@ export default function NotificationBell({ userId }: { userId?: string }) {
   useEffect(() => {
     console.log(`[NotificationBell] Unread count: ${unreadCount}`);
   }, [unreadCount]);
+
+  // Log notification data for debugging
+  useEffect(() => {
+    if (notifications.length > 0) {
+      console.log("Current notifications:", notifications);
+    }
+  }, [notifications]);
 
   if (!userId) {
     return null;

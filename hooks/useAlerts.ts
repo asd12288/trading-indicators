@@ -47,6 +47,14 @@ const useAlerts = () => {
         { event: "INSERT", schema: "public", table: "signals_alert" },
         (payload) => {
           console.log("New alert received:", payload.new); // Debug log
+          // Log specific fields to identify the correct field names
+          console.log(
+            "Alert details - instrument:",
+            payload.new.instrument_name || payload.new.instrument,
+          );
+          console.log("Alert details - price:", payload.new.price);
+          console.log("Alert details - time:", payload.new.time_utc);
+
           // Play sound when a new alert is received
           if (pingSoundRef.current) {
             pingSoundRef.current

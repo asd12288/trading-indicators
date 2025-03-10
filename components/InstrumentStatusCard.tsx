@@ -78,7 +78,7 @@ const InstrumentStatusCard = ({
 
   if (statusLoading) {
     return (
-      <div className="flex h-[600px] w-full flex-col items-center justify-center p-6">
+      <div className="flex h-[800px] w-full flex-col items-center justify-center p-6">
         <div className="flex w-full animate-pulse flex-col gap-6">
           <div className="flex items-center justify-between">
             <div className="h-8 w-1/3 rounded-md bg-slate-700"></div>
@@ -103,7 +103,7 @@ const InstrumentStatusCard = ({
 
   if (statusError || !data || data.length === 0) {
     return (
-      <div className="flex h-[600px] w-full flex-col items-center justify-center p-6">
+      <div className="flex h-[800px] w-full flex-col items-center justify-center p-6">
         <div className="flex items-center space-x-3 text-amber-500">
           <AlertTriangle size={24} />
           <h3 className="text-xl font-medium">
@@ -122,7 +122,7 @@ const InstrumentStatusCard = ({
     compositeData.latestTimestamp || (data && data[0]?.timestamp);
 
   return (
-    <div className="flex h-[600px] w-full flex-col p-6">
+    <div className="flex h-[800px] w-full flex-col p-6">
       {/* Header with status and time */}
       <div className="mb-5 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -180,7 +180,8 @@ const InstrumentStatusCard = ({
       </div>
 
       {/* Main Stats Grid */}
-      <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+
+      <div className="flex flex-col gap-4">
         <StatCard
           label={t("high")}
           tooltip={t("highTooltip")}
@@ -191,34 +192,6 @@ const InstrumentStatusCard = ({
         />
 
         <StatCard
-          label={t("low")}
-          tooltip={t("lowTooltip")}
-          value={compositeData.low?.value}
-          isFlashing={flashField === "low"}
-          t={t}
-          icon={<ArrowDown size={16} className="text-red-400" />}
-        />
-
-        <StatCard
-          label="VWAP"
-          tooltip={t("vwapTooltip")}
-          value={compositeData.vwap?.value}
-          isFlashing={flashField === "vwap"}
-          t={t}
-        />
-
-        <StatCard
-          label="POC"
-          tooltip={t("pocTooltip")}
-          value={compositeData.poc?.value}
-          isFlashing={flashField === "poc"}
-          t={t}
-        />
-      </div>
-
-      {/* Value Area Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <StatCard
           label="VAH"
           tooltip={t("vahTooltip")}
           value={compositeData.vah?.value}
@@ -226,6 +199,34 @@ const InstrumentStatusCard = ({
           variant="secondary"
           t={t}
         />
+
+        <div className="grid grid-cols-3 gap-4">
+          <StatCard
+            label="VWAP"
+            tooltip={t("vwapTooltip")}
+            value={compositeData.vwap?.value}
+            isFlashing={flashField === "vwap"}
+            t={t}
+          />
+
+          <StatCard
+            label="POC"
+            tooltip={t("pocTooltip")}
+            value={compositeData.poc?.value}
+            isFlashing={flashField === "poc"}
+            t={t}
+          />
+
+          {/* Value Area Stats */}
+          <StatCard
+            label="VPOC"
+            tooltip={t("vpocTooltip")}
+            value={compositeData.vpoc?.value}
+            isFlashing={flashField === "vpoc"}
+            variant="secondary"
+            t={t}
+          />
+        </div>
 
         <StatCard
           label="VAL"
@@ -237,12 +238,12 @@ const InstrumentStatusCard = ({
         />
 
         <StatCard
-          label="VPOC"
-          tooltip={t("vpocTooltip")}
-          value={compositeData.vpoc?.value}
-          isFlashing={flashField === "vpoc"}
-          variant="secondary"
+          label={t("low")}
+          tooltip={t("lowTooltip")}
+          value={compositeData.low?.value}
+          isFlashing={flashField === "low"}
           t={t}
+          icon={<ArrowDown size={16} className="text-red-400" />}
         />
       </div>
 
@@ -281,11 +282,7 @@ const StatCard = ({
 
   return (
     <div
-      className={`flex flex-col justify-between rounded-xl p-4 ${
-        isPrimary
-          ? "bg-gradient-to-br from-slate-700/70 to-slate-800/70"
-          : "bg-slate-800/50"
-      } shadow-md backdrop-blur-sm transition-all duration-200 hover:shadow-lg ${isFlashing ? "ring-1 ring-slate-400/30" : ""}`}
+      className={`"bg-gradient-to-br to-slate-800/70" flex flex-col justify-between rounded-xl from-slate-800/70 p-4 shadow-md backdrop-blur-sm transition-all duration-200 hover:shadow-lg ${isFlashing ? "ring-1 ring-slate-400/30" : ""}`}
     >
       <div className="mb-2 flex items-center justify-between">
         <SignalToolTooltip text={tooltip}>

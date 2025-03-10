@@ -1423,5 +1423,22 @@
   },
   "NewFeatureHighlight": {
     "dismiss": "Dismiss"
+  },
+  "MarketClosedCard": {
+    "marketClosed": "Market Closed",
+    "trading": "Trading is currently unavailable",
+    "nextOpen": "Next opens at",
+    "marketHours": "Trading hours",
+    "localTime": "Local time"
+  },
+
+  "SystemClosedCard": {
+    "alertsOffline": "Alerts Currently Offline",
+    "systemMessage": "Alert system is currently not active for this instrument",
+    "nextSession": "Next Alert Session",
+    "startsIn": "Starts in",
+    "alertSessions": "Scheduled Alert Sessions",
+    "session": "Session",
+    "noSessionsConfigured": "No alert sessions configured for this instrument"
   }
 }

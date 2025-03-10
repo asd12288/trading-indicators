@@ -1,3 +1,4 @@
+import AlertHoursManager from "@/components/admin/AlertHoursManager";
 import BlogTable from "@/components/admin/BlogTable";
 import SendNotificationForm from "@/components/admin/SendNotificationForm";
 import SignalDebugTab from "@/components/admin/SignalDebugTab";
@@ -53,6 +54,7 @@ const page = async ({ params }: { params: { locale: string } }) => {
               <TabsTrigger value="signals">Signals</TabsTrigger>
               <TabsTrigger value="blogs">Blogs</TabsTrigger>
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
+              <TabsTrigger value="alert-hours">Alert Hours</TabsTrigger>
               <TabsTrigger value="monitoring">Debugging</TabsTrigger>
               <TabsTrigger value="debug">Signal Debug</TabsTrigger>
             </TabsList>
@@ -73,6 +75,10 @@ const page = async ({ params }: { params: { locale: string } }) => {
               <div className="space-y-6">
                 <SendNotificationForm />
               </div>
+            </TabsContent>
+
+            <TabsContent value="alert-hours">
+              <AlertHoursManager />
             </TabsContent>
 
             <TabsContent value="debug">

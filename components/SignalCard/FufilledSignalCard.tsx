@@ -90,7 +90,7 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
             <div className="flex items-center justify-between">
               <h3
                 className={cn(
-                  "text-xl font-bold", // Increased size from text-lg to text-xl
+                  "text-4xl font-bold", // Increased size from text-lg to text-xl
                   theme === "dark" ? "text-white" : "text-slate-900",
                 )}
               >

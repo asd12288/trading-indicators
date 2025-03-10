@@ -19,7 +19,7 @@ export default function NotificationItem({
   onClick,
 }: NotificationItemProps) {
   const router = useRouter();
-  
+
   // Get the appropriate icon based on notification type
   const getIcon = () => {
     switch (notification.type) {
@@ -40,38 +40,40 @@ export default function NotificationItem({
     try {
       const date = new Date(timestamp);
       const now = new Date();
-      
+
       // Log for debugging
-      console.log(`Notification timestamp: ${timestamp}, parsed as: ${date.toISOString()}`);
-      
+      console.log(
+        `Notification timestamp: ${timestamp}, parsed as: ${date.toISOString()}`,
+      );
+
       // Check if date is valid
       if (isNaN(date.getTime())) {
         console.warn("Invalid timestamp:", timestamp);
         return "recently";
       }
-      
+
       // Check for timezone or future date issues
       if (date > now || differenceInHours(now, date) > 24) {
         console.warn(`Suspicious timestamp difference: ${timestamp}`);
       }
-      
-      return formatDistanceToNow(date, { 
+
+      return formatDistanceToNow(date, {
         addSuffix: true,
-        includeSeconds: true 
+        includeSeconds: true,
       });
     } catch (e) {
       console.error("Error formatting time:", e);
       return "recently";
     }
   };
-  
+
   // Handle click with proper link navigation
   const handleClick = () => {
     // If there's a valid link, navigate to it
     if (notification.link) {
       router.push(notification.link);
     }
-    
+
     // Always call the onClick handler (for marking as read, etc.)
     onClick();
   };

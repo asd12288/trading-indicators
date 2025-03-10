@@ -271,41 +271,7 @@ export function useNotifications(passedUserId?: string) {
         )
         .subscribe();
 
-      // 3. Generate notifications from alerts (inspired by useAlerts)
-      const alertsSubscription = supabaseClient
-        .channel("alerts_notification_generator")
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "signals_alert",
-          },
-          async (payload) => {
-            const alert = payload.new as any;
-
-            // Create alert notifications automatically
-            try {
-              await supabaseClient.from("notifications").insert({
-                user_id: userId,
-                type: "alert",
-                title: `Alert: ${alert.instrument}`,
-                message:
-                  alert.message || `Price alert triggered at ${alert.price}`,
-                read: false,
-                link: `/alerts`,
-                additional_data: {
-                  instrument: alert.instrument,
-                  price: alert.price,
-                  timestamp: alert.time_utc,
-                },
-              });
-            } catch (err) {
-              console.error("Failed to create alert notification:", err);
-            }
-          },
-        )
-        .subscribe();
+      // Remove the alerts notification generator since it's already handled by a component
 
       // 4. Generate notifications from instrument status changes (inspired by useInstrumentStatus)
       const statusSubscription = supabaseClient
@@ -351,7 +317,7 @@ export function useNotifications(passedUserId?: string) {
         console.log(`[useNotifications] Cleaning up channel: ${channelName}`);
         supabaseClient.removeChannel(notificationsSubscription);
         supabaseClient.removeChannel(signalsSubscription);
-        supabaseClient.removeChannel(alertsSubscription);
+        // Remove reference to the alertsSubscription that no longer exists
         supabaseClient.removeChannel(statusSubscription);
       };
     } catch (err) {

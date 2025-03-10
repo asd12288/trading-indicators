@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import { Activity, ArrowLeft, Eye, Info, Lock, Newspaper } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { notFound, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AlertNotification from "./AlertNotification";
 import BlurOverlay from "./BlurOverlay";
 import InstrumentStatusCard from "./InstrumentStatusCard";
@@ -20,6 +20,10 @@ import SignalLatestNews from "./SignalLatestNews";
 import SignalOverview from "./SignalOverview";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/context/theme-context";
+import RunningSignalCard from "./SignalCard/RunningSignalCard";
+import FufilledSignalCard from "./SignalCard/FufilledSignalCard";
+import MarketClosedCard from "./SignalCard/MarketClosedCard"; // Import the new component
+import { isMarketOpen } from "@/lib/market-hours"; // Import the market hours utility
 
 // Tab type definition
 interface Tab {
@@ -39,8 +43,11 @@ const SignalLayout = ({ id, userId, isPro }) => {
 
   // Tab state management
   const [activeTab, setActiveTab] = useState("overview");
+  // Remove the market status state since it's now handled in the SignalCard
 
   const instrumentName = instrumentData[0]?.instrument_name;
+
+  // Remove the market status check effect
 
   if (isLoading || loadingInstrumentData || !profile) {
     return <SignalLayoutLoader />;
@@ -177,7 +184,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
       </div>
 
       {/* Tab content */}
-      <div className="min-h-[600px]">
+      <div className="min-h-[800px]">
         {/* Overview Tab - Available to all users */}
         {activeTab === "overview" && (
           <motion.div
@@ -200,6 +207,9 @@ const SignalLayout = ({ id, userId, isPro }) => {
                   signalPassed={lastSignal}
                 />
               </div>
+              
+              {/* Signal Card - Now handled within the SignalCard component */}
+           
             </div>
 
             <div className="flex flex-col gap-6">
