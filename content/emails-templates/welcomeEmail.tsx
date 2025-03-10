@@ -28,7 +28,7 @@ const NewSubscriptionEmail: React.FC<NewSubscriptionEmailProps> = ({
 
       <div style={{ textAlign: "center", marginTop: "20px" }}>
         <a
-          href="https://yourwebsite.com/dashboard"
+          href="https://trader-map.com/smart-alerts"
           style={{
             display: "inline-block",
             padding: "10px 20px",
@@ -44,12 +44,12 @@ const NewSubscriptionEmail: React.FC<NewSubscriptionEmailProps> = ({
 
       <p style={{ fontSize: "12px", color: "#777", marginTop: "30px" }}>
         If you didn't sign up for this subscription, please contact our support at{" "}
-        <a href="mailto:support@yourwebsite.com">support@yourwebsite.com</a>.
+        <a href="mailto:support@trader-map.com">support@trader-map.com</a>.
       </p>
 
       <hr style={{ margin: "20px 0", border: "none", borderTop: "1px solid #ddd" }} />
       <p style={{ fontSize: "12px", color: "#777", textAlign: "center" }}>
-        © {new Date().getFullYear()} YourCompany. All rights reserved.
+        © {new Date().getFullYear()} Trader map. All rights reserved.
       </p>
     </div>
   );

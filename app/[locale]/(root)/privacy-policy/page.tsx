@@ -1,6 +1,4 @@
-import { Metadata } from "next";
-import { useTranslations } from "next-intl";
-import React from "react";
+
 import {
   Shield,
   Database,
@@ -9,8 +7,9 @@ import {
   RefreshCw,
   Mail,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "Privacy Policy",
 };
 
@@ -22,17 +21,19 @@ const PolicySection = ({
   title: string;
   content: string;
   icon: React.ElementType;
-}) => (
-  <div className="mt-8 rounded-xl bg-slate-700/50 p-6 transition-all hover:bg-slate-700/70">
-    <div className="mb-3 flex items-center gap-3">
-      <div className="bg-primary/20 rounded-full p-2">
-        <Icon className="text-primary h-5 w-5" />
+}) => {
+  return (
+    <div className="mt-8 rounded-xl bg-slate-700/50 p-6 transition-all hover:bg-slate-700/70">
+      <div className="mb-3 flex items-center gap-3">
+        <div className="bg-primary/20 rounded-full p-2">
+          <Icon className="text-primary h-5 w-5" />
+        </div>
+        <h2 className="text-2xl font-semibold text-slate-100">{title}</h2>
       </div>
-      <h2 className="text-2xl font-semibold text-slate-100">{title}</h2>
+      <p className="leading-relaxed text-slate-300">{content}</p>
     </div>
-    <p className="leading-relaxed text-slate-300">{content}</p>
-  </div>
-);
+  );
+};
 
 const PrivacyPolicy = () => {
   const t = useTranslations("PrivacyPolicy");

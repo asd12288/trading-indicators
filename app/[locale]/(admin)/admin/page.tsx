@@ -1,4 +1,5 @@
 import BlogTable from "@/components/admin/BlogTable";
+import SignalDebugTab from "@/components/admin/SignalDebugTab";
 import SignalsMonitoring from "@/components/admin/SignalsMonitoring";
 import SignalsTable from "@/components/admin/SignalsTable";
 import UsersTable from "@/components/admin/UsersTable";
@@ -45,12 +46,13 @@ const page = async ({ params }: { params: { locale: string } }) => {
       <h1 className="my-4 text-center text-3xl font-medium">Admin Page</h1>
       <div className="flex justify-center p-4">
         <div className="w-full rounded-md bg-slate-800 p-12">
-          <Tabs defaultValue="monitoring">
+          <Tabs defaultValue="debug">
             <TabsList className="flex justify-center bg-inherit">
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="signals">Signals</TabsTrigger>
               <TabsTrigger value="blogs">Blogs</TabsTrigger>
-              <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
+              <TabsTrigger value="monitoring">Debugging</TabsTrigger>
+              <TabsTrigger value="debug">Signal Debug</TabsTrigger>
             </TabsList>
 
             <TabsContent value="users">
@@ -63,6 +65,10 @@ const page = async ({ params }: { params: { locale: string } }) => {
 
             <TabsContent value="blogs">
               <BlogTable posts={posts} />
+            </TabsContent>
+
+            <TabsContent value="debug">
+              <SignalDebugTab />
             </TabsContent>
 
             <TabsContent value="monitoring">

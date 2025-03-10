@@ -1,9 +1,8 @@
-import React from "react";
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto max-w-7xl">
-      {children}
+    <div className="flex">
+      <main className="flex-1 p-8 ">{children}</main>
     </div>
   );
 }

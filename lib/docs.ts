@@ -1,5 +1,3 @@
-'use server'
-
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
@@ -13,7 +11,7 @@ import rehypeSlug from "rehype-slug";
 const docsDirectory = path.join(process.cwd(), "content/docs");
 
 // Get document content by slug and locale
-export async function getDocContent(slug: string, locale: string = "en") {
+export function getDocContent(slug: string, locale: string = "en") {
   const fullPath = path.join(docsDirectory, locale, `${slug}.md`);
 
   // Default content if file doesn't exist
@@ -41,7 +39,7 @@ export async function getDocContent(slug: string, locale: string = "en") {
     .toString();
 
   // Get next and previous docs for navigation
-  const allDocs = await getAllDocs(locale);
+  const allDocs = getAllDocs(locale);
   const currentIndex = allDocs.findIndex((doc) => doc.slug === slug);
   const prevDoc = currentIndex > 0 ? allDocs[currentIndex - 1] : null;
   const nextDoc =
@@ -57,8 +55,8 @@ export async function getDocContent(slug: string, locale: string = "en") {
   };
 }
 
-// Get all available docs for a locale with flexible sorting
-export async function getAllDocs(locale: string = "en") {
+// Get all available docs for a locale
+export function getAllDocs(locale: string = "en") {
   const localeDir = path.join(docsDirectory, locale);
 
   if (!fs.existsSync(localeDir)) {
@@ -67,56 +65,35 @@ export async function getAllDocs(locale: string = "en") {
 
   const fileNames = fs.readdirSync(localeDir);
 
-  const docs = fileNames
+  return fileNames
     .filter((fileName) => fileName.endsWith(".md"))
     .map((fileName) => {
       const slug = fileName.replace(/\.md$/, "");
       const fullPath = path.join(localeDir, fileName);
       const fileContents = fs.readFileSync(fullPath, "utf8");
       const { data } = matter(fileContents);
-      
-      // Add order property from frontmatter or default to 999
+
       return {
         slug,
         title: data.title || slug,
         description: data.description || "",
-        order: data.order || 999,
       };
+    })
+    .sort((a, b) => {
+      // You can define a custom sort order here
+      const order = [
+        "getting-started",
+        "introduction",
+        "smart-alert",
+        "mfe-mae-trading",
+      ];
+      return order.indexOf(a.slug) - order.indexOf(b.slug);
     });
-
-  // Custom sort order
-  const priorityOrder = [
-    "getting-started",
-    "introduction",
-    "smart-alert",
-    "mfe-mae-trading",
-  ];
-  
-  return docs.sort((a, b) => {
-    // First try to sort by explicit order in frontmatter
-    if (a.order !== b.order) {
-      return a.order - b.order;
-    }
-    
-    // Then by priority list
-    const aIndex = priorityOrder.indexOf(a.slug);
-    const bIndex = priorityOrder.indexOf(b.slug);
-    
-    if (aIndex !== -1 && bIndex !== -1) {
-      return aIndex - bIndex;
-    }
-    
-    if (aIndex !== -1) return -1;
-    if (bIndex !== -1) return 1;
-    
-    // Finally alphabetically
-    return a.title.localeCompare(b.title);
-  });
 }
 
 // Get documentation sections for the docs landing page
-export async function getDocsSections(locale: string = "en") {
-  return (await getAllDocs(locale)).map((doc) => ({
+export function getDocsSections(locale: string = "en") {
+  return getAllDocs(locale).map((doc) => ({
     slug: doc.slug,
     title: doc.title,
     description: doc.description,
@@ -124,7 +101,7 @@ export async function getDocsSections(locale: string = "en") {
 }
 
 // Extract headings from HTML content for table of contents
-export async function extractHeadings(html: string) {
+export function extractHeadings(html: string) {
   const headings: Array<{ id: string; text: string; level: number }> = [];
 
   // Match all h2, h3, h4 headings with their ids

@@ -4,10 +4,12 @@ import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import PricingCard from "../pricing/PricingCard";
 import { Link } from "@/i18n/routing";
+import { useParams } from "next/navigation";
 
 const Plans = ({ size = "regular" }) => {
   const t = useTranslations("HomePage.plans");
   const planT = useTranslations("HomePage.planCards");
+  const { locale } = useParams();
 
   const plans = [
     {
@@ -20,7 +22,7 @@ const Plans = ({ size = "regular" }) => {
         planT("free.features.feature3"),
       ],
       cta: planT("free.cta"),
-      href: "/signup",
+      href: `${locale}/signup`,
       popular: false,
       tier: "free",
       billingPeriod: "monthly",
@@ -37,7 +39,7 @@ const Plans = ({ size = "regular" }) => {
         planT("monthly.features.feature5"),
       ],
       cta: planT("monthly.cta"),
-      href: "/signup?plan=monthly",
+      href: `${locale}/signup`,
       popular: false,
       tier: "monthly",
       billingPeriod: "monthly",
@@ -54,7 +56,7 @@ const Plans = ({ size = "regular" }) => {
         planT("lifetime.features.feature5"),
       ],
       cta: planT("lifetime.cta"),
-      href: "/signup?plan=lifetime",
+      href: `${locale}/signup`,
       popular: true,
       tier: "lifetime",
       billingPeriod: "oneTime",

@@ -70,6 +70,8 @@ const useSignals = (preferences: PreferencesMap = {}) => {
       setSignals((current) => {
         const updatedSignal = payload.new as Signal;
 
+        console.log(updatedSignal);
+
         // Using immutable update patterns for better performance
         if (payload.eventType === "INSERT") {
           return [

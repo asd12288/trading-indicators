@@ -117,6 +117,7 @@
     "plans": {
       "title": "Plans",
       "subtitle": "We've got a plan perfect just for you",
+      "paymentMethods": "Payment Methods",
       "loginPrompt": "Already got an account? log-in",
       "freePlan": {
         "title": "Free Plan",

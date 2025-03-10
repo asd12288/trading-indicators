@@ -1,5 +1,12 @@
 import { useTranslations } from "next-intl";
-import { Mail, Twitter, Facebook, Instagram, Globe } from "lucide-react";
+import {
+  Mail,
+  Twitter,
+  Facebook,
+  Instagram,
+  Globe,
+  MapPin,
+} from "lucide-react";
 import { Link } from "@/i18n/routing";
 
 const Footer = () => {
@@ -18,6 +25,14 @@ const Footer = () => {
               Advanced trading insights and real-time smart alerts for active
               traders.
             </p>
+            <div className="mt-4 flex items-start gap-2 text-left">
+              <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-slate-400" />
+              <p className="text-sm text-slate-400">
+                Edisonstraße 63, 12459 Berlin, Germany
+                <br />
+                Leuchtenfabrik Berlin
+              </p>
+            </div>
           </div>
           <div className="flex flex-wrap items-center gap-4">
             <a

@@ -26,6 +26,8 @@ export interface Signal {
   take_profit_price: number;
   stop_loss_price: number;
   signal: string;
+  account_name?: string;
+  daily_pnl?: number;
 }
 
 export interface Alert {

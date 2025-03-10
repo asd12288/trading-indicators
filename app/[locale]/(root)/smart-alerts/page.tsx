@@ -9,7 +9,6 @@ export const metadata: Metadata = {
 
 async function page({ params }: { params: { locale: string } }) {
   const supabase = await createClient();
-
   const { locale } = await params;
 
   const {
@@ -20,11 +19,7 @@ async function page({ params }: { params: { locale: string } }) {
     redirect({ href: "/login", locale: locale });
   }
 
-  return (
-    <div>
-      <SignalsLayout userId={user?.id} />
-    </div>
-  );
+  return <SignalsLayout userId={user?.id} />;
 }
 
 export default page;

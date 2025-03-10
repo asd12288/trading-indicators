@@ -1,5 +1,14 @@
 import { Link } from "@/i18n/routing";
-import { Clock, Globe, Heart, Shield, Zap } from "lucide-react";
+import {
+  Clock,
+  Globe,
+  Heart,
+  Shield,
+  Zap,
+  MapPin,
+  Mail,
+  Phone,
+} from "lucide-react";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
@@ -215,6 +224,49 @@ export default async function AboutUsPage() {
                 <p className="text-slate-300">{member.description}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Information Section */}
+      <section className="bg-slate-900/50 py-16">
+        <div className="container mx-auto px-6">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-white">
+              {t("contact.title") || "Our Office"}
+            </h2>
+            <div className="mx-auto h-1 w-20 rounded bg-blue-500"></div>
+          </div>
+
+          <div className="flex flex-col gap-8 md:flex-row">
+            <div className="flex-1 rounded-xl border border-slate-700/50 bg-slate-800/20 p-6">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="rounded-full bg-slate-800/80 p-2">
+                  <MapPin className="h-5 w-5 text-blue-400" />
+                </div>
+                <h3 className="text-xl font-bold text-white">Address</h3>
+              </div>
+              <p className="mb-2 text-slate-300">Edisonstraße 63</p>
+              <p className="mb-2 text-slate-300">12459 Berlin, Germany</p>
+              <p className="text-slate-300">Leuchtenfabrik Berlin</p>
+            </div>
+
+            <div className="flex-1 rounded-xl border border-slate-700/50 bg-slate-800/20 p-6">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="rounded-full bg-slate-800/80 p-2">
+                  <Mail className="h-5 w-5 text-blue-400" />
+                </div>
+                <h3 className="text-xl font-bold text-white">Contact</h3>
+              </div>
+              <p className="mb-2 text-slate-300">info@trader-map.com</p>
+              <Link
+                href="/contact"
+                className="mt-4 inline-flex items-center text-blue-400 hover:text-blue-300"
+              >
+                Send us a message
+                <span className="ml-1">→</span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

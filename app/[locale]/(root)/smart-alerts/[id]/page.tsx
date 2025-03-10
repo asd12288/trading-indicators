@@ -2,6 +2,8 @@ import SignalLayout from "@/components/SignalLayout";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
 import { Metadata } from "next";
+import { ClientThemeProvider } from "@/components/ui/client-theme-provider";
+import { cn } from "@/lib/utils";
 
 export async function generateMetadata({
   params,
@@ -55,7 +57,7 @@ export default async function Page({
   const isPro = profile?.plan === "pro" ? true : false;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-950">
+    <div className="bg-gradient-to-b from-slate-900 to-slate-950">
       <SignalLayout id={params.id} userId={user.id} isPro={isPro} />
     </div>
   );

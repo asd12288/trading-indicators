@@ -10,11 +10,13 @@ import {
   ArrowDown,
   Zap,
   Flag,
-  Timer,
+  CircleDot,
 } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/context/theme-context";
+import useLast from "@/hooks/useLast";
 
 interface RunningSignalCardProps {
   instrument: Signal;
@@ -23,6 +25,7 @@ interface RunningSignalCardProps {
 
 const RunningSignalCard: FC<RunningSignalCardProps> = memo(
   ({ instrument, isBuy }) => {
+    const { theme } = useTheme();
     const {
       entry_time,
       instrument_name,
@@ -31,6 +34,9 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
       take_profit_price,
       stop_loss_price,
     } = instrument;
+
+    // Get real-time last price
+    const { lastPrice, isLoading } = useLast(instrument_name);
 
     const t = useTranslations("RunningSignalCard");
 
@@ -59,196 +65,291 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
       addSuffix: true,
     });
 
-    const formattedTime = format(parseISO(entry_time), "HH:mm:ss");
-    const formattedDate = format(parseISO(entry_time), "MMM dd");
-
-    // Calculate risk/reward ratio
-    const riskValue = Math.abs(entry_price - stop_loss_price);
-    const rewardValue = Math.abs(take_profit_price - entry_price);
-    const riskRewardRatio = (rewardValue / riskValue).toFixed(1);
-
-    // Calculate distance to targets in percentage
-    const distanceToTP = (
-      (Math.abs(take_profit_price - entry_price) / entry_price) *
-      100
-    ).toFixed(2);
-    const distanceToSL = (
-      (Math.abs(stop_loss_price - entry_price) / entry_price) *
-      100
-    ).toFixed(2);
-
-    // Where on the scale between SL and TP is the entry price
-    const entryPosition =
-      ((entry_price - stop_loss_price) /
-        (take_profit_price - stop_loss_price)) *
-      100;
+    // Calculate profit/loss based on last price
+    const currentPrice = lastPrice?.last || null;
+    const currentPnL = currentPrice
+      ? isBuy
+        ? currentPrice - entry_price
+        : entry_price - currentPrice
+      : null;
+    const isProfitable = currentPnL ? currentPnL > 0 : false;
+    const pnlPercentage = currentPnL
+      ? ((Math.abs(currentPnL) / entry_price) * 100).toFixed(2)
+      : null;
+      
+    // Helper function to safely calculate position percentages
+    const calculatePosition = (price) => {
+      if (!price) return null;
+      
+      const range = take_profit_price - stop_loss_price;
+      if (range === 0) return 50; // Prevent division by zero
+      
+      const position = ((price - stop_loss_price) / range) * 100;
+      // Constrain to 0-100% to ensure visibility within the bar
+      return Math.min(Math.max(position, 0), 100);
+    };
+    
+    const entryPosition = calculatePosition(entry_price);
+    const currentPosition = calculatePosition(currentPrice);
+    
+    // Format the profit target and stop loss as percentages from entry
+    const profitTargetPercent = Math.abs(((take_profit_price - entry_price) / entry_price) * 100).toFixed(1);
+    const stopLossPercent = Math.abs(((stop_loss_price - entry_price) / entry_price) * 100).toFixed(1);
 
     return (
       <div className="h-full">
         <div
           className={cn(
-            "relative h-full rounded-lg border-l-4 bg-slate-900 shadow-md transition-all hover:shadow-lg",
-            isBuy ? "border-l-emerald-500" : "border-l-rose-500",
+            "relative h-full overflow-hidden rounded-lg border shadow-md transition-all hover:shadow-lg",
+            isBuy ? "border-emerald-500" : "border-rose-500",
+            theme === "dark"
+              ? "bg-slate-900"
+              : "border border-slate-200 bg-white",
           )}
         >
-          {/* Live indicator */}
-          <div className="absolute right-3 top-3">
+          {/* Live banner */}
+          <div
+            className={cn(
+              "flex items-center justify-center gap-2 py-1.5 text-center text-sm font-semibold text-white",
+              isBuy ? "bg-emerald-600" : "bg-rose-600",
+            )}
+          >
             <motion.div
-              className="flex items-center gap-1.5 rounded-full bg-blue-600/90 px-2 py-0.5 text-xs shadow-md"
-              animate={{ opacity: [1, 0.7, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            >
-              <Zap className="h-3 w-3 text-white" />
-              <span className="font-semibold text-white">{t("live")}</span>
-            </motion.div>
+              animate={{ opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="h-2 w-2 rounded-full bg-white"
+            />
+            {t("live")}
           </div>
 
-          {/* Card header with better time display */}
+          {/* Main content area */}
           <div className="p-4">
-            <div className="mb-1 flex items-center gap-2">
-              <h3 className="text-lg font-bold text-white">
+            {/* Header */}
+            <div className="mb-3 flex items-center justify-between">
+              <h3
+                className={cn(
+                  "text-lg font-bold",
+                  theme === "dark" ? "text-white" : "text-slate-900",
+                )}
+              >
                 {instrument_name}
               </h3>
               <Badge
                 className={cn(
-                  "text-xs font-medium",
+                  "flex items-center gap-1",
                   isBuy
                     ? "bg-emerald-600 hover:bg-emerald-700"
                     : "bg-rose-600 hover:bg-rose-700",
                 )}
               >
+                {isBuy ? (
+                  <ArrowUp className="h-3 w-3" />
+                ) : (
+                  <ArrowDown className="h-3 w-3" />
+                )}
                 {trade_side}
               </Badge>
             </div>
 
-            <div className="mb-3 flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                <Clock className="h-3.5 w-3.5" />
-                <span>{timeAgo}</span>
-              </div>
-              <div className="flex items-center gap-1.5 rounded-md bg-slate-800 px-2 py-0.5 text-xs text-slate-300">
-                <Timer className="h-3 w-3" />
-                <span>{formattedTime}</span>
-                <span className="text-slate-500">|</span>
-                <span className="text-slate-400">{formattedDate}</span>
-              </div>
+            {/* Time info - simplified */}
+            <div className="mb-4 flex items-center gap-1.5 text-xs text-slate-400">
+              <Clock className="h-3.5 w-3.5" />
+              <span>{timeAgo}</span>
             </div>
 
-            {/* Entry price */}
-            <div className="mb-4 flex items-baseline justify-between rounded-md bg-slate-800 p-2">
-              <span className="text-sm text-slate-300">{t("entryPrice")}</span>
-              <span className="text-lg font-bold text-white">
-                {formatNumber(entry_price)}
-              </span>
-            </div>
-
-            {/* Targets Section - Enhanced */}
-            <div className="mb-4 space-y-3">
-              {/* Objective/Take Profit */}
-              <div className="flex items-center justify-between rounded-md bg-emerald-900/20 p-2">
-                <div className="flex items-center gap-2">
-                  <Target className="h-4 w-4 text-emerald-400" />
-                  <span className="text-sm font-medium text-emerald-300">
-                    {t("objective")}
+            {/* Current Price - Prominent */}
+            <div
+              className={cn(
+                "mb-4 rounded-lg border-2 p-4",
+                theme === "dark" ? "bg-slate-800" : "bg-slate-50",
+                currentPrice
+                  ? isProfitable
+                    ? "border-emerald-500/50"
+                    : "border-rose-500/50"
+                  : "border-transparent",
+              )}
+            >
+              <div className="mb-2 flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <Zap className="h-4 w-4 text-amber-400" />
+                  <span className="text-sm font-medium text-amber-400">
+                    {t("currentPrice")}
                   </span>
                 </div>
-                <div>
-                  <div className="text-right text-lg font-bold text-emerald-400">
-                    {formatNumber(take_profit_price)}
+                {currentPnL && (
+                  <div
+                    className={cn(
+                      "text-sm font-medium",
+                      isProfitable ? "text-emerald-400" : "text-rose-400",
+                    )}
+                  >
+                    {isProfitable ? "+" : "-"}
+                    {formatNumber(Math.abs(currentPnL))}
                   </div>
-                  <div className="text-right text-xs text-emerald-500/70">
-                    +{distanceToTP}%
-                  </div>
+                )}
+              </div>
+
+              <div className="flex items-baseline justify-between">
+                <div className="text-3xl font-bold tracking-tight">
+                  {isLoading
+                    ? "..."
+                    : formatNumber(currentPrice || entry_price)}
                 </div>
+                {pnlPercentage && (
+                  <div
+                    className={cn(
+                      "text-lg font-medium",
+                      isProfitable ? "text-emerald-400" : "text-rose-400",
+                    )}
+                  >
+                    {isProfitable ? "+" : "-"}
+                    {pnlPercentage}%
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Key prices in a simple grid */}
+            <div className="mb-5 grid grid-cols-3 gap-2">
+              {/* Entry Price */}
+              <div
+                className={cn(
+                  "rounded-md p-2",
+                  theme === "dark" ? "bg-slate-800" : "bg-slate-100",
+                )}
+              >
+                <div className="text-xs text-slate-400">{t("entry")}</div>
+                <div className="font-medium">{formatNumber(entry_price)}</div>
+              </div>
+
+              {/* Target Price */}
+              <div
+                className={cn(
+                  "rounded-md p-2",
+                  theme === "dark" ? "bg-emerald-900/20" : "bg-emerald-50",
+                  theme === "dark" ? "text-emerald-400" : "text-emerald-600",
+                )}
+              >
+                <div className="text-xs opacity-80">{t("target")}</div>
+                <div className="font-medium">
+                  {formatNumber(take_profit_price)}
+                </div>
+                <div className="mt-0.5 text-xs opacity-80">+{profitTargetPercent}%</div>
               </div>
 
               {/* Stop Loss */}
-              <div className="flex items-center justify-between rounded-md bg-rose-900/20 p-2">
-                <div className="flex items-center gap-2">
-                  <Flag className="h-4 w-4 text-rose-400" />
-                  <span className="text-sm font-medium text-rose-300">
-                    {t("stopLoss")}
-                  </span>
+              <div
+                className={cn(
+                  "rounded-md p-2",
+                  theme === "dark" ? "bg-rose-900/20" : "bg-rose-50",
+                  theme === "dark" ? "text-rose-400" : "text-rose-600",
+                )}
+              >
+                <div className="text-xs opacity-80">{t("stop")}</div>
+                <div className="font-medium">
+                  {formatNumber(stop_loss_price)}
                 </div>
-                <div>
-                  <div className="text-right text-lg font-bold text-rose-400">
-                    {formatNumber(stop_loss_price)}
-                  </div>
-                  <div className="text-right text-xs text-rose-500/70">
-                    -{distanceToSL}%
-                  </div>
-                </div>
+                <div className="mt-0.5 text-xs opacity-80">-{stopLossPercent}%</div>
               </div>
             </div>
 
-            {/* Price scale visualization */}
-            <div className="mb-3">
-              <div className="relative h-6 rounded-lg bg-slate-800 p-1">
-                {/* Trade direction indicator */}
+            {/* Improved Price scale visualization */}
+            <div className="mb-5">
+              <div className="relative h-8 rounded-lg bg-slate-200 dark:bg-slate-700">
+                {/* Progress range for entry price */}
                 <div
                   className={cn(
-                    "absolute top-1 h-4",
-                    isBuy
-                      ? "bg-gradient-to-r from-transparent to-emerald-500/30"
-                      : "bg-gradient-to-l from-transparent to-rose-500/30",
+                    "absolute bottom-0 left-0 top-0 opacity-20",
+                    isBuy ? "bg-emerald-500" : "bg-rose-500",
                   )}
                   style={{
-                    left: isBuy ? `${entryPosition}%` : "auto",
-                    right: isBuy ? "auto" : `${100 - entryPosition}%`,
-                    width: `${100 - entryPosition}%`,
+                    width: `${entryPosition}%`,
                   }}
-                ></div>
+                />
 
-                {/* Stop, Entry and Target markers */}
-                <div className="absolute bottom-0 left-0 top-0 flex items-center">
-                  <div className="h-5 w-1 rounded-sm bg-rose-500"></div>
-                </div>
-                <div
-                  className="absolute bottom-0 top-0 flex items-center"
-                  style={{ left: `${entryPosition}%` }}
-                >
-                  <div className="h-5 w-1 rounded-sm bg-blue-500"></div>
-                </div>
-                <div className="absolute bottom-0 right-0 top-0 flex items-center">
-                  <div className="h-5 w-1 rounded-sm bg-emerald-500"></div>
-                </div>
-              </div>
-              <div className="mt-1 flex justify-between text-xs">
-                <span className="text-rose-400">{t("stop")}</span>
-                <span className="text-blue-400">{t("entry")}</span>
-                <span className="text-emerald-400">{t("target")}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Key metrics */}
-          <div className="grid grid-cols-2 gap-2 border-t border-slate-800 p-3">
-            <div className="flex flex-col rounded-md bg-slate-800 p-2">
-              <span className="text-xs text-slate-400">{t("riskReward")}</span>
-              <span className="text-lg font-bold text-white">
-                1:{riskRewardRatio}
-              </span>
-            </div>
-
-            <div className="flex flex-col rounded-md bg-slate-800 p-2">
-              <span className="text-xs text-slate-400">{t("direction")}</span>
-              <div className="flex items-center">
-                {isBuy ? (
-                  <>
-                    <ArrowUp className="mr-1 h-4 w-4 text-emerald-400" />
-                    <span className="font-bold text-emerald-400">
-                      {t("long")}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <ArrowDown className="mr-1 h-4 w-4 text-rose-400" />
-                    <span className="font-bold text-rose-400">
-                      {t("short")}
-                    </span>
-                  </>
+                {/* Progress from entry to current price (if available) */}
+                {currentPosition !== null && (
+                  <div
+                    className={cn(
+                      "absolute bottom-0 top-0 opacity-40",
+                      isProfitable ? "bg-emerald-500" : "bg-rose-500",
+                    )}
+                    style={{
+                      left: `${Math.min(entryPosition, currentPosition)}%`,
+                      width: `${Math.abs(currentPosition - entryPosition)}%`,
+                    }}
+                  />
                 )}
+
+                {/* Stop Loss marker */}
+                <div className="absolute bottom-0 left-0 top-0 flex items-center">
+                  <div className="h-8 w-2 rounded-l-lg bg-rose-500" />
+                </div>
+
+                {/* Entry price marker */}
+                <div
+                  className="absolute bottom-0 top-0 z-10 flex items-center"
+                  style={{
+                    left: `calc(${entryPosition}% - 1.5px)`,
+                  }}
+                >
+                  <div className="h-8 w-3 bg-blue-500" />
+                </div>
+
+                {/* Current price marker - SIMPLIFIED TO JUST A LINE */}
+                {currentPosition !== null && (
+                  <div
+                    className="absolute bottom-0 top-0 z-20 flex items-center"
+                    style={{
+                      left: `calc(${currentPosition}% - 1px)`,
+                    }}
+                  >
+                    <div className="h-8 w-2 bg-amber-500" />
+                  </div>
+                )}
+
+                {/* Take profit marker */}
+                <div className="absolute bottom-0 right-0 top-0 flex items-center">
+                  <div className="h-8 w-2 rounded-r-lg bg-emerald-500" />
+                </div>
               </div>
+
+              {/* Labels for the scale */}
+              <div className="mt-1 flex justify-between text-xs">
+                <div className="flex flex-col items-start">
+                  <span className="text-rose-500 font-medium">{t("stop")}</span>
+                  <span className="text-slate-400">{formatNumber(stop_loss_price)}</span>
+                </div>
+                
+                <div className="flex flex-col items-center">
+                  <span className="text-blue-500 font-medium">{t("entry")}</span>
+                  <span className="text-slate-400">{formatNumber(entry_price)}</span>
+                </div>
+                
+                <div className="flex flex-col items-end">
+                  <span className="text-emerald-500 font-medium">{t("target")}</span>
+                  <span className="text-slate-400">{formatNumber(take_profit_price)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Trade direction */}
+            <div
+              className={cn(
+                "flex items-center justify-center rounded-md py-2",
+                isBuy
+                  ? "bg-emerald-900/20 text-emerald-400"
+                  : "bg-rose-900/20 text-rose-400",
+              )}
+            >
+              {isBuy ? (
+                <ArrowUp className="mr-1 h-4 w-4" />
+              ) : (
+                <ArrowDown className="mr-1 h-4 w-4" />
+              )}
+              <span className="font-medium">
+                {isBuy ? t("long") : t("short")}
+              </span>
             </div>
           </div>
         </div>
@@ -256,5 +357,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
     );
   },
 );
+
+RunningSignalCard.displayName = "RunningSignalCard";
 
 export default RunningSignalCard;

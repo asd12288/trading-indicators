@@ -8,6 +8,8 @@ import { toast } from "@/hooks/use-toast";
 import usePreferences from "@/hooks/usePreferences";
 import SignalToolTooltip from "./SignalToolTooltip";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
+import { useTheme } from "@/context/theme-context";
 
 interface SignalToolProps {
   signalId: string;
@@ -17,6 +19,7 @@ interface SignalToolProps {
 }
 
 function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
+  const { theme } = useTheme();
   const { preferences, updatePreference, isLoading } = usePreferences(userId);
   const t = useTranslations("SignalTool");
 
@@ -61,16 +64,24 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
     await updatePreference(signalId, { favorite: newValue });
   }
 
-  const buttonClasses = `relative rounded-full p-2.5 transition-all duration-200 ${
+  const buttonClasses = cn(
+    "relative rounded-full p-2.5 transition-all duration-200",
     isPro
-      ? "hover:bg-slate-700/70 active:scale-95"
-      : "text-slate-700 cursor-not-allowed"
-  }`;
+      ? theme === "dark" 
+        ? "hover:bg-slate-700/70 active:scale-95" 
+        : "hover:bg-slate-100 active:scale-95"
+      : theme === "dark" 
+        ? "text-slate-700 cursor-not-allowed" 
+        : "text-slate-300 cursor-not-allowed"
+  );
 
   const iconClasses = `text-2xl ${isPro ? "" : "opacity-50"}`;
 
   return (
-    <div className="flex items-center space-x-3 border-l border-slate-700/70 pl-4">
+    <div className={cn(
+      "flex items-center space-x-3 border-l pl-4",
+      theme === "dark" ? "border-slate-700/70" : "border-slate-200"
+    )}>
       {!isLoading && (
         <>
           <SignalToolTooltip text={t("notifications.tooltip")}>
@@ -85,7 +96,10 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
                 <IoIosNotificationsOff className={iconClasses} />
               )}
               {!isPro && (
-                <span className="absolute inset-0 rounded-full border border-slate-700/50"></span>
+                <span className={cn(
+                  "absolute inset-0 rounded-full border",
+                  theme === "dark" ? "border-slate-700/50" : "border-slate-200"
+                )}></span>
               )}
             </button>
           </SignalToolTooltip>
@@ -102,7 +116,10 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
                 <FaVolumeMute className={iconClasses} />
               )}
               {!isPro && (
-                <span className="absolute inset-0 rounded-full border border-slate-700/50"></span>
+                <span className={cn(
+                  "absolute inset-0 rounded-full border",
+                  theme === "dark" ? "border-slate-700/50" : "border-slate-200"
+                )}></span>
               )}
             </button>
           </SignalToolTooltip>
@@ -121,14 +138,20 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
                 <MdFavoriteBorder className={iconClasses} />
               )}
               {!isPro && (
-                <span className="absolute inset-0 rounded-full border border-slate-700/50"></span>
+                <span className={cn(
+                  "absolute inset-0 rounded-full border",
+                  theme === "dark" ? "border-slate-700/50" : "border-slate-200"
+                )}></span>
               )}
             </button>
           </SignalToolTooltip>
         </>
       )}
       {isLoading && (
-        <div className="h-8 w-24 animate-pulse rounded-full bg-slate-700/50"></div>
+        <div className={cn(
+          "h-8 w-24 animate-pulse rounded-full",
+          theme === "dark" ? "bg-slate-700/50" : "bg-slate-200/70"
+        )}></div>
       )}
     </div>
   );
