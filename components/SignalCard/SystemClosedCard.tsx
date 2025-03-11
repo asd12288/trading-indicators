@@ -17,51 +17,51 @@ const SystemClosedCard = ({ instrumentName }: SystemClosedCardProps) => {
   const { instrumentInfo } = useInstrumentInfo(instrumentName);
   const { nextActiveTime, alertHours } = useAlertHours(instrumentName);
   const [countdown, setCountdown] = useState<string | null>(null);
-  
+
   // Update countdown timer
   useEffect(() => {
     if (!nextActiveTime) return;
-    
+
     const updateCountdown = () => {
       const now = new Date();
       const diffMs = nextActiveTime.getTime() - now.getTime();
-      
+
       if (diffMs <= 0) {
         setCountdown("Starting now");
         return;
       }
-      
+
       const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
       const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-      
+
       let countdownText = "";
       if (diffHrs > 0) {
         countdownText += `${diffHrs}h `;
       }
       countdownText += `${diffMins}m`;
-      
+
       setCountdown(countdownText);
     };
-    
+
     updateCountdown();
     const intervalId = setInterval(updateCountdown, 30000); // Update every 30 seconds
-    
+
     return () => clearInterval(intervalId);
   }, [nextActiveTime]);
 
   // Extract sessions info for display
   const formatSessionTime = (timeString: string) => {
-    const [hours, minutes] = timeString.split(':').map(Number);
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    const [hours, minutes] = timeString.split(":").map(Number);
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
   };
 
   // Get active sessions for display
   const activeSessions = alertHours.map((session, index) => ({
     session: session.session_number,
     time: `${formatSessionTime(session.start_time_utc)} - ${formatSessionTime(session.end_time_utc)} UTC`,
-    days: session.days_active.map(day => 
-      ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][day]
-    ).join(', ')
+    days: session.days_active
+      .map((day) => ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][day])
+      .join(", "),
   }));
 
   return (
@@ -69,18 +69,18 @@ const SystemClosedCard = ({ instrumentName }: SystemClosedCardProps) => {
       <div
         className={cn(
           "h-full overflow-hidden rounded-lg border shadow-md transition-all hover:shadow-lg",
-          theme === "dark" 
-            ? "border-blue-500/30 bg-slate-900" 
-            : "border-blue-500/50 bg-white"
+          theme === "dark"
+            ? "border-blue-500/30 bg-slate-900"
+            : "border-blue-500/50 bg-white",
         )}
       >
         {/* Status banner */}
-        <div 
+        <div
           className={cn(
             "py-2 text-center font-medium text-white",
-            theme === "dark" 
-              ? "bg-gradient-to-r from-blue-900 to-blue-600" 
-              : "bg-gradient-to-r from-blue-700 to-blue-500"
+            theme === "dark"
+              ? "bg-gradient-to-r from-blue-900 to-blue-600"
+              : "bg-gradient-to-r from-blue-700 to-blue-500",
           )}
         >
           <div className="flex items-center justify-center gap-2">
@@ -95,7 +95,7 @@ const SystemClosedCard = ({ instrumentName }: SystemClosedCardProps) => {
               <h3
                 className={cn(
                   "text-4xl font-bold",
-                  theme === "dark" ? "text-white" : "text-slate-900"
+                  theme === "dark" ? "text-white" : "text-slate-900",
                 )}
               >
                 {instrumentName}
@@ -111,24 +111,24 @@ const SystemClosedCard = ({ instrumentName }: SystemClosedCardProps) => {
           </div>
 
           {/* Status message */}
-          <div 
+          <div
             className={cn(
-              "mb-6 flex items-center rounded-md py-2.5 px-4",
-              theme === "dark" ? "bg-blue-900/30" : "bg-blue-50"
+              "mb-6 flex items-center rounded-md px-4 py-2.5",
+              theme === "dark" ? "bg-blue-900/30" : "bg-blue-50",
             )}
           >
             <AlertTriangle className="mr-3 h-5 w-5 text-blue-500" />
-            <span className="text-blue-600 dark:text-blue-400 text-sm font-medium">
+            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
               {t("systemMessage")}
             </span>
           </div>
 
           {/* Next alert session */}
           {nextActiveTime && (
-            <div 
+            <div
               className={cn(
-                "mb-4 rounded-lg p-4", 
-                theme === "dark" ? "bg-slate-800/70" : "bg-slate-100"
+                "mb-4 rounded-lg p-4",
+                theme === "dark" ? "bg-slate-800/70" : "bg-slate-100",
               )}
             >
               <div className="flex items-center justify-between">
@@ -136,41 +136,43 @@ const SystemClosedCard = ({ instrumentName }: SystemClosedCardProps) => {
                   <Clock className="h-4 w-4" />
                   <span className="font-medium">{t("nextSession")}</span>
                 </div>
-                
+
                 {countdown && (
                   <div className="flex items-center text-xs font-medium text-blue-500">
                     <Timer className="mr-1 h-3.5 w-3.5" />
-                    <span>{t("startsIn")} {countdown}</span>
+                    <span>
+                      {t("startsIn")} {countdown}
+                    </span>
                   </div>
                 )}
               </div>
-              
-              <div className="mt-3 text-lg font-bold">
+
+              <div className="mt-3 text-lg font-medium">
                 {format(nextActiveTime, "EEEE, HH:mm")} UTC
               </div>
             </div>
           )}
 
           {/* Alert sessions list */}
-          <div 
+          <div
             className={cn(
-              "rounded-lg p-4", 
-              theme === "dark" ? "bg-slate-800/70" : "bg-slate-100"
+              "rounded-lg p-4",
+              theme === "dark" ? "bg-slate-800/70" : "bg-slate-100",
             )}
           >
             <div className="mb-2 flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
               <Calendar className="h-4 w-4" />
               <span className="font-medium">{t("alertSessions")}</span>
             </div>
-            
-            <div className="space-y-2 mt-3">
+
+            <div className="mt-3 space-y-2">
               {activeSessions.length > 0 ? (
                 activeSessions.map((session, index) => (
-                  <div 
+                  <div
                     key={index}
                     className={cn(
-                      "rounded-md p-3", 
-                      theme === "dark" ? "bg-slate-700" : "bg-slate-200"
+                      "rounded-md p-3",
+                      theme === "dark" ? "bg-slate-700" : "bg-slate-200",
                     )}
                   >
                     <div className="flex justify-between">
@@ -181,9 +183,7 @@ const SystemClosedCard = ({ instrumentName }: SystemClosedCardProps) => {
                         {session.days}
                       </div>
                     </div>
-                    <div className="mt-1 text-lg font-bold">
-                      {session.time}
-                    </div>
+                    <div className="mt-1 text-lg font-medium">{session.time}</div>
                   </div>
                 ))
               ) : (

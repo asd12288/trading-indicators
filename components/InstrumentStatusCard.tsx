@@ -175,38 +175,32 @@ const InstrumentStatusCard = ({
             />
           </div>
         </div>
-
-        {/* Add decorative elements */}
-        <div className="absolute -bottom-6 -right-6 h-24 w-24 rounded-full bg-blue-500/5"></div>
-        <div className="absolute -left-6 -top-6 h-16 w-16 rounded-full bg-purple-500/5"></div>
       </div>
 
       {/* Main Stats Grid - REDESIGNED with cards */}
       <div className="flex flex-col gap-4">
         {/* High/VAH row */}
-        <div className="grid grid-cols-2 gap-4">
-          <StatCard
-            label={t("high")}
-            tooltip={t("highTooltip")}
-            value={compositeData.high?.value}
-            isFlashing={flashField === "high"}
-            t={t}
-            icon={<ArrowUp size={18} className="text-green-400" />}
-            theme="green"
-          />
 
-          <StatCard
-            label="VAH"
-            tooltip={t("vahTooltip")}
-            value={compositeData.vah?.value}
-            isFlashing={flashField === "vah"}
-            variant="secondary"
-            t={t}
-            theme="blue"
-          />
-        </div>
+        <StatCard
+          label={t("high")}
+          tooltip={t("highTooltip")}
+          value={compositeData.high?.value}
+          isFlashing={flashField === "high"}
+          t={t}
+          icon={<ArrowUp size={18} className="text-green-400" />}
+        />
+
+        <StatCard
+          label="VAH"
+          tooltip={t("vahTooltip")}
+          value={compositeData.vah?.value}
+          isFlashing={flashField === "vah"}
+          variant="secondary"
+          t={t}
+        />
 
         {/* Middle row - 3 columns */}
+
         <div className="grid grid-cols-3 gap-4">
           <StatCard
             label="VWAP"
@@ -214,7 +208,6 @@ const InstrumentStatusCard = ({
             value={compositeData.vwap?.value}
             isFlashing={flashField === "vwap"}
             t={t}
-            theme="violet"
           />
 
           <StatCard
@@ -223,7 +216,6 @@ const InstrumentStatusCard = ({
             value={compositeData.poc?.value}
             isFlashing={flashField === "poc"}
             t={t}
-            theme="amber"
           />
 
           <StatCard
@@ -233,32 +225,26 @@ const InstrumentStatusCard = ({
             isFlashing={flashField === "vpoc"}
             variant="secondary"
             t={t}
-            theme="cyan"
           />
         </div>
-
         {/* Low/VAL row */}
-        <div className="grid grid-cols-2 gap-4">
-          <StatCard
-            label="VAL"
-            tooltip={t("valTooltip")}
-            value={compositeData.val?.value}
-            isFlashing={flashField === "val"}
-            variant="secondary"
-            t={t}
-            theme="indigo"
-          />
+        <StatCard
+          label="VAL"
+          tooltip={t("valTooltip")}
+          value={compositeData.val?.value}
+          isFlashing={flashField === "val"}
+          variant="secondary"
+          t={t}
+        />
 
-          <StatCard
-            label={t("low")}
-            tooltip={t("lowTooltip")}
-            value={compositeData.low?.value}
-            isFlashing={flashField === "low"}
-            t={t}
-            icon={<ArrowDown size={18} className="text-red-400" />}
-            theme="red"
-          />
-        </div>
+        <StatCard
+          label={t("low")}
+          tooltip={t("lowTooltip")}
+          value={compositeData.low?.value}
+          isFlashing={flashField === "low"}
+          t={t}
+          icon={<ArrowDown size={18} className="text-red-400" />}
+        />
       </div>
 
       {/* Footer with timestamp */}
@@ -289,40 +275,16 @@ const StatCard = ({
   tooltip,
   value,
   isFlashing,
-  variant = "primary",
   icon,
   t,
   theme = "blue",
   compact = false,
 }: StatCardProps) => {
-  const isPrimary = variant === "primary";
-
-  // Get theme-specific classes
-  const getThemeClasses = () => {
-    const themeMap = {
-      blue: "from-blue-800/20 to-blue-900/10 hover:from-blue-800/30 hover:to-blue-900/20",
-      green:
-        "from-green-800/20 to-green-900/10 hover:from-green-800/30 hover:to-green-900/20",
-      red: "from-red-800/20 to-red-900/10 hover:from-red-800/30 hover:to-red-900/20",
-      amber:
-        "from-amber-800/20 to-amber-900/10 hover:from-amber-800/30 hover:to-amber-900/20",
-      violet:
-        "from-violet-800/20 to-violet-900/10 hover:from-violet-800/30 hover:to-violet-900/20",
-      cyan: "from-cyan-800/20 to-cyan-900/10 hover:from-cyan-800/30 hover:to-cyan-900/20",
-      indigo:
-        "from-indigo-800/20 to-indigo-900/10 hover:from-indigo-800/30 hover:to-indigo-900/20",
-    };
-
-    return themeMap[theme] || themeMap.blue;
-  };
-
   return (
-    <div
-      className={`flex flex-col justify-between rounded-xl bg-gradient-to-br ${getThemeClasses()} p-3.5 shadow-lg transition-all duration-300 hover:shadow-xl ${isFlashing ? `ring-1 ring-${theme}-400/30` : ""}`}
-    >
+    <div className="flex flex-col justify-between rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 p-3.5 shadow-lg transition-all duration-300 hover:shadow-xl">
       <div className="mb-2 flex items-center justify-between">
         <SignalToolTooltip text={tooltip}>
-          <div className="flex cursor-help items-center gap-1 text-sm font-medium">
+          <div className="flex cursor-help items-center gap-1 text-sm font-medium md:text-lg">
             {icon && <span className="mr-1">{icon}</span>}
             {label}
             <Info size={12} className="ml-0.5 opacity-60" />
@@ -333,7 +295,7 @@ const StatCard = ({
         <div className={`h-1.5 w-1.5 rounded-full bg-${theme}-500/50`}></div>
 
         <motion.div
-          className={`text-xl font-bold tracking-tight ${isPrimary ? "" : "text-slate-300"}`}
+          className={`text-xl font-bold tracking-tight text-slate-300`}
           animate={{
             opacity: isFlashing ? [1, 0.5, 1] : 1,
             scale: isFlashing ? [1, 1.02, 1] : 1,
