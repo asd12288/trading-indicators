@@ -349,8 +349,7 @@
     "liveTracking": "LIVE TRACKING",
     "signalActive": "SIGNAL ACTIVE",
     "live": "LIVE",
-    "entryPrice": "Entry Price",
-    "objective": "Objective",
+
     "stopLoss": "Stop Loss",
     "stop": "Stop",
     "entry": "Entry",
@@ -365,15 +364,10 @@
     "close": "Close",
     "status": "Status:",
     "tradeOver": "Trade Over",
-    "entryPrice": "Entry Price:",
-    "exitPrice": "Exit Price:",
-    "mae": "MAE:",
-    "mfe": "MFE:",
     "tradeDuration": "Trade Duration:",
     "startedAt": "Started at:",
     "result": "Result",
     "profit": "PROFIT",
-    "loss": "LOSS",
     "completed": "COMPLETED",
     "gain": "gain",
     "priceDifference": "price difference",
@@ -883,13 +877,12 @@
     "overviewDescription": "Current status and trading session information",
     "signalStatus": "Signal Status",
     "tradingHours": "Trading Hours",
-    
+
     "status": {
       "title": "Smart Alert Status:",
       "active": "Active",
       "inactive": "Deactivate",
       "lastUpdate": "Last updated: {time}"
-      
     },
     "summary": {
       "title": "Signal Summary - last 7 days",
@@ -1452,7 +1445,7 @@
     "noSessionsConfigured": "No alert sessions configured for this instrument"
   },
   "SignalHoursInfo": {
-   "marketHours": "Market Hours",
+    "marketHours": "Market Hours",
     "alertHours": "Alert Hours",
     "marketDescription": "When this instrument is traded on exchanges",
     "alertDescription": "When our system actively monitors this instrument",

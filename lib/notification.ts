@@ -1,4 +1,5 @@
 import { toast } from "@/hooks/use-toast";
+import React from "react";
 
 interface SignalPayload {
   new: {
@@ -21,13 +22,27 @@ export const initializeAudio = () => {
 };
 
 export const notifyUser = (payload: SignalPayload) => {
+  const isNewAlert = payload.new.exit_price === null;
+  const instrumentName = payload.new.instrument_name;
+  
   toast({
-    title: `New Alert ${payload?.new?.instrument_name}`,
-    description: `${
-      payload.new.exit_price === null
-        ? `A new Alert has started. Entry Price: ${payload.new.entry_price}`
-        : `A Alert has been closed. Exit Price: ${payload.new.exit_price}`
-    }`,
+    title: `New Alert ${instrumentName}`,
+    description: React.createElement(
+      "div", 
+      {}, 
+      React.createElement("p", {}, 
+        isNewAlert
+          ? `A new Alert has started. Entry Price: ${payload.new.entry_price}`
+          : `A Alert has been closed. Exit Price: ${payload.new.exit_price}`
+      ),
+      React.createElement("a", {
+        href: `/smart-alerts/${instrumentName}`,
+        className: "underline text-blue-600 hover:text-blue-800 cursor-pointer mt-2 inline-block",
+        onClick: (e) => {
+          e.stopPropagation(); // Prevent toast dismiss when clicking link
+        }
+      }, "View instrument details →")
+    )
   });
 };
 
