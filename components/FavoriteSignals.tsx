@@ -20,6 +20,22 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
+// Helper function to determine signal status priority
+const getSignalStatusPriority = (signal: Signal): number => {
+  // Running signals (have entry_time but no exit_time)
+  if (signal.entry_time && !signal.exit_time) {
+    return 1; // Highest priority
+  }
+  // Fulfilled signals (have both entry_time and exit_time)
+  else if (signal.entry_time && signal.exit_time) {
+    return 2; // Medium priority
+  }
+  // Market closed signals (default to lowest priority)
+  else {
+    return 3; // Lowest priority
+  }
+};
+
 interface FavoriteSignalsProps {
   favouriteSignals: Signal[];
   isLoading?: boolean;
@@ -70,8 +86,10 @@ const FavoriteSignals: React.FC<FavoriteSignalsProps> = ({
   favouriteSignals,
   isLoading = false,
 }) => {
-  const [sortOption, setSortOption] = useState<"name" | "time" | "performance">(
-    "time",
+  const [sortOption, setSortOption] = useState<
+    "name" | "time" | "performance" | "status"
+  >(
+    "status", // Changed default to status
   );
 
   // Scroll handlers
@@ -115,6 +133,19 @@ const FavoriteSignals: React.FC<FavoriteSignalsProps> = ({
             : b.entry_price - b.take_profit_price;
 
         return bPerformance - aPerformance;
+      } else if (sortOption === "status") {
+        // Sort by status priority first
+        const statusCompare =
+          getSignalStatusPriority(a) - getSignalStatusPriority(b);
+        if (statusCompare !== 0) {
+          return statusCompare;
+        }
+
+        // For signals with same status, sort by time (newest first within each category)
+        return (
+          new Date(b.entry_time || new Date()).getTime() -
+          new Date(a.entry_time || new Date()).getTime()
+        );
       }
       // Default: sort by time (newest first)
       return (
@@ -154,13 +185,21 @@ const FavoriteSignals: React.FC<FavoriteSignalsProps> = ({
                   ? "Recent"
                   : sortOption === "name"
                     ? "Name"
-                    : "Performance"}
+                    : sortOption === "status"
+                      ? "Status"
+                      : "Performance"}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
               className="bg-slate-800 text-slate-200"
             >
+              <DropdownMenuItem
+                onClick={() => setSortOption("status")}
+                className="hover:bg-slate-700"
+              >
+                Status
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSortOption("time")}
                 className="hover:bg-slate-700"

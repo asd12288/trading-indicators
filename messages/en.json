@@ -925,7 +925,8 @@
     "listView": "List view",
     "sort": "Sort",
     "sortByName": "Sort by name",
-    "sortByTime": "Sort by time"
+    "sortByTime": "Sort by time",
+    "sortByStatus": "Sort by status"
   },
   "InstrumentStatusCard": {
     "instrumentStatus": "Instrument Status",

@@ -1,16 +1,21 @@
+"use client";
+
 import AlertsTable from "@/components/AlertsTable";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
 import React from "react";
 
 export const metadata = {
-  title: "Smart Alerts",
-  description: "View and manage your trading alerts",
+  title: "Instrument Alerts",
+  description: "View and manage your instrument-specific alerts",
 };
 
-const AlertsPage = async ({ params }: { params: { locale: string } }) => {
+const InstrumentAlertsPage = async ({
+  params,
+}: {
+  params: { locale: string; instrumentName: string };
+}) => {
   const supabase = await createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -21,9 +26,9 @@ const AlertsPage = async ({ params }: { params: { locale: string } }) => {
 
   return (
     <div className="container mx-auto">
-      <AlertsTable />
+      <AlertsTable instrumentName={params.instrumentName} />
     </div>
   );
 };
 
-export default AlertsPage;
+export default InstrumentAlertsPage;

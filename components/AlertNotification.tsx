@@ -155,57 +155,56 @@ const AlertNotification = ({
               )}
             </div>
 
-            <div className="flex items-center text-xs text-slate-400">
-              <Clock className="mr-1 h-3 w-3" />
-              {actualTime && format(new Date(actualTime), "HH:mm")}
-            </div>
+            <div className="flex items-center text-xs text-slate-400"></div>
+            <Clock className="mr-1 h-3 w-3" />
+            {actualTime && format(new Date(actualTime), "HH:mm")}
+          </div>
+        </div>
+
+        {/* Middle row - Price & Movement */}
+        <div className="mb-1 flex items-center justify-between">
+          <div className="flex items-baseline gap-1">
+            <span className="text-sm text-slate-300">
+              {t("messages.level")}
+            </span>
+            <span
+              className={`text-lg font-bold tabular-nums tracking-wide ${
+                isLong ? "text-green-400" : "text-red-400"
+              }`}
+            >
+              {typeof price === "number" ? price.toFixed(2) : price}
+            </span>
           </div>
 
-          {/* Middle row - Price & Movement */}
-          <div className="mb-1 flex items-center justify-between">
-            <div className="flex items-baseline gap-1">
-              <span className="text-sm text-slate-300">
-                {t("messages.level")}
-              </span>
-              <span
-                className={`text-lg font-bold tabular-nums tracking-wide ${
-                  isLong ? "text-green-400" : "text-red-400"
-                }`}
-              >
-                {typeof price === "number" ? price.toFixed(2) : price}
-              </span>
-            </div>
+          <div className="flex items-center gap-1.5">
+            <PercentIcon className="h-3 w-3 text-slate-400" />
+            <span
+              className={`text-sm font-medium tabular-nums ${priceMovement >= 0 ? "text-green-400" : "text-red-400"}`}
+            >
+              {formatPercentage(priceMovement)}
+            </span>
+          </div>
+        </div>
 
-            <div className="flex items-center gap-1.5">
-              <PercentIcon className="h-3 w-3 text-slate-400" />
-              <span
-                className={`text-sm font-medium tabular-nums ${priceMovement >= 0 ? "text-green-400" : "text-red-400"}`}
-              >
-                {formatPercentage(priceMovement)}
-              </span>
-            </div>
+        {/* Bottom row - Alert type & Volume */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-slate-700/60 px-2 py-0.5 text-xs text-slate-300">
+              {alertType === "price_level"
+                ? "Price Alert"
+                : alertType === "trend_change"
+                  ? "Trend Change"
+                  : "Volatility Alert"}
+            </span>
+            <span className="flex items-center text-xs text-slate-400">
+              <BarChart3 className="mr-1 h-3 w-3" />
+              {volume}
+            </span>
           </div>
 
-          {/* Bottom row - Alert type & Volume */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-slate-700/60 px-2 py-0.5 text-xs text-slate-300">
-                {alertType === "price_level"
-                  ? "Price Alert"
-                  : alertType === "trend_change"
-                    ? "Trend Change"
-                    : "Volatility Alert"}
-              </span>
-              <span className="flex items-center text-xs text-slate-400">
-                <BarChart3 className="mr-1 h-3 w-3" />
-                {volume}
-              </span>
-            </div>
-
-            <div className="flex items-center">
-              <ExternalLink className="h-4 w-4 text-blue-400 opacity-0 transition-opacity group-hover:opacity-100" />
-              <ChevronRight className="ml-1 h-4 w-4 text-slate-500 opacity-0 transition-opacity group-hover:opacity-100" />
-            </div>
+          <div className="flex items-center">
+            <ExternalLink className="h-4 w-4 text-blue-400 opacity-0 transition-opacity group-hover:opacity-100" />
+            <ChevronRight className="ml-1 h-4 w-4 text-slate-500 opacity-0 transition-opacity group-hover:opacity-100" />
           </div>
         </div>
       </motion.div>

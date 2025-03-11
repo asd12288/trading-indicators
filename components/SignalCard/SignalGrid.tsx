@@ -8,6 +8,22 @@ import { memo, useCallback, useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import SignalCard from "./SignalCard";
 
+// Helper function to determine signal status priority
+const getSignalStatusPriority = (signal: Signal): number => {
+  // Running signals (have entry_time but no exit_time)
+  if (signal.entry_time && !signal.exit_time) {
+    return 1; // Highest priority
+  }
+  // Fulfilled signals (have both entry_time and exit_time)
+  else if (signal.entry_time && signal.exit_time) {
+    return 2; // Medium priority
+  }
+  // Market closed signals (default to lowest priority)
+  else {
+    return 3; // Lowest priority
+  }
+};
+
 interface SignalsGridProps {
   signals: Signal[];
   isLoading?: boolean;
@@ -45,8 +61,10 @@ const SignalsGrid: React.FC<SignalsGridProps> = ({
 }) => {
   // Always call hooks at the top, regardless of conditions
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [sortOrder, setSortOrder] = useState<"default" | "name" | "time">(
-    "default",
+  const [sortOrder, setSortOrder] = useState<
+    "default" | "name" | "time" | "status"
+  >(
+    "status", // Changed default to "status" to prioritize by signal state
   );
   const t = useTranslations("SignalsGrid");
 
@@ -61,8 +79,21 @@ const SignalsGrid: React.FC<SignalsGridProps> = ({
         return (
           new Date(b.entry_time).getTime() - new Date(a.entry_time).getTime()
         );
+      } else if (sortOrder === "status" || sortOrder === "default") {
+        // Sort by status priority first
+        const statusCompare =
+          getSignalStatusPriority(a) - getSignalStatusPriority(b);
+        if (statusCompare !== 0) {
+          return statusCompare;
+        }
+
+        // For signals with same status, sort by time (newest first within each category)
+        return (
+          new Date(b.entry_time || new Date()).getTime() -
+          new Date(a.entry_time || new Date()).getTime()
+        );
       }
-      return 0; // Default order
+      return 0;
     });
   }, [signals, sortOrder]);
 
@@ -70,12 +101,14 @@ const SignalsGrid: React.FC<SignalsGridProps> = ({
   const handleSortOrderChange = useCallback(() => {
     setSortOrder((current) => {
       switch (current) {
-        case "default":
+        case "status":
           return "name";
         case "name":
           return "time";
+        case "time":
+          return "status";
         default:
-          return "default";
+          return "status";
       }
     });
   }, []);
@@ -147,8 +180,8 @@ const SignalsGrid: React.FC<SignalsGridProps> = ({
               onClick={handleSortOrderChange}
             >
               <ArrowDownWideNarrow className="h-3.5 w-3.5" />
-              {sortOrder === "default"
-                ? t("sort")
+              {sortOrder === "status"
+                ? t("sortByStatus") || "Sort by Status"
                 : sortOrder === "name"
                   ? t("sortByName")
                   : t("sortByTime")}

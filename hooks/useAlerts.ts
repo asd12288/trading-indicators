@@ -20,7 +20,7 @@ const useAlerts = () => {
           .from("signals_alert")
           .select("*")
           .order("time_utc", { ascending: false })
-          .limit(20);
+          
 
         if (error) {
           throw new Error(error.message);
@@ -39,21 +39,15 @@ const useAlerts = () => {
 
     fetchData();
 
-    // Subscribe to changes in the "signals_alert" table (was incorrectly "alerts")
+    // Subscribe to changes in the "signals_alert" table
     const subscription = supabaseClient
       .channel("alerts-channel")
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "signals_alert" },
         (payload) => {
-          console.log("New alert received:", payload.new); // Debug log
-          // Log specific fields to identify the correct field names
-          console.log(
-            "Alert details - instrument:",
-            payload.new.instrument_name || payload.new.instrument,
-          );
-          console.log("Alert details - price:", payload.new.price);
-          console.log("Alert details - time:", payload.new.time_utc);
+         
+          const newAlert = payload.new as Alert;
 
           // Play sound when a new alert is received
           if (pingSoundRef.current) {
@@ -63,7 +57,8 @@ const useAlerts = () => {
                 console.error("Could not play alert sound:", err),
               );
           }
-          setAlerts((current) => [payload.new as Alert, ...current]);
+
+          setAlerts((current) => [newAlert, ...current]);
         },
       )
       .subscribe();

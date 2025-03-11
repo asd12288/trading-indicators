@@ -20,6 +20,22 @@ import { useTheme } from "@/context/theme-context";
 import SignalsDisplay from "../SignalsDisplay";
 import SignalDebugDisplay from "../debug/SignalDebugDisplay";
 
+// Helper function to determine signal status priority
+const getSignalStatusPriority = (signal) => {
+  // Running signals (have entry_time but no exit_time)
+  if (signal.entry_time && !signal.exit_time) {
+    return 1; // Highest priority
+  }
+  // Fulfilled signals (have both entry_time and exit_time)
+  else if (signal.entry_time && signal.exit_time) {
+    return 2; // Medium priority
+  }
+  // Market closed signals (default to lowest priority)
+  else {
+    return 3; // Lowest priority
+  }
+};
+
 interface SignalsListProps {
   userId: string;
 }
@@ -44,24 +60,59 @@ const SignalsList = ({ userId }: SignalsListProps) => {
   const filteredSignals = useMemo(() => {
     if (!signals) return [];
 
-    return signals.filter((signal) => {
-      const name = signal.instrument_name?.toLowerCase() || "";
-      const category =
-        instrumentCategoryMap[signal.instrument_name] || "unknown";
-      const matchesCategory =
-        selectedCategory === "all" ? true : category === selectedCategory;
-      const matchesSearch =
-        searchedSignal.trim() === ""
-          ? true
-          : name.includes(searchedSignal.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
+    return (
+      [...signals]
+        .filter((signal) => {
+          const name = signal.instrument_name?.toLowerCase() || "";
+          const category =
+            instrumentCategoryMap[signal.instrument_name] || "unknown";
+          const matchesCategory =
+            selectedCategory === "all" ? true : category === selectedCategory;
+          const matchesSearch =
+            searchedSignal.trim() === ""
+              ? true
+              : name.includes(searchedSignal.toLowerCase());
+          return matchesCategory && matchesSearch;
+        })
+        // Sort by status priority first before slicing
+        .sort((a, b) => {
+          // Sort by status priority first
+          const statusCompare =
+            getSignalStatusPriority(a) - getSignalStatusPriority(b);
+          if (statusCompare !== 0) {
+            return statusCompare;
+          }
+
+          // For signals with same status, sort by time (newest first within each category)
+          return (
+            new Date(b.entry_time || new Date()).getTime() -
+            new Date(a.entry_time || new Date()).getTime()
+          );
+        })
+    );
   }, [signals, searchedSignal, selectedCategory]);
 
   const displaySignals = isPro ? filteredSignals : filteredSignals.slice(0, 5);
-  const favouriteSignals =
-    signals?.filter((signal) => favorites.includes(signal.instrument_name)) ??
-    [];
+  const favouriteSignals = useMemo(() => {
+    if (!signals) return [];
+
+    return signals
+      .filter((signal) => favorites.includes(signal.instrument_name))
+      .sort((a, b) => {
+        // Sort by status priority first
+        const statusCompare =
+          getSignalStatusPriority(a) - getSignalStatusPriority(b);
+        if (statusCompare !== 0) {
+          return statusCompare;
+        }
+
+        // For signals with same status, sort by time (newest first within each category)
+        return (
+          new Date(b.entry_time || new Date()).getTime() -
+          new Date(a.entry_time || new Date()).getTime()
+        );
+      });
+  }, [signals, favorites]);
 
   // Instead of early returns, use conditional rendering with content variable
   let content;

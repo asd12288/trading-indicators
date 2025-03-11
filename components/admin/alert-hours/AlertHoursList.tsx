@@ -10,11 +10,18 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2, Clock, Search } from "lucide-react";
+import { Trash2, Clock, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/context/theme-context";
 import supabaseClient from "@/database/supabase/supabase";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface AlertHoursListProps {
   alertHours: AlertHours[];
@@ -34,6 +41,10 @@ const AlertHoursList = ({
   const { theme } = useTheme();
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
   const handleStatusChange = async (id: string, checked: boolean) => {
     setUpdatingStatus(id);
     try {
@@ -47,6 +58,30 @@ const AlertHoursList = ({
       setUpdatingStatus(null);
     }
   };
+
+  // Pagination calculation
+  const totalPages = Math.ceil(alertHours.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = alertHours.slice(startIndex, endIndex);
+
+  // Pagination handlers
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  // Reset to first page when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   return (
     <>
@@ -70,7 +105,7 @@ const AlertHoursList = ({
           <TableHeader>
             <TableRow
               className={
-                theme === "dark" ? "bg-slate-800 hover:bg-slate-800" : ""
+                theme === "dark" ? "bg-slate-700 hover:bg-slate-800" : ""
               }
             >
               <TableHead className={theme === "dark" ? "text-slate-100" : ""}>
@@ -119,7 +154,7 @@ const AlertHoursList = ({
                 </TableCell>
               </TableRow>
             ) : (
-              alertHours.map((item) => (
+              currentItems.map((item) => (
                 <TableRow
                   key={item.id}
                   className={
@@ -202,6 +237,69 @@ const AlertHoursList = ({
           </TableBody>
         </Table>
       </div>
+
+      {/* Pagination Controls */}
+      {alertHours.length > 0 && (
+        <div
+          className={cn(
+            "mt-4 flex items-center justify-between py-2",
+            theme === "dark" ? "text-slate-300" : "text-slate-600",
+          )}
+        >
+          <div className="flex items-center gap-2">
+            <p className="text-sm">Items per page:</p>
+            <Select
+              value={itemsPerPage.toString()}
+              onValueChange={(value) => {
+                setItemsPerPage(Number(value));
+                setCurrentPage(1);
+              }}
+            >
+              <SelectTrigger className="h-8 w-20">
+                <SelectValue placeholder={itemsPerPage} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <p className="text-sm">
+              Page {currentPage} of {Math.max(1, totalPages)}
+            </p>
+            <div className="flex items-center">
+              <Button
+                
+                size="sm"
+                onClick={goToPreviousPage}
+                disabled={currentPage === 1}
+                className={cn(
+                  "h-8 w-8 p-0",
+                  theme === "dark" ? "border-slate-700 hover:bg-slate-700" : "",
+                )}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button
+              
+                size="sm"
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages || totalPages === 0}
+                className={cn(
+                  "ml-2 h-8 w-8 p-0",
+                  theme === "dark" ? "border-slate-700 hover:bg-slate-700" : "",
+                )}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

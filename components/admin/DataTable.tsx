@@ -37,12 +37,14 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   type?: "signals" | "users" | "posts" | "alerts"; // Make type optional with specific values
+  onRowClick?: (row: TData) => void; // Add onRowClick parameter
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   type,
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -137,6 +139,10 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  onClick={() => onRowClick && onRowClick(row.original)}
+                  className={
+                    onRowClick ? "cursor-pointer hover:bg-slate-700/50" : ""
+                  }
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="p-4">
