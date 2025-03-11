@@ -14,7 +14,7 @@ export interface InstrumentInfo {
 export interface Signal {
   client_trade_id: string;
   instrument_name: string;
-  trade_side: "Long" | "Short" | "Buy" | "Sell";
+  trade_side: "Long" | "Short" | "Buy" | "Sell" | "LONG" | "SHORT" | "BUY" | "SELL";
   entry_price: number;
   entry_time: string;
   exit_price: number | null;

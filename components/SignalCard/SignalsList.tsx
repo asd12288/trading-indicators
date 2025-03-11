@@ -4,7 +4,7 @@ import usePreferences from "@/hooks/usePreferences";
 import useProfile from "@/hooks/useProfile";
 import useSignals from "@/hooks/useSignals";
 import { instrumentCategoryMap } from "@/lib/instrumentCategories";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import FavoriteSignals from "../FavoriteSignals";
 import LoaderCards from "../loaders/LoaderCards";
 import SignalsFilters from "./SignalsFilters";
@@ -16,7 +16,6 @@ import { Alert, AlertTitle, AlertDescription } from "../ui/alert";
 import { Search, Filter, AlertOctagon } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
 import SignalsDisplay from "../SignalsDisplay";
 import SignalDebugDisplay from "../debug/SignalDebugDisplay";
 
@@ -41,11 +40,12 @@ interface SignalsListProps {
 }
 
 const SignalsList = ({ userId }: SignalsListProps) => {
-  const { theme } = useTheme();
-  // Move all hooks to the top - don't add any hooks after this section
   const t = useTranslations("Signals");
   const [searchedSignal, setSearchedSignal] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+
+  // Track locally removed favorites
+  const [removedFavorites, setRemovedFavorites] = useState<string[]>([]);
 
   const {
     preferences,
@@ -55,6 +55,11 @@ const SignalsList = ({ userId }: SignalsListProps) => {
   } = usePreferences(userId);
   const { signals, isLoading: isLoadingSignals } = useSignals(preferences);
   const { isPro } = useProfile(userId);
+
+  // Handle favorite removal to update UI immediately
+  const handleFavoriteRemoved = useCallback((instrumentName: string) => {
+    setRemovedFavorites((prev) => [...prev, instrumentName]);
+  }, []);
 
   // Derived state using useMemo
   const filteredSignals = useMemo(() => {
@@ -96,28 +101,35 @@ const SignalsList = ({ userId }: SignalsListProps) => {
   const favouriteSignals = useMemo(() => {
     if (!signals) return [];
 
-    return signals
-      .filter((signal) => favorites.includes(signal.instrument_name))
-      .sort((a, b) => {
-        // Sort by status priority first
-        const statusCompare =
-          getSignalStatusPriority(a) - getSignalStatusPriority(b);
-        if (statusCompare !== 0) {
-          return statusCompare;
-        }
+    return (
+      signals
+        // Filter based on preferences AND local removed state
+        .filter(
+          (signal) =>
+            favorites.includes(signal.instrument_name) &&
+            !removedFavorites.includes(signal.instrument_name),
+        )
+        .sort((a, b) => {
+          // Sort by status priority first
+          const statusCompare =
+            getSignalStatusPriority(a) - getSignalStatusPriority(b);
+          if (statusCompare !== 0) {
+            return statusCompare;
+          }
 
-        // For signals with same status, sort by time (newest first within each category)
-        return (
-          new Date(b.entry_time || new Date()).getTime() -
-          new Date(a.entry_time || new Date()).getTime()
-        );
-      });
-  }, [signals, favorites]);
+          // For signals with same status, sort by time (newest first within each category)
+          return (
+            new Date(b.entry_time || new Date()).getTime() -
+            new Date(a.entry_time || new Date()).getTime()
+          );
+        })
+    );
+  }, [signals, favorites, removedFavorites]);
 
   // Instead of early returns, use conditional rendering with content variable
   let content;
 
-  // Adjust the content rendering with theme-aware styling
+  // Adjust the content rendering with dark theme styling only
   if (isLoadingSignals || isLoadingPrefs) {
     content = (
       <div className="space-y-6">
@@ -132,12 +144,7 @@ const SignalsList = ({ userId }: SignalsListProps) => {
     content = (
       <Alert
         variant="destructive"
-        className={cn(
-          "p-6",
-          theme === "dark"
-            ? "border-red-800 bg-red-950/50 text-red-200"
-            : "border-red-300 bg-red-50 text-red-800",
-        )}
+        className="border-red-800 bg-red-950/50 p-6 text-red-200"
       >
         <AlertOctagon className="h-5 w-5" />
         <AlertTitle className="text-lg">Error loading signals</AlertTitle>
@@ -160,16 +167,13 @@ const SignalsList = ({ userId }: SignalsListProps) => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className={cn(
-              "rounded-xl border p-5 shadow-md",
-              theme === "dark"
-                ? "border-slate-700/30 bg-gradient-to-b from-slate-800 to-slate-900"
-                : "border-slate-200/80 bg-gradient-to-b from-slate-50 to-white",
-            )}
+            className="rounded-xl border border-slate-700/30 bg-gradient-to-b from-slate-800 to-slate-900 p-5 shadow-md"
           >
             <FavoriteSignals
               favouriteSignals={favouriteSignals}
               isLoading={isLoadingSignals}
+              userId={userId}
+              onFavoriteRemoved={handleFavoriteRemoved} // Add the callback prop
             />
           </motion.div>
         )}
@@ -191,26 +195,11 @@ const SignalsList = ({ userId }: SignalsListProps) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className={cn(
-              "rounded-xl p-5 shadow-md",
-              theme === "dark"
-                ? "bg-slate-900/50"
-                : "border border-slate-200/80 bg-white",
-            )}
+            className="rounded-xl bg-slate-900/50 p-5 shadow-md"
           >
             <div className="mb-4 flex items-center gap-2">
-              <Filter
-                className={cn(
-                  "h-5 w-5",
-                  theme === "dark" ? "text-slate-400" : "text-slate-600",
-                )}
-              />
-              <h3
-                className={cn(
-                  "text-base font-medium",
-                  theme === "dark" ? "text-slate-300" : "text-slate-700",
-                )}
-              >
+              <Filter className="h-5 w-5 text-slate-400" />
+              <h3 className="text-base font-medium text-slate-300">
                 Filter Signals
               </h3>
             </div>
@@ -225,34 +214,12 @@ const SignalsList = ({ userId }: SignalsListProps) => {
 
         {/* No results message */}
         {displaySignals && displaySignals.length === 0 && (
-          <div
-            className={cn(
-              "flex flex-col items-center justify-center rounded-xl p-10 text-center",
-              theme === "dark"
-                ? "bg-slate-900/50"
-                : "border border-slate-200/80 bg-white",
-            )}
-          >
-            <Search
-              className={cn(
-                "mb-3 h-10 w-10",
-                theme === "dark" ? "text-slate-500" : "text-slate-400",
-              )}
-            />
-            <p
-              className={cn(
-                "text-xl font-medium",
-                theme === "dark" ? "text-slate-400" : "text-slate-600",
-              )}
-            >
+          <div className="flex flex-col items-center justify-center rounded-xl bg-slate-900/50 p-10 text-center">
+            <Search className="mb-3 h-10 w-10 text-slate-500" />
+            <p className="text-xl font-medium text-slate-400">
               {t("noResult")}
             </p>
-            <p
-              className={cn(
-                "mt-3 text-base",
-                theme === "dark" ? "text-slate-500" : "text-slate-500",
-              )}
-            >
+            <p className="mt-3 text-base text-slate-500">
               Try adjusting your search or filters to find what you're looking
               for.
             </p>
@@ -264,18 +231,8 @@ const SignalsList = ({ userId }: SignalsListProps) => {
 
         {/* Footer - if needed */}
         {!isPro && displaySignals.length >= 5 && filteredSignals.length > 5 && (
-          <div
-            className={cn(
-              "mt-4 rounded-lg p-5 text-center",
-              theme === "dark" ? "bg-blue-950/30" : "bg-blue-50",
-            )}
-          >
-            <p
-              className={cn(
-                "text-base",
-                theme === "dark" ? "text-slate-300" : "text-slate-700",
-              )}
-            >
+          <div className="mt-4 rounded-lg bg-blue-950/30 p-5 text-center">
+            <p className="text-base text-slate-300">
               Viewing 5 of {filteredSignals.length} signals.
               <Link
                 href="/profile?tab=upgrade"

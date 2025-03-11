@@ -13,7 +13,6 @@ import {
   CircleDot,
 } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/context/theme-context";
 import useLast from "@/hooks/useLast";
@@ -109,36 +108,29 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
       <div className="h-full">
         <div
           className={cn(
-            "relative h-full overflow-hidden rounded-lg border shadow-md transition-all hover:shadow-lg",
+            "h-full overflow-hidden rounded-lg border shadow-md transition-all hover:shadow-lg",
             isBuy ? "border-emerald-500" : "border-rose-500",
             theme === "dark"
               ? "bg-slate-900"
               : "border border-slate-200 bg-white",
           )}
         >
-          {/* Live banner */}
           <div
             className={cn(
-              "flex items-center justify-center gap-2 py-1.5 text-center text-sm font-semibold text-white",
+              "py-1.5 text-center text-sm font-semibold text-white",
               isBuy ? "bg-emerald-600" : "bg-rose-600",
             )}
           >
-            <motion.div
-              animate={{ opacity: [0.7, 1, 0.7] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="h-2 w-2 rounded-full bg-white"
-            />
             {t("live")}
           </div>
 
-          {/* Main content area */}
           <div className="p-4">
-            {/* Enhanced Header with full name */}
+            {/* Header with full name */}
             <div className="mb-4">
               <div className="flex items-center justify-between">
                 <h3
                   className={cn(
-                    "text-4xl font-bold", // Increased size from text-lg to text-xl
+                    "text-4xl font-bold",
                     theme === "dark" ? "text-white" : "text-slate-900",
                   )}
                 >
@@ -169,13 +161,13 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
               )}
             </div>
 
-            {/* Time info - simplified */}
+            {/* Time info */}
             <div className="mb-4 flex items-center gap-1.5 text-xs text-slate-400">
               <Clock className="h-3.5 w-3.5" />
               <span>{timeAgo}</span>
             </div>
 
-            {/* Current Price - Prominent */}
+            {/* Current Price */}
             <div
               className={cn(
                 "mb-4 rounded-lg border-2 p-4",
@@ -275,7 +267,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
               </div>
             </div>
 
-            {/* Improved Price scale visualization */}
+            {/* Price scale visualization */}
             <div className="mb-5">
               <div className="relative h-8 rounded-lg bg-slate-400 dark:bg-slate-700">
                 {/* Progress range for entry price */}
@@ -318,7 +310,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
                   <div className="h-8 w-3 bg-blue-500" />
                 </div>
 
-                {/* Current price marker - SIMPLIFIED TO JUST A LINE */}
+                {/* Current price marker */}
                 {currentPosition !== null && (
                   <div
                     className="absolute bottom-0 top-0 z-20 flex items-center"

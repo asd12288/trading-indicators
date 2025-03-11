@@ -307,7 +307,7 @@
     "noAlertsPro": "No alerts available. Turn on notifications on smart alerts to get alerts",
     "messages": {
       "noRecentAlerts": "No recent alerts available",
-      "noAlertsForInstrument": "No alerts for {instrument}",
+      "noRecentAlertsForInstrument": "No alerts for {instrument}",
       "alert": "Alert: Potential",
       "opportunity": "Opportunity on",
       "level": "Level",

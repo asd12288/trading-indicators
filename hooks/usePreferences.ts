@@ -54,62 +54,45 @@ function usePreferences(userId: string): UsePreferencesReturn {
     fetchPreferences();
   }, [userId]);
 
+  // Simplify updatePreference to match exactly how it works in SignalTool
   const updatePreference = async (
     signalId: string,
     updatedValues: Partial<PreferenceValues>,
   ) => {
     try {
-      const oldPreferences = structuredClone(preferences);
+      // Get the current signal preference or use defaults
+      const currentPreference = preferences[signalId] || {
+        notifications: false,
+        volume: false,
+        favorite: false,
+      };
 
-      // Optimistic update
-      setPreferences((prev) => {
-        const existingSignalPrefs = prev[signalId] || {
-          notifications: true,
-          volume: true,
-          favorite: false,
-        };
-        return {
-          ...prev,
-          [signalId]: { ...existingSignalPrefs, ...updatedValues },
-        };
-      });
-
-      // Build the new, merged preferences object
-      const newPreferences = {
+      // Create a new preferences object with the updated values
+      const updatedPreferences = {
         ...preferences,
         [signalId]: {
-          ...(preferences[signalId] ?? {
-            notifications: true,
-            volume: true,
-            favorite: false,
-          }),
+          ...currentPreference,
           ...updatedValues,
         },
       };
 
-      // Persist to the DB
-      const { error: updateError } = await supabaseClient
+      // Update local state first for immediate UI feedback
+      setPreferences(updatedPreferences);
+
+      // Update the database
+      const { error } = await supabaseClient
         .from("profiles")
-        .update({ preferences: newPreferences })
+        .update({ preferences: updatedPreferences })
         .eq("id", userId);
 
-      if (updateError) {
-        console.error("Error updating preferences in Supabase:", updateError);
-        // revert local changes
-        setPreferences(oldPreferences);
-        toast({
-          title: "Error",
-          description: "Failed to update preferences. Please try again.",
-          variant: "destructive",
-        });
+      if (error) {
+        throw error;
       }
-    } catch (err) {
-      console.error("Error updating preferences:", err);
-      toast({
-        title: "Error",
-        description: "Failed to update preferences. Please try again.",
-        variant: "destructive",
-      });
+
+      return true;
+    } catch (error) {
+      console.error("Error updating preferences:", error);
+      throw error;
     }
   };
 

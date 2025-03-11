@@ -10,7 +10,7 @@ interface UserProfile {
   username?: string;
   email?: string;
   avatar_url?: string;
-  plan?: "free" | "pro" | "premium";
+  plan?: "free" | "pro";
   role?: string;
   [key: string]: any;
 }
@@ -45,16 +45,27 @@ export function useAuth() {
       setLoading(true);
       setError(null);
 
-      const { data, error } = await supabaseClient.auth.getSession();
+      // First check if we have a session
+      const { data: sessionData, error: sessionError } =
+        await supabaseClient.auth.getSession();
 
-      if (error) throw error;
+      if (sessionError) throw sessionError;
 
-      const session = data?.session;
+      if (sessionData?.session) {
+        // We have a session, now we can safely get the user
+        const {
+          data: { user },
+          error,
+        } = await supabaseClient.auth.getUser();
 
-      if (session) {
-        setUser(session.user);
-        await fetchProfile(session.user.id);
+        if (error) throw error;
+
+        if (user) {
+          setUser(user);
+          await fetchProfile(user.id);
+        }
       } else {
+        // No session found, clear user and profile
         setUser(null);
         setProfile(null);
       }

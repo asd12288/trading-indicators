@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { memo, useCallback, useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import SignalCard from "./SignalCard";
+import { useAuth } from "@/hooks/useAuth";
 
 // Helper function to determine signal status priority
 const getSignalStatusPriority = (signal: Signal): number => {
@@ -31,26 +32,34 @@ interface SignalsGridProps {
 
 // Create memoized SignalItem to prevent unnecessary re-renders
 const SignalItem = memo(
-  ({ signal, viewMode }: { signal: Signal; viewMode: string }) => (
-    <Link
-      className={cn(
-        "block h-full w-full transition-all duration-300",
-        viewMode === "grid"
-          ? "transform rounded-xl hover:translate-y-[-4px] hover:shadow-xl hover:shadow-blue-500/20"
-          : "transform rounded-xl hover:bg-slate-700/40",
-      )}
-      href={`smart-alerts/${signal.instrument_name}`}
-    >
-      <div
+  ({ signal, viewMode }: { signal: Signal; viewMode: string }) => {
+    // Get current user ID from auth context
+    const { user } = useAuth();
+
+    return (
+      <Link
         className={cn(
-          viewMode === "list" ? "w-full" : "h-full",
-          "overflow-hidden rounded-xl",
+          "block h-full w-full transition-all duration-300",
+          viewMode === "grid"
+            ? "transform rounded-xl hover:translate-y-[-4px] hover:shadow-xl hover:shadow-blue-500/20"
+            : "transform rounded-xl hover:bg-slate-700/40",
         )}
+        href={`smart-alerts/${signal.instrument_name}`}
       >
-        <SignalCard signalPassed={signal} />
-      </div>
-    </Link>
-  ),
+        <div
+          className={cn(
+            viewMode === "list" ? "w-full" : "h-full",
+            "overflow-hidden rounded-xl",
+          )}
+        >
+          <SignalCard
+            signalPassed={signal}
+            userId={user?.id} // Pass user ID from auth context
+          />
+        </div>
+      </Link>
+    );
+  },
 );
 
 SignalItem.displayName = "SignalItem";
