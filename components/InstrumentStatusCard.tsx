@@ -144,7 +144,6 @@ const InstrumentStatusCard = ({
           <div className="flex items-center space-x-5">
             <div className="relative">
               {getTrendIcon(trend, false)} {/* Using larger icon size */}
-              <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-slate-800 ring-2 ring-slate-900"></div>
             </div>
             <div>
               <div className="mb-1 flex items-center gap-1">

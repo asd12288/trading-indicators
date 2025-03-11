@@ -381,7 +381,14 @@
     "entry": "Entry",
     "maximum": "Maximum",
     "potentialGain": "Potential gain",
-    "maxAdversity": "Maximum adversity"
+    "maxAdversity": "Maximum adversity",
+
+    "long": "Long",
+    "short": "Short",
+    "maxPotential": "Maximum Potential",
+    "maxDrawdown": "Max Drawdown",
+
+    "tradingOpportunity": "More opportunities coming soon"
   },
   "SignalLayout": {
     "allSignals": "All Smart Alerts",
