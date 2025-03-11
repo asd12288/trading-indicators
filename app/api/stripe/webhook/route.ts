@@ -62,6 +62,10 @@ export async function POST(req) {
           expirationDate.setMonth(expirationDate.getMonth() + 1);
         }
 
+        await supabaseClient.from("stripe_customers").insert({
+          subscription_id: subscriptionId,
+        });
+
         // Update user profile
         await supabaseClient
           .from("profiles")

@@ -22,13 +22,15 @@ export async function POST(req) {
     const { data: subscriptionData, error: subscriptionError } =
       await supabaseClient
         .from("stripe_customers")
-        .select("stripe_customer_id")
+        .select("subscription_id")
         .eq("user_id", userId)
         .single();
 
-    console.log("subscription data", subscriptionData);
+    const id = subscriptionData?.subscription_id;
 
-    if (subscriptionError || !subscriptionData?.stripe_customer_id) {
+    console.log(id);
+
+    if (subscriptionError || !subscriptionData?.subscription_id) {
       return NextResponse.json(
         { error: "Active Stripe subscription not found" },
         { status: 404 },
@@ -36,10 +38,11 @@ export async function POST(req) {
     }
 
     // Cancel the subscription in Stripe (at period end)
-    const subscription = await stripe.subscriptions.update(
-      subscriptionData.stripe_customer_id,
-      { cancel_at_period_end: true },
-    );
+    const subscription = await stripe.subscriptions.update(id, {
+      cancel_at_period_end: true,
+    });
+
+    console.log(subscription);
 
     // Update profile status
     await supabaseClient

@@ -141,7 +141,7 @@ const ManageAccount = ({ profile }) => {
 
         <CardFooter className="flex flex-col space-y-3 pt-1">
           <div className="flex w-full items-center gap-3">
-            <SignalToolTooltip text="Canceling the plan is for PayPal subscription only. Your subscription will be cancelled at the end of the billing period.">
+            <SignalToolTooltip text="Canceling the plan is for PayPal and Stripe subscription only. Your subscription will be cancelled at the end of the billing period.">
               <div className="w-full">
                 <Button
                   className="w-full bg-red-900 transition-colors hover:bg-red-800"
