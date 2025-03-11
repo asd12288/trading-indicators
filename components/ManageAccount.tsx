@@ -44,8 +44,13 @@ const ManageAccount = ({ profile }) => {
   const handleCancelConfirmSubscription = async () => {
     setIsLoading(true);
     try {
-      // Use the unified endpoint instead of PayPal-specific one
-      const response = await fetch("/api/subscription/cancel", {
+      // Determine which endpoint to call based on payment method
+      const endpoint =
+        profile.payment_method === "Credit Card (Stripe)"
+          ? "/api/stripe/cancel-sub"
+          : "/api/paypal/cancel-subscription";
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
