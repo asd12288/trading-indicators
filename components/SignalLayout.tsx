@@ -117,12 +117,11 @@ const SignalLayout = ({ id, userId, isPro }) => {
             {t("signal")}{" "}
             <span className="text-primary font-semibold">{id}</span>
           </h2>
-          <div className="ml-4">
-            <AlertNotification
-              instrumentName={instrumentName}
-              userId={userId}
-            />
-          </div>
+          <div className="ml-4"></div>
+        </div>
+
+        <div>
+          <AlertNotification instrumentName={instrumentName} userId={userId} />
         </div>
 
         <div className="flex items-center gap-4">
@@ -253,9 +252,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
                     <h3
                       className={cn(
                         "text-sm font-medium uppercase tracking-wider",
-                        theme === "dark"
-                          ? "text-slate-300"
-                          : "text-slate-700",
+                        theme === "dark" ? "text-slate-300" : "text-slate-700",
                       )}
                     >
                       {t("instrumentStatusTitle")}
@@ -356,8 +353,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
                 description={t("premium.detailsDescription")}
                 onUpgradeClick={handleUpgradeClick}
               />
-            )
-            }
+            )}
             <div className={!isPro ? "blur-sm" : ""}>
               <SignalInfo instrumentName={instrumentName} />
             </div>

@@ -44,8 +44,8 @@ const ManageAccount = ({ profile }) => {
   const handleCancelConfirmSubscription = async () => {
     setIsLoading(true);
     try {
-      // Updated to use the PayPal-specific endpoint
-      const response = await fetch("/api/paypal/cancel-subscription", {
+      // Use the unified endpoint instead of PayPal-specific one
+      const response = await fetch("/api/subscription/cancel", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -63,6 +63,7 @@ const ManageAccount = ({ profile }) => {
       toast({
         title: t("toast.success.title"),
         description: t("toast.success.description"),
+        data: { instrumentName: null }, // Prevent navigation when clicking this toast
       });
       router.refresh();
     } catch (error) {
@@ -70,6 +71,7 @@ const ManageAccount = ({ profile }) => {
       toast({
         title: t("toast.error.title"),
         description: error.message || t("toast.error.description"),
+        data: { instrumentName: null }, // Prevent navigation when clicking this toast
       });
     } finally {
       setIsLoading(false);
@@ -140,10 +142,7 @@ const ManageAccount = ({ profile }) => {
                   className="w-full bg-red-900 transition-colors hover:bg-red-800"
                   onClick={() => setAlertOpen(true)}
                   disabled={
-                    isLoading ||
-                    profile.subscription_status === "CANCELLED" ||
-                    (profile.payment_method &&
-                      profile.payment_method !== "paypal")
+                    isLoading || profile.subscription_status === "CANCELLED"
                   }
                 >
                   {isLoading ? (

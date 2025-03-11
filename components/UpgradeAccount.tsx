@@ -187,7 +187,7 @@ const UpgradeAccount = ({ user }) => {
             <CardContent className="p-0">
               <Tabs defaultValue="card" className="w-full">
                 <TabsList className="mb-4 grid w-full grid-cols-3 bg-slate-800/40">
-                  <TabsTrigger value="card">Card</TabsTrigger>
+                  <TabsTrigger value="card">Stripe</TabsTrigger>
                   <TabsTrigger value="paypal">PayPal</TabsTrigger>
                   <TabsTrigger value="crypto">Crypto</TabsTrigger>
                 </TabsList>

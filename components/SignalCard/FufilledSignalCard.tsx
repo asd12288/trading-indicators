@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { Signal } from "@/lib/types";
 import { format, formatDistance, parseISO } from "date-fns";
@@ -115,18 +115,6 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
                 )}
               >
                 {isBuy ? "Long" : "Short"}
-              </div>
-
-              {/* Small outcome indicator */}
-              <div
-                className={cn(
-                  "ml-2 inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs",
-                  theme === "dark" ? "bg-slate-800" : "bg-slate-100",
-                  isProfitable ? "text-blue-400" : "text-amber-400",
-                )}
-              >
-                {isProfitable ? "+" : "-"}
-                {formatNumber(absoluteDiff)} ({percentChange}%)
               </div>
             </div>
           </div>
