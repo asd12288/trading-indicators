@@ -54,17 +54,22 @@ interface AdminHeaderProps {
   onTabChange: (value: string) => void;
 }
 
-export default function AdminHeader({ activeTab, onTabChange }: AdminHeaderProps) {
+export default function AdminHeader({
+  activeTab,
+  onTabChange,
+}: AdminHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showGroupDropdown, setShowGroupDropdown] = useState<string | null>(null);
+  const [showGroupDropdown, setShowGroupDropdown] = useState<string | null>(
+    null,
+  );
   const [scrolled, setScrolled] = useState(false);
-  
+
   // Monitor scroll position for styling
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
     };
-    
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);

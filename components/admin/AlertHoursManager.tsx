@@ -1,15 +1,16 @@
 'use client'
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Loader2 } from "lucide-react";
+import { PlusCircle, Loader2, Clock } from "lucide-react";
 import { AlertHours } from "@/hooks/useAlertHours";
 import supabaseClient from "@/database/supabase/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/context/theme-context";
+import { motion } from "framer-motion";
 
 import AlertHoursList from "./alert-hours/AlertHoursList";
 import AlertHourForm from "./alert-hours/AlertHourForm";
@@ -173,54 +174,60 @@ const AlertHoursManager = () => {
   );
 
   return (
-    <Card className={theme === "dark" ? "bg-slate-900 text-slate-100" : "bg-white"}>
-      <CardHeader className={cn(
-        "rounded-t-lg",
-        theme === "dark" ? "bg-slate-800 text-white border-b border-slate-700" : "bg-slate-100 border-b"
-      )}>
-        <div className="flex justify-between items-center">
-          <div>
-            <CardTitle>Alert Hours Management</CardTitle>
-            <CardDescription className={theme === "dark" ? "text-slate-300" : "text-slate-600"}>
-              Configure when alerts are active for each instrument
-            </CardDescription>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6"
+    >
+      <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-slate-800 to-slate-900 p-6 shadow-lg">
+        <div className="flex items-center gap-3">
+          <div className="rounded-full bg-amber-900/30 p-3">
+            <Clock className="h-6 w-6 text-amber-400" />
           </div>
-          
+          <div>
+            <h1 className="text-2xl font-bold text-white">Alert Hours Management</h1>
+            <p className="text-slate-400">Configure when alerts are active for each instrument</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
           <Button onClick={handleCreate}>
             <PlusCircle className="mr-2 h-4 w-4" />
             Add New
           </Button>
         </div>
-      </CardHeader>
-      
-      <CardContent className="pt-6">
-        {loading ? (
-          <div className="flex justify-center p-8">
-            <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
-          </div>
-        ) : (
-          <AlertHoursList 
-            alertHours={filteredAlertHours} 
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            onEdit={handleEdit} 
-            onDelete={handleDelete}
-          />
-        )}
+      </div>
 
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className={cn(
-            "sm:max-w-[500px]",
-            theme === "dark" ? "bg-slate-900 text-slate-100 border-slate-700" : "bg-white"
-          )}>
-            <AlertHourForm 
-              currentItem={currentItem}
-              onSubmit={handleSubmit}
+      <Card className={theme === "dark" ? "bg-slate-900 border-slate-700 text-slate-100" : "bg-white"}>
+        <CardContent className="pt-6">
+          {loading ? (
+            <div className="flex justify-center p-8">
+              <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+            </div>
+          ) : (
+            <AlertHoursList 
+              alertHours={filteredAlertHours} 
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              onEdit={handleEdit} 
+              onDelete={handleDelete}
             />
-          </DialogContent>
-        </Dialog>
-      </CardContent>
-    </Card>
+          )}
+
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogContent className={cn(
+              "sm:max-w-[500px]",
+              theme === "dark" ? "bg-slate-900 text-slate-100 border-slate-700" : "bg-white"
+            )}>
+              <AlertHourForm 
+                currentItem={currentItem}
+                onSubmit={handleSubmit}
+              />
+            </DialogContent>
+          </Dialog>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 

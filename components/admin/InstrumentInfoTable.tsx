@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, Plus, Search, X } from "lucide-react";
+import { Loader2, Plus, Search, X, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTheme } from "@/context/theme-context";
@@ -16,10 +16,8 @@ import Pagination from "./instruments/Pagination";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
+import { motion } from "framer-motion";
 
 const PAGE_SIZE = 10;
 
@@ -318,127 +316,125 @@ export default function InstrumentInfoTable() {
   };
 
   return (
-    <Card
-      className={theme === "dark" ? "bg-slate-900 text-slate-100" : "bg-white"}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6"
     >
-      <CardHeader
-        className={cn(
-          "rounded-t-lg",
-          theme === "dark"
-            ? "border-b border-slate-700 bg-slate-800 text-white"
-            : "border-b bg-slate-100",
-        )}
-      >
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Instrument Information</CardTitle>
-            <CardDescription
-              className={theme === "dark" ? "text-slate-300" : "text-slate-600"}
-            >
-              Manage instrument specifications and contract details
-            </CardDescription>
+      <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-slate-800 to-slate-900 p-6 shadow-lg">
+        <div className="flex items-center gap-3">
+          <div className="rounded-full bg-cyan-900/30 p-3">
+            <BarChart3 className="h-6 w-6 text-cyan-400" />
           </div>
-
+          <div>
+            <h1 className="text-2xl font-bold text-white">Instrument Information</h1>
+            <p className="text-slate-400">Manage instrument specifications and contract details</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
           <Button onClick={handleCreateNew}>
             <Plus className="mr-2 h-4 w-4" />
             Add New
           </Button>
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent className="space-y-4 pt-6">
-        {/* Search Bar */}
-        <div className="flex items-center">
-          <div className="relative flex w-full max-w-sm items-center">
-            <Search className="absolute left-2.5 h-4 w-4 text-slate-400" />
-            <Input
-              type="text"
-              placeholder="Search instruments..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full border-slate-700 bg-slate-800 pl-9 text-slate-200"
-            />
-            {searchQuery && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute right-1 h-7 w-7 p-0 text-slate-400"
-                onClick={handleSearchClear}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            )}
+      <Card className={theme === "dark" ? "bg-slate-800/80 border-slate-700/50" : "bg-white"}>
+        <CardContent className="space-y-4 pt-6">
+          {/* Search Bar */}
+          <div className="flex items-center">
+            <div className="relative flex w-full max-w-sm items-center">
+              <Search className="absolute left-2.5 h-4 w-4 text-slate-400" />
+              <Input
+                type="text"
+                placeholder="Search instruments..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full border-slate-700 bg-slate-800 pl-9 text-slate-200"
+              />
+              {searchQuery && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-1 h-7 w-7 p-0 text-slate-400"
+                  onClick={handleSearchClear}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
 
-        {loading && instruments.length === 0 ? (
-          <div className="flex h-64 items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-          </div>
-        ) : (
-          <>
-            {isSearching && (
-              <div className="text-sm text-slate-400">
-                {totalCount === 0 ? (
-                  <span>No instruments found matching "{searchQuery}"</span>
-                ) : (
-                  <span>
-                    Found {totalCount} instrument{totalCount !== 1 ? "s" : ""}{" "}
-                    matching "{searchQuery}"
-                  </span>
-                )}
-              </div>
-            )}
+          {loading && instruments.length === 0 ? (
+            <div className="flex h-64 items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            </div>
+          ) : (
+            <>
+              {isSearching && (
+                <div className="text-sm text-slate-400">
+                  {totalCount === 0 ? (
+                    <span>No instruments found matching "{searchQuery}"</span>
+                  ) : (
+                    <span>
+                      Found {totalCount} instrument{totalCount !== 1 ? "s" : ""}{" "}
+                      matching "{searchQuery}"
+                    </span>
+                  )}
+                </div>
+              )}
 
-            <InstrumentTable
-              instruments={instruments}
-              onEdit={openEditDialog}
-              onDelete={openDeleteDialog}
-              loading={loading}
-            />
+              <InstrumentTable
+                instruments={instruments}
+                onEdit={openEditDialog}
+                onDelete={openDeleteDialog}
+                loading={loading}
+              />
 
-            <Pagination
-              currentPage={currentPage}
-              totalCount={totalCount}
-              pageSize={PAGE_SIZE}
-              onPageChange={(page) => fetchInstruments(page, searchQuery)}
-            />
-          </>
-        )}
+              <Pagination
+                currentPage={currentPage}
+                totalCount={totalCount}
+                pageSize={PAGE_SIZE}
+                onPageChange={(page) => fetchInstruments(page, searchQuery)}
+              />
+            </>
+          )}
 
-        {/* Add Instrument Dialog */}
-        <InstrumentForm
-          open={isAddDialogOpen}
-          onOpenChange={setIsAddDialogOpen}
-          title="Add New Instrument"
-          description="Enter the details for the new instrument"
-          initialData={defaultInstrument}
-          onSubmit={handleAddInstrument}
-          isSubmitting={saving}
-          submitLabel="Save Instrument"
-        />
+          {/* Add Instrument Dialog */}
+          <InstrumentForm
+            open={isAddDialogOpen}
+            onOpenChange={setIsAddDialogOpen}
+            title="Add New Instrument"
+            description="Enter the details for the new instrument"
+            initialData={defaultInstrument}
+            onSubmit={handleAddInstrument}
+            isSubmitting={saving}
+            submitLabel="Save Instrument"
+          />
 
-        {/* Edit Instrument Dialog */}
-        <InstrumentForm
-          open={isEditDialogOpen}
-          onOpenChange={setIsEditDialogOpen}
-          title={`Edit Instrument: ${formData.instrument_name}`}
-          description="Update the instrument details"
-          initialData={formData}
-          onSubmit={handleEditInstrument}
-          isSubmitting={saving}
-          submitLabel="Update Instrument"
-        />
+          {/* Edit Instrument Dialog */}
+          <InstrumentForm
+            open={isEditDialogOpen}
+            onOpenChange={setIsEditDialogOpen}
+            title={`Edit Instrument: ${formData.instrument_name}`}
+            description="Update the instrument details"
+            initialData={formData}
+            onSubmit={handleEditInstrument}
+            isSubmitting={saving}
+            submitLabel="Update Instrument"
+          />
 
-        {/* Delete Confirmation Dialog */}
-        <DeleteInstrumentDialog
-          open={isDeleteDialogOpen}
-          onOpenChange={setIsDeleteDialogOpen}
-          instrumentName={currentInstrument?.instrument_name || ""}
-          onDelete={handleDeleteInstrument}
-          isDeleting={saving}
-        />
-      </CardContent>
-    </Card>
+          {/* Delete Confirmation Dialog */}
+          <DeleteInstrumentDialog
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+            instrumentName={currentInstrument?.instrument_name || ""}
+            onDelete={handleDeleteInstrument}
+            isDeleting={saving}
+          />
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
