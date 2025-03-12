@@ -1,20 +1,18 @@
-import AlertHoursManager from "@/components/admin/AlertHoursManager";
-import BlogTable from "@/components/admin/BlogTable";
-import SendNotificationForm from "@/components/admin/SendNotificationForm";
-import SignalDebugTab from "@/components/admin/SignalDebugTab";
-import SignalsMonitoring from "@/components/admin/SignalsMonitoring";
-import SignalsTable from "@/components/admin/SignalsTable";
-import UsersTable from "@/components/admin/UsersTable";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Metadata } from "next";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
-import { Metadata } from "next";
+import AdminDashboardClient from "@/components/admin/AdminDashboardClient";
 
+// Export metadata (only allowed in server components)
 export const metadata: Metadata = {
-  title: "Admin",
+  title: "Admin Dashboard",
 };
 
-const page = async ({ params }: { params: { locale: string } }) => {
+export default async function AdminPage({
+  params,
+}: {
+  params: { locale: string };
+}) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -43,56 +41,6 @@ const page = async ({ params }: { params: { locale: string } }) => {
     .order("entry_time", { ascending: false });
   const { data: posts } = await supabase.from("blogs").select("*");
 
-  return (
-    <div className="min-h-min">
-      <h1 className="my-4 text-center text-3xl font-medium">Admin Page</h1>
-      <div className="flex justify-center p-4">
-        <div className="w-full rounded-md bg-slate-800 p-12">
-          <Tabs defaultValue="debug">
-            <TabsList className="flex justify-center bg-inherit">
-              <TabsTrigger value="users">Users</TabsTrigger>
-              <TabsTrigger value="signals">Signals</TabsTrigger>
-              <TabsTrigger value="blogs">Blogs</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
-              <TabsTrigger value="alert-hours">Alert Hours</TabsTrigger>
-              <TabsTrigger value="monitoring">Debugging</TabsTrigger>
-              <TabsTrigger value="debug">Signal Debug</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="users">
-              <UsersTable users={users} />
-            </TabsContent>
-
-            <TabsContent value="signals">
-              <SignalsTable signals={signals} />
-            </TabsContent>
-
-            <TabsContent value="blogs">
-              <BlogTable posts={posts} />
-            </TabsContent>
-
-            <TabsContent value="notifications">
-              <div className="space-y-6">
-                <SendNotificationForm />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="alert-hours">
-              <AlertHoursManager />
-            </TabsContent>
-
-            <TabsContent value="debug">
-              <SignalDebugTab />
-            </TabsContent>
-
-            <TabsContent value="monitoring">
-              <SignalsMonitoring />
-            </TabsContent>
-          </Tabs>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default page;
+  // Pass fetched data to client component
+  return <AdminDashboardClient users={users} signals={signals} posts={posts} />;
+}

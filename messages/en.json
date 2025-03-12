@@ -308,6 +308,7 @@
     "messages": {
       "noRecentAlerts": "No recent alerts available",
       "noRecentAlertsForInstrument": "No alerts for {instrument}",
+      "noAlertsForInstrument": "No alerts for {instrument}",
       "alert": "Alert: Potential",
       "opportunity": "Opportunity on",
       "level": "Level",
@@ -365,6 +366,7 @@
     "status": "Status:",
     "tradeOver": "Trade Over",
     "tradeDuration": "Trade Duration:",
+    "tradePotentialOver": "Trade Potential Over",
     "startedAt": "Started at:",
     "result": "Result",
     "profit": "PROFIT",
@@ -382,6 +384,7 @@
     "maximum": "Maximum",
     "potentialGain": "Potential gain",
     "maxAdversity": "Maximum adversity",
+    "potentialProfit": "Potential Profit",
 
     "long": "Long",
     "short": "Short",
