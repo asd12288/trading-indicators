@@ -79,7 +79,7 @@ const SystemClosedCard = ({ instrumentName }: SystemClosedCardProps) => {
           className={cn(
             "py-2 text-center font-medium text-white",
             theme === "dark"
-              ? "bg-gradient-to-r from-blue-900 to-blue-600"
+              ? "bg-gradient-to-r from-gray-900 to-gray-700"
               : "bg-gradient-to-r from-blue-700 to-blue-500",
           )}
         >
@@ -118,7 +118,7 @@ const SystemClosedCard = ({ instrumentName }: SystemClosedCardProps) => {
             )}
           >
             <AlertTriangle className="mr-3 h-5 w-5 text-blue-500" />
-            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+            <span className="text-sm font-medium text-blue-gray dark:text-blue-400">
               {t("systemMessage")}
             </span>
           </div>

@@ -51,13 +51,13 @@ const useAlerts = () => {
           const newAlert = payload.new as Alert;
 
           // Play sound when a new alert is received
-          if (pingSoundRef.current) {
-            pingSoundRef.current
-              .play()
-              .catch((err) =>
-                console.error("Could not play alert sound:", err),
-              );
-          }
+          // if (pingSoundRef.current) {
+          //   pingSoundRef.current
+          //     .play()
+          //     .catch((err) =>
+          //       console.error("Could not play alert sound:", err),
+          //     );
+          // }
 
           // Update alerts state
           setAlerts((current) => [newAlert, ...current]);

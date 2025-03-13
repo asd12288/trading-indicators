@@ -88,9 +88,6 @@ export default function useLast(instrumentName: string) {
     const channel = supabaseClient.channel(channelName);
     channelRef.current = channel;
 
-    console.log(
-      `Setting up real-time subscription for ${instrumentName} on channel ${channelName}`,
-    );
 
     channel
       .on(
@@ -131,7 +128,6 @@ export default function useLast(instrumentName: string) {
           );
           // Try to reconnect on error
           setTimeout(() => {
-            console.log("Attempting to resubscribe...");
             channel.subscribe();
           }, 5000);
         }
@@ -144,7 +140,6 @@ export default function useLast(instrumentName: string) {
     }, 5000); // Poll every 5 seconds as a backup
 
     return () => {
-      console.log(`Cleaning up subscription for ${channelName}`);
       if (channelRef.current) {
         channelRef.current.unsubscribe();
       }
