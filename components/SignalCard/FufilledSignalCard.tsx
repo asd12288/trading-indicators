@@ -168,7 +168,7 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
       <div
         className={cn(
           "h-full overflow-hidden rounded-lg border shadow-md transition-all hover:shadow-lg",
-          "border-blue-500",
+          "border-gray-500",
           theme === "dark"
             ? "bg-slate-900"
             : "border border-slate-200 bg-white",
@@ -178,7 +178,7 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
         <div
           className={cn(
             "py-1.5 text-center text-sm font-semibold text-white",
-            "bg-blue-600",
+            "bg-gray-500",
           )}
         >
           {t("tradePotentialOver", { defaultValue: "Trade Potential Over" })}

@@ -185,16 +185,22 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
                   <span className="text-sm font-medium text-amber-400">
                     {t("currentPrice")}
                   </span>
+                  <span className="ml-1.5 rounded-full bg-blue-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                    LIVE
+                  </span>
                 </div>
                 {currentPnL && (
-                  <div
-                    className={cn(
-                      "text-sm font-medium",
-                      isProfitable ? "text-emerald-400" : "text-rose-400",
-                    )}
-                  >
-                    {isProfitable ? "+" : "-"}
-                    {formatNumber(Math.abs(currentPnL))}
+                  <div className="flex flex-col items-end">
+                    <div className="text-xs text-slate-400 mb-0.5">Live Performance</div>
+                    <div
+                      className={cn(
+                        "text-sm font-medium",
+                        isProfitable ? "text-emerald-400" : "text-rose-400",
+                      )}
+                    >
+                      {isProfitable ? "+" : "-"}
+                      {formatNumber(Math.abs(currentPnL))}
+                    </div>
                   </div>
                 )}
               </div>
