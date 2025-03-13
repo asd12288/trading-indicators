@@ -5,6 +5,7 @@ import { getMessages } from "next-intl/server";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import MaintenanceBanner from "@/components/MaintenanceBanner";
+import AlertNotifications from "@/components/AlertNotifications";
 
 const poppins = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -35,13 +36,21 @@ export default async function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* Preconnect to Google Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
         {/* Load Google Fonts */}
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body className={`${poppins.className} antialiased`}>
         <NextIntlClientProvider locale={params.locale} messages={messages}>
           <MaintenanceBanner />
+          <AlertNotifications />
           {children}
           <Toaster />
         </NextIntlClientProvider>

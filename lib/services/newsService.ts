@@ -54,7 +54,7 @@ export async function getInstrumentNews(symbol: string): Promise<NewsItem[]> {
 
     if (!succeeded) {
       // If all providers fail, try the mock data as a fallback
-      news = getMockNewsData(symbol);
+      return [];
     }
 
     // Cache the results
@@ -66,7 +66,7 @@ export async function getInstrumentNews(symbol: string): Promise<NewsItem[]> {
     return news;
   } catch (error) {
     console.error("Error in news service:", error);
-    return getMockNewsData(symbol); // Fallback to mock data
+    return [];
   }
 }
 
@@ -129,30 +129,4 @@ async function fetchWithFinnhub(symbol: string): Promise<NewsItem[]> {
       source: item.source,
     }))
     .slice(0, 5);
-}
-
-// Provide mock data if all APIs fail
-function getMockNewsData(symbol: string): NewsItem[] {
-  return [
-    {
-      id: `mock-1-${Date.now()}`,
-      title: `Market Analysis: ${symbol} Price Movement Explained`,
-      url: "#",
-      time_published: new Date().toISOString(),
-      summary:
-        "Experts analyze recent price movements and provide outlook for upcoming market sessions.",
-      banner_image: null,
-      source: "Trading Analysis",
-    },
-    {
-      id: `mock-2-${Date.now()}`,
-      title: `Technical Levels to Watch for ${symbol}`,
-      url: "#",
-      time_published: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      summary:
-        "Key support and resistance levels that traders should monitor in current market conditions.",
-      banner_image: null,
-      source: "Technical Insights",
-    },
-  ];
 }

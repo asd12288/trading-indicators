@@ -1,17 +1,42 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import supabaseClient from "@/database/supabase/supabase";
 import { Alert } from "@/lib/types";
+import useProfile from "./useProfile";
+import usePreferences from "./usePreferences";
 
-const useAlerts = () => {
-  const [alerts, setAlerts] = useState<Alert[]>([]);
+const useAlerts = (userId) => {
+  const [allAlerts, setAllAlerts] = useState<Alert[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const pingSoundRef = useRef<HTMLAudioElement | null>(null);
 
+  // Get user profile to determine if they're a pro user
+  const {
+    isPro,
+    isLoading: profileLoading,
+    error: profileError,
+  } = useProfile(userId);
+
+  // Get user preferences including notification settings
+  const { preferences, notificationsOn } = usePreferences(userId);
+
   // New ref for storing alert listeners
   const alertListenersRef = useRef<((alert: Alert) => void)[]>([]);
+
+  // Filter alerts based on user preferences if user is pro
+  const alerts = useMemo(() => {
+    if (!isPro) {
+      // Non-pro users get all alerts
+      return allAlerts;
+    }
+
+    // Pro users only get alerts for instruments they've turned on notifications for
+    return allAlerts.filter((alert) =>
+      notificationsOn.includes(alert.instrument_name),
+    );
+  }, [allAlerts, isPro, notificationsOn]);
 
   useEffect(() => {
     pingSoundRef.current = new Audio("/audio/ping.mp3");
@@ -29,7 +54,7 @@ const useAlerts = () => {
         }
 
         console.log("Fetched alerts:", data); // Debug log
-        setAlerts(data || []);
+        setAllAlerts(data || []);
         setError(null);
       } catch (err) {
         console.error("Error fetching alerts:", err);
@@ -50,26 +75,24 @@ const useAlerts = () => {
         (payload) => {
           const newAlert = payload.new as Alert;
 
-          // Play sound when a new alert is received
-          // if (pingSoundRef.current) {
-          //   pingSoundRef.current
-          //     .play()
-          //     .catch((err) =>
-          //       console.error("Could not play alert sound:", err),
-          //     );
-          // }
+          // Only process this alert if not a pro user OR
+          // if pro user and they have notifications turned on for this instrument
+          const shouldProcess =
+            !isPro || notificationsOn.includes(newAlert.instrument_name);
 
-          // Update alerts state
-          setAlerts((current) => [newAlert, ...current]);
+          if (shouldProcess) {
+            // Update alerts state
+            setAllAlerts((current) => [newAlert, ...current]);
 
-          // Notify all listeners
-          alertListenersRef.current.forEach((listener) => {
-            try {
-              listener(newAlert);
-            } catch (err) {
-              console.error("Error in alert listener:", err);
-            }
-          });
+            // Notify all listeners
+            alertListenersRef.current.forEach((listener) => {
+              try {
+                listener(newAlert);
+              } catch (err) {
+                console.error("Error in alert listener:", err);
+              }
+            });
+          }
         },
       )
       .subscribe();
@@ -78,7 +101,7 @@ const useAlerts = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [isPro, notificationsOn]);
 
   // Function to register a new alert listener
   const onNewAlert = useCallback((callback: (alert: Alert) => void) => {
@@ -93,9 +116,9 @@ const useAlerts = () => {
   }, []);
 
   return {
-    alerts,
-    isLoading,
-    error,
+    alerts, // Return filtered alerts instead of all alerts
+    isLoading: isLoading || profileLoading,
+    error: error || profileError,
     onNewAlert, // Expose the onNewAlert function
   };
 };

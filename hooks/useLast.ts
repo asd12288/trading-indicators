@@ -8,16 +8,27 @@ interface LastPriceData {
   timestamp: string;
 }
 
+// Helper function to create a timeout promise
+const createTimeoutPromise = (timeoutMs: number) => {
+  return new Promise((_, reject) => {
+    setTimeout(() => {
+      reject(new Error(`Request timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+  });
+};
+
 export default function useLast(instrumentName: string) {
   const [lastPrice, setLastPrice] = useState<LastPriceData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const channelRef = useRef<any>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const retryCountRef = useRef<number>(0);
+  const maxRetries = 3;
 
   // Use callback to ensure this function has a stable identity
   const fetchLastPrice = useCallback(
-    async (silent = false) => {
+    async (silent = false, isRetry = false) => {
       if (!instrumentName) return;
 
       if (!silent) {
@@ -25,14 +36,30 @@ export default function useLast(instrumentName: string) {
       }
 
       try {
-        const { data, error } = await supabaseClient
-          .from("instruments_status") // Make sure table name is correct
+        // Create the fetch query
+        const query = supabaseClient
+          .from("instruments_status")
           .select("last, timestamp")
           .eq("instrument_name", instrumentName)
           .order("timestamp", { ascending: false })
           .limit(1);
 
-        if (error) throw new Error(error.message);
+        // Use Promise.race to implement a client-side timeout
+        const timeoutMs = 10000; // 10 seconds
+        const result = await Promise.race([
+          query,
+          createTimeoutPromise(timeoutMs),
+        ]);
+
+        // Destructure the result
+        const { data, error } = result as any;
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        // Reset retry counter on success
+        retryCountRef.current = 0;
 
         if (data && data.length > 0 && data[0].last !== null) {
           if (!silent) {
@@ -57,9 +84,52 @@ export default function useLast(instrumentName: string) {
           console.log("No last price found");
         }
       } catch (err) {
-        console.error("Failed to fetch last price", err);
-        if (!silent) {
-          setError(err instanceof Error ? err : new Error("Unknown error"));
+        console.error(`Failed to fetch last price for ${instrumentName}:`, err);
+
+        // Handle timeout or other errors with retry logic
+        const isTimeout =
+          err instanceof Error &&
+          (err.message.includes("timeout") ||
+            err.message.includes("timed out") ||
+            err.message.includes("canceling statement"));
+
+        if (isTimeout && !isRetry && retryCountRef.current < maxRetries) {
+          // Implement exponential backoff
+          const backoffTime = Math.min(
+            1000 * Math.pow(2, retryCountRef.current),
+            10000,
+          );
+          retryCountRef.current++;
+
+          console.log(
+            `Retrying fetch for ${instrumentName} in ${backoffTime}ms (attempt ${retryCountRef.current} of ${maxRetries})`,
+          );
+
+          // Retry after backoff
+          setTimeout(() => {
+            fetchLastPrice(silent, true);
+          }, backoffTime);
+
+          // Don't update error state for silent retries
+          if (!silent) {
+            setError(
+              new Error(
+                `Query timeout. Retrying... (${retryCountRef.current}/${maxRetries})`,
+              ),
+            );
+          }
+        } else {
+          // Either not a timeout, or we've exceeded retries, or already in retry mode
+          if (!silent) {
+            setError(
+              err instanceof Error
+                ? err
+                : new Error("Unknown error fetching price data"),
+            );
+          }
+
+          // If we have a previous price, we can continue using it
+          // This prevents UI from breaking completely on errors
         }
       } finally {
         if (!silent) {
@@ -79,6 +149,7 @@ export default function useLast(instrumentName: string) {
 
     setIsLoading(true);
     setError(null);
+    retryCountRef.current = 0;
 
     // Initial fetch to get the latest price immediately
     fetchLastPrice();
@@ -87,7 +158,6 @@ export default function useLast(instrumentName: string) {
     const channelName = `last-price-${instrumentName}-${Date.now()}`;
     const channel = supabaseClient.channel(channelName);
     channelRef.current = channel;
-
 
     channel
       .on(
@@ -112,6 +182,9 @@ export default function useLast(instrumentName: string) {
               last: payload.new.last,
               timestamp: payload.new.timestamp || new Date().toISOString(),
             });
+
+            // Clear any error state since we got a successful update
+            setError(null);
           }
         },
       )
@@ -157,6 +230,8 @@ export default function useLast(instrumentName: string) {
     isLive: true,
     lastUpdated: lastPrice?.timestamp ? new Date(lastPrice.timestamp) : null,
     // Add a manual refresh function that can be called from the component
-    refreshNow: fetchLastPrice,
+    refreshNow: () => fetchLastPrice(false, false),
+    // Add a fallback or error state flag to help components handle errors gracefully
+    hasError: error !== null,
   };
 }

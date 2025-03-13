@@ -6,12 +6,24 @@ import { Notification } from "@/lib/notification-types";
 import { toast } from "@/hooks/use-toast";
 import { BellOff } from "lucide-react";
 
+// Helper function to check if a file exists at a given URL
+const checkFileExists = async (url: string): Promise<boolean> => {
+  try {
+    const response = await fetch(url, { method: "HEAD" });
+    return response.ok;
+  } catch (e) {
+    console.warn(`Failed to check if file exists at ${url}:`, e);
+    return false;
+  }
+};
+
 export function useNotifications(passedUserId?: string) {
   // Initialize with empty array instead of sample notifications
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const notificationSoundRef = useRef<HTMLAudioElement | null>(null);
+  const soundEnabledRef = useRef<boolean>(true); // Track if sound is enabled
 
   // Use passed userId directly instead of depending on the useUser hook
   const userId = passedUserId;
@@ -19,32 +31,79 @@ export function useNotifications(passedUserId?: string) {
   // Calculate unread count - make sure this is accurate
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  // Initialize notification sound with better error handling
+  // Initialize notification sound with better error handling and format fallbacks
   useEffect(() => {
-    // Create audio element with explicit error handling
+    // Check if window is available (for SSR)
+    if (typeof window === "undefined") return;
+
+    // Audio formats to try in order of preference
+    const audioFormats = [
+      { path: "/audio/notification.mp3", type: "audio/mpeg" },
+      { path: "/audio/notification.ogg", type: "audio/ogg" },
+      { path: "/audio/notification.wav", type: "audio/wav" },
+    ];
+
+    // Try to create an audio element
     try {
-      // Check if Audio API is available
       if (typeof Audio !== "undefined") {
-        notificationSoundRef.current = new Audio("/audio/notification.mp3");
+        // First check if the primary audio file exists
+        checkFileExists(audioFormats[0].path).then((exists) => {
+          if (!exists) {
+            console.warn(
+              `Audio file ${audioFormats[0].path} not found, will try fallbacks`,
+            );
+            soundEnabledRef.current = false;
+            return;
+          }
 
-        // Add proper error handling
-        notificationSoundRef.current.addEventListener("error", (e) => {
-          console.error(
-            "Error loading notification sound:",
-            e.target.error?.message || "Unknown audio error",
-          );
-          notificationSoundRef.current = null;
+          // Create audio element
+          const audio = new Audio();
+
+          // Add comprehensive error handling
+          audio.addEventListener("error", (e) => {
+            const errorMessage =
+              e.target?.error?.message || "Unknown audio error";
+            console.error(
+              `Error loading notification sound: "${errorMessage}"`,
+            );
+
+            // If there was a format error, try the next format
+            if (
+              e.target?.error?.code ===
+                MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED ||
+              e.target?.error?.code === MediaError.MEDIA_ERR_FORMAT
+            ) {
+              console.log(
+                "Format not supported, will try fallbacks on next notification",
+              );
+            }
+
+            // Mark sound as unavailable
+            soundEnabledRef.current = false;
+            notificationSoundRef.current = null;
+          });
+
+          // Set up successful load handler
+          audio.addEventListener("canplaythrough", () => {
+            console.log("Notification sound loaded successfully");
+            soundEnabledRef.current = true;
+          });
+
+          // Set preload mode and source
+          audio.preload = "auto";
+          audio.src = audioFormats[0].path;
+
+          // Store the audio element
+          notificationSoundRef.current = audio;
         });
-
-        // Preload the audio file
-        notificationSoundRef.current.preload = "auto";
-        notificationSoundRef.current.load();
       } else {
         console.log("Audio API not available in this browser");
+        soundEnabledRef.current = false;
       }
     } catch (err) {
       console.error("Failed to initialize notification sound:", err);
       notificationSoundRef.current = null;
+      soundEnabledRef.current = false;
     }
 
     return () => {
@@ -57,6 +116,29 @@ export function useNotifications(passedUserId?: string) {
         }
       }
     };
+  }, []);
+
+  // Improved playSound function with fallbacks
+  const playSound = useCallback(() => {
+    // Don't attempt to play if sound is disabled
+    if (!soundEnabledRef.current || !notificationSoundRef.current) return;
+
+    try {
+      // Reset the position
+      notificationSoundRef.current.currentTime = 0;
+
+      // Use a silent catch for the play promise to avoid console errors
+      const playPromise = notificationSoundRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.log("Audio play prevented (user interaction may be needed)");
+          // Don't disable sound entirely - it might be an autoplay restriction
+        });
+      }
+    } catch (err) {
+      console.warn("Could not play notification sound:", err);
+      soundEnabledRef.current = false;
+    }
   }, []);
 
   // Make fetchNotifications a callback to ensure stable reference
@@ -172,28 +254,8 @@ export function useNotifications(passedUserId?: string) {
                 notification,
               );
 
-              // Play sound with better error handling
-              if (notificationSoundRef.current) {
-                try {
-                  // Reset the position
-                  notificationSoundRef.current.currentTime = 0;
-
-                  // Use a silent catch for the play promise to avoid console errors
-                  const playPromise = notificationSoundRef.current.play();
-                  if (playPromise !== undefined) {
-                    playPromise.catch((err) => {
-                      // Most browsers require user interaction before playing audio
-                      console.log(
-                        "Audio play prevented (user interaction may be needed)",
-                      );
-                    });
-                  }
-                } catch (err) {
-                  console.warn(
-                    "Could not play notification sound - silent fail",
-                  );
-                }
-              }
+              // Play sound with better error handling using the new playSound function
+              playSound();
             } else if (payload.eventType === "UPDATE") {
               // Update existing notification
               console.log(
@@ -323,7 +385,7 @@ export function useNotifications(passedUserId?: string) {
     } catch (err) {
       console.error("Error setting up notification subscriptions:", err);
     }
-  }, [userId]);
+  }, [userId, playSound]);
 
   // Mark all notifications as read
   const markAllAsRead = async () => {
@@ -459,5 +521,11 @@ export function useNotifications(passedUserId?: string) {
     deleteNotification,
     bulkDelete,
     refetch: fetchNotifications,
+    soundEnabled: soundEnabledRef.current,
+    // Add ability to toggle sound
+    toggleSound: () => {
+      soundEnabledRef.current = !soundEnabledRef.current;
+      return soundEnabledRef.current;
+    },
   };
 }

@@ -191,7 +191,9 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
                 </div>
                 {currentPnL && (
                   <div className="flex flex-col items-end">
-                    <div className="text-xs text-slate-400 mb-0.5">Live Performance</div>
+                    <div className="mb-0.5 text-xs text-slate-400">
+                      Live Performance
+                    </div>
                     <div
                       className={cn(
                         "text-sm font-medium",
