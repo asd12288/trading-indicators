@@ -42,7 +42,7 @@ const DemoSignalCard: React.FC<DemoSignalCardProps> = ({ type }) => {
   if (type === "nq") {
     instrument = {
       client_trade_id: "123",
-      result_ticks: 100,
+      result_ticks: 20,
       trade_duration: "1h",
       instrument_name: "NQ",
       trade_side: "Buy",

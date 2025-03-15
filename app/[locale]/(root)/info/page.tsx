@@ -2,7 +2,8 @@ import React from "react";
 import SignalTool from "@/components/SignalCard/SignalTool";
 import { useTranslations } from "next-intl";
 import { Metadata } from "next";
-import SignalCardsSection from "@/components/Sections/SignalCardsSection";
+import { CalendarClock, Clock, DollarSign, Activity, Eye, Bell, LineChart } from "lucide-react";
+import DemoCard from "@/components/demo/DemoCards";
 
 export const metadata: Metadata = {
   title: "Info",
@@ -23,8 +24,22 @@ export default function FeatureDocsPage() {
     fulfilled: {
       title: t("sections.signalCards.fulfilled.title"),
       description: t("sections.signalCards.fulfilled.description"),
-      items: Array.from({ length: 5 }).map((_, i) =>
+      items: Array.from({ length: 4 }).map((_, i) =>
         t(`sections.signalCards.fulfilled.item${i}`),
+      ),
+    },
+    marketClosed: {
+      title: t("sections.signalCards.marketClosed.title"),
+      description: t("sections.signalCards.marketClosed.description"),
+      items: Array.from({ length: 4 }).map((_, i) =>
+        t(`sections.signalCards.marketClosed.item${i}`),
+      ),
+    },
+    systemClosed: {
+      title: t("sections.signalCards.systemClosed.title"),
+      description: t("sections.signalCards.systemClosed.description"),
+      items: Array.from({ length: 4 }).map((_, i) =>
+        t(`sections.signalCards.systemClosed.item${i}`),
       ),
     },
   };
@@ -181,7 +196,7 @@ export default function FeatureDocsPage() {
           </div>
         </section>
 
-        {/* Signal Cards Section (Client Component) */}
+        {/* Signal Cards Section (Client Component) - Updated with all card types */}
         <section className="mb-16 rounded-xl bg-slate-800/50 md:p-8 p-2 backdrop-blur-sm transition-all hover:bg-slate-800/70">
           <div className="mb-6 flex items-center">
             <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-green-500">
@@ -203,11 +218,170 @@ export default function FeatureDocsPage() {
               {t("sections.signalCards.title")}
             </h2>
           </div>
-          <p className="mt-2 text-sm md:text-[1rem] text-slate-300">
+          <p className="mt-2 text-sm md:text-[1rem] text-slate-300 mb-6">
             {t("sections.signalCards.description")}
           </p>
 
-          <SignalCardsSection translations={signalCardTranslations} />
+          {/* Card grid with actual DemoCards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Running Signal Card */}
+            <div>
+              <div className="mb-4 bg-emerald-600/20 p-3 rounded-lg">
+                <h3 className="flex items-center text-lg font-semibold text-emerald-400">
+                  <Activity className="mr-2 h-4 w-4" />
+                  {t("sections.signalCards.running.title")}
+                </h3>
+              </div>
+              <p className="mb-4 text-sm text-slate-300">
+                {t("sections.signalCards.running.description")}
+              </p>
+              <ul className="mb-5 space-y-2">
+                {signalCardTranslations.running.items.map((item, index) => (
+                  <li key={index} className="flex items-baseline text-xs md:text-sm">
+                    <span className="mr-2 text-emerald-400">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="h-[550px] w-full">
+                <DemoCard type="running" instrumentName="ES" tradeSide="Long" />
+              </div>
+            </div>
+
+            {/* Fulfilled Signal Card */}
+            <div>
+              <div className="mb-4 bg-blue-600/20 p-3 rounded-lg">
+                <h3 className="flex items-center text-lg font-semibold text-blue-400">
+                  <DollarSign className="mr-2 h-4 w-4" />
+                  {t("sections.signalCards.fulfilled.title")}
+                </h3>
+              </div>
+              <p className="mb-4 text-sm text-slate-300">
+                {t("sections.signalCards.fulfilled.description")}
+              </p>
+              <ul className="mb-5 space-y-2">
+                {signalCardTranslations.fulfilled.items.map((item, index) => (
+                  <li key={index} className="flex items-baseline text-xs md:text-sm">
+                    <span className="mr-2 text-blue-400">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="h-[550px] w-full">
+                <DemoCard type="fulfilled" instrumentName="NQ" tradeSide="Long" />
+              </div>
+            </div>
+
+            {/* Market Closed Card */}
+            <div>
+              <div className="mb-4 bg-amber-600/20 p-3 rounded-lg">
+                <h3 className="flex items-center text-lg font-semibold text-amber-400">
+                  <Clock className="mr-2 h-4 w-4" />
+                  {t("sections.signalCards.marketClosed.title")}
+                </h3>
+              </div>
+              <p className="mb-4 text-sm text-slate-300">
+                {t("sections.signalCards.marketClosed.description")}
+              </p>
+              <ul className="mb-5 space-y-2">
+                {signalCardTranslations.marketClosed.items.map((item, index) => (
+                  <li key={index} className="flex items-baseline text-xs md:text-sm">
+                    <span className="mr-2 text-amber-400">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="h-[550px] w-full">
+                <DemoCard type="marketClosed" instrumentName="YM" />
+              </div>
+            </div>
+
+            {/* System Closed Card */}
+            <div>
+              <div className="mb-4 bg-blue-800/20 p-3 rounded-lg">
+                <h3 className="flex items-center text-lg font-semibold text-blue-400">
+                  <Bell className="mr-2 h-4 w-4" />
+                  {t("sections.signalCards.systemClosed.title")}
+                </h3>
+              </div>
+              <p className="mb-4 text-sm text-slate-300">
+                {t("sections.signalCards.systemClosed.description")}
+              </p>
+              <ul className="mb-5 space-y-2">
+                {signalCardTranslations.systemClosed.items.map((item, index) => (
+                  <li key={index} className="flex items-baseline text-xs md:text-sm">
+                    <span className="mr-2 text-blue-400">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="h-[550px] w-full">
+                <DemoCard type="systemClosed" instrumentName="RTY" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* New Section: Card Features */}
+        <section className="mb-16 rounded-xl bg-slate-800/50 p-8 backdrop-blur-sm transition-all hover:bg-slate-800/70">
+          <div className="mb-6 flex items-center">
+            <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500">
+              <LineChart className="h-5 w-5" />
+            </div>
+            <h2 className="text-2xl font-bold text-white">
+              {t("cardFeatures.title")}
+            </h2>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-lg bg-gradient-to-br from-slate-800 to-slate-900 p-5 shadow-md hover:shadow-lg transition-all">
+              <div className="mb-4 h-12 w-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                <Activity className="h-6 w-6" />
+              </div>
+              <h3 className="mb-2 text-lg font-medium text-white">
+                {t("cardFeatures.realtime.title")}
+              </h3>
+              <p className="text-slate-300">
+                {t("cardFeatures.realtime.description")}
+              </p>
+            </div>
+
+            <div className="rounded-lg bg-gradient-to-br from-slate-800 to-slate-900 p-5 shadow-md hover:shadow-lg transition-all">
+              <div className="mb-4 h-12 w-12 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <Eye className="h-6 w-6" />
+              </div>
+              <h3 className="mb-2 text-lg font-medium text-white">
+                {t("cardFeatures.visualization.title")}
+              </h3>
+              <p className="text-slate-300">
+                {t("cardFeatures.visualization.description")}
+              </p>
+            </div>
+
+            <div className="rounded-lg bg-gradient-to-br from-slate-800 to-slate-900 p-5 shadow-md hover:shadow-lg transition-all">
+              <div className="mb-4 h-12 w-12 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400">
+                <Bell className="h-6 w-6" />
+              </div>
+              <h3 className="mb-2 text-lg font-medium text-white">
+                {t("cardFeatures.status.title")}
+              </h3>
+              <p className="text-slate-300">
+                {t("cardFeatures.status.description")}
+              </p>
+            </div>
+
+            <div className="rounded-lg bg-gradient-to-br from-slate-800 to-slate-900 p-5 shadow-md hover:shadow-lg transition-all">
+              <div className="mb-4 h-12 w-12 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400">
+                <CalendarClock className="h-6 w-6" />
+              </div>
+              <h3 className="mb-2 text-lg font-medium text-white">
+                {t("cardFeatures.context.title")}
+              </h3>
+              <p className="text-slate-300">
+                {t("cardFeatures.context.description")}
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* Section: Signal Tool */}

@@ -5,6 +5,7 @@ import HowItWork from "@/components/homePage/HowItWork";
 import Plans from "@/components/homePage/Plans";
 import Service from "@/components/homePage/Service";
 import TestimonialsSection from "@/components/homePage/TestimonialsSection";
+import PageBackground from "@/components/ui/PageBackground";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
 
@@ -21,38 +22,38 @@ async function page({ params }: { params: { locale: string } }) {
 
   return (
     <>
-      <section>
-        <div>
+      {/* Shared background for all sections */}
+      <PageBackground />
+
+      <div className="relative">
+        <section>
           <Hero />
-        </div>
-      </section>
+        </section>
 
-      <section>
-        <div>
+        <section className="relative">
           <Service />
-        </div>
-      </section>
+        </section>
 
-      <section>
-        <HowItWork />
-      </section>
+        <section className="relative">
+          <HowItWork />
+        </section>
 
-      <section className="p-2">
-        <Plans />
-      </section>
+        <section className="relative p-2">
+          <Plans />
+        </section>
 
-      <section className="z-50 p-2">
-        <TestimonialsSection />
-      </section>
+        <section className="relative z-[1] p-2">
+          <TestimonialsSection />
+        </section>
 
-      <section>
-        <Cta />
-      </section>
+        <section className="relative">
+          <Cta />
+        </section>
 
-      <section className="p-2">
-        <Contact />
-      </section>
-
+        <section className="relative p-2">
+          <Contact />
+        </section>
+      </div>
     </>
   );
 }

@@ -2,7 +2,6 @@
 
 import React, { lazy, Suspense, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { BackgroundGradient } from "../ui/background-gradient";
 import { motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 
@@ -51,9 +50,13 @@ const FeatureCard = ({ icon: Icon, titleKey, descKey, t, index }) => {
       animate={controls}
       className="h-full"
     >
-      <BackgroundGradient className="h-full">
-        <div className="flex h-full flex-col items-center gap-4 rounded-xl border border-slate-700/30 bg-gradient-to-br from-slate-800/50 to-slate-900/80 p-4 backdrop-blur-sm transition-all md:p-6">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-slate-600 to-slate-700 text-3xl text-slate-50 shadow-lg md:h-16 md:w-16 md:text-4xl">
+      <div className="relative h-full overflow-hidden rounded-xl border border-slate-700/30 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-emerald-700/10">
+        {/* Add subtle gradient glow effect in the background - lighter */}
+        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-gradient-to-br from-emerald-800/10 to-cyan-800/10 blur-2xl"></div>
+        <div className="absolute -bottom-5 -left-5 h-20 w-20 rounded-full bg-gradient-to-br from-indigo-800/10 to-purple-800/10 blur-xl"></div>
+
+        <div className="relative z-10 flex h-full flex-col items-center gap-4 rounded-xl bg-gradient-to-br from-slate-800/80 to-slate-900/90 p-4 backdrop-blur-sm transition-all md:p-6">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-emerald-700/40 to-teal-800/40 text-3xl text-slate-50 shadow-lg md:text-4xl">
             <Icon aria-hidden="true" />
           </div>
           <div className="space-y-2 text-center md:space-y-3">
@@ -65,7 +68,7 @@ const FeatureCard = ({ icon: Icon, titleKey, descKey, t, index }) => {
             </p>
           </div>
         </div>
-      </BackgroundGradient>
+      </div>
     </motion.div>
   );
 };
@@ -83,38 +86,49 @@ const Service = () => {
   return (
     <section
       aria-labelledby="services-heading"
-      className="rounded-xl bg-gradient-to-br from-slate-900 via-slate-900/90 to-slate-800/80 px-2 py-8 md:px-4 md:py-16"
+      className="relative px-4 py-16 md:py-24"
     >
-      <div className="mx-auto mb-8 max-w-2xl text-center md:mb-12">
-        <span className="mb-2 inline-block rounded-full bg-indigo-500/20 px-3 py-1 text-xs font-medium text-indigo-300 md:mb-3 md:text-sm">
-          {t("subtitle")}
-        </span>
-        <h2
-          id="services-heading"
-          className="mb-4 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-2xl font-bold tracking-tight text-transparent md:mb-6 md:text-3xl lg:text-4xl"
-        >
-          {t("title")}
-        </h2>
-        <div className="mx-auto h-1 w-12 rounded-full bg-indigo-500/50 md:w-16"></div>
-      </div>
+      {/* Section divider - creates visual connection between sections - darker */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-slate-800/60 to-transparent" />
 
-      <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
-        {features.map((feature, index) => (
-          <Suspense
-            key={feature.key}
-            fallback={
-              <div className="h-40 animate-pulse rounded-lg bg-slate-800 md:h-64"></div>
-            }
+      <div className="relative mx-auto max-w-6xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          viewport={{ once: true }}
+          className="mx-auto mb-12 max-w-2xl text-center"
+        >
+          <span className="mb-3 inline-block rounded-full bg-gradient-to-r from-emerald-900/20 to-teal-900/20 px-4 py-1.5 text-sm font-medium text-emerald-500">
+            {t("subtitle")}
+          </span>
+          <h2
+            id="services-heading"
+            className="mb-6 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-3xl font-bold tracking-tight text-transparent md:text-4xl"
           >
-            <FeatureCard
-              icon={feature.icon}
-              titleKey={feature.key}
-              descKey={feature.key}
-              t={t}
-              index={index}
-            />
-          </Suspense>
-        ))}
+            {t("title")}
+          </h2>
+          <div className="mx-auto h-1 w-16 rounded-full bg-emerald-700/50"></div>
+        </motion.div>
+
+        <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2 md:gap-8">
+          {features.map((feature, index) => (
+            <Suspense
+              key={feature.key}
+              fallback={
+                <div className="h-40 animate-pulse rounded-lg bg-slate-800 md:h-64"></div>
+              }
+            >
+              <FeatureCard
+                icon={feature.icon}
+                titleKey={feature.key}
+                descKey={feature.key}
+                t={t}
+                index={index}
+              />
+            </Suspense>
+          ))}
+        </div>
       </div>
     </section>
   );

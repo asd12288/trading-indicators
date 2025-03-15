@@ -1,106 +1,140 @@
 "use client";
 
-import { Link } from "@/i18n/routing";
-import { useTranslations } from "next-intl";
-import { HiArrowRight } from "react-icons/hi";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import dynamic from "next/dynamic";
-import React from "react";
+import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { ArrowRight } from "lucide-react";
+import DemoCard from "@/components/demo/DemoCards";
 
-// Lazy-load these heavier components
-const TimelineSection = dynamic(() => import("./TimelineSection"), {
-  ssr: false,
-});
-const LogosScroling = dynamic(() => import("@/components/LogosScroling"), {
-  ssr: false,
-});
-const DemoCard = dynamic(() => import("./DemoCard"), { ssr: false });
+// Define card types for the carousel - focus only on ES and NQ
+const demoCards = [
+  { type: "running", instrument: "ES", side: "Long" },
+  { type: "running", instrument: "NQ", side: "Short" },
+  { type: "fulfilled", instrument: "ES", side: "Short" },
+  { type: "fulfilled", instrument: "NQ", side: "Long" },
+];
 
-const Hero = () => {
+export default function Hero() {
   const t = useTranslations("HomePage.hero");
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  
+  // Auto-rotate through demo cards
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentCardIndex((prevIndex) => (prevIndex + 1) % demoCards.length);
+    }, 8000); // Change card every 8 seconds
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  const currentCard = demoCards[currentCardIndex];
 
   return (
-    <section className="overflow-hidden">
-      <div className="mx-auto flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 md:grid md:min-h-[85vh] md:grid-cols-12 md:gap-4 md:px-6">
-        {/* LEFT COLUMN */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mt-8 w-full px-4 py-4 md:col-span-6 md:py-20 md:pl-8 lg:pl-16 xl:py-28"
-        >
-          <div className="inline-block md:items-start items-center rounded-full bg-emerald-900/30 px-4 py-1 backdrop-blur-sm">
-            <p className="text-center text-sm text-emerald-400 md:text-left">
-              {t("rating")}
-            </p>
-          </div>
-
-          <p className="my-3 text-center font-thin text-slate-400 md:text-left">
-            {t("count")}
-          </p>
-
-          <h1 className="text-center text-4xl font-bold text-gray-50 md:text-left md:text-5xl lg:text-6xl xl:text-7xl">
-            <span className="bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
-              Smart Alert
-            </span>{" "}
-            <br />
-            {t("mainTitleStart")}
-          </h1>
-
-          <h2 className="mt-6 text-center text-lg font-light text-slate-300 md:text-left md:text-2xl lg:text-3xl">
-            {t("highlightedText")}
-          </h2>
-
-          <div className="mt-10 flex flex-col items-center gap-6 md:flex-row md:items-start md:justify-start">
-            <Link href="/signup">
-              <div className="flex flex-col items-center gap-2">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-700 px-6 py-3 shadow-lg shadow-emerald-900/30 transition-all hover:from-emerald-500 hover:to-teal-600 md:px-8 md:py-3 md:font-medium lg:text-xl"
+    <section className="relative px-4 pt-8 pb-16 md:py-16">
+      <div className="relative mx-auto max-w-7xl">
+        {/* Main hero content with improved layout and better vertical centering */}
+        <div className="flex min-h-[700px] flex-col items-center justify-center gap-8 lg:flex-row lg:items-center lg:justify-between">
+          {/* Text content with enhanced styling */}
+          <div className="max-w-2xl pt-0 text-center lg:text-left">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+            >
+              <span className="inline-block rounded-full bg-gradient-to-r from-emerald-900/20 to-teal-900/20 px-5 py-1.5 text-sm font-semibold text-emerald-500">
+                {t("rating")}
+              </span>
+              <p className="mt-3 text-sm font-light text-emerald-600/80">
+                {t("count")}
+              </p>
+              <h1 className="mt-6 text-5xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl">
+                <span className="block bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
+                  Smart Alert
+                </span>
+                <span className="mt-2 block">
+                  {t("highlightedText")}
+                </span>
+              </h1>
+              <p className="mt-8 text-xl leading-8 text-slate-300">
+                {t("subtitle")}
+              </p>
+              <div className="mt-10 flex flex-col items-center gap-6 sm:flex-row sm:justify-center lg:justify-start">
+                <Link href="/signup"
+                  className="group relative overflow-hidden rounded-full bg-gradient-to-r from-emerald-700 to-teal-600 px-8 py-3 text-lg font-medium text-white shadow-lg transition-all hover:shadow-emerald-800/20 hover:from-emerald-600 hover:to-teal-500"
                 >
-                  {t("buttons.joinUs")}{" "}
-                  <span className="ml-1">
-                    <HiArrowRight className="inline" />
+                  <span className="relative z-10 flex items-center">
+                    {t("buttons.joinUs")}
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </span>
-                </motion.button>
-                <p className="text-xs font-light text-slate-400">
-                  {t("noCard")}
-                </p>
+                  <span className="absolute inset-0 -z-10 bg-gradient-to-r from-emerald-600 to-teal-500 opacity-0 blur transition-opacity group-hover:opacity-70"></span>
+                </Link>
+                <Link
+                  href="/info"
+                  className="group flex items-center gap-2 text-base font-medium text-slate-300 transition-colors hover:text-white"
+                >
+                  {t("buttons.learnMore")}
+                  <span className="rounded-full bg-slate-800 p-1 transition-transform group-hover:translate-x-1">
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                </Link>
               </div>
-            </Link>
-
-            <Link href="/info">
-              <button className="group px-3 py-2 text-sm transition-all md:px-4 md:py-3 md:font-medium lg:text-lg">
-                {t("buttons.learnMore")}
-                <span className="block h-0.5 max-w-0 bg-green-400 transition-all duration-500 group-hover:max-w-full"></span>
-              </button>
-            </Link>
+              <p className="mt-6 text-sm text-slate-400">
+                {t("noCard")}
+              </p>
+            </motion.div>
           </div>
-        </motion.div>
 
-        {/* RIGHT COLUMN */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="my-4 w-full md:col-span-6 md:flex md:items-center md:justify-center lg:mt-12"
-        >
-          {/* Parent must be relative for absolute positioning inside */}
-          <div className="w-full items-center justify-center md:relative lg:flex">
-            {/* A container to hold both cards, one behind the other */}
-            <div className="xs:grid grid-cols-2 md:relative">
-              <div className="relative z-10 transform transition-all md:hover:rotate-2">
-                <DemoCard type="es" />
+          {/* Fixed card positioning */}
+          <motion.div 
+            className="w-full max-w-md pt-0 lg:pt-0"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+          >
+            <div className="relative">
+              {/* Subtle glow effect behind the card - darker */}
+              <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-emerald-800/15 to-blue-800/15 blur-xl"></div>
+              
+              {/* Floating animation wrapper */}
+              <motion.div
+                animate={{ 
+                  y: [0, -10, 0],
+                  rotate: [0, 1, 0]
+                }}
+                transition={{ 
+                  duration: 6,
+                  repeat: Infinity,
+                  repeatType: "reverse"
+                }}
+                className="relative h-[550px]"
+              >
+                <DemoCard 
+                  type={currentCard.type as any}
+                  instrumentName={currentCard.instrument}
+                  tradeSide={currentCard.side as any}
+                />
+              </motion.div>
+              
+              {/* Card indicators - darker */}
+              <div className="mt-4 flex justify-center gap-3">
+                {demoCards.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`h-2.5 w-2.5 rounded-full transition-all ${
+                      index === currentCardIndex 
+                        ? "bg-emerald-600 scale-110 shadow-lg shadow-emerald-700/30" 
+                        : "bg-slate-700 hover:bg-slate-600"
+                    }`}
+                    onClick={() => setCurrentCardIndex(index)}
+                    aria-label={`View demo card ${index + 1}`}
+                  ></button>
+                ))}
               </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
-
-      <LogosScroling />
     </section>
   );
-};
-
-export default React.memo(Hero);
+}

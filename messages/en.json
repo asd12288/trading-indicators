@@ -39,18 +39,34 @@
           "title": "Running Smart Alert Card",
           "description": "Displays trades that are actively in progress:",
           "item0": "Entry Price: The price at which the trade was opened.",
-          "item1": "Stop Price: The protective stop-loss level.",
-          "item2": "Target Price: The desired profit-taking level.",
-          "item3": "Trade Duration: How long the trade has been running so far.",
-          "item4": "Status: Usually shows 'Running' while the trade is active."
+          "item1": "Target Price: The desired profit-taking level.",
+          "item2": "Stop Loss Price: The protective stop-loss level.",
+          "item3": "Current Price: Shows the live price with real-time updates.",
+          "item4": "Visual Price Scale: Shows where the current price is in relation to entry, target, and stop."
         },
         "fulfilled": {
           "title": "Fulfilled Smart Alert Card",
           "description": "Displays trades that have already closed:",
-          "item0": "Entry Price & Exit Price: Shows where you got in and out.",
-          "item1": "MAE & MFE: Reflects how the trade performed at its worst and best.",
-          "item2": "Trade Duration: The total time from entry to exit.",
-          "item3": "Status: Typically 'Trade Over' or 'Closed.'"
+          "item0": "Potential Profit: The maximum possible profit that was available during the trade.",
+          "item1": "MFE (Maximum Favorable Excursion): Shows the best possible outcome the trade reached.",
+          "item2": "MAE (Maximum Adverse Excursion): Shows the maximum risk or drawdown during the trade.",
+          "item3": "Trade Quality: Some cards show badges like 'Expert Trade' or 'Quality Trade' based on their risk/reward profile."
+        },
+        "marketClosed": {
+          "title": "Market Closed Card",
+          "description": "Shown when the market for an instrument is currently closed:",
+          "item0": "Next Open Time: Shows when the market will next be open (in both UTC and local time).",
+          "item1": "Countdown Timer: Displays how much time remains until the market opens.",
+          "item2": "Trading Hours: Shows the regular trading schedule for this instrument.",
+          "item3": "Trading Days: Visual representation of which days the market is open."
+        },
+        "systemClosed": {
+          "title": "System Closed Card",
+          "description": "Appears when our alert system is not actively monitoring an instrument:",
+          "item0": "Next Alert Session: When the system will resume monitoring this instrument.",
+          "item1": "Session Schedule: Shows the times when alerts are active.",
+          "item2": "Session Days: Shows which days of the week have active monitoring.",
+          "item3": "Countdown: Shows the time remaining until alerts resume."
         }
       },
       "signalTool": {
@@ -73,6 +89,25 @@
       "createAccount": "Create An Account",
       "readyToTrade": "Ready to start trading?",
       "viewSignals": "View All Smart Alerts"
+    },
+    "cardFeatures": {
+      "title": "Common Card Features",
+      "realtime": {
+        "title": "Real-time Updates",
+        "description": "Our cards provide live data with automatic updates. No need to refresh for the latest information."
+      },
+      "visualization": {
+        "title": "Visual Price Tracking",
+        "description": "Price scales and visual indicators help you quickly understand the trade's status and performance."
+      },
+      "status": {
+        "title": "Clear Status Indicators",
+        "description": "Colored headers and badges make it easy to distinguish between different types of signals and market conditions."
+      },
+      "context": {
+        "title": "Market Context",
+        "description": "Cards provide relevant market information like trading hours and scheduled sessions for better decision-making."
+      }
     }
   },
   "HomePage": {
