@@ -16,6 +16,7 @@ import {
   Globe,
   Calendar,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type DemoCardType = "running" | "fulfilled" | "marketClosed" | "systemClosed";
 
@@ -82,6 +83,13 @@ export default function DemoCard({
   instrumentName = "NQ",
   tradeSide = "Long",
 }: DemoCardProps) {
+  // Add translations from real cards
+  const runningT = useTranslations("RunningSignalCard");
+  const fulfilledT = useTranslations("FufilledSignalCard");
+  const marketT = useTranslations("MarketClosedCard");
+  const systemT = useTranslations("SystemClosedCard");
+  const demoT = useTranslations("DemoCard");
+
   const { theme } = useTheme();
   const isBuy = tradeSide === "Long";
   const animationIndexRef = useRef(0);
@@ -123,71 +131,82 @@ export default function DemoCard({
     setCurrentPrice(
       isBuy
         ? entryPrice + targetTicks * instrument.tickSize * 0.35
-        : entryPrice - targetTicks * instrument.tickSize * 0.35
+        : entryPrice - targetTicks * instrument.tickSize * 0.35,
     );
-    
+
     // Update the last update time to show fresh data
     const now = new Date();
     lastUpdateTimeRef.current = now;
     setLastUpdateTime(now);
-  }, [instrumentName, tradeSide, entryPrice, targetTicks, instrument.tickSize, isBuy]);
+  }, [
+    instrumentName,
+    tradeSide,
+    entryPrice,
+    targetTicks,
+    instrument.tickSize,
+    isBuy,
+  ]);
 
   // Simulate realistic price movement with noise and trending
   useEffect(() => {
     if (type !== "running") return;
 
-    const interval = setInterval(() => {
-      setCurrentPrice((prevPrice) => {
-        // Get next price from history or simulate a new realistic movement
-        const priceHistory = instrument.priceHistory || [];
-        
-        // If we have history data, use it in a cycle for realistic patterns
-        if (priceHistory.length > 0) {
-          animationIndexRef.current = (animationIndexRef.current + 1) % priceHistory.length;
-          const nextHistoricalPrice = priceHistory[animationIndexRef.current];
-          
-          // Add some random noise to the historical price for variation
-          const noiseAmount = instrument.tickSize * (Math.random() * 4 - 2); // -2 to +2 ticks
-          const nextPrice = nextHistoricalPrice + noiseAmount;
-          
+    const interval = setInterval(
+      () => {
+        setCurrentPrice((prevPrice) => {
+          // Get next price from history or simulate a new realistic movement
+          const priceHistory = instrument.priceHistory || [];
+
+          // If we have history data, use it in a cycle for realistic patterns
+          if (priceHistory.length > 0) {
+            animationIndexRef.current =
+              (animationIndexRef.current + 1) % priceHistory.length;
+            const nextHistoricalPrice = priceHistory[animationIndexRef.current];
+
+            // Add some random noise to the historical price for variation
+            const noiseAmount = instrument.tickSize * (Math.random() * 4 - 2); // -2 to +2 ticks
+            const nextPrice = nextHistoricalPrice + noiseAmount;
+
+            // Update last price timestamp
+            lastUpdateTimeRef.current = new Date();
+            setLastUpdateTime(lastUpdateTimeRef.current);
+
+            return nextPrice;
+          }
+
+          // Fallback to simulated movement if no history
+          const volatilityFactor =
+            instrument.volatilityRange * instrument.tickSize;
+          const trend = isBuy ? 0.1 : -0.1; // slight bias in direction of trade
+          const noise = (Math.random() - 0.5) * volatilityFactor;
+
+          let newPrice = prevPrice + noise + trend;
+
+          // Ensure price stays within realistic bounds
+          const rangeLimitUpper = isBuy ? targetPrice * 0.95 : stopPrice * 0.95;
+          const rangeLimitLower = isBuy ? stopPrice * 1.05 : targetPrice * 1.05;
+
+          if (
+            (isBuy && newPrice > rangeLimitUpper) ||
+            (!isBuy && newPrice < rangeLimitLower)
+          ) {
+            // Reverse movement direction when approaching limits (mean reversion)
+            newPrice = prevPrice - noise * 2;
+          }
+
           // Update last price timestamp
           lastUpdateTimeRef.current = new Date();
           setLastUpdateTime(lastUpdateTimeRef.current);
-          
-          return nextPrice;
-        }
-        
-        // Fallback to simulated movement if no history
-        const volatilityFactor =
-          instrument.volatilityRange * instrument.tickSize;
-        const trend = isBuy ? 0.1 : -0.1; // slight bias in direction of trade
-        const noise = (Math.random() - 0.5) * volatilityFactor;
 
-        let newPrice = prevPrice + noise + trend;
+          // Format to correct decimal places for the instrument type
+          const decimalPlaces =
+            instrument.format === "forex" ? instrument.decimalPlaces || 5 : 2;
 
-        // Ensure price stays within realistic bounds
-        const rangeLimitUpper = isBuy ? targetPrice * 0.95 : stopPrice * 0.95;
-        const rangeLimitLower = isBuy ? stopPrice * 1.05 : targetPrice * 1.05;
-
-        if (
-          (isBuy && newPrice > rangeLimitUpper) ||
-          (!isBuy && newPrice < rangeLimitLower)
-        ) {
-          // Reverse movement direction when approaching limits (mean reversion)
-          newPrice = prevPrice - noise * 2;
-        }
-
-        // Update last price timestamp
-        lastUpdateTimeRef.current = new Date();
-        setLastUpdateTime(lastUpdateTimeRef.current);
-
-        // Format to correct decimal places for the instrument type
-        const decimalPlaces =
-          instrument.format === "forex" ? instrument.decimalPlaces || 5 : 2;
-
-        return parseFloat(newPrice.toFixed(decimalPlaces));
-      });
-    }, 1250 + Math.random() * 500); // Randomize update timing slightly for realism
+          return parseFloat(newPrice.toFixed(decimalPlaces));
+        });
+      },
+      1250 + Math.random() * 500,
+    ); // Randomize update timing slightly for realism
 
     return () => clearInterval(interval);
   }, [
@@ -294,7 +313,7 @@ export default function DemoCard({
             isBuy ? "bg-emerald-600" : "bg-rose-600",
           )}
         >
-          LIVE
+          {runningT("liveTracking")}
         </div>
 
         <div className="p-4">
@@ -322,7 +341,7 @@ export default function DemoCard({
                 ) : (
                   <ArrowDown className="h-3 w-3" />
                 )}
-                {tradeSide}
+                {isBuy ? runningT("long") : runningT("short")}
               </div>
             </div>
             <div className="mt-1 text-sm text-slate-400">
@@ -334,10 +353,12 @@ export default function DemoCard({
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-xs text-slate-400">
               <Clock className="h-3.5 w-3.5" />
-              <span>Started 45 minutes ago</span>
+              <span>
+                {runningT("started")} 45 {runningT("tradeDuration")}
+              </span>
             </div>
             <div className="text-xs text-slate-400">
-              Last update:{" "}
+              {runningT("lastUpdate")}:{" "}
               <span className="text-blue-400">{getTimeSinceUpdate()}</span>
             </div>
           </div>
@@ -354,15 +375,15 @@ export default function DemoCard({
               <div className="flex items-center gap-1.5">
                 <Zap className="h-4 w-4 text-amber-400" />
                 <span className="text-sm font-medium text-amber-400">
-                  Current Price
+                  {runningT("currentPrice")}
                 </span>
                 <span className="ml-1.5 rounded-full bg-blue-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
-                  LIVE
+                  {runningT("live")}
                 </span>
               </div>
               <div className="flex flex-col items-end">
                 <div className="mb-0.5 text-xs text-slate-400">
-                  Live Performance
+                  {runningT("livePosition")}
                 </div>
                 <div
                   className={cn(
@@ -377,8 +398,8 @@ export default function DemoCard({
             </div>
 
             <div className="flex items-baseline justify-between">
-              <div 
-                key={`${instrumentName}-${currentPrice}`} // Add key to force re-render on instrument change
+              <div
+                key={`${instrumentName}-${currentPrice}`}
                 className="animate-pulse text-3xl font-bold tracking-tight"
               >
                 {formatNumber(currentPrice)}
@@ -402,7 +423,7 @@ export default function DemoCard({
                 {ticksDifference} {tickLabel} ({formatDollar(dollarValue)})
               </span>
               <span className="text-slate-400">
-                Risk/Reward: 1:{riskReward}
+                {runningT("riskReward")}: 1:{riskReward}
               </span>
             </div>
           </div>
@@ -416,7 +437,7 @@ export default function DemoCard({
                 theme === "dark" ? "bg-slate-800" : "bg-slate-100",
               )}
             >
-              <div className="text-xs text-slate-400">Entry</div>
+              <div className="text-xs text-slate-400">{runningT("entry")}</div>
               <div className="font-medium">{formatNumber(entryPrice)}</div>
             </div>
 
@@ -428,7 +449,7 @@ export default function DemoCard({
                 theme === "dark" ? "text-emerald-400" : "text-emerald-600",
               )}
             >
-              <div className="text-xs opacity-80">Target</div>
+              <div className="text-xs opacity-80">{runningT("target")}</div>
               <div className="font-medium">{formatNumber(targetPrice)}</div>
               <div className="mt-0.5 text-xs opacity-80">
                 {isBuy ? "+" : "-"}
@@ -444,7 +465,7 @@ export default function DemoCard({
                 theme === "dark" ? "text-rose-400" : "text-rose-600",
               )}
             >
-              <div className="text-xs opacity-80">Stop</div>
+              <div className="text-xs opacity-80">{runningT("stop")}</div>
               <div className="font-medium">{formatNumber(stopPrice)}</div>
               <div className="mt-0.5 text-xs opacity-80">
                 {isBuy ? "-" : "+"}
@@ -511,21 +532,27 @@ export default function DemoCard({
             {/* Scale labels */}
             <div className="mt-1 flex justify-between text-xs">
               <div className="flex flex-col items-start">
-                <span className="font-medium text-rose-500">Stop</span>
+                <span className="font-medium text-rose-500">
+                  {runningT("stop")}
+                </span>
                 <span className="text-slate-400">
                   {formatNumber(stopPrice)}
                 </span>
               </div>
 
               <div className="flex flex-col items-center">
-                <span className="font-medium text-blue-500">Entry</span>
+                <span className="font-medium text-blue-500">
+                  {runningT("entry")}
+                </span>
                 <span className="text-slate-400">
                   {formatNumber(entryPrice)}
                 </span>
               </div>
 
               <div className="flex flex-col items-end">
-                <span className="font-medium text-emerald-600">Target</span>
+                <span className="font-medium text-emerald-600">
+                  {runningT("target")}
+                </span>
                 <span className="text-slate-400">
                   {formatNumber(targetPrice)}
                 </span>
@@ -547,7 +574,10 @@ export default function DemoCard({
             ) : (
               <ArrowDown className="mr-1 h-4 w-4" />
             )}
-            <span className="font-medium">{isBuy ? "LONG" : "SHORT"}</span>
+            <span className="font-medium">
+              {runningT("direction")}:{" "}
+              {isBuy ? runningT("long") : runningT("short")}
+            </span>
           </div>
         </div>
       </div>
@@ -569,7 +599,7 @@ export default function DemoCard({
             "bg-gray-500",
           )}
         >
-          Trade Potential Over
+          {fulfilledT("tradePotentialOver")}
         </div>
 
         <div className="flex h-full flex-col p-4">
@@ -597,7 +627,7 @@ export default function DemoCard({
                 ) : (
                   <ArrowDown className="h-3 w-3" />
                 )}
-                {tradeSide}
+                {isBuy ? fulfilledT("long") : fulfilledT("short")}
               </div>
             </div>
             <div className="mt-1 text-sm text-slate-400">
@@ -609,7 +639,9 @@ export default function DemoCard({
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <div className="flex items-center gap-1 rounded-md border border-amber-500/40 bg-amber-900/20 px-2 py-1 text-amber-400">
               <Award className="h-3.5 w-3.5" />
-              <span className="text-xs font-medium">Expert Trade</span>
+              <span className="text-xs font-medium">
+                {demoT("expertTrade")}
+              </span>
               <span className="ml-1 text-xs opacity-80">({riskReward}x)</span>
             </div>
           </div>
@@ -618,13 +650,13 @@ export default function DemoCard({
           <div className="mb-6 flex flex-col items-center justify-center rounded-lg border border-blue-500/30 bg-blue-900/10 p-5">
             <div className="flex items-center gap-1 text-xl font-medium text-blue-300">
               <DollarSign className="h-5 w-5" />
-              Potential Profit
+              {fulfilledT("potentialProfit")}
             </div>
             <div className="mt-2 text-5xl font-bold text-blue-400">
               {formatDollar(mfeDollarValue)}
             </div>
             <div className="mt-2 text-sm text-slate-400">
-              {mfeTicks} {tickLabel} maximum potential
+              {mfeTicks} {tickLabel} {fulfilledT("maxPotential")}
             </div>
           </div>
 
@@ -636,7 +668,9 @@ export default function DemoCard({
                 theme === "dark" ? "bg-slate-800" : "bg-slate-100",
               )}
             >
-              <div className="mb-2 text-xs text-slate-400">Entry Price</div>
+              <div className="mb-2 text-xs text-slate-400">
+                {fulfilledT("entryPrice")}
+              </div>
               <div className="text-lg font-semibold">
                 {formatNumber(entryPrice)}
               </div>
@@ -649,13 +683,13 @@ export default function DemoCard({
             <div className="rounded-lg border border-red-500/20 bg-red-900/10 p-4">
               <div className="mb-2 flex items-center gap-1 text-xs text-red-300">
                 <Target className="h-3.5 w-3.5" />
-                Max Risk (Drawdown)
+                {fulfilledT("maxDrawdown")}
               </div>
               <div className="text-lg font-bold text-red-400">
                 {maeTicks} {tickLabel}
               </div>
               <div className="mt-2 text-xs text-slate-400">
-                Maximum adverse movement
+                {fulfilledT("mae")}
               </div>
             </div>
           </div>
@@ -663,7 +697,7 @@ export default function DemoCard({
           {/* Future Trade Hint */}
           <div className="mt-auto flex items-center justify-center pt-4 text-sm text-slate-400">
             <Clock className="mr-2 h-4 w-4" />
-            <span>More opportunities coming soon</span>
+            <span>{fulfilledT("tradingOpportunity")}</span>
           </div>
         </div>
       </div>
@@ -690,7 +724,7 @@ export default function DemoCard({
         >
           <div className="flex items-center justify-center gap-2">
             <div className="h-2 w-2 animate-pulse rounded-full bg-white"></div>
-            <span>Market Closed</span>
+            <span>{marketT("marketClosed")}</span>
           </div>
         </div>
 
@@ -708,7 +742,7 @@ export default function DemoCard({
               </h3>
             </div>
             <div className="mt-1 text-sm text-slate-400">
-              E-mini S&P 500 Future
+              {instrument.fullName}
             </div>
           </div>
 
@@ -721,7 +755,7 @@ export default function DemoCard({
           >
             <Clock className="mr-3 h-5 w-5 text-amber-500" />
             <span className="text-sm font-medium text-amber-600 dark:text-amber-400">
-              Trading is currently unavailable
+              {marketT("trading")}
             </span>
           </div>
 
@@ -735,11 +769,11 @@ export default function DemoCard({
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
                 <Clock className="h-4 w-4" />
-                <span className="font-medium">Next opens at</span>
+                <span className="font-medium">{marketT("nextOpen")}</span>
               </div>
               <div className="flex items-center text-xs font-medium text-emerald-500">
                 <Clock className="mr-1 h-3.5 w-3.5" />
-                <span>Opens in 2h 15m</span>
+                <span>{demoT("opensIn")} 2h 15m</span>
               </div>
             </div>
 
@@ -747,7 +781,7 @@ export default function DemoCard({
             <div className="mt-3 flex items-center space-x-2">
               <Globe className="h-4 w-4 text-blue-400" />
               <div>
-                <div className="text-xs text-slate-500">UTC</div>
+                <div className="text-xs text-slate-500">{demoT("utcTime")}</div>
                 <div className="text-lg font-bold">Monday, 9:30 AM</div>
               </div>
             </div>
@@ -756,7 +790,9 @@ export default function DemoCard({
             <div className="mt-2 flex items-center space-x-2">
               <Clock className="h-4 w-4 text-emerald-400" />
               <div>
-                <div className="text-xs text-slate-500">Local Time</div>
+                <div className="text-xs text-slate-500">
+                  {demoT("localTime")}
+                </div>
                 <div className="text-lg font-bold">Monday, 5:30 AM</div>
               </div>
             </div>
@@ -772,7 +808,7 @@ export default function DemoCard({
             <div className="mb-2 flex items-center justify-between">
               <div className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
                 <Calendar className="h-4 w-4" />
-                <span className="font-medium">Trading hours</span>
+                <span className="font-medium">{marketT("marketHours")}</span>
               </div>
             </div>
 
@@ -842,7 +878,7 @@ export default function DemoCard({
           )}
         >
           <div className="flex items-center justify-center gap-2">
-            <span>Alerts Currently Offline</span>
+            <span>{systemT("alertsOffline")}</span>
           </div>
         </div>
 
@@ -860,7 +896,7 @@ export default function DemoCard({
               </h3>
             </div>
             <div className="mt-1 text-sm text-slate-400">
-              E-mini S&P 500 Future
+              {instrument.fullName}
             </div>
           </div>
 
@@ -873,7 +909,7 @@ export default function DemoCard({
           >
             <Bell className="mr-3 h-5 w-5 text-blue-500" />
             <span className="text-blue-gray text-sm font-medium dark:text-blue-400">
-              Alert system is currently not active for this instrument
+              {systemT("systemMessage")}
             </span>
           </div>
 
@@ -887,11 +923,11 @@ export default function DemoCard({
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
                 <Clock className="h-4 w-4" />
-                <span className="font-medium">Next Alert Session</span>
+                <span className="font-medium">{systemT("nextSession")}</span>
               </div>
               <div className="flex items-center text-xs font-medium text-blue-500">
                 <Clock className="mr-1 h-3.5 w-3.5" />
-                <span>Starts in 3h 45m</span>
+                <span>{systemT("startsIn")} 3h 45m</span>
               </div>
             </div>
 
@@ -907,7 +943,7 @@ export default function DemoCard({
           >
             <div className="mb-2 flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
               <Calendar className="h-4 w-4" />
-              <span className="font-medium">Scheduled Alert Sessions</span>
+              <span className="font-medium">{systemT("alertSessions")}</span>
             </div>
 
             <div className="mt-3 space-y-2">
@@ -918,7 +954,9 @@ export default function DemoCard({
                 )}
               >
                 <div className="flex justify-between">
-                  <div className="text-sm font-medium">Session 1</div>
+                  <div className="text-sm font-medium">
+                    {systemT("session")} 1
+                  </div>
                   <div className="text-xs text-slate-500">
                     Mon, Tue, Wed, Thu, Fri
                   </div>
@@ -934,7 +972,9 @@ export default function DemoCard({
                 )}
               >
                 <div className="flex justify-between">
-                  <div className="text-sm font-medium">Session 2</div>
+                  <div className="text-sm font-medium">
+                    {systemT("session")} 2
+                  </div>
                   <div className="text-xs text-slate-500">
                     Mon, Tue, Wed, Thu
                   </div>

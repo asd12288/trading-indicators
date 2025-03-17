@@ -362,14 +362,14 @@
     "volume": "Volume"
   },
   "RunningSignalCard": {
-    "started": "Started:",
+    "started": "Started",
     "status": "Status:",
     "running": "Running",
     "notActivated": "Running",
     "entryPrice": "Entry Price:",
     "invalidation": "Invalidation",
     "objective": "Objective",
-    "tradeDuration": "Trade Duration:",
+    "tradeDuration": "minutes ago",
     "startedAt": "Started at:",
     "active": "Active",
     "livePosition": "Live Position Status",
@@ -385,15 +385,15 @@
     "liveTracking": "LIVE TRACKING",
     "signalActive": "SIGNAL ACTIVE",
     "live": "LIVE",
-
+    "lastUpdate": "Last update",
     "stopLoss": "Stop Loss",
     "stop": "Stop",
     "entry": "Entry",
     "target": "Target",
     "riskReward": "Risk/Reward",
     "direction": "Direction",
-    "long": "Long",
-    "short": "Short"
+    "long": "LONG",
+    "short": "SHORT"
   },
   "FufilledSignalCard": {
     "finished": "Finished:",
@@ -420,12 +420,10 @@
     "potentialGain": "Potential gain",
     "maxAdversity": "Maximum adversity",
     "potentialProfit": "Potential Profit",
-
     "long": "Long",
     "short": "Short",
-    "maxPotential": "Maximum Potential",
-    "maxDrawdown": "Max Drawdown",
-
+    "maxPotential": "maximum potential",
+    "maxDrawdown": "Max Risk (Drawdown)",
     "tradingOpportunity": "More opportunities coming soon"
   },
   "SignalLayout": {
@@ -1479,7 +1477,6 @@
     "marketHours": "Trading hours",
     "localTime": "Local time"
   },
-
   "SystemClosedCard": {
     "alertsOffline": "Alerts Currently Offline",
     "systemMessage": "Alert system is currently not active for this instrument",
@@ -1504,5 +1501,15 @@
     "disabled": "Disabled",
     "nextActiveSession": "Next active session",
     "noAlertHours": "No alert hours configured for this instrument"
+  },
+  "DemoCard": {
+    "expertTrade": "Expert Trade",
+    "tradingDays": "Trading days",
+    "utcTime": "UTC",
+    "localTime": "Local Time",
+    "opensIn": "Opens in",
+    "nextSession": "Next Session",
+    "session": "Session",
+    "startsIn": "Starts in"
   }
 }

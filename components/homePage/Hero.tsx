@@ -1,10 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowRight } from "lucide-react";
 import dynamic from "next/dynamic";
+import { Link } from "@/i18n/routing";
+
 
 // Lazy load the DemoCard component which isn't needed for initial render
 const DemoCard = dynamic(() => import("@/components/demo/DemoCards"), {
