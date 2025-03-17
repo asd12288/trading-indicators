@@ -1,17 +1,8 @@
-import { Toaster } from "@/components/ui/toaster";
+import { Suspense } from "react";
 import { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { Poppins } from "next/font/google";
 import "./globals.css";
-import MaintenanceBanner from "@/components/MaintenanceBanner";
-import AlertNotifications from "@/components/AlertNotifications";
-
-const poppins = Poppins({
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: {
@@ -20,6 +11,20 @@ export const metadata: Metadata = {
   },
   description: "Get the best Smart Alerts for your trades",
 };
+
+// Import critical CSS in a non-blocking way
+const criticalCss = `
+  /* Inlining minimal critical CSS here to prevent render blocking */
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+  
+  body {
+    font-family: 'Poppins', system-ui, sans-serif;
+    background: linear-gradient(to bottom, rgb(15, 23, 42), rgb(10, 15, 30));
+    color: white;
+    margin: 0;
+    padding: 0;
+  }
+`;
 
 export default async function RootLayout({
   children,
@@ -34,6 +39,7 @@ export default async function RootLayout({
     <html lang={params.locale}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+
         {/* Preconnect to Google Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -41,20 +47,39 @@ export default async function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        {/* Load Google Fonts */}
+
+        {/* Inline critical CSS */}
+        <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
+
+        {/* Preload critical fonts */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
-          rel="stylesheet"
+          rel="preload"
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap"
+          as="style"
+          onLoad="this.onload=null;this.rel='stylesheet'"
         />
       </head>
-      <body className={`${poppins.className} antialiased`}>
+      <body>
         <NextIntlClientProvider locale={params.locale} messages={messages}>
-          <MaintenanceBanner />
-          <AlertNotifications />
           {children}
-          <Toaster />
+
+          {/* Load non-critical components lazily */}
+          <Suspense fallback={null}>
+            <LazyLoadedComponents />
+          </Suspense>
         </NextIntlClientProvider>
       </body>
     </html>
   );
 }
+
+// Lazy load non-critical components
+const LazyLoadedComponents = () => {
+  return (
+    <>
+      <div id="maintenance-banner-container" data-load-delay="true" />
+      <div id="alerts-container" data-load-delay="true" />
+      <div id="toaster-container" data-load-delay="true" />
+    </>
+  );
+};

@@ -5,7 +5,6 @@ import HowItWork from "@/components/homePage/HowItWork";
 import Plans from "@/components/homePage/Plans";
 import Service from "@/components/homePage/Service";
 import TestimonialsSection from "@/components/homePage/TestimonialsSection";
-import PageBackground from "@/components/ui/PageBackground";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
 
@@ -22,9 +21,6 @@ async function page({ params }: { params: { locale: string } }) {
 
   return (
     <>
-      {/* Shared background for all sections */}
-      <PageBackground />
-
       <div className="relative">
         <section>
           <Hero />

@@ -29,7 +29,7 @@ export default function CardShowcase({
   // Auto-rotate through cards
   useEffect(() => {
     if (!autoRotate) return;
-    
+
     const timer = setInterval(() => {
       setIsAnimating(true);
       setTimeout(() => {

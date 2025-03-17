@@ -1,10 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/context/theme-context";
-import { ArrowUp, ArrowDown, Clock, Zap, Target, DollarSign, Award, Bell, Globe, Calendar } from "lucide-react";
+import {
+  ArrowUp,
+  ArrowDown,
+  Clock,
+  Zap,
+  Target,
+  DollarSign,
+  Award,
+  Bell,
+  Globe,
+  Calendar,
+} from "lucide-react";
 
 type DemoCardType = "running" | "fulfilled" | "marketClosed" | "systemClosed";
 
@@ -14,87 +25,193 @@ interface DemoCardProps {
   tradeSide?: "Long" | "Short";
 }
 
-// Realistic instrument price data
+// Market data with realistic pricing based on actual market values as of May 2024
 const instrumentData = {
   ES: {
     fullName: "E-mini S&P 500 Future",
-    basePrice: 5240.50,
+    basePrice: 5266.75,
     tickSize: 0.25,
-    tickValue: 12.50,
+    tickValue: 12.5,
     profitTarget: 20, // ticks
     stopLoss: 8, // ticks
     volatilityRange: 0.5, // percentage
+    format: "futures",
+    priceHistory: [
+      5266.75, 5267.0, 5267.25, 5266.5, 5266.75, 5267.5, 5268.0, 5267.75,
+    ],
+    typicalDailyRange: 32, // points
   },
   NQ: {
     fullName: "E-mini Nasdaq-100 Future",
-    basePrice: 18520.75,
+    basePrice: 18654.25,
     tickSize: 0.25,
-    tickValue: 5.00,
-    profitTarget: 30, // ticks
-    stopLoss: 15, // ticks
-    volatilityRange: 0.7, // percentage
-  }
+    tickValue: 5.0,
+    profitTarget: 42, // ticks (10.5 points)
+    stopLoss: 24, // ticks (6 points)
+    volatilityRange: 0.8, // higher volatility than ES
+    format: "futures",
+    averageDailyRange: 180, // points
+    typicalMFE: 35, // ticks
+    typicalMAE: 18, // ticks
+    priceHistory: [
+      18654.25, 18656.5, 18657.75, 18655.25, 18653.0, 18654.5, 18656.25,
+      18655.75,
+    ],
+  },
+  EURUSD: {
+    fullName: "Euro/US Dollar",
+    basePrice: 1.07732,
+    tickSize: 0.00001, // 0.1 pip
+    tickValue: 1.0, // $1 per pip (assuming 0.1 lot)
+    profitTarget: 45, // pips
+    stopLoss: 25, // pips
+    volatilityRange: 0.4,
+    format: "forex",
+    averageDailyRange: 80, // pips
+    typicalMFE: 38, // pips
+    typicalMAE: 15, // pips
+    priceHistory: [
+      1.07732, 1.07741, 1.07752, 1.07738, 1.07726, 1.07737, 1.07745, 1.07731,
+    ],
+    decimalPlaces: 5,
+  },
 };
 
-export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Long" }: DemoCardProps) {
+export default function DemoCard({
+  type,
+  instrumentName = "NQ",
+  tradeSide = "Long",
+}: DemoCardProps) {
   const { theme } = useTheme();
   const isBuy = tradeSide === "Long";
-  
+  const animationIndexRef = useRef(0);
+  const lastUpdateTimeRef = useRef<Date>(new Date());
+  const [lastUpdateTime, setLastUpdateTime] = useState<Date>(new Date());
+
   // Get instrument-specific data
-  const instrument = instrumentName in instrumentData ? instrumentData[instrumentName] : instrumentData.ES;
-  
+  const instrument =
+    instrumentName in instrumentData
+      ? instrumentData[instrumentName]
+      : instrumentData.NQ;
+
   // Initialize prices based on instrument data
   const entryPrice = instrument.basePrice;
   const targetTicks = instrument.profitTarget;
   const stopTicks = instrument.stopLoss;
-  
+
   // Calculate target and stop prices based on direction
-  const targetPrice = isBuy 
-    ? entryPrice + (targetTicks * instrument.tickSize) 
-    : entryPrice - (targetTicks * instrument.tickSize);
-  
-  const stopPrice = isBuy 
-    ? entryPrice - (stopTicks * instrument.tickSize) 
-    : entryPrice + (stopTicks * instrument.tickSize);
-  
-  // For running cards, simulate price movement
-  const [currentPrice, setCurrentPrice] = useState(
-    isBuy 
-      ? entryPrice + (targetTicks * instrument.tickSize * 0.3) // Start 30% toward target for long
-      : entryPrice - (targetTicks * instrument.tickSize * 0.3) // Start 30% toward target for short
-  );
-  
-  // Simulate price movement for running cards
+  const targetPrice = isBuy
+    ? entryPrice + targetTicks * instrument.tickSize
+    : entryPrice - targetTicks * instrument.tickSize;
+
+  const stopPrice = isBuy
+    ? entryPrice - stopTicks * instrument.tickSize
+    : entryPrice + stopTicks * instrument.tickSize;
+
+  // For running cards, simulate price movement with more realism
+  const [currentPrice, setCurrentPrice] = useState(() => {
+    // Initialize with realistic price based on current instrument
+    return isBuy
+      ? entryPrice + targetTicks * instrument.tickSize * 0.35
+      : entryPrice - targetTicks * instrument.tickSize * 0.35;
+  });
+
+  // Reset the current price when the instrument changes to prevent flashing
+  useEffect(() => {
+    // This ensures we immediately reset to the correct starting price for the new instrument
+    animationIndexRef.current = 0;
+    setCurrentPrice(
+      isBuy
+        ? entryPrice + targetTicks * instrument.tickSize * 0.35
+        : entryPrice - targetTicks * instrument.tickSize * 0.35
+    );
+    
+    // Update the last update time to show fresh data
+    const now = new Date();
+    lastUpdateTimeRef.current = now;
+    setLastUpdateTime(now);
+  }, [instrumentName, tradeSide, entryPrice, targetTicks, instrument.tickSize, isBuy]);
+
+  // Simulate realistic price movement with noise and trending
   useEffect(() => {
     if (type !== "running") return;
-    
-    // Create a realistic price movement simulation
+
     const interval = setInterval(() => {
-      setCurrentPrice(prevPrice => {
-        // Random price movement within volatility range
-        const volatilityFactor = instrument.volatilityRange * instrument.tickSize;
-        const movement = (Math.random() - 0.3) * volatilityFactor; // Slightly biased toward positive for demo
+      setCurrentPrice((prevPrice) => {
+        // Get next price from history or simulate a new realistic movement
+        const priceHistory = instrument.priceHistory || [];
         
-        let newPrice = prevPrice + movement;
-        
-        // Ensure price stays within logical bounds (don't go beyond target or below stop for demo purposes)
-        if (isBuy) {
-          if (newPrice > targetPrice * 0.95) newPrice = targetPrice * 0.9; // Don't quite reach target
-          if (newPrice < stopPrice * 1.2) newPrice = stopPrice * 1.3; // Don't get too close to stop
-        } else {
-          if (newPrice < targetPrice * 1.05) newPrice = targetPrice * 1.1; // Don't quite reach target
-          if (newPrice > stopPrice * 0.8) newPrice = stopPrice * 0.7; // Don't get too close to stop
+        // If we have history data, use it in a cycle for realistic patterns
+        if (priceHistory.length > 0) {
+          animationIndexRef.current = (animationIndexRef.current + 1) % priceHistory.length;
+          const nextHistoricalPrice = priceHistory[animationIndexRef.current];
+          
+          // Add some random noise to the historical price for variation
+          const noiseAmount = instrument.tickSize * (Math.random() * 4 - 2); // -2 to +2 ticks
+          const nextPrice = nextHistoricalPrice + noiseAmount;
+          
+          // Update last price timestamp
+          lastUpdateTimeRef.current = new Date();
+          setLastUpdateTime(lastUpdateTimeRef.current);
+          
+          return nextPrice;
         }
         
-        return parseFloat(newPrice.toFixed(2));
-      });
-    }, 1500); // Update every 1.5 seconds
-    
-    return () => clearInterval(interval);
-  }, [type, isBuy, targetPrice, stopPrice, instrument.tickSize, instrument.volatilityRange]);
+        // Fallback to simulated movement if no history
+        const volatilityFactor =
+          instrument.volatilityRange * instrument.tickSize;
+        const trend = isBuy ? 0.1 : -0.1; // slight bias in direction of trade
+        const noise = (Math.random() - 0.5) * volatilityFactor;
 
-  // Format numbers consistently
+        let newPrice = prevPrice + noise + trend;
+
+        // Ensure price stays within realistic bounds
+        const rangeLimitUpper = isBuy ? targetPrice * 0.95 : stopPrice * 0.95;
+        const rangeLimitLower = isBuy ? stopPrice * 1.05 : targetPrice * 1.05;
+
+        if (
+          (isBuy && newPrice > rangeLimitUpper) ||
+          (!isBuy && newPrice < rangeLimitLower)
+        ) {
+          // Reverse movement direction when approaching limits (mean reversion)
+          newPrice = prevPrice - noise * 2;
+        }
+
+        // Update last price timestamp
+        lastUpdateTimeRef.current = new Date();
+        setLastUpdateTime(lastUpdateTimeRef.current);
+
+        // Format to correct decimal places for the instrument type
+        const decimalPlaces =
+          instrument.format === "forex" ? instrument.decimalPlaces || 5 : 2;
+
+        return parseFloat(newPrice.toFixed(decimalPlaces));
+      });
+    }, 1250 + Math.random() * 500); // Randomize update timing slightly for realism
+
+    return () => clearInterval(interval);
+  }, [
+    type,
+    isBuy,
+    targetPrice,
+    stopPrice,
+    instrument.tickSize,
+    instrument.volatilityRange,
+    instrument.format,
+    instrument.priceHistory,
+    instrument.decimalPlaces,
+    instrumentName, // Add instrumentName dependency to re-trigger effect when it changes
+  ]);
+
+  // Format numbers based on instrument type
   const formatNumber = (num: number) => {
+    if (instrument.format === "forex") {
+      return new Intl.NumberFormat("en-US", {
+        minimumFractionDigits: instrument.decimalPlaces || 5,
+        maximumFractionDigits: instrument.decimalPlaces || 5,
+      }).format(num);
+    }
+
     return new Intl.NumberFormat("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -112,26 +229,55 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
 
   // Calculate position for price scale (0-100%)
   const calculatePosition = (price: number) => {
-    const range = targetPrice - stopPrice;
+    const range = Math.abs(targetPrice - stopPrice);
     if (range === 0) return 50;
-    return ((price - stopPrice) / range) * 100;
+
+    const position = ((price - stopPrice) / range) * 100;
+    return Math.max(0, Math.min(100, position)); // Clamp between 0-100
   };
 
   const entryPosition = calculatePosition(entryPrice);
   const currentPosition = calculatePosition(currentPrice);
-  
+
   // Calculate performance metrics for display
   const priceDifference = Math.abs(currentPrice - entryPrice);
-  const performancePercentage = ((priceDifference / entryPrice) * 100).toFixed(2);
-  const ticksDifference = Math.round(priceDifference / instrument.tickSize);
-  const dollarValue = ticksDifference * instrument.tickValue;
-  const isProfitable = isBuy ? (currentPrice > entryPrice) : (currentPrice < entryPrice);
 
-  // For fulfilled cards, generate realistic MFE (Maximum Favorable Excursion)
-  const mfeTicks = Math.round(instrument.profitTarget * 0.85); // 85% of potential
+  // Format performance percentage based on instrument type
+  const performancePercentage =
+    instrument.format === "forex"
+      ? ((priceDifference / entryPrice) * 10000).toFixed(1) // Show in pips for forex
+      : ((priceDifference / entryPrice) * 100).toFixed(2); // Show in percent for futures
+
+  // Calculate ticks/pips with correct rounding
+  const ticksDifference = Math.round(priceDifference / instrument.tickSize);
+  const dollarValue = Math.round(ticksDifference * instrument.tickValue);
+  const isProfitable = isBuy
+    ? currentPrice > entryPrice
+    : currentPrice < entryPrice;
+
+  // For fulfilled cards, use realistic MFE/MAE values
+  const mfeTicks =
+    instrument.typicalMFE || Math.round(instrument.profitTarget * 0.85);
   const mfeDollarValue = Math.round(mfeTicks * instrument.tickValue);
-  const maeTicks = Math.round(instrument.stopLoss * 0.4); // 40% of potential risk
-  
+  const maeTicks =
+    instrument.typicalMAE || Math.round(instrument.stopLoss * 0.4);
+
+  // Calculate risk-reward ratio
+  const riskReward = (instrument.profitTarget / instrument.stopLoss).toFixed(1);
+
+  // Format last update time
+  const getTimeSinceUpdate = () => {
+    const now = new Date();
+    const diff = now.getTime() - lastUpdateTime.getTime();
+
+    if (diff < 1000) return "just now";
+    if (diff < 60000) return `${Math.floor(diff / 1000)}s ago`;
+    return `${Math.floor(diff / 60000)}m ago`;
+  };
+
+  // For forex, use "pips" instead of "ticks"
+  const tickLabel = instrument.format === "forex" ? "pips" : "ticks";
+
   // Demo cards components
   const renderRunningCard = () => (
     <div className="h-full">
@@ -145,7 +291,7 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
         <div
           className={cn(
             "py-1.5 text-center text-sm font-semibold text-white",
-            isBuy ? "bg-emerald-600" : "bg-rose-600"
+            isBuy ? "bg-emerald-600" : "bg-rose-600",
           )}
         >
           LIVE
@@ -155,18 +301,27 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
           {/* Header */}
           <div className="mb-4">
             <div className="flex items-center justify-between">
-              <h3 className={cn("text-4xl font-bold", theme === "dark" ? "text-white" : "text-slate-900")}>
+              <h3
+                className={cn(
+                  "text-4xl font-bold",
+                  theme === "dark" ? "text-white" : "text-slate-900",
+                )}
+              >
                 {instrumentName}
               </h3>
               <div
                 className={cn(
                   "flex items-center gap-1 rounded-md border px-2 py-1 text-xs",
-                  isBuy 
-                    ? "border-emerald-500/30 bg-emerald-900/10 text-emerald-400" 
-                    : "border-rose-500/30 bg-rose-900/10 text-rose-400"
+                  isBuy
+                    ? "border-emerald-500/30 bg-emerald-900/10 text-emerald-400"
+                    : "border-rose-500/30 bg-rose-900/10 text-rose-400",
                 )}
               >
-                {isBuy ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
+                {isBuy ? (
+                  <ArrowUp className="h-3 w-3" />
+                ) : (
+                  <ArrowDown className="h-3 w-3" />
+                )}
                 {tradeSide}
               </div>
             </div>
@@ -175,10 +330,16 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
             </div>
           </div>
 
-          {/* Time info */}
-          <div className="mb-4 flex items-center gap-1.5 text-xs text-slate-400">
-            <Clock className="h-3.5 w-3.5" />
-            <span>Started 45 minutes ago</span>
+          {/* Time info - with last update time */}
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-xs text-slate-400">
+              <Clock className="h-3.5 w-3.5" />
+              <span>Started 45 minutes ago</span>
+            </div>
+            <div className="text-xs text-slate-400">
+              Last update:{" "}
+              <span className="text-blue-400">{getTimeSinceUpdate()}</span>
+            </div>
           </div>
 
           {/* Current Price - with animation */}
@@ -186,23 +347,27 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
             className={cn(
               "mb-4 rounded-lg border-2 p-4",
               theme === "dark" ? "bg-slate-800" : "bg-slate-50",
-              isProfitable ? "border-emerald-500/50" : "border-rose-500/50"
+              isProfitable ? "border-emerald-500/50" : "border-rose-500/50",
             )}
           >
             <div className="mb-2 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <Zap className="h-4 w-4 text-amber-400" />
-                <span className="text-sm font-medium text-amber-400">Current Price</span>
+                <span className="text-sm font-medium text-amber-400">
+                  Current Price
+                </span>
                 <span className="ml-1.5 rounded-full bg-blue-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
                   LIVE
                 </span>
               </div>
               <div className="flex flex-col items-end">
-                <div className="mb-0.5 text-xs text-slate-400">Live Performance</div>
+                <div className="mb-0.5 text-xs text-slate-400">
+                  Live Performance
+                </div>
                 <div
                   className={cn(
                     "text-sm font-medium",
-                    isProfitable ? "text-emerald-400" : "text-rose-400"
+                    isProfitable ? "text-emerald-400" : "text-rose-400",
                   )}
                 >
                   {isProfitable ? "+" : "-"}
@@ -212,21 +377,32 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
             </div>
 
             <div className="flex items-baseline justify-between">
-              <div className="text-3xl font-bold tracking-tight animate-pulse">
+              <div 
+                key={`${instrumentName}-${currentPrice}`} // Add key to force re-render on instrument change
+                className="animate-pulse text-3xl font-bold tracking-tight"
+              >
                 {formatNumber(currentPrice)}
               </div>
-              <div className={cn(
-                "text-lg font-medium",
-                isProfitable ? "text-emerald-400" : "text-rose-400"
-              )}>
-                {isProfitable ? "+" : "-"}{performancePercentage}%
+              <div
+                className={cn(
+                  "text-lg font-medium",
+                  isProfitable ? "text-emerald-400" : "text-rose-400",
+                )}
+              >
+                {isProfitable ? "+" : "-"}
+                {instrument.format === "forex"
+                  ? `${performancePercentage} pips`
+                  : `${performancePercentage}%`}
               </div>
             </div>
 
-            {/* Ticks and dollar value */}
+            {/* Ticks/Pips and dollar value */}
             <div className="mt-2 flex items-center justify-between text-xs">
               <span className="text-slate-400">
-                {ticksDifference} ticks ({formatDollar(dollarValue)})
+                {ticksDifference} {tickLabel} ({formatDollar(dollarValue)})
+              </span>
+              <span className="text-slate-400">
+                Risk/Reward: 1:{riskReward}
               </span>
             </div>
           </div>
@@ -234,7 +410,12 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
           {/* Key prices in a grid */}
           <div className="mb-5 grid grid-cols-3 gap-2">
             {/* Entry Price */}
-            <div className={cn("rounded-md p-2", theme === "dark" ? "bg-slate-800" : "bg-slate-100")}>
+            <div
+              className={cn(
+                "rounded-md p-2",
+                theme === "dark" ? "bg-slate-800" : "bg-slate-100",
+              )}
+            >
               <div className="text-xs text-slate-400">Entry</div>
               <div className="font-medium">{formatNumber(entryPrice)}</div>
             </div>
@@ -244,13 +425,14 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
               className={cn(
                 "rounded-md p-2",
                 theme === "dark" ? "bg-emerald-900/20" : "bg-emerald-50",
-                theme === "dark" ? "text-emerald-400" : "text-emerald-600"
+                theme === "dark" ? "text-emerald-400" : "text-emerald-600",
               )}
             >
               <div className="text-xs opacity-80">Target</div>
               <div className="font-medium">{formatNumber(targetPrice)}</div>
               <div className="mt-0.5 text-xs opacity-80">
-                {isBuy ? "+" : "-"}{targetTicks} ticks
+                {isBuy ? "+" : "-"}
+                {instrument.profitTarget} {tickLabel}
               </div>
             </div>
 
@@ -259,13 +441,14 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
               className={cn(
                 "rounded-md p-2",
                 theme === "dark" ? "bg-rose-900/20" : "bg-rose-50",
-                theme === "dark" ? "text-rose-400" : "text-rose-600"
+                theme === "dark" ? "text-rose-400" : "text-rose-600",
               )}
             >
               <div className="text-xs opacity-80">Stop</div>
               <div className="font-medium">{formatNumber(stopPrice)}</div>
               <div className="mt-0.5 text-xs opacity-80">
-                {isBuy ? "-" : "+"}{stopTicks} ticks
+                {isBuy ? "-" : "+"}
+                {instrument.stopLoss} {tickLabel}
               </div>
             </div>
           </div>
@@ -329,17 +512,23 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
             <div className="mt-1 flex justify-between text-xs">
               <div className="flex flex-col items-start">
                 <span className="font-medium text-rose-500">Stop</span>
-                <span className="text-slate-400">{formatNumber(stopPrice)}</span>
+                <span className="text-slate-400">
+                  {formatNumber(stopPrice)}
+                </span>
               </div>
 
               <div className="flex flex-col items-center">
                 <span className="font-medium text-blue-500">Entry</span>
-                <span className="text-slate-400">{formatNumber(entryPrice)}</span>
+                <span className="text-slate-400">
+                  {formatNumber(entryPrice)}
+                </span>
               </div>
 
               <div className="flex flex-col items-end">
                 <span className="font-medium text-emerald-600">Target</span>
-                <span className="text-slate-400">{formatNumber(targetPrice)}</span>
+                <span className="text-slate-400">
+                  {formatNumber(targetPrice)}
+                </span>
               </div>
             </div>
           </div>
@@ -358,9 +547,7 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
             ) : (
               <ArrowDown className="mr-1 h-4 w-4" />
             )}
-            <span className="font-medium">
-              {isBuy ? "LONG" : "SHORT"}
-            </span>
+            <span className="font-medium">{isBuy ? "LONG" : "SHORT"}</span>
           </div>
         </div>
       </div>
@@ -376,7 +563,12 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
           theme === "dark" ? "bg-slate-900" : "bg-white",
         )}
       >
-        <div className={cn("py-1.5 text-center text-sm font-semibold text-white", "bg-gray-500")}>
+        <div
+          className={cn(
+            "py-1.5 text-center text-sm font-semibold text-white",
+            "bg-gray-500",
+          )}
+        >
           Trade Potential Over
         </div>
 
@@ -384,7 +576,12 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
           {/* Card header */}
           <div className="mb-2">
             <div className="flex items-center justify-between">
-              <h3 className={cn("text-4xl font-bold", theme === "dark" ? "text-white" : "text-slate-900")}>
+              <h3
+                className={cn(
+                  "text-4xl font-bold",
+                  theme === "dark" ? "text-white" : "text-slate-900",
+                )}
+              >
                 {instrumentName}
               </h3>
               <div
@@ -392,10 +589,14 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
                   "flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs",
                   isBuy
                     ? "border-emerald-500/30 bg-emerald-900/10 text-emerald-400"
-                    : "border-rose-500/30 bg-rose-900/10 text-rose-400"
+                    : "border-rose-500/30 bg-rose-900/10 text-rose-400",
                 )}
               >
-                {isBuy ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
+                {isBuy ? (
+                  <ArrowUp className="h-3 w-3" />
+                ) : (
+                  <ArrowDown className="h-3 w-3" />
+                )}
                 {tradeSide}
               </div>
             </div>
@@ -406,15 +607,15 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
 
           {/* Trade quality badge */}
           <div className="mb-4 flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1 rounded-md border px-2 py-1 border-amber-500/40 bg-amber-900/20 text-amber-400">
+            <div className="flex items-center gap-1 rounded-md border border-amber-500/40 bg-amber-900/20 px-2 py-1 text-amber-400">
               <Award className="h-3.5 w-3.5" />
               <span className="text-xs font-medium">Expert Trade</span>
-              <span className="ml-1 text-xs opacity-80">(4.5x)</span>
+              <span className="ml-1 text-xs opacity-80">({riskReward}x)</span>
             </div>
           </div>
 
           {/* MFE - Main focus */}
-          <div className="mb-6 flex flex-col items-center justify-center rounded-lg border p-5 border-blue-500/30 bg-blue-900/10">
+          <div className="mb-6 flex flex-col items-center justify-center rounded-lg border border-blue-500/30 bg-blue-900/10 p-5">
             <div className="flex items-center gap-1 text-xl font-medium text-blue-300">
               <DollarSign className="h-5 w-5" />
               Potential Profit
@@ -423,30 +624,35 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
               {formatDollar(mfeDollarValue)}
             </div>
             <div className="mt-2 text-sm text-slate-400">
-              {mfeTicks} ticks maximum potential
+              {mfeTicks} {tickLabel} maximum potential
             </div>
           </div>
 
           {/* Entry and Max Drawdown */}
           <div className="mb-5 grid grid-cols-2 gap-3">
-            <div className={cn("rounded-lg p-4", theme === "dark" ? "bg-slate-800" : "bg-slate-100")}>
-              <div className="mb-2 text-xs text-slate-400">
-                Entry Price
+            <div
+              className={cn(
+                "rounded-lg p-4",
+                theme === "dark" ? "bg-slate-800" : "bg-slate-100",
+              )}
+            >
+              <div className="mb-2 text-xs text-slate-400">Entry Price</div>
+              <div className="text-lg font-semibold">
+                {formatNumber(entryPrice)}
               </div>
-              <div className="text-lg font-semibold">{formatNumber(entryPrice)}</div>
               <div className="mt-2 flex items-center gap-1 text-xs text-slate-400">
                 <Clock className="h-3 w-3" />
                 {format(new Date(), "MMM d, HH:mm")}
               </div>
             </div>
 
-            <div className="rounded-lg border p-4 border-red-500/20 bg-red-900/10">
+            <div className="rounded-lg border border-red-500/20 bg-red-900/10 p-4">
               <div className="mb-2 flex items-center gap-1 text-xs text-red-300">
                 <Target className="h-3.5 w-3.5" />
                 Max Risk (Drawdown)
               </div>
               <div className="text-lg font-bold text-red-400">
-                {maeTicks} ticks
+                {maeTicks} {tickLabel}
               </div>
               <div className="mt-2 text-xs text-slate-400">
                 Maximum adverse movement
@@ -469,13 +675,17 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
       <div
         className={cn(
           "h-full overflow-hidden rounded-lg border shadow-md transition-all hover:shadow-lg",
-          theme === "dark" ? "border-amber-500/30 bg-slate-900" : "border-amber-500/50 bg-white",
+          theme === "dark"
+            ? "border-amber-500/30 bg-slate-900"
+            : "border-amber-500/50 bg-white",
         )}
       >
         <div
           className={cn(
             "py-2 text-center font-medium text-white",
-            theme === "dark" ? "bg-gradient-to-r from-amber-700 to-amber-500" : "bg-gradient-to-r from-amber-600 to-amber-400",
+            theme === "dark"
+              ? "bg-gradient-to-r from-amber-700 to-amber-500"
+              : "bg-gradient-to-r from-amber-600 to-amber-400",
           )}
         >
           <div className="flex items-center justify-center gap-2">
@@ -488,7 +698,12 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
           {/* Card header */}
           <div className="mb-5">
             <div className="flex items-center justify-between">
-              <h3 className={cn("text-4xl font-bold", theme === "dark" ? "text-white" : "text-slate-900")}>
+              <h3
+                className={cn(
+                  "text-4xl font-bold",
+                  theme === "dark" ? "text-white" : "text-slate-900",
+                )}
+              >
                 {instrumentName}
               </h3>
             </div>
@@ -511,7 +726,12 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
           </div>
 
           {/* Next opening time */}
-          <div className={cn("mb-4 rounded-lg p-4", theme === "dark" ? "bg-slate-800/70" : "bg-slate-100")}>
+          <div
+            className={cn(
+              "mb-4 rounded-lg p-4",
+              theme === "dark" ? "bg-slate-800/70" : "bg-slate-100",
+            )}
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
                 <Clock className="h-4 w-4" />
@@ -528,9 +748,7 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
               <Globe className="h-4 w-4 text-blue-400" />
               <div>
                 <div className="text-xs text-slate-500">UTC</div>
-                <div className="text-lg font-bold">
-                  Monday, 9:30 AM
-                </div>
+                <div className="text-lg font-bold">Monday, 9:30 AM</div>
               </div>
             </div>
 
@@ -539,15 +757,18 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
               <Clock className="h-4 w-4 text-emerald-400" />
               <div>
                 <div className="text-xs text-slate-500">Local Time</div>
-                <div className="text-lg font-bold">
-                  Monday, 5:30 AM
-                </div>
+                <div className="text-lg font-bold">Monday, 5:30 AM</div>
               </div>
             </div>
           </div>
 
           {/* Market hours info */}
-          <div className={cn("rounded-lg p-4", theme === "dark" ? "bg-slate-800/70" : "bg-slate-100")}>
+          <div
+            className={cn(
+              "rounded-lg p-4",
+              theme === "dark" ? "bg-slate-800/70" : "bg-slate-100",
+            )}
+          >
             <div className="mb-2 flex items-center justify-between">
               <div className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
                 <Calendar className="h-4 w-4" />
@@ -564,32 +785,36 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
               >
                 <div className="flex gap-2 text-sm">
                   <Globe className="h-4 w-4 flex-shrink-0 text-blue-400" />
-                  <div className="text-sm leading-tight">Mon-Fri: 9:30 AM - 4:00 PM ET</div>
+                  <div className="text-sm leading-tight">
+                    Mon-Fri: 9:30 AM - 4:00 PM ET
+                  </div>
                 </div>
               </div>
 
               {/* Trading days visualization */}
               <div className="mt-3 flex justify-between">
-                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => {
-                  const isActive = day !== "Sun" && day !== "Sat";
-                  return (
-                    <div
-                      key={day}
-                      className={cn(
-                        "flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium",
-                        isActive
-                          ? theme === "dark"
-                            ? "bg-blue-900/50 text-blue-300"
-                            : "bg-blue-100 text-blue-800"
-                          : theme === "dark"
-                            ? "bg-slate-800 text-slate-500"
-                            : "bg-slate-200 text-slate-500",
-                      )}
-                    >
-                      {day.charAt(0)}
-                    </div>
-                  );
-                })}
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+                  (day) => {
+                    const isActive = day !== "Sun" && day !== "Sat";
+                    return (
+                      <div
+                        key={day}
+                        className={cn(
+                          "flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium",
+                          isActive
+                            ? theme === "dark"
+                              ? "bg-blue-900/50 text-blue-300"
+                              : "bg-blue-100 text-blue-800"
+                            : theme === "dark"
+                              ? "bg-slate-800 text-slate-500"
+                              : "bg-slate-200 text-slate-500",
+                        )}
+                      >
+                        {day.charAt(0)}
+                      </div>
+                    );
+                  },
+                )}
               </div>
             </div>
           </div>
@@ -603,13 +828,17 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
       <div
         className={cn(
           "h-full overflow-hidden rounded-lg border shadow-md transition-all hover:shadow-lg",
-          theme === "dark" ? "border-blue-500/30 bg-slate-900" : "border-blue-500/50 bg-white",
+          theme === "dark"
+            ? "border-blue-500/30 bg-slate-900"
+            : "border-blue-500/50 bg-white",
         )}
       >
         <div
           className={cn(
             "py-2 text-center font-medium text-white",
-            theme === "dark" ? "bg-gradient-to-r from-gray-900 to-gray-700" : "bg-gradient-to-r from-blue-700 to-blue-500",
+            theme === "dark"
+              ? "bg-gradient-to-r from-gray-900 to-gray-700"
+              : "bg-gradient-to-r from-blue-700 to-blue-500",
           )}
         >
           <div className="flex items-center justify-center gap-2">
@@ -621,7 +850,12 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
           {/* Card header */}
           <div className="mb-5">
             <div className="flex items-center justify-between">
-              <h3 className={cn("text-4xl font-bold", theme === "dark" ? "text-white" : "text-slate-900")}>
+              <h3
+                className={cn(
+                  "text-4xl font-bold",
+                  theme === "dark" ? "text-white" : "text-slate-900",
+                )}
+              >
                 {instrumentName}
               </h3>
             </div>
@@ -631,21 +865,25 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
           </div>
 
           {/* Status message */}
-          <div className={cn(
-            "mb-6 flex items-center rounded-md px-4 py-2.5",
-            theme === "dark" ? "bg-blue-900/30" : "bg-blue-50",
-          )}>
+          <div
+            className={cn(
+              "mb-6 flex items-center rounded-md px-4 py-2.5",
+              theme === "dark" ? "bg-blue-900/30" : "bg-blue-50",
+            )}
+          >
             <Bell className="mr-3 h-5 w-5 text-blue-500" />
-            <span className="text-sm font-medium text-blue-gray dark:text-blue-400">
+            <span className="text-blue-gray text-sm font-medium dark:text-blue-400">
               Alert system is currently not active for this instrument
             </span>
           </div>
 
           {/* Next alert session */}
-          <div className={cn(
-            "mb-4 rounded-lg p-4",
-            theme === "dark" ? "bg-slate-800/70" : "bg-slate-100",
-          )}>
+          <div
+            className={cn(
+              "mb-4 rounded-lg p-4",
+              theme === "dark" ? "bg-slate-800/70" : "bg-slate-100",
+            )}
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
                 <Clock className="h-4 w-4" />
@@ -657,35 +895,53 @@ export default function DemoCard({ type, instrumentName = "ES", tradeSide = "Lon
               </div>
             </div>
 
-            <div className="mt-3 text-lg font-medium">
-              Monday, 13:00 UTC
-            </div>
+            <div className="mt-3 text-lg font-medium">Monday, 13:00 UTC</div>
           </div>
 
           {/* Alert sessions list */}
-          <div className={cn(
-            "rounded-lg p-4",
-            theme === "dark" ? "bg-slate-800/70" : "bg-slate-100",
-          )}>
+          <div
+            className={cn(
+              "rounded-lg p-4",
+              theme === "dark" ? "bg-slate-800/70" : "bg-slate-100",
+            )}
+          >
             <div className="mb-2 flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
               <Calendar className="h-4 w-4" />
               <span className="font-medium">Scheduled Alert Sessions</span>
             </div>
 
             <div className="mt-3 space-y-2">
-              <div className={cn("rounded-md p-3", theme === "dark" ? "bg-slate-700" : "bg-slate-200")}>
+              <div
+                className={cn(
+                  "rounded-md p-3",
+                  theme === "dark" ? "bg-slate-700" : "bg-slate-200",
+                )}
+              >
                 <div className="flex justify-between">
                   <div className="text-sm font-medium">Session 1</div>
-                  <div className="text-xs text-slate-500">Mon, Tue, Wed, Thu, Fri</div>
+                  <div className="text-xs text-slate-500">
+                    Mon, Tue, Wed, Thu, Fri
+                  </div>
                 </div>
-                <div className="mt-1 text-lg font-medium">13:00 - 20:00 UTC</div>
+                <div className="mt-1 text-lg font-medium">
+                  13:00 - 20:00 UTC
+                </div>
               </div>
-              <div className={cn("rounded-md p-3", theme === "dark" ? "bg-slate-700" : "bg-slate-200")}>
+              <div
+                className={cn(
+                  "rounded-md p-3",
+                  theme === "dark" ? "bg-slate-700" : "bg-slate-200",
+                )}
+              >
                 <div className="flex justify-between">
                   <div className="text-sm font-medium">Session 2</div>
-                  <div className="text-xs text-slate-500">Mon, Tue, Wed, Thu</div>
+                  <div className="text-xs text-slate-500">
+                    Mon, Tue, Wed, Thu
+                  </div>
                 </div>
-                <div className="mt-1 text-lg font-medium">22:00 - 04:00 UTC</div>
+                <div className="mt-1 text-lg font-medium">
+                  22:00 - 04:00 UTC
+                </div>
               </div>
             </div>
           </div>

@@ -62,15 +62,17 @@ const DemoSignalCard: React.FC<DemoSignalCardProps> = ({ type }) => {
     instrument = {
       instrument_name: "ES",
       trade_side: "Short",
-      entry_price: 4000,
-      exit_price: 3900,
-      take_profit_price: 3900,
-      stop_loss_price: 4100,
-      mae: 5,
-      mfe: 25,
+      entry_price: 5622,
+      exit_price: 5612,         // assuming a target hit at take profit
+      take_profit_price: 5612,
+      stop_loss_price: 5626,
+      mae: 4,                   // Maximum Adverse Excursion
+      mfe: 10,                  // Maximum Favorable Excursion
       signal: "demo",
       result_ticks: 100,
-      trade_duration: "1h",
+      trade_duration: "1h"
+    };
+    
 
       // Pretend the entry time was 10 min ago
       entry_time: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
