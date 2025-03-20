@@ -1,42 +1,84 @@
-import useLast from './useLast';
+"use client";
 
-const useForexPrice = (instrumentName: string) => {
-  // Use the useLast hook which now makes server-side API calls
-  const {
-    lastPrice,
-    isLoading,
-    error,
-    lastUpdated,
-    refreshNow,
-    isLive,
-    source,
-    direction,
-    forceRefresh
-  } = useLast(instrumentName);
-  
-  // Calculate bid/ask with a typical spread (if needed)
-  let formattedPrice = null;
-  if (lastPrice?.last) {
-    const last = lastPrice.last;
-    const spread = last * 0.0001; // Typical 1 pip spread
-    
-    formattedPrice = {
-      last,
-      bid: last - spread/2,
-      ask: last + spread/2
-    };
+import { useState, useEffect, useCallback, useRef } from "react";
+import useSWR from "swr";
+
+// Type for the API response
+interface LastPriceData {
+  last: number;
+  timestamp: string;
+  instrument_name: string;
+  source?: string;
+  priceHistory?: number[];
+}
+
+// Fetch function for SWR
+const fetcher = async (url: string): Promise<LastPriceData> => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
   }
-  
-  return {
-    lastPrice: formattedPrice,
-    isLoading,
-    error,
-    lastUpdated,
-    refreshNow: forceRefresh, // Use the cache-purging refresh for more immediate updates
-    isLive,
-    source,
-    priceDirection: direction
-  };
+  return response.json();
 };
 
-export default useForexPrice;
+export default function useForexPrice(instrumentName: string) {
+  // Use SWR for data fetching with caching and revalidation
+  const { data, error, isLoading, mutate } = useSWR<LastPriceData>(
+    instrumentName
+      ? `/api/instrument-price?instrument=${instrumentName}&history=20`
+      : null,
+    fetcher,
+    {
+      refreshInterval: 5000, // Refresh every 5 seconds
+      revalidateOnFocus: false,
+      dedupingInterval: 2000,
+    },
+  );
+
+  // Keep track of the last value for UI transition purposes
+  const prevPriceRef = useRef<number | null>(null);
+  const [priceDirection, setDirection] = useState<"up" | "down" | "neutral">(
+    "neutral",
+  );
+
+  // Update direction when price changes
+  useEffect(() => {
+    if (data?.last && prevPriceRef.current !== null) {
+      if (data.last > prevPriceRef.current) {
+        setDirection("up");
+      } else if (data.last < prevPriceRef.current) {
+        setDirection("down");
+      }
+    }
+
+    if (data?.last) {
+      prevPriceRef.current = data.last;
+    }
+  }, [data?.last]);
+
+  // Function to manually refresh data
+  const refreshNow = useCallback(() => {
+    return mutate();
+  }, [mutate]);
+
+  // Function to force refresh by purging the cache
+  const forceRefresh = useCallback(() => {
+    return fetch(
+      `/api/instrument-price?instrument=${instrumentName}&purge=true`,
+    ).then(() => mutate());
+  }, [instrumentName, mutate]);
+
+  return {
+    lastPrice: data ? { last: data.last } : null,
+    priceHistory: data?.priceHistory || [],
+    isLoading,
+    error,
+    isLive: !error,
+    priceDirection,
+    source: data?.source,
+    lastUpdated: data?.timestamp ? new Date(data.timestamp) : null,
+    refreshNow,
+    forceRefresh,
+    hasError: !!error,
+  };
+}

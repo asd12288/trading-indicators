@@ -4,16 +4,11 @@ import useInstrumentInfo from "@/hooks/useInstrumentInfo";
 import { Signal } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow, parseISO } from "date-fns";
-import {
-  AlertTriangle,
-  ArrowDown,
-  ArrowUp,
-  Clock,
-  Zap
-} from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowUp, Clock, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { FC, memo } from "react";
 import { Badge } from "../ui/badge";
+import LastPriceDisplay from "../LastPriceDisplay";
 
 interface RunningSignalCardProps {
   instrument: Signal;
@@ -164,63 +159,62 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
               <span>{timeAgo}</span>
             </div>
 
-            {/* Current Price */}
+            {/* IMPROVED Current Price Section - More compact and better aligned */}
             <div
               className={cn(
-                "mb-4 rounded-lg border-2 p-4",
-                theme === "dark" ? "bg-slate-800" : "bg-slate-50",
+                "mb-4 rounded-lg border-l-4 p-3",
+                theme === "dark" ? "bg-slate-800/70" : "bg-slate-50",
                 currentPrice
                   ? isProfitable
-                    ? "border-emerald-500/50"
-                    : "border-rose-500/50"
-                  : "border-transparent",
+                    ? "border-l-emerald-500"
+                    : "border-l-rose-500"
+                  : "border-l-slate-500",
               )}
             >
-              <div className="mb-2 flex items-center justify-between">
+              {/* Header row with improved alignment */}
+              <div className="mb-1.5 flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <Zap className="h-4 w-4 text-amber-400" />
-                  <span className="text-sm font-medium text-amber-400">
+                  <Zap className="h-3.5 w-3.5 text-amber-400" />
+                  <span className="text-xs font-medium text-amber-400">
                     {t("currentPrice")}
                   </span>
-                  <span className="ml-1.5 rounded-full bg-blue-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                  <span className="ml-1 rounded-full bg-blue-500/80 px-1 py-0.5 text-[9px] font-semibold text-white">
                     LIVE
                   </span>
                 </div>
+                
+                {/* Right-aligned performance indicator */}
                 {currentPnL && (
-                  <div className="flex flex-col items-end">
-                    <div className="mb-0.5 text-xs text-slate-400">
-                      Live Performance
-                    </div>
-                    <div
-                      className={cn(
-                        "text-sm font-medium",
-                        isProfitable ? "text-emerald-400" : "text-rose-400",
-                      )}
-                    >
-                      {isProfitable ? "+" : "-"}
-                      {formatNumber(Math.abs(currentPnL))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex items-baseline justify-between">
-                <div className="text-3xl font-bold tracking-tight">
-                  {isLoading
-                    ? "..."
-                    : formatNumber(currentPrice || entry_price)}
-                </div>
-                {pnlPercentage && (
                   <div
                     className={cn(
-                      "text-lg font-medium",
+                      "text-xs font-medium",
                       isProfitable ? "text-emerald-400" : "text-rose-400",
                     )}
                   >
                     {isProfitable ? "+" : "-"}
-                    {pnlPercentage}%
+                    {formatNumber(Math.abs(currentPnL))} ({pnlPercentage}%)
                   </div>
                 )}
+              </div>
+
+              {/* Price and sparkline in a more compact layout */}
+              <div className="flex items-start justify-between">
+                {/* Price value with larger font */}
+                <div className="text-2xl font-bold tracking-tight">
+                  {isLoading
+                    ? "..."
+                    : formatNumber(currentPrice || entry_price)}
+                </div>
+                
+                {/* Sparkline with better sizing */}
+                <div className="w-[100px]">
+                  <LastPriceDisplay
+                    instrumentName={instrument_name}
+                    size="small"
+                    showLabel={false}
+                    showSparkline={true}
+                  />
+                </div>
               </div>
             </div>
 

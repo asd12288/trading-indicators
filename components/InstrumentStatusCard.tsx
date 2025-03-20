@@ -164,12 +164,13 @@ const InstrumentStatusCard = ({
             </div>
           </div>
 
-          {/* Last Price Section - Enhanced */}
+          {/* Last Price Section - Enhanced with sparkline */}
           <div className="flex items-center justify-end">
             <LastPriceDisplay
               instrumentName={instrumentName}
               size="large"
               showLabel={true}
+              showSparkline={true}
               className="text-right"
             />
           </div>

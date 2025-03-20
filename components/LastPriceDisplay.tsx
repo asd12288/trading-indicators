@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowUp, ArrowDown, Info, Minus } from "lucide-react";
+import { ArrowUp, ArrowDown, Info } from "lucide-react";
 import SignalToolTooltip from "./SignalCard/SignalToolTooltip";
 import useForexPrice from "@/hooks/useForexPrice";
 
@@ -12,13 +12,95 @@ interface LastPriceDisplayProps {
   size?: "small" | "medium" | "large";
   showLabel?: boolean;
   className?: string;
+  showSparkline?: boolean;
 }
+
+// Improved sparkline generator for actual price data
+const generateSparkline = (
+  prices: number[],
+  width = 100,
+  height = 20,
+  color: string,
+) => {
+  if (!prices || prices.length < 2) return null;
+
+  // Find min and max with padding to avoid flat lines
+  const minValue = Math.min(...prices);
+  const maxValue = Math.max(...prices);
+
+  // If min and max are very close, add some padding to make the line visible
+  const range = maxValue - minValue;
+  const paddingFactor = range < 0.0001 ? 0.0005 : range * 0.1;
+
+  const min = minValue - paddingFactor;
+  const max = maxValue + paddingFactor;
+  const totalRange = max - min;
+
+  // Calculate points for the path
+  const points = prices
+    .map((price, index) => {
+      const x = (index / (prices.length - 1)) * width;
+      // Invert Y axis since SVG coordinates start from top
+      const y = height - ((price - min) / totalRange) * height;
+      return `${x},${y}`;
+    })
+    .join(" ");
+
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      className="overflow-visible"
+    >
+      {/* Middle reference line */}
+      <line
+        x1="0"
+        y1={height / 2}
+        x2={width}
+        y2={height / 2}
+        stroke="#44445530"
+        strokeWidth="0.5"
+        strokeDasharray="2,2"
+      />
+
+      {/* Path for the price line */}
+      <polyline
+        points={points}
+        fill="none"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      {/* Dot for the last price point */}
+      <circle
+        cx={width}
+        cy={height - ((prices[prices.length - 1] - min) / totalRange) * height}
+        r="2.5"
+        fill={color}
+      />
+
+      {/* Show small dots for each price point for better visualization */}
+      {prices.map((price, index) => {
+        if (index === prices.length - 1 || index % 3 !== 0) return null; // Only show some dots to avoid clutter
+        const x = (index / (prices.length - 1)) * width;
+        const y = height - ((price - min) / totalRange) * height;
+        return (
+          <circle key={index} cx={x} cy={y} r="1" fill={color} opacity="0.5" />
+        );
+      })}
+    </svg>
+  );
+};
 
 const LastPriceDisplay = ({
   instrumentName,
   size = "medium",
   showLabel = true,
   className = "",
+  showSparkline = false,
 }: LastPriceDisplayProps) => {
   const {
     lastPrice,
@@ -28,15 +110,12 @@ const LastPriceDisplay = ({
     refreshNow,
     source,
     priceDirection,
+    priceHistory,
   } = useForexPrice(instrumentName);
   const t = useTranslations("InstrumentStatusCard");
   const [isFlashing, setIsFlashing] = useState(false);
 
   const prevPriceRef = useRef<number | null>(null);
-
-  // Debug counter to show component is alive
-  const renderCountRef = useRef(0);
-  renderCountRef.current++;
 
   // Handle animation when price changes
   useEffect(() => {
@@ -53,13 +132,13 @@ const LastPriceDisplay = ({
       prevPriceRef.current = lastPrice.last;
       return () => clearTimeout(timer);
     }
-  }, [lastPrice?.last]); // Only depend on lastPrice.last, not the entire lastPrice object
+  }, [lastPrice?.last]);
 
   // Periodic refresh as an extra safety measure
   useEffect(() => {
     const refreshTimer = setInterval(() => {
       refreshNow();
-    }, 60000); // Refresh every 60 seconds (adjusted to comply with API rate limits)
+    }, 60000);
 
     return () => clearInterval(refreshTimer);
   }, [refreshNow]);
@@ -68,8 +147,17 @@ const LastPriceDisplay = ({
   const formatPrice = (price: number): string => {
     return price.toLocaleString(undefined, {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 8,
+      maximumFractionDigits: 5,
     });
+  };
+
+  // Calculate percentage change for the price history
+  const calculateChange = () => {
+    if (!priceHistory || priceHistory.length < 2) return null;
+    const first = priceHistory[0];
+    const last = priceHistory[priceHistory.length - 1];
+    const change = ((last - first) / first) * 100;
+    return change.toFixed(2);
   };
 
   // Size-based classes
@@ -86,6 +174,14 @@ const LastPriceDisplay = ({
     neutral: "text-primary",
   }[priceDirection || "neutral"];
 
+  // Sparkline color based on price direction with better opacity
+  const sparklineColor =
+    priceDirection === "up"
+      ? "#10b981"
+      : priceDirection === "down"
+        ? "#ef4444"
+        : "#60a5fa";
+
   if (isLoading) {
     return (
       <div className={`animate-pulse ${className}`}>
@@ -100,6 +196,9 @@ const LastPriceDisplay = ({
   if (error) {
     return <div className="text-amber-500">Error loading price</div>;
   }
+
+  const percentChange = calculateChange();
+  const isPositiveChange = percentChange && parseFloat(percentChange) >= 0;
 
   return (
     <div className={`flex flex-col ${className}`}>
@@ -149,6 +248,35 @@ const LastPriceDisplay = ({
           </motion.div>
         )}
       </div>
+
+      {/* Enhanced Sparkline display */}
+      {showSparkline && priceHistory && priceHistory.length > 1 && (
+        <div className="mt-2 rounded-md bg-slate-800/10 p-2 dark:bg-slate-700/20">
+          <div className="h-[24px] w-full">
+            {generateSparkline(
+              priceHistory,
+              size === "large" ? 150 : size === "medium" ? 100 : 70,
+              24,
+              sparklineColor,
+            )}
+          </div>
+
+          <div className="mt-1 flex items-center justify-between text-[10px]">
+            <div className="text-slate-500">
+              {priceHistory.length > 1 ? `${priceHistory.length} points` : ""}
+            </div>
+
+            {percentChange && (
+              <div
+                className={isPositiveChange ? "text-green-400" : "text-red-400"}
+              >
+                {isPositiveChange ? "+" : ""}
+                {percentChange}%
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {size === "large" && lastUpdated && (
         <div className="mt-2 text-xs text-slate-500">

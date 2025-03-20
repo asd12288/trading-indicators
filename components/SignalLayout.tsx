@@ -70,12 +70,12 @@ const SignalLayout = ({ id, userId, isPro }) => {
       icon: <Info size={16} />,
       isPremium: true,
     },
-    {
-      id: "news",
-      label: t("tabs.news"),
-      icon: <Newspaper size={16} />,
-      isPremium: true,
-    },
+    // {
+    //   id: "news",
+    //   label: t("tabs.news"),
+    //   icon: <Newspaper size={16} />,
+    //   isPremium: true,
+    // },
   ];
 
   const handleUpgradeClick = () => {

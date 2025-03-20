@@ -243,7 +243,7 @@ export const NewSubscriptionEmail = ({
           >
             <Text
               style={{ color: "#666666", fontSize: "12px", margin: "0 0 10px" }}
-            >
+            >plete
               © {new Date().getFullYear()} Trader Map. All rights reserved.
             </Text>
 

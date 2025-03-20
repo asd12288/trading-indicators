@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/database/supabase/server";
 
-// Initialize Supabase client (server-side only)
-
 // Cache structure
 interface CacheEntry {
   data: {
     last: number;
     timestamp: string;
     instrument_name: string;
+    priceHistory?: number[];
   };
   fetchedAt: number;
 }
@@ -21,6 +20,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const instrumentName = searchParams.get("instrument");
   const purgeCache = searchParams.get("purge") === "true";
+  const historySize = parseInt(searchParams.get("history") || "20", 10);
 
   // Validate input
   if (!instrumentName) {
@@ -58,15 +58,15 @@ export async function GET(request: Request) {
     const supabase = await createClient();
 
     // Fetch last price data from Supabase
-    const { data, error } = await supabase
+    const { data: lastPriceData, error: lastPriceError } = await supabase
       .from("instruments_status")
       .select("last, timestamp, instrument_name")
       .eq("instrument_name", instrumentName)
       .order("timestamp", { ascending: false })
       .limit(1);
 
-    if (error) {
-      console.error(`Supabase error for ${instrumentName}:`, error);
+    if (lastPriceError) {
+      console.error(`Supabase error for ${instrumentName}:`, lastPriceError);
 
       // Try to serve stale data rather than failing completely
       if (cache[instrumentName]) {
@@ -77,10 +77,14 @@ export async function GET(request: Request) {
         });
       }
 
-      throw new Error(error.message);
+      throw new Error(lastPriceError.message);
     }
 
-    if (!data || data.length === 0 || data[0].last === null) {
+    if (
+      !lastPriceData ||
+      lastPriceData.length === 0 ||
+      lastPriceData[0].last === null
+    ) {
       console.log(`No price data found for ${instrumentName}`);
 
       // Try to serve stale data rather than returning nothing
@@ -100,15 +104,54 @@ export async function GET(request: Request) {
       );
     }
 
+    // Fetch historical price data
+    let priceHistory: number[] = [];
+
+    if (cache[instrumentName] && cache[instrumentName].data.priceHistory) {
+      // Use existing history and append new price
+      priceHistory = [...cache[instrumentName].data.priceHistory];
+
+      // Only add if the price is different from the last one
+      if (
+        priceHistory.length === 0 ||
+        priceHistory[priceHistory.length - 1] !== lastPriceData[0].last
+      ) {
+        priceHistory.push(lastPriceData[0].last);
+        // Keep only the latest N prices
+        if (priceHistory.length > historySize) {
+          priceHistory.shift();
+        }
+      }
+    } else {
+      // Fetch historical prices from database when cache is empty
+      const { data: historyData, error: historyError } = await supabase
+        .from("instruments_status")
+        .select("last")
+        .eq("instrument_name", instrumentName)
+        .order("timestamp", { ascending: false })
+        .limit(historySize);
+
+      if (!historyError && historyData && historyData.length > 0) {
+        // Reverse to get chronological order
+        priceHistory = historyData.map((item) => item.last).reverse();
+      } else {
+        // Fallback to single price point if history fetch fails
+        priceHistory = [lastPriceData[0].last];
+      }
+    }
+
+    // Add price history to the response
+    lastPriceData[0].priceHistory = priceHistory;
+
     // Update cache
     cache[instrumentName] = {
-      data: data[0],
+      data: lastPriceData[0],
       fetchedAt: now,
     };
 
     // Return the result
     return NextResponse.json({
-      ...data[0],
+      ...lastPriceData[0],
       source: "supabase",
     });
   } catch (error: any) {
