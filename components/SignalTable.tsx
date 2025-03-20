@@ -12,6 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
+import { getInstrumentCategory } from "@/lib/instrumentCategories";
 
 const SignalTable = ({ allSignal }) => {
   const t = useTranslations("SignalTable");
@@ -50,6 +51,11 @@ const SignalTable = ({ allSignal }) => {
         tradeDuration = tradeDuration.replace(/ -(\d+[hms])/g, " $1");
       }
 
+      // Check if this is a forex instrument
+      const instrumentCategory = getInstrumentCategory(trade.instrument_name);
+      const isForex = instrumentCategory === "forex";
+      const measurementUnit = isForex ? "pips" : "ticks";
+
       return {
         ...trade,
         entry_price: entryPrice,
@@ -57,6 +63,8 @@ const SignalTable = ({ allSignal }) => {
         mfeTicks: Number(mfeTicks.toFixed(2)),
         lossTicks: Number(lossTicks.toFixed(2)),
         trade_duration: tradeDuration,
+        isForex,
+        measurementUnit,
       };
     });
 

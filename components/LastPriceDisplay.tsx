@@ -148,15 +148,15 @@ const LastPriceDisplay = ({
     // For forex and crypto, we want to show all decimal places
     // Convert to string to preserve all decimal places
     const priceStr = price.toString();
-    
+
     // If it's a whole number or has fewer than 2 decimals, ensure we show at least 2
-    if (!priceStr.includes('.') || priceStr.split('.')[1].length < 2) {
+    if (!priceStr.includes(".") || priceStr.split(".")[1].length < 2) {
       return price.toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 10,
       });
     }
-    
+
     // Otherwise, show all existing decimal places
     return price.toLocaleString(undefined, {
       minimumFractionDigits: 2,

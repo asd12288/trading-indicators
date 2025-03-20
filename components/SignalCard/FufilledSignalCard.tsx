@@ -66,14 +66,15 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
   // Format numbers consistently with full precision
   const formatNumber = (num) => {
     if (num === null || num === undefined) return "N/A";
-    
+
     // Convert to string to count decimal places
     const numStr = num.toString();
-    
+
     // If it has decimal places, preserve them all (up to 10)
-    const decimalPlaces = numStr.includes('.') ? 
-      Math.min(numStr.split('.')[1].length, 10) : 2;
-    
+    const decimalPlaces = numStr.includes(".")
+      ? Math.min(numStr.split(".")[1].length, 10)
+      : 2;
+
     return new Intl.NumberFormat("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: Math.max(decimalPlaces, 2),

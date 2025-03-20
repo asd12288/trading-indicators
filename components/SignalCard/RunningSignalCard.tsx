@@ -56,14 +56,15 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
     // Format numbers consistently with full precision
     const formatNumber = (num) => {
       if (num === null || num === undefined) return "N/A";
-      
+
       // Convert to string to check decimal places
       const numStr = num.toString();
-      
+
       // If it has decimal places, preserve them all (up to 10)
-      const decimalPlaces = numStr.includes('.') ? 
-        Math.min(numStr.split('.')[1].length, 10) : 2;
-      
+      const decimalPlaces = numStr.includes(".")
+        ? Math.min(numStr.split(".")[1].length, 10)
+        : 2;
+
       return new Intl.NumberFormat("en-US", {
         minimumFractionDigits: 2,
         maximumFractionDigits: Math.max(decimalPlaces, 2), // At least 2, up to the actual number
@@ -177,9 +178,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
             <div
               className={cn(
                 "mb-4 overflow-hidden rounded-lg border",
-                isProfitable
-                  ? "border-emerald-500/30"
-                  : "border-rose-500/30",
+                isProfitable ? "border-emerald-500/30" : "border-rose-500/30",
                 theme === "dark" ? "bg-slate-800/70" : "bg-slate-50",
               )}
             >
@@ -189,7 +188,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
                   "flex items-center justify-between border-b px-3 py-1.5",
                   isProfitable
                     ? "border-emerald-500/20 bg-emerald-500/5"
-                    : "border-rose-500/20 bg-rose-500/5"
+                    : "border-rose-500/20 bg-rose-500/5",
                 )}
               >
                 <div className="flex items-center gap-1.5">
@@ -198,15 +197,13 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
                     {t("currentPrice")}
                   </span>
                 </div>
-                
+
                 {/* Percentage change */}
                 {pnlPercentage && (
                   <div
                     className={cn(
                       "rounded-full px-1.5 py-0.5 text-xs font-medium",
-                      isProfitable
-                        ? "text-emerald-400"
-                        : "text-rose-400"
+                      isProfitable ? "text-emerald-400" : "text-rose-400",
                     )}
                   >
                     {isProfitable ? "+" : "−"}
@@ -214,7 +211,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
                   </div>
                 )}
               </div>
-              
+
               {/* Price and sparkline in a more compact layout */}
               <div className="flex items-center justify-between p-2">
                 <div className="text-2xl font-bold">
@@ -222,7 +219,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
                     ? "..."
                     : formatNumber(currentPrice || entry_price)}
                 </div>
-                
+
                 {/* Condensed change indicator */}
                 {currentPnL && (
                   <div
@@ -230,7 +227,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
                       "flex items-center rounded-full px-2 py-1 text-xs",
                       isProfitable
                         ? "bg-emerald-500/10 text-emerald-400"
-                        : "bg-rose-500/10 text-rose-400"
+                        : "bg-rose-500/10 text-rose-400",
                     )}
                   >
                     {isProfitable ? (
@@ -238,11 +235,12 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
                     ) : (
                       <ArrowDown className="mr-1 h-3 w-3" />
                     )}
-                    {formatNumber(Math.abs(currentPnL))} {isForex ? "pips" : "points"}
+                    {formatNumber(Math.abs(currentPnL))}{" "}
+                    {isForex ? "pips" : "points"}
                   </div>
                 )}
               </div>
-              
+
               {/* Sparkline with minimal padding */}
               <LastPriceDisplay
                 instrumentName={instrument_name}

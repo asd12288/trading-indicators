@@ -483,13 +483,13 @@
     }
   },
   "SignalTable": {
-    "title": "Trade MFE & Loss Ticks Performance Summary",
+    "title": "Trade MFE & Loss Ticks/Pips Performance Summary",
     "summary": {
       "totalTrades": "Total Trades:",
-      "totalMFETicks": "Total MFE Ticks:",
-      "totalLossTicks": "Total Loss Ticks:",
-      "avgMFETicks": "Average MFE Ticks:",
-      "avgLossTicks": "Average Loss Ticks:"
+      "totalMFETicks": "Total MFE Ticks/Pips:",
+      "totalLossTicks": "Total Loss Ticks/Pips:",
+      "avgMFETicks": "Average MFE Ticks/Pips:",
+      "avgLossTicks": "Average Loss Ticks/Pips:"
     },
     "table": {
       "date": "Date",
@@ -497,8 +497,8 @@
       "exitPrice": "Exit Price",
       "tradeSide": "Trade Side",
       "duration": "Duration",
-      "mfeTicks": "MFE Ticks",
-      "lossTicks": "Loss Ticks"
+      "mfeTicks": "MFE /Pips",
+      "lossTicks": "Loss /Pips"
     },
     "tooltips": {
       "date": "The date when the trade was entered. This shows when the position was opened in the format day/month/year.",
