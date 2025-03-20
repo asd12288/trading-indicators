@@ -4,8 +4,8 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowUp, ArrowDown, Info, Minus } from "lucide-react";
-import useLast from "@/hooks/useLast";
 import SignalToolTooltip from "./SignalCard/SignalToolTooltip";
+import useForexPrice from "@/hooks/useForexPrice";
 
 interface LastPriceDisplayProps {
   instrumentName: string;
@@ -20,13 +20,18 @@ const LastPriceDisplay = ({
   showLabel = true,
   className = "",
 }: LastPriceDisplayProps) => {
-  const { lastPrice, isLoading, error, lastUpdated, refreshNow } =
-    useLast(instrumentName);
+  const {
+    lastPrice,
+    isLoading,
+    error,
+    lastUpdated,
+    refreshNow,
+    source,
+    priceDirection,
+  } = useForexPrice(instrumentName);
   const t = useTranslations("InstrumentStatusCard");
   const [isFlashing, setIsFlashing] = useState(false);
-  const [priceDirection, setPriceDirection] = useState<
-    "up" | "down" | "neutral"
-  >("neutral");
+
   const prevPriceRef = useRef<number | null>(null);
 
   // Debug counter to show component is alive
@@ -43,17 +48,6 @@ const LastPriceDisplay = ({
         `⚡ Price update: ${prevPriceRef.current} → ${lastPrice.last}`,
       );
 
-      // Determine price direction
-      if (prevPriceRef.current !== null) {
-        if (lastPrice.last > prevPriceRef.current) {
-          setPriceDirection("up");
-        } else if (lastPrice.last < prevPriceRef.current) {
-          setPriceDirection("down");
-        } else {
-          setPriceDirection("neutral");
-        }
-      }
-
       setIsFlashing(true);
       const timer = setTimeout(() => setIsFlashing(false), 1000);
       prevPriceRef.current = lastPrice.last;
@@ -65,7 +59,7 @@ const LastPriceDisplay = ({
   useEffect(() => {
     const refreshTimer = setInterval(() => {
       refreshNow();
-    }, 10000); // Refresh every 10 seconds
+    }, 60000); // Refresh every 60 seconds (adjusted to comply with API rate limits)
 
     return () => clearInterval(refreshTimer);
   }, [refreshNow]);
@@ -90,7 +84,7 @@ const LastPriceDisplay = ({
     up: "text-green-400",
     down: "text-red-400",
     neutral: "text-primary",
-  }[priceDirection];
+  }[priceDirection || "neutral"];
 
   if (isLoading) {
     return (
@@ -156,10 +150,14 @@ const LastPriceDisplay = ({
         )}
       </div>
 
- 
       {size === "large" && lastUpdated && (
         <div className="mt-2 text-xs text-slate-500">
           Updated: {lastUpdated.toLocaleTimeString()}
+          {process.env.NODE_ENV === "development" && (
+            <span className="ml-2 text-xs opacity-50">
+              ({source || "unknown"})
+            </span>
+          )}
         </div>
       )}
     </div>

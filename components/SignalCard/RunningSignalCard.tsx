@@ -1,22 +1,19 @@
+import { useTheme } from "@/context/theme-context";
+import useForexPrice from "@/hooks/useForexPrice";
+import useInstrumentInfo from "@/hooks/useInstrumentInfo";
 import { Signal } from "@/lib/types";
-import { format, formatDistanceToNow, parseISO } from "date-fns";
+import { cn } from "@/lib/utils";
+import { formatDistanceToNow, parseISO } from "date-fns";
+import {
+  AlertTriangle,
+  ArrowDown,
+  ArrowUp,
+  Clock,
+  Zap
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { FC, memo } from "react";
-import {
-  Clock,
-  Target,
-  AlertTriangle,
-  ArrowUp,
-  ArrowDown,
-  Zap,
-  Flag,
-  CircleDot,
-} from "lucide-react";
 import { Badge } from "../ui/badge";
-import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
-import useLast from "@/hooks/useLast";
-import useInstrumentInfo from "@/hooks/useInstrumentInfo";
 
 interface RunningSignalCardProps {
   instrument: Signal;
@@ -36,7 +33,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
     } = instrument;
 
     // Get real-time last price
-    const { lastPrice, isLoading } = useLast(instrument_name);
+    const { lastPrice, isLoading } = useForexPrice(instrument_name);
 
     // Get instrument information
     const { instrumentInfo, loading: infoLoading } =

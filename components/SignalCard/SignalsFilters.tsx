@@ -68,7 +68,9 @@ const SignalsFilters = ({
         </span>
       </div>
 
-      <div className="flex flex-wrap gap-2">{categoryButtons}</div>
+      {/* category buttons for now disabbled */}
+
+      {/* <div className="flex flex-wrap gap-2">{categoryButtons}</div> */}
     </div>
   );
 };
