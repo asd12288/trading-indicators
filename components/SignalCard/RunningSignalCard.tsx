@@ -9,6 +9,7 @@ import { useTranslations } from "next-intl";
 import { FC, memo } from "react";
 import { Badge } from "../ui/badge";
 import LastPriceDisplay from "../LastPriceDisplay";
+import { getInstrumentCategory } from "@/lib/instrumentCategories"; // Import the function
 
 interface RunningSignalCardProps {
   instrument: Signal;
@@ -26,6 +27,11 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
       take_profit_price,
       stop_loss_price,
     } = instrument;
+
+    // Determine if the instrument is forex to display pips or ticks
+    const instrumentCategory = getInstrumentCategory(instrument_name);
+    const isForex = instrumentCategory === "forex";
+    const measurementUnit = isForex ? "pips" : "ticks";
 
     // Get real-time last price
     const { lastPrice, isLoading } = useForexPrice(instrument_name);
@@ -159,63 +165,84 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
               <span>{timeAgo}</span>
             </div>
 
-            {/* IMPROVED Current Price Section - More compact and better aligned */}
+            {/* COMPACT Current Price Section */}
             <div
               className={cn(
-                "mb-4 rounded-lg border-l-4 p-3",
+                "mb-4 overflow-hidden rounded-lg border",
+                isProfitable
+                  ? "border-emerald-500/30"
+                  : "border-rose-500/30",
                 theme === "dark" ? "bg-slate-800/70" : "bg-slate-50",
-                currentPrice
-                  ? isProfitable
-                    ? "border-l-emerald-500"
-                    : "border-l-rose-500"
-                  : "border-l-slate-500",
               )}
             >
-              {/* Header row with improved alignment */}
-              <div className="mb-1.5 flex items-center justify-between">
+              {/* Header row */}
+              <div
+                className={cn(
+                  "flex items-center justify-between border-b px-3 py-1.5",
+                  isProfitable
+                    ? "border-emerald-500/20 bg-emerald-500/5"
+                    : "border-rose-500/20 bg-rose-500/5"
+                )}
+              >
                 <div className="flex items-center gap-1.5">
-                  <Zap className="h-3.5 w-3.5 text-amber-400" />
-                  <span className="text-xs font-medium text-amber-400">
+                  <Zap className="h-3.5 w-3.5 text-blue-400" />
+                  <span className="text-xs font-medium text-slate-300">
                     {t("currentPrice")}
-                  </span>
-                  <span className="ml-1 rounded-full bg-blue-500/80 px-1 py-0.5 text-[9px] font-semibold text-white">
-                    LIVE
                   </span>
                 </div>
                 
-                {/* Right-aligned performance indicator */}
-                {currentPnL && (
+                {/* Percentage change */}
+                {pnlPercentage && (
                   <div
                     className={cn(
-                      "text-xs font-medium",
-                      isProfitable ? "text-emerald-400" : "text-rose-400",
+                      "rounded-full px-1.5 py-0.5 text-xs font-medium",
+                      isProfitable
+                        ? "text-emerald-400"
+                        : "text-rose-400"
                     )}
                   >
-                    {isProfitable ? "+" : "-"}
-                    {formatNumber(Math.abs(currentPnL))} ({pnlPercentage}%)
+                    {isProfitable ? "+" : "−"}
+                    {pnlPercentage}%
                   </div>
                 )}
               </div>
-
+              
               {/* Price and sparkline in a more compact layout */}
-              <div className="flex items-start justify-between">
-                {/* Price value with larger font */}
-                <div className="text-2xl font-bold tracking-tight">
+              <div className="flex items-center justify-between p-2">
+                <div className="text-2xl font-bold">
                   {isLoading
                     ? "..."
                     : formatNumber(currentPrice || entry_price)}
                 </div>
                 
-                {/* Sparkline with better sizing */}
-                <div className="w-[100px]">
-                  <LastPriceDisplay
-                    instrumentName={instrument_name}
-                    size="small"
-                    showLabel={false}
-                    showSparkline={true}
-                  />
-                </div>
+                {/* Condensed change indicator */}
+                {currentPnL && (
+                  <div
+                    className={cn(
+                      "flex items-center rounded-full px-2 py-1 text-xs",
+                      isProfitable
+                        ? "bg-emerald-500/10 text-emerald-400"
+                        : "bg-rose-500/10 text-rose-400"
+                    )}
+                  >
+                    {isProfitable ? (
+                      <ArrowUp className="mr-1 h-3 w-3" />
+                    ) : (
+                      <ArrowDown className="mr-1 h-3 w-3" />
+                    )}
+                    {formatNumber(Math.abs(currentPnL))} {isForex ? "pips" : "points"}
+                  </div>
+                )}
               </div>
+              
+              {/* Sparkline with minimal padding */}
+              <LastPriceDisplay
+                instrumentName={instrument_name}
+                size="small"
+                showLabel={false}
+                showSparkline={true}
+                className="px-2 pb-2"
+              />
             </div>
 
             {/* Key prices in a simple grid */}

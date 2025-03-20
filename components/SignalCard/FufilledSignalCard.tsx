@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "@/context/theme-context";
 import useInstrumentInfo from "@/hooks/useInstrumentInfo";
 import { Badge } from "../ui/badge";
+import { getInstrumentCategory } from "@/lib/instrumentCategories"; // Import the function
 
 interface FufilledSignalCardProps {
   instrument: Signal;
@@ -36,6 +37,11 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
 
   // Get instrument information
   const { instrumentInfo, loading, error } = useInstrumentInfo(instrument_name);
+
+  // Determine if the instrument is forex to display pips or ticks
+  const instrumentCategory = getInstrumentCategory(instrument_name);
+  const isForex = instrumentCategory === "forex";
+  const measurementUnit = isForex ? "pips" : "ticks";
 
   const hasCompleteInstrumentInfo =
     instrumentInfo &&
@@ -274,7 +280,7 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
               {formatDollar(mfeDollarValue)}
             </div>
             <div className="mt-2 text-sm text-slate-400">
-              {mfeTicks} ticks maximum potential
+              {mfeTicks} {measurementUnit} maximum potential
               {usingFallbackValues && (
                 <span className="ml-1 block text-xs text-amber-400">
                   (Using default multiplier - partial data)
@@ -314,7 +320,7 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
                 {t("maxDrawdown", { defaultValue: "Max Risk (Drawdown)" })}
               </div>
               <div className="text-lg font-bold text-red-400">
-                {maeTicks} ticks
+                {maeTicks} {measurementUnit}
               </div>
               <div className="mt-2 text-xs text-slate-400">
                 Maximum adverse movement

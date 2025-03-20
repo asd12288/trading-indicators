@@ -25,11 +25,11 @@ export default function useForexPrice(instrumentName: string) {
   // Use SWR for data fetching with caching and revalidation
   const { data, error, isLoading, mutate } = useSWR<LastPriceData>(
     instrumentName
-      ? `/api/instrument-price?instrument=${instrumentName}&history=20`
+      ? `/api/instrument-price?instrument=${instrumentName}&history=30`
       : null,
     fetcher,
     {
-      refreshInterval: 5000, // Refresh every 5 seconds
+      refreshInterval: 2000, // Refresh every 2 seconds
       revalidateOnFocus: false,
       dedupingInterval: 2000,
     },

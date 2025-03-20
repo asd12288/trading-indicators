@@ -199,9 +199,16 @@ const InstrumentStatusCard = ({
           t={t}
         />
 
-        {/* Middle row - 3 columns */}
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
+          <StatCard
+            label="POC"
+            tooltip={t("pocTooltip")}
+            value={compositeData.poc?.value}
+            isFlashing={flashField === "poc"}
+            t={t}
+          />
+          
           <StatCard
             label="VWAP"
             tooltip={t("vwapTooltip")}
@@ -210,22 +217,6 @@ const InstrumentStatusCard = ({
             t={t}
           />
 
-          <StatCard
-            label="POC"
-            tooltip={t("pocTooltip")}
-            value={compositeData.poc?.value}
-            isFlashing={flashField === "poc"}
-            t={t}
-          />
-
-          <StatCard
-            label="VPOC"
-            tooltip={t("vpocTooltip")}
-            value={compositeData.vpoc?.value}
-            isFlashing={flashField === "vpoc"}
-            variant="secondary"
-            t={t}
-          />
         </div>
         {/* Low/VAL row */}
         <StatCard
