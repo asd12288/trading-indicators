@@ -199,7 +199,6 @@ const InstrumentStatusCard = ({
           t={t}
         />
 
-
         <div className="grid grid-cols-2 gap-4">
           <StatCard
             label="POC"
@@ -208,7 +207,7 @@ const InstrumentStatusCard = ({
             isFlashing={flashField === "poc"}
             t={t}
           />
-          
+
           <StatCard
             label="VWAP"
             tooltip={t("vwapTooltip")}
@@ -216,7 +215,6 @@ const InstrumentStatusCard = ({
             isFlashing={flashField === "vwap"}
             t={t}
           />
-
         </div>
         {/* Low/VAL row */}
         <StatCard
@@ -261,6 +259,24 @@ interface StatCardProps {
   compact?: boolean;
 }
 
+// Format numbers consistently with full precision
+const formatFullNumber = (num?: number): string => {
+  if (num === undefined) return "N/A";
+
+  // Convert to string to count decimal places
+  const numStr = num.toString();
+
+  // If it has decimal places, preserve them all (up to 10)
+  const decimalPlaces = numStr.includes(".")
+    ? Math.min(numStr.split(".")[1].length, 10)
+    : 2;
+
+  return new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: Math.max(decimalPlaces, 2), // At least 2, up to the actual number
+  }).format(num);
+};
+
 const StatCard = ({
   label,
   tooltip,
@@ -293,7 +309,7 @@ const StatCard = ({
           }}
           transition={{ duration: 0.5 }}
         >
-          {value !== undefined ? value.toLocaleString() : t("n/a")}
+          {value !== undefined ? formatFullNumber(value) : t("n/a")}
         </motion.div>
       </div>
     </div>

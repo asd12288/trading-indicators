@@ -109,7 +109,7 @@ export default function useInstrumentStatus(instrumentName: string) {
           .select("*")
           .eq("instrument_name", instrumentName)
           .order("timestamp", { ascending: false })
-          .limit(20); // Get more rows to ensure we have complete data
+          .limit(30); // Get more rows to ensure we have complete data
 
         if (error) throw new Error(error.message);
 

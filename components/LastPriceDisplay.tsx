@@ -143,11 +143,24 @@ const LastPriceDisplay = ({
     return () => clearInterval(refreshTimer);
   }, [refreshNow]);
 
-  // Format number to always show 2 decimal places
+  // Format number to show all significant decimal places
   const formatPrice = (price: number): string => {
+    // For forex and crypto, we want to show all decimal places
+    // Convert to string to preserve all decimal places
+    const priceStr = price.toString();
+    
+    // If it's a whole number or has fewer than 2 decimals, ensure we show at least 2
+    if (!priceStr.includes('.') || priceStr.split('.')[1].length < 2) {
+      return price.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 10,
+      });
+    }
+    
+    // Otherwise, show all existing decimal places
     return price.toLocaleString(undefined, {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 5,
+      maximumFractionDigits: 10, // Allow up to 10 decimal places
     });
   };
 
