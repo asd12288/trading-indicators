@@ -27,7 +27,7 @@ const KeyPricesGrid: FC<KeyPricesGridProps> = ({
       <div
         className={cn(
           "rounded-md p-2",
-          theme === "dark" ? "bg-slate-800" : "bg-slate-100"
+          theme === "dark" ? "bg-slate-800" : "bg-slate-100",
         )}
       >
         <div className="text-xs text-slate-400">{t("entry")}</div>
@@ -39,12 +39,11 @@ const KeyPricesGrid: FC<KeyPricesGridProps> = ({
         className={cn(
           "rounded-md p-2",
           theme === "dark" ? "bg-emerald-900/20" : "bg-emerald-50",
-          theme === "dark" ? "text-emerald-400" : "text-emerald-600"
+          theme === "dark" ? "text-emerald-400" : "text-emerald-600",
         )}
       >
         <div className="text-xs opacity-80">{t("target")}</div>
         <div className="font-medium">{formatNumber(takeProfitPrice)}</div>
-        <div className="mt-0.5 text-xs opacity-80">+{profitTargetPercent}%</div>
       </div>
 
       {/* Stop Loss */}
@@ -52,12 +51,11 @@ const KeyPricesGrid: FC<KeyPricesGridProps> = ({
         className={cn(
           "rounded-md p-2",
           theme === "dark" ? "bg-rose-900/20" : "bg-rose-50",
-          theme === "dark" ? "text-rose-400" : "text-rose-600"
+          theme === "dark" ? "text-rose-400" : "text-rose-600",
         )}
       >
         <div className="text-xs opacity-80">{t("stop")}</div>
         <div className="font-medium">{formatNumber(stopLossPrice)}</div>
-        <div className="mt-0.5 text-xs opacity-80">-{stopLossPercent}%</div>
       </div>
     </div>
   );

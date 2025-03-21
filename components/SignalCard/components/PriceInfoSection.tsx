@@ -28,7 +28,7 @@ const PriceInfoSection: FC<PriceInfoSectionProps> = ({
 }) => {
   const { theme } = useTheme();
   const t = useTranslations("RunningSignalCard");
-  
+
   // Define the unit based on instrument type
   const unit = isForex ? "pips" : "points";
 
@@ -37,7 +37,7 @@ const PriceInfoSection: FC<PriceInfoSectionProps> = ({
       className={cn(
         "mb-4 overflow-hidden rounded-lg border",
         isProfitable ? "border-emerald-500/30" : "border-rose-500/30",
-        theme === "dark" ? "bg-slate-800/70" : "bg-slate-50"
+        theme === "dark" ? "bg-slate-800/70" : "bg-slate-50",
       )}
     >
       {/* Simple header with current price label */}
@@ -48,7 +48,7 @@ const PriceInfoSection: FC<PriceInfoSectionProps> = ({
             {t("currentPrice")}
           </span>
         </div>
-        
+
         {/* Entry price reference */}
         <div className="text-xs text-slate-400">
           {t("entry")}: {formatNumber(entryPrice)}
@@ -65,10 +65,12 @@ const PriceInfoSection: FC<PriceInfoSectionProps> = ({
 
           {/* Price change - compact */}
           {currentPnL && (
-            <div className={cn(
-              "flex flex-col items-end",
-              isProfitable ? "text-emerald-400" : "text-rose-400"
-            )}>
+            <div
+              className={cn(
+                "flex flex-col items-end",
+                isProfitable ? "text-emerald-400" : "text-rose-400",
+              )}
+            >
               {/* Change amount with arrow */}
               <div className="flex items-center font-medium">
                 {isProfitable ? (
@@ -78,10 +80,11 @@ const PriceInfoSection: FC<PriceInfoSectionProps> = ({
                 )}
                 {formatNumber(Math.abs(currentPnL))} {unit}
               </div>
-              
+
               {/* Percentage */}
               <div className="text-xs">
-                {isProfitable ? "+" : "-"}{pnlPercentage}%
+                {isProfitable ? "+" : "-"}
+                {pnlPercentage}%
               </div>
             </div>
           )}
