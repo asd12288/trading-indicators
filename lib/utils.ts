@@ -12,11 +12,21 @@ export function formatCurrency(value: number, currency = "USD"): string {
   }).format(value);
 }
 
-export function formatNumber(value: number, precision = 2): string {
+export function formatNumber(num: number | null | undefined): string {
+  if (num === null || num === undefined) return "N/A";
+
+  // Convert to string to check decimal places
+  const numStr = num.toString();
+
+  // If it has decimal places, preserve them all (up to 10)
+  const decimalPlaces = numStr.includes(".")
+    ? Math.min(numStr.split(".")[1].length, 10)
+    : 2;
+
   return new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: precision,
-    maximumFractionDigits: precision,
-  }).format(value);
+    minimumFractionDigits: 2,
+    maximumFractionDigits: Math.max(decimalPlaces, 2), // At least 2, up to the actual number
+  }).format(num);
 }
 
 export function formatPercentage(value: number): string {
