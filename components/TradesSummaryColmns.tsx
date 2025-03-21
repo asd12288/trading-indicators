@@ -11,10 +11,11 @@ export type TradesSummary = {
   trade_side: "Long" | "Short";
   trade_duration: string;
   mfe: number | null;
-  lossTicks: number | null;
+  mae: number | null; // Changed from lossTicks to mae
   isForex?: boolean;
   measurementUnit?: string;
   instrument_name: string;
+  maeTicks?: number; // Added for the processed value
 };
 
 export const tradeSummaryColumns: ColumnDef<TradesSummary>[] = [
@@ -134,25 +135,23 @@ export const tradeSummaryColumns: ColumnDef<TradesSummary>[] = [
     },
   },
   {
-    accessorKey: "lossTicks",
+    accessorKey: "mae",
     header: () => (
       <div className="flex items-center gap-2">
-        <p className="text-left font-semibold text-slate-50">Loss</p>
-        <TableInfoToolTip type={"lossTicks"}>
+        <p className="text-left font-semibold text-slate-50">MAE</p>
+        <TableInfoToolTip type={"maeTicks"}>
           <Info className="h-4 w-4 text-slate-400" />
         </TableInfoToolTip>
       </div>
     ),
     cell: ({ row }) => {
-      const lossTicks = row.getValue("lossTicks");
+      const mae = row.getValue("mae");
       const unit = row.original.measurementUnit || "ticks";
-      const lossFormatted = lossTicks ? Number(lossTicks).toFixed(1) : null;
+      const maeFormatted = mae ? Number(mae).toFixed(1) : null;
 
       return (
-        <div className="text-lg text-red-500">
-          {lossFormatted && Number(lossFormatted) > 0
-            ? `${lossFormatted} ${unit}`
-            : "-"}
+        <div className="text-lg  text-red-500">
+          {maeFormatted ? `${maeFormatted} ${unit}` : "-"}
         </div>
       );
     },

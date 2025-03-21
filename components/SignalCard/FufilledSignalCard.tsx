@@ -289,7 +289,7 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
               {formatDollar(mfeDollarValue)}
             </div>
             <div className="mt-2 text-sm text-slate-400">
-              {mfeTicks} {measurementUnit} maximum potential
+              {mfeTicks.toFixed(1)} {measurementUnit} maximum potential
               {usingFallbackValues && (
                 <span className="ml-1 block text-xs text-amber-400">
                   (Using default multiplier - partial data)
@@ -329,7 +329,7 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
                 {t("maxDrawdown", { defaultValue: "Max Risk (Drawdown)" })}
               </div>
               <div className="text-lg font-bold text-red-400">
-                {maeTicks} {measurementUnit}
+                {maeTicks.toFixed(1)} {measurementUnit}
               </div>
               <div className="mt-2 text-xs text-slate-400">
                 Maximum adverse movement

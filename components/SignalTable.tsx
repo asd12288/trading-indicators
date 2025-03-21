@@ -20,9 +20,9 @@ const SignalTable = ({ allSignal }) => {
   const [summary, setSummary] = useState({
     totalTrades: 0,
     totalMFE: 0,
-    totalLoss: 0,
+    totalMAE: 0, // Changed from totalLoss to totalMAE
     avgMFE: 0,
-    avgLoss: 0,
+    avgMAE: 0, // Changed from avgLoss to avgMAE
   });
 
   useEffect(() => {
@@ -36,8 +36,8 @@ const SignalTable = ({ allSignal }) => {
       // Use the actual mfe value from the database
       const mfeTicks = Number(trade.mfe || 0);
 
-      // Calculate loss ticks from result_ticks if negative
-      const lossTicks = resultTicks < 0 ? Math.abs(resultTicks) : 0;
+      // Use the actual mae value from the database instead of calculating lossTicks
+      const maeTicks = Number(trade.mae || 0);
 
       // Ensure trade_duration is always positive
       let tradeDuration = trade.trade_duration;
@@ -61,7 +61,7 @@ const SignalTable = ({ allSignal }) => {
         entry_price: entryPrice,
         exit_price: exitPrice,
         mfeTicks: Number(mfeTicks.toFixed(2)),
-        lossTicks: Number(lossTicks.toFixed(2)),
+        maeTicks: Number(maeTicks.toFixed(2)), // Use MAE instead of lossTicks
         trade_duration: tradeDuration,
         isForex,
         measurementUnit,
@@ -73,20 +73,20 @@ const SignalTable = ({ allSignal }) => {
       (acc, trade) => acc + trade.mfeTicks,
       0,
     );
-    const totalLoss = formattedData.reduce(
-      (acc, trade) => acc + trade.lossTicks,
+    const totalMAE = formattedData.reduce(
+      (acc, trade) => acc + trade.maeTicks, // Sum MAE instead of lossTicks
       0,
     );
     const avgMFE = totalTrades ? totalMFE / totalTrades : 0;
-    const avgLoss = totalTrades ? totalLoss / totalTrades : 0;
+    const avgMAE = totalTrades ? totalMAE / totalTrades : 0; // Calculate average MAE
 
     setTableData(formattedData);
     setSummary({
       totalTrades,
       totalMFE: Number(totalMFE.toFixed(2)),
-      totalLoss: Number(totalLoss.toFixed(2)),
+      totalMAE: Number(totalMAE.toFixed(2)), // Store totalMAE
       avgMFE: Number(avgMFE.toFixed(2)),
-      avgLoss: Number(avgLoss.toFixed(2)),
+      avgMAE: Number(avgMAE.toFixed(2)), // Store avgMAE
     });
   }, [allSignal]);
 
@@ -132,9 +132,7 @@ const SignalTable = ({ allSignal }) => {
           </div>
           <div>
             <h2 className="text-2xl font-bold text-white">{t("title")}</h2>
-            <p className="text-slate-400">
-              Analyze trade performance metrics and trends
-            </p>
+            <p className="text-slate-400">{t("subTitle")}</p>
           </div>
         </div>
       </div>
@@ -146,35 +144,35 @@ const SignalTable = ({ allSignal }) => {
           value={summary.totalTrades}
           icon={<BarChart3 className="h-5 w-5 text-blue-400" />}
           color="bg-slate-800"
-          tooltip="Total number of completed trades in the dataset"
+          tooltip={t("toolTips.1")}
         />
         <StatCard
           label={t("summary.totalMFETicks")}
           value={summary.totalMFE}
           icon={<TrendingUp className="h-5 w-5 text-emerald-400" />}
           color="bg-slate-800"
-          tooltip="Sum of all Maximum Favorable Excursion ticks across all trades"
+          tooltip={t("toolTips.2")}
         />
         <StatCard
-          label={t("summary.totalLossTicks")}
-          value={summary.totalLoss}
+          label={t("summary.totalLossTicks")} // Changed label to MAE
+          value={summary.totalMAE}
           icon={<TrendingDown className="h-5 w-5 text-rose-400" />}
           color="bg-slate-800"
-          tooltip="Sum of all negative movement ticks across all trades"
+          tooltip="Sum of all Maximum Adverse Excursion ticks across all trades" // Updated tooltip
         />
         <StatCard
           label={t("summary.avgMFETicks")}
           value={summary.avgMFE}
           icon={<TrendingUp className="h-5 w-5 text-emerald-400" />}
           color="bg-slate-800"
-          tooltip="Average Maximum Favorable Excursion ticks per trade"
+          tooltip={t("toolTips.4")}
         />
         <StatCard
-          label={t("summary.avgLossTicks")}
-          value={summary.avgLoss}
+          label={t("summary.avgLossTicks")} // Changed label to average MAE
+          value={summary.avgMAE}
           icon={<TrendingDown className="h-5 w-5 text-rose-400" />}
           color="bg-slate-800"
-          tooltip="Average negative movement ticks per trade"
+          tooltip="Average Maximum Adverse Excursion ticks per trade" // Updated tooltip
         />
       </div>
 

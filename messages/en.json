@@ -484,12 +484,20 @@
   },
   "SignalTable": {
     "title": "Trade MFE & Loss Ticks/Pips Performance Summary",
+    "subTitle": "Analyze trade performance metrics and trends",
+    "toolTips": {
+      "1": "Total number of completed trades in the dataset",
+      "2": "Sum of all Maximum Favorable Excursion ticks/pips across all trades",
+      "3": "Sum of all negative movement ticks/pips across all trades",
+      "4": "Average Maximum Favorable Excursion ticks/pips per trade",
+      "5": "Average negative movement ticks/pips per trade"
+    },
     "summary": {
       "totalTrades": "Total Trades:",
       "totalMFETicks": "Total MFE Ticks/Pips:",
-      "totalLossTicks": "Total Loss Ticks/Pips:",
+      "totalLossTicks": "Total MAE Ticks/Pips:",
       "avgMFETicks": "Average MFE Ticks/Pips:",
-      "avgLossTicks": "Average Loss Ticks/Pips:"
+      "avgLossTicks": "Average MAE Ticks/Pips:"
     },
     "table": {
       "date": "Date",

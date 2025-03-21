@@ -16,7 +16,16 @@ const TableInfoToolTip = ({
 }) => {
   const t = useTranslations("SignalTable.tooltips");
 
-  const text = t(type);
+  const getTooltipContent = (type: string) => {
+    switch (type) {
+      case "maeTicks":
+        return "Maximum Adverse Excursion - The largest negative movement against your position during the trade lifecycle";
+      default:
+        return t(type);
+    }
+  };
+
+  const text = getTooltipContent(type);
 
   return (
     <TooltipProvider>
