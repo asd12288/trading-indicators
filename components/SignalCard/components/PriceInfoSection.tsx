@@ -1,6 +1,6 @@
 import { useTheme } from "@/context/theme-context";
 import { cn, formatNumber } from "@/lib/utils";
-import { ArrowDown, ArrowUp, Zap } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { FC } from "react";
 import LastPriceDisplay from "../../LastPriceDisplay";
@@ -35,70 +35,82 @@ const PriceInfoSection: FC<PriceInfoSectionProps> = ({
   return (
     <div
       className={cn(
-        "mb-4 overflow-hidden rounded-lg border",
-        isProfitable ? "border-emerald-500/30" : "border-rose-500/30",
+        "mb-4 grid grid-cols-3 gap-1 overflow-hidden rounded-lg",
         theme === "dark" ? "bg-slate-800/70" : "bg-slate-50",
       )}
     >
-      {/* Simple header with current price label */}
-      <div className="flex items-center justify-between border-b border-slate-700/20 px-3 py-2">
-        <div className="flex items-center gap-1.5">
-          <Zap className="h-3.5 w-3.5 text-blue-400" />
-          <span className="text-xs font-medium text-slate-300">
-            {t("currentPrice")}
-          </span>
+      {/* Column 1: Current Price - Simplified */}
+      <div
+        className={cn(
+          "flex flex-col items-center justify-center border-r px-2 py-3",
+          theme === "dark" ? "border-slate-700/40" : "border-slate-200",
+        )}
+      >
+        <div className="mb-1 text-xs text-slate-400">{t("currentPrice")}</div>
+        <div className="text-2xl font-bold">
+          {isLoading ? "..." : formatNumber(currentPrice || entryPrice)}
         </div>
+        <div className="mt-1 h-1 w-full rounded-full bg-amber-500"></div>
+      </div>
 
-        {/* Entry price reference */}
-        <div className="text-xs text-slate-400">
-          {t("entry")}: {formatNumber(entryPrice)}
+      {/* Column 2: Market Pulse - Only the line graph */}
+      <div
+        className={cn(
+          "border-r px-2 py-3",
+          theme === "dark" ? "border-slate-700/40" : "border-slate-200",
+        )}
+      >
+        <div className="mb-2 text-center text-xs text-slate-400">
+          Market Pulse
+        </div>
+        <div className="flex items-center justify-center">
+          {/* Pass clean props to hide everything except the graph line */}
+          <LastPriceDisplay
+            instrumentName={instrumentName}
+            size="small"
+            showLabel={false}
+            showSparkline={true}
+            className="market-pulse-only"
+            hideChartDetails={true}
+          />
         </div>
       </div>
 
-      {/* Clear price display */}
-      <div className="p-3">
-        <div className="flex items-center justify-between">
-          {/* Current price */}
-          <div className="text-2xl font-bold">
-            {isLoading ? "..." : formatNumber(currentPrice || entryPrice)}
-          </div>
+      {/* Column 3: PnL Information - Smaller */}
+      <div className="flex flex-col items-center justify-center px-2 py-3">
+        <div className="mb-1 text-xs text-slate-400">PnL</div>
 
-          {/* Price change - compact */}
-          {currentPnL && (
+        {currentPnL && currentPrice !== entryPrice ? (
+          <div className="flex flex-col items-center">
+            {/* PnL Amount - Compact */}
             <div
               className={cn(
-                "flex flex-col items-end",
+                "flex items-center text-xs font-semibold",
                 isProfitable ? "text-emerald-400" : "text-rose-400",
               )}
             >
-              {/* Change amount with arrow */}
-              <div className="flex items-center font-medium">
-                {isProfitable ? (
-                  <ArrowUp className="mr-1 h-4 w-4" />
-                ) : (
-                  <ArrowDown className="mr-1 h-4 w-4" />
-                )}
-                {formatNumber(Math.abs(currentPnL))} {unit}
-              </div>
-
-              {/* Percentage */}
-              <div className="text-xs">
-                {isProfitable ? "+" : "-"}
-                {pnlPercentage}%
-              </div>
+              {isProfitable ? (
+                <ArrowUp className="mr-0.5 h-3 w-3" />
+              ) : (
+                <ArrowDown className="mr-0.5 h-3 w-3" />
+              )}
+              {formatNumber(Math.abs(currentPnL))} {unit}
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Price chart */}
-      <div className="border-t border-slate-700/20 bg-slate-800/30 px-2 py-1">
-        <LastPriceDisplay
-          instrumentName={instrumentName}
-          size="small"
-          showLabel={false}
-          showSparkline={true}
-        />
+            {/* Percentage - Smaller */}
+            <div
+              className={cn(
+                "text-xs",
+                isProfitable ? "text-emerald-400" : "text-rose-400",
+              )}
+            >
+              {isProfitable ? "+" : "-"}
+              {pnlPercentage}%
+            </div>
+          </div>
+        ) : (
+          <div className="text-xs text-slate-400">No change</div>
+        )}
       </div>
     </div>
   );

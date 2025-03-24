@@ -27,10 +27,10 @@ const KeyPricesGrid: FC<KeyPricesGridProps> = ({
       <div
         className={cn(
           "rounded-md p-2",
-          theme === "dark" ? "bg-slate-800" : "bg-slate-100",
+          theme === "dark" ? "bg-slate-800 text-blue-500" : "bg-slate-100",
         )}
       >
-        <div className="text-xs text-slate-400">{t("entry")}</div>
+        <div className="text-xs text-blue-500">{t("entry")}</div>
         <div className="font-medium">{formatNumber(entryPrice)}</div>
       </div>
 

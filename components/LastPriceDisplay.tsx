@@ -13,6 +13,7 @@ interface LastPriceDisplayProps {
   showLabel?: boolean;
   className?: string;
   showSparkline?: boolean;
+  hideChartDetails?: boolean; // New prop to hide chart details
 }
 
 // Improved sparkline generator for actual price data
@@ -21,6 +22,7 @@ const generateSparkline = (
   width = 100,
   height = 20,
   color: string,
+  hideDetails = false, // New parameter
 ) => {
   if (!prices || prices.length < 2) return null;
 
@@ -53,16 +55,18 @@ const generateSparkline = (
       viewBox={`0 0 ${width} ${height}`}
       className="overflow-visible"
     >
-      {/* Middle reference line */}
-      <line
-        x1="0"
-        y1={height / 2}
-        x2={width}
-        y2={height / 2}
-        stroke="#44445530"
-        strokeWidth="0.5"
-        strokeDasharray="2,2"
-      />
+      {/* Only show middle reference line if not hiding details */}
+      {!hideDetails && (
+        <line
+          x1="0"
+          y1={height / 2}
+          x2={width}
+          y2={height / 2}
+          stroke="#44445530"
+          strokeWidth="0.5"
+          strokeDasharray="2,2"
+        />
+      )}
 
       {/* Path for the price line */}
       <polyline
@@ -74,23 +78,35 @@ const generateSparkline = (
         strokeLinejoin="round"
       />
 
-      {/* Dot for the last price point */}
-      <circle
-        cx={width}
-        cy={height - ((prices[prices.length - 1] - min) / totalRange) * height}
-        r="2.5"
-        fill={color}
-      />
+      {/* Only show the last point if not hiding details */}
+      {!hideDetails && (
+        <circle
+          cx={width}
+          cy={
+            height - ((prices[prices.length - 1] - min) / totalRange) * height
+          }
+          r="2.5"
+          fill={color}
+        />
+      )}
 
-      {/* Show small dots for each price point for better visualization */}
-      {prices.map((price, index) => {
-        if (index === prices.length - 1 || index % 3 !== 0) return null; // Only show some dots to avoid clutter
-        const x = (index / (prices.length - 1)) * width;
-        const y = height - ((price - min) / totalRange) * height;
-        return (
-          <circle key={index} cx={x} cy={y} r="1" fill={color} opacity="0.5" />
-        );
-      })}
+      {/* Only show small dots for price points if not hiding details */}
+      {!hideDetails &&
+        prices.map((price, index) => {
+          if (index === prices.length - 1 || index % 3 !== 0) return null;
+          const x = (index / (prices.length - 1)) * width;
+          const y = height - ((price - min) / totalRange) * height;
+          return (
+            <circle
+              key={index}
+              cx={x}
+              cy={y}
+              r="1"
+              fill={color}
+              opacity="0.5"
+            />
+          );
+        })}
     </svg>
   );
 };
@@ -101,6 +117,7 @@ const LastPriceDisplay = ({
   showLabel = true,
   className = "",
   showSparkline = false,
+  hideChartDetails = false, // New prop with default value
 }: LastPriceDisplayProps) => {
   const {
     lastPrice,
@@ -213,6 +230,26 @@ const LastPriceDisplay = ({
   const percentChange = calculateChange();
   const isPositiveChange = percentChange && parseFloat(percentChange) >= 0;
 
+  // Clean version for market pulse display
+  if (
+    showSparkline &&
+    hideChartDetails &&
+    priceHistory &&
+    priceHistory.length > 1
+  ) {
+    return (
+      <div className={className}>
+        {generateSparkline(
+          priceHistory,
+          size === "small" ? 90 : size === "medium" ? 120 : 150,
+          30, // Increased height for better visibility
+          sparklineColor,
+          true, // Pass hideDetails as true
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className={`flex flex-col ${className}`}>
       {showLabel && (
@@ -263,33 +300,39 @@ const LastPriceDisplay = ({
       </div>
 
       {/* Enhanced Sparkline display */}
-      {showSparkline && priceHistory && priceHistory.length > 1 && (
-        <div className="mt-2 rounded-md bg-slate-800/10 p-2 dark:bg-slate-700/20">
-          <div className="h-[24px] w-full">
-            {generateSparkline(
-              priceHistory,
-              size === "large" ? 150 : size === "medium" ? 100 : 70,
-              24,
-              sparklineColor,
-            )}
-          </div>
-
-          <div className="mt-1 flex items-center justify-between text-[10px]">
-            <div className="text-slate-500">
-              {priceHistory.length > 1 ? `${priceHistory.length} points` : ""}
+      {showSparkline &&
+        priceHistory &&
+        priceHistory.length > 1 &&
+        !hideChartDetails && (
+          <div className="mt-2 rounded-md bg-slate-800/10 p-2 dark:bg-slate-700/20">
+            <div className="h-[24px] w-full">
+              {generateSparkline(
+                priceHistory,
+                size === "large" ? 150 : size === "medium" ? 100 : 70,
+                24,
+                sparklineColor,
+                false, // Not hiding details in the standard view
+              )}
             </div>
 
-            {percentChange && (
-              <div
-                className={isPositiveChange ? "text-green-400" : "text-red-400"}
-              >
-                {isPositiveChange ? "+" : ""}
-                {percentChange}%
+            <div className="mt-1 flex items-center justify-between text-[10px]">
+              <div className="text-slate-500">
+                {priceHistory.length > 1 ? `${priceHistory.length} points` : ""}
               </div>
-            )}
+
+              {percentChange && (
+                <div
+                  className={
+                    isPositiveChange ? "text-green-400" : "text-red-400"
+                  }
+                >
+                  {isPositiveChange ? "+" : ""}
+                  {percentChange}%
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {size === "large" && lastUpdated && (
         <div className="mt-2 text-xs text-slate-500">

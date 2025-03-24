@@ -73,11 +73,22 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
       if (!price) return null;
 
       const range = take_profit_price - stop_loss_price;
-      if (range === 0) return 50; // Prevent division by zero
+      if (Math.abs(range) < 0.00001) return 50; // Prevent division by zero
 
-      const position = ((price - stop_loss_price) / range) * 100;
-      // Constrain to 0-100% to ensure visibility within the bar
-      return Math.min(Math.max(position, 0), 100);
+      // For shorts, we need to invert the position calculation
+      // since target is on the left and stop is on the right
+      if (isBuy) {
+        // Long position: stop is left (0%), target is right (100%)
+        const position = ((price - stop_loss_price) / range) * 100;
+        return Math.min(Math.max(position, 0), 100);
+      } else {
+        // Short position: target is left (0%), stop is right (100%)
+        const position =
+          ((price - take_profit_price) /
+            (stop_loss_price - take_profit_price)) *
+          100;
+        return Math.min(Math.max(position, 0), 100);
+      }
     };
 
     const entryPosition = calculatePosition(entry_price);
@@ -113,8 +124,8 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
 
           <div className="p-4">
             {/* Header with full name */}
-            <div className="mb-4">
-              <div className="flex items-center justify-between">
+            <div className="mb-4 flex justify-between">
+              <div className="flex flex-col gap-2">
                 <h3
                   className={cn(
                     "text-4xl font-bold",
@@ -123,35 +134,35 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
                 >
                   {instrument_name}
                 </h3>
+                {instrumentInfo && (
+                  <div className="mt-1 text-sm text-slate-400">
+                    {instrumentInfo.full_name || ""}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-2">
                 <Badge
                   className={cn(
-                    "flex items-center gap-1",
+                    "flex items-center justify-center gap-1",
                     isBuy
                       ? "bg-emerald-600 hover:bg-emerald-700"
                       : "bg-rose-600 hover:bg-rose-700",
                   )}
                 >
                   {isBuy ? (
-                    <ArrowUp className="h-3 w-3" />
+                    <ArrowUp className="h-5 w-5" />
                   ) : (
-                    <ArrowDown className="h-3 w-3" />
+                    <ArrowDown className="h-5 w-5" />
                   )}
-                  {trade_side}
+                  <span className="text-xl">{trade_side}</span>
                 </Badge>
-              </div>
-
-              {/* Full instrument name display */}
-              {instrumentInfo && (
-                <div className="mt-1 text-sm text-slate-400">
-                  {instrumentInfo.full_name || ""}
+                {/* Time info */}
+                <div className="mb-4 flex items-center gap-1.5 text-xs text-slate-400">
+                  <Clock className="h-3.5 w-3.5" />
+                  <span>{timeAgo}</span>
                 </div>
-              )}
-            </div>
-
-            {/* Time info */}
-            <div className="mb-4 flex items-center gap-1.5 text-xs text-slate-400">
-              <Clock className="h-3.5 w-3.5" />
-              <span>{timeAgo}</span>
+              </div>
             </div>
 
             {/* Price Info Section */}
