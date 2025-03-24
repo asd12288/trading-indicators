@@ -8,15 +8,19 @@ interface TradingViewWidgetProps {
   height?: number;
   width?: string;
   showToolbar?: boolean;
+  lightweight?: boolean; // New prop for simplified chart
+  interval?: string; // New prop to control timeframe
 }
 
 let scriptLoaded = false;
 
 const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
   symbol,
-  height = 300,
+  height = 180, // Reduced default height from 300 to 180
   width = "100%",
   showToolbar = false,
+  lightweight = false, // Default to regular mode
+  interval = "60", // Default to 60min chart (less data than daily)
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
@@ -62,18 +66,26 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
         new window.TradingView.widget({
           autosize: true,
           symbol: formattedSymbol,
-          interval: "D",
+          interval: interval,
           timezone: "Etc/UTC",
           theme: theme === "dark" ? "dark" : "light",
-          style: "1",
+          // Use a simpler chart style for lightweight mode
+          style: lightweight ? "8" : "1", // Style 8 is the "line" style (much simpler)
           locale: "en",
           toolbar_bg: theme === "dark" ? "#1e293b" : "#f8fafc",
           enable_publishing: false,
           allow_symbol_change: false,
           container_id: containerRef.current.id,
-          hide_top_toolbar: !showToolbar,
+          hide_top_toolbar: true, // Always hide top toolbar for compactness
           hide_side_toolbar: true,
+          hide_legend: lightweight, // Hide legend in lightweight mode
+          hide_volume: lightweight, // Hide volume in lightweight mode
           save_image: false,
+          // Simplified settings for lightweight mode
+          studies: lightweight ? [] : ["RSI@tv-basicstudies"],
+          drawings_access: { type: 'none' },
+          // Adjust range for less data
+          range: lightweight ? "1M" : "3M",
           height,
           width,
         });
@@ -86,12 +98,12 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
         containerRef.current.innerHTML = "";
       }
     };
-  }, [symbol, theme, height, width, showToolbar]);
+  }, [symbol, theme, height, width, showToolbar, lightweight, interval]);
 
   const containerId = `tradingview_${symbol.replace(/[^a-zA-Z0-9]/g, "")}`;
 
   return (
-    <div className="w-full rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+    <div className="w-full overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700">
       <div 
         id={containerId} 
         ref={containerRef} 

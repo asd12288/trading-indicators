@@ -13,7 +13,12 @@ interface TradingViewWidget {
     container_id: string;
     hide_top_toolbar: boolean;
     hide_side_toolbar: boolean;
+    hide_legend?: boolean;
+    hide_volume?: boolean;
     save_image: boolean;
+    studies?: string[];
+    drawings_access?: { type: string };
+    range?: string;
     height: number;
     width: string | number;
   }): void;
