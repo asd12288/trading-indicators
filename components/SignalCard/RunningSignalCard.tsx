@@ -9,13 +9,13 @@ import { useTranslations } from "next-intl";
 import { FC, memo } from "react";
 import { Badge } from "../ui/badge";
 import { getInstrumentCategory } from "@/lib/instrumentCategories";
+import TradingViewWidget from "../TradingViewWidget";
 
 // Import the new components
 import ErrorCard from "./components/ErrorCard";
 import PriceInfoSection from "./components/PriceInfoSection";
 import KeyPricesGrid from "./components/KeyPricesGrid";
 import PriceScaleVisualization from "./components/PriceScaleVisualization";
-import TradeDirectionDisplay from "./components/TradeDirectionDisplay";
 
 interface RunningSignalCardProps {
   instrument: Signal;
@@ -197,8 +197,14 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
               isBuy={isBuy}
             />
 
-            {/* Trade Direction Display */}
-            <TradeDirectionDisplay isBuy={isBuy} />
+            {/* TradingView Chart Widget (replacing TradeDirectionDisplay) */}
+            <div className="mb-4">
+              <TradingViewWidget 
+                symbol={instrument_name} 
+                height={250}
+                showToolbar={false}
+              />
+            </div>
           </div>
         </div>
       </div>
