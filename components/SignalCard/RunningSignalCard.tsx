@@ -197,14 +197,15 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
               isBuy={isBuy}
             />
 
-            {/* TradingView Chart Widget - Smaller and lightweight */}
+            {/* TradingView Chart Widget - Customized colors based on trade direction */}
             <div className="mb-4">
-              <TradingViewWidget 
-                symbol={instrument_name} 
+              <TradingViewWidget
+                symbol={instrument_name}
                 height={180}
                 showToolbar={false}
                 lightweight={true}
                 interval="15"
+                isBuy={isBuy}
               />
             </div>
           </div>
