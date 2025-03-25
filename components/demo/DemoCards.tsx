@@ -1,22 +1,24 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import { useTheme } from "@/context/theme-context";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 import {
-  ArrowUp,
   ArrowDown,
-  Clock,
-  Zap,
-  Target,
-  DollarSign,
+  ArrowUp,
   Award,
   Bell,
-  Globe,
   Calendar,
+  Clock,
+  DollarSign,
+  Globe,
+  Target,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import KeyPricesGrid from "../SignalCard/components/KeyPricesGrid";
+import PriceInfoSection from "../SignalCard/components/PriceInfoSection";
+import PriceScaleVisualization from "../SignalCard/components/PriceScaleVisualization";
+import TradingViewWidget from "../TradingViewWidget";
 
 type DemoCardType = "running" | "fulfilled" | "marketClosed" | "systemClosed";
 
@@ -61,26 +63,24 @@ const instrumentData = {
   },
   EURUSD: {
     fullName: "Euro/US Dollar",
-    basePrice: 1.07732,
-    tickSize: 0.00001, // 0.1 pip
-    tickValue: 1.0, // $1 per pip (assuming 0.1 lot)
-    profitTarget: 45, // pips
-    stopLoss: 25, // pips
-    volatilityRange: 0.4,
+    basePrice: 1.07732, // Example current market price
+    tickSize: 0.00001, // 0.1 pip per tick
+    tickValue: 1.0, // $1 per pip per 0.1 lot (10k units)
+    profitTarget: 50, // 50 pips is a realistic target for intraday or swing
+    stopLoss: 25, // 25 pips common for tight risk management
+    volatilityRange: 0.6, // Moderate intraday range factor (0.5 - 0.7 realistic)
     format: "forex",
-    averageDailyRange: 80, // pips
-    typicalMFE: 38, // pips
-    typicalMAE: 15, // pips
-    priceHistory: [
-      1.07732, 1.07741, 1.07752, 1.07738, 1.07726, 1.07737, 1.07745, 1.07731,
-    ],
-    decimalPlaces: 5,
+    averageDailyRange: 75, // EUR/USD ranges from 60 to 100 pips daily on average
+    typicalMFE: 80, // Maximum Favorable Excursion - 80 pips before reversal
+    typicalMAE: 20, // Maximum Adverse Excursion - 15-25 pips realistic
+    priceHistory: [1.07732], // Starting price history
+    decimalPlaces: 5, // Forex quotes are usually in 5 decimals (1.07732)
   },
 };
 
 export default function DemoCard({
   type,
-  instrumentName = "NQ",
+  instrumentName = "EURUSD", // Default to ES instead of NQ
   tradeSide = "Long",
 }: DemoCardProps) {
   // Add translations from real cards
@@ -92,15 +92,10 @@ export default function DemoCard({
 
   const { theme } = useTheme();
   const isBuy = tradeSide === "Long";
-  const animationIndexRef = useRef(0);
-  const lastUpdateTimeRef = useRef<Date>(new Date());
-  const [lastUpdateTime, setLastUpdateTime] = useState<Date>(new Date());
+  const lastUpdateTime = new Date(); // Static time for demo
 
   // Get instrument-specific data
-  const instrument =
-    instrumentName in instrumentData
-      ? instrumentData[instrumentName]
-      : instrumentData.NQ;
+  const instrument = instrumentData.EURUSD;
 
   // Initialize prices based on instrument data
   const entryPrice = instrument.basePrice;
@@ -116,111 +111,11 @@ export default function DemoCard({
     ? entryPrice - stopTicks * instrument.tickSize
     : entryPrice + stopTicks * instrument.tickSize;
 
-  // For running cards, simulate price movement with more realism
-  const [currentPrice, setCurrentPrice] = useState(() => {
-    // Initialize with realistic price based on current instrument
-    return isBuy
-      ? entryPrice + targetTicks * instrument.tickSize * 0.35
-      : entryPrice - targetTicks * instrument.tickSize * 0.35;
-  });
-
-  // Reset the current price when the instrument changes to prevent flashing
-  useEffect(() => {
-    // This ensures we immediately reset to the correct starting price for the new instrument
-    animationIndexRef.current = 0;
-    setCurrentPrice(
-      isBuy
-        ? entryPrice + targetTicks * instrument.tickSize * 0.35
-        : entryPrice - targetTicks * instrument.tickSize * 0.35,
-    );
-
-    // Update the last update time to show fresh data
-    const now = new Date();
-    lastUpdateTimeRef.current = now;
-    setLastUpdateTime(now);
-  }, [
-    instrumentName,
-    tradeSide,
-    entryPrice,
-    targetTicks,
-    instrument.tickSize,
-    isBuy,
-  ]);
-
-  // Simulate realistic price movement with noise and trending
-  useEffect(() => {
-    if (type !== "running") return;
-
-    const interval = setInterval(
-      () => {
-        setCurrentPrice((prevPrice) => {
-          // Get next price from history or simulate a new realistic movement
-          const priceHistory = instrument.priceHistory || [];
-
-          // If we have history data, use it in a cycle for realistic patterns
-          if (priceHistory.length > 0) {
-            animationIndexRef.current =
-              (animationIndexRef.current + 1) % priceHistory.length;
-            const nextHistoricalPrice = priceHistory[animationIndexRef.current];
-
-            // Add some random noise to the historical price for variation
-            const noiseAmount = instrument.tickSize * (Math.random() * 4 - 2); // -2 to +2 ticks
-            const nextPrice = nextHistoricalPrice + noiseAmount;
-
-            // Update last price timestamp
-            lastUpdateTimeRef.current = new Date();
-            setLastUpdateTime(lastUpdateTimeRef.current);
-
-            return nextPrice;
-          }
-
-          // Fallback to simulated movement if no history
-          const volatilityFactor =
-            instrument.volatilityRange * instrument.tickSize;
-          const trend = isBuy ? 0.1 : -0.1; // slight bias in direction of trade
-          const noise = (Math.random() - 0.5) * volatilityFactor;
-
-          let newPrice = prevPrice + noise + trend;
-
-          // Ensure price stays within realistic bounds
-          const rangeLimitUpper = isBuy ? targetPrice * 0.95 : stopPrice * 0.95;
-          const rangeLimitLower = isBuy ? stopPrice * 1.05 : targetPrice * 1.05;
-
-          if (
-            (isBuy && newPrice > rangeLimitUpper) ||
-            (!isBuy && newPrice < rangeLimitLower)
-          ) {
-            // Reverse movement direction when approaching limits (mean reversion)
-            newPrice = prevPrice - noise * 2;
-          }
-
-          // Update last price timestamp
-          lastUpdateTimeRef.current = new Date();
-          setLastUpdateTime(lastUpdateTimeRef.current);
-
-          // Format to correct decimal places for the instrument type
-          const decimalPlaces =
-            instrument.format === "forex" ? instrument.decimalPlaces || 5 : 2;
-
-          return parseFloat(newPrice.toFixed(decimalPlaces));
-        });
-      },
-      1250 + Math.random() * 500,
-    ); // Randomize update timing slightly for realism
-
-    return () => clearInterval(interval);
-  }, [
-    type,
-    isBuy,
-    targetPrice,
-    stopPrice,
-    instrument.tickSize,
-    instrument.volatilityRange,
-    instrument.format,
-    instrument.priceHistory,
-    instrument.decimalPlaces,
-    instrumentName, // Add instrumentName dependency to re-trigger effect when it changes
-  ]);
+  // Use a static price for the demo instead of simulating movement
+  // Position it about 35% of the way to target for a realistic in-progress trade
+  const currentPrice = isBuy
+    ? entryPrice + targetTicks * instrument.tickSize * 0.35
+    : entryPrice - targetTicks * instrument.tickSize * 0.35;
 
   // Format numbers based on instrument type
   const formatNumber = (num: number) => {
@@ -284,15 +179,8 @@ export default function DemoCard({
   // Calculate risk-reward ratio
   const riskReward = (instrument.profitTarget / instrument.stopLoss).toFixed(1);
 
-  // Format last update time
-  const getTimeSinceUpdate = () => {
-    const now = new Date();
-    const diff = now.getTime() - lastUpdateTime.getTime();
-
-    if (diff < 1000) return "just now";
-    if (diff < 60000) return `${Math.floor(diff / 1000)}s ago`;
-    return `${Math.floor(diff / 60000)}m ago`;
-  };
+  // Format last update time - simplified since we use static time
+  const getTimeSinceUpdate = () => "just now";
 
   // For forex, use "pips" instead of "ticks"
   const tickLabel = instrument.format === "forex" ? "pips" : "ticks";
@@ -304,22 +192,29 @@ export default function DemoCard({
         className={cn(
           "h-full overflow-hidden rounded-lg border shadow-md transition-all hover:shadow-lg",
           isBuy ? "border-emerald-500" : "border-rose-500",
-          theme === "dark" ? "bg-slate-900" : "bg-white",
+          theme === "dark"
+            ? "bg-slate-900"
+            : "border border-slate-200 bg-white",
         )}
       >
         <div
           className={cn(
-            "py-1.5 text-center text-sm font-semibold text-white",
+            "relative py-1.5 text-center text-sm font-semibold text-white",
             isBuy ? "bg-emerald-600" : "bg-rose-600",
           )}
         >
           {runningT("liveTracking")}
+
+          {/* Demo badge */}
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md bg-black/20 px-1.5 py-0.5 text-xs font-medium">
+            DEMO
+          </div>
         </div>
 
         <div className="p-4">
-          {/* Header */}
-          <div className="mb-4">
-            <div className="flex items-center justify-between">
+          {/* Header with full name - Matches RunningSignalCard */}
+          <div className="mb-4 flex justify-between">
+            <div className="flex flex-col gap-2">
               <h3
                 className={cn(
                   "text-4xl font-bold",
@@ -328,256 +223,85 @@ export default function DemoCard({
               >
                 {instrumentName}
               </h3>
+              <div className="mt-1 text-sm text-slate-400">
+                {instrument.fullName}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
               <div
                 className={cn(
-                  "flex items-center gap-1 rounded-md border px-2 py-1 text-xs",
+                  "flex items-center gap-1 rounded-md border px-2 py-1",
+                  "font-semibold text-white",
                   isBuy
-                    ? "border-emerald-500/30 bg-emerald-900/10 text-emerald-400"
-                    : "border-rose-500/30 bg-rose-900/10 text-rose-400",
+                    ? "bg-emerald-600 hover:bg-emerald-700"
+                    : "bg-rose-600 hover:bg-rose-700",
                 )}
               >
                 {isBuy ? (
-                  <ArrowUp className="h-3 w-3" />
+                  <ArrowUp className="h-5 w-5" />
                 ) : (
-                  <ArrowDown className="h-3 w-3" />
+                  <ArrowDown className="h-5 w-5" />
                 )}
-                {isBuy ? runningT("long") : runningT("short")}
-              </div>
-            </div>
-            <div className="mt-1 text-sm text-slate-400">
-              {instrument.fullName}
-            </div>
-          </div>
-
-          {/* Time info - with last update time */}
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-xs text-slate-400">
-              <Clock className="h-3.5 w-3.5" />
-              <span>
-                {runningT("started")} 45 {runningT("tradeDuration")}
-              </span>
-            </div>
-            <div className="text-xs text-slate-400">
-              {runningT("lastUpdate")}:{" "}
-              <span className="text-blue-400">{getTimeSinceUpdate()}</span>
-            </div>
-          </div>
-
-          {/* Current Price - with animation */}
-          <div
-            className={cn(
-              "mb-4 rounded-lg border-2 p-4",
-              theme === "dark" ? "bg-slate-800" : "bg-slate-50",
-              isProfitable ? "border-emerald-500/50" : "border-rose-500/50",
-            )}
-          >
-            <div className="mb-2 flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <Zap className="h-4 w-4 text-amber-400" />
-                <span className="text-sm font-medium text-amber-400">
-                  {runningT("currentPrice")}
-                </span>
-                <span className="ml-1.5 rounded-full bg-blue-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
-                  {runningT("live")}
-                </span>
-              </div>
-              <div className="flex flex-col items-end">
-                <div className="mb-0.5 text-xs text-slate-400">
-                  {runningT("livePosition")}
-                </div>
-                <div
-                  className={cn(
-                    "text-sm font-medium",
-                    isProfitable ? "text-emerald-400" : "text-rose-400",
-                  )}
-                >
-                  {isProfitable ? "+" : "-"}
-                  {formatNumber(priceDifference)}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-baseline justify-between">
-              <div
-                key={`${instrumentName}-${currentPrice}`}
-                className="animate-pulse text-3xl font-bold tracking-tight"
-              >
-                {formatNumber(currentPrice)}
-              </div>
-              <div
-                className={cn(
-                  "text-lg font-medium",
-                  isProfitable ? "text-emerald-400" : "text-rose-400",
-                )}
-              >
-                {isProfitable ? "+" : "-"}
-                {instrument.format === "forex"
-                  ? `${performancePercentage} pips`
-                  : `${performancePercentage}%`}
-              </div>
-            </div>
-
-            {/* Ticks/Pips and dollar value */}
-            <div className="mt-2 flex items-center justify-between text-xs">
-              <span className="text-slate-400">
-                {ticksDifference} {tickLabel} ({formatDollar(dollarValue)})
-              </span>
-              <span className="text-slate-400">
-                {runningT("riskReward")}: 1:{riskReward}
-              </span>
-            </div>
-          </div>
-
-          {/* Key prices in a grid */}
-          <div className="mb-5 grid grid-cols-3 gap-2">
-            {/* Entry Price */}
-            <div
-              className={cn(
-                "rounded-md p-2",
-                theme === "dark" ? "bg-slate-800" : "bg-slate-100",
-              )}
-            >
-              <div className="text-xs text-slate-400">{runningT("entry")}</div>
-              <div className="font-medium">{formatNumber(entryPrice)}</div>
-            </div>
-
-            {/* Target Price */}
-            <div
-              className={cn(
-                "rounded-md p-2",
-                theme === "dark" ? "bg-emerald-900/20" : "bg-emerald-50",
-                theme === "dark" ? "text-emerald-400" : "text-emerald-600",
-              )}
-            >
-              <div className="text-xs opacity-80">{runningT("target")}</div>
-              <div className="font-medium">{formatNumber(targetPrice)}</div>
-              <div className="mt-0.5 text-xs opacity-80">
-                {isBuy ? "+" : "-"}
-                {instrument.profitTarget} {tickLabel}
-              </div>
-            </div>
-
-            {/* Stop Loss */}
-            <div
-              className={cn(
-                "rounded-md p-2",
-                theme === "dark" ? "bg-rose-900/20" : "bg-rose-50",
-                theme === "dark" ? "text-rose-400" : "text-rose-600",
-              )}
-            >
-              <div className="text-xs opacity-80">{runningT("stop")}</div>
-              <div className="font-medium">{formatNumber(stopPrice)}</div>
-              <div className="mt-0.5 text-xs opacity-80">
-                {isBuy ? "-" : "+"}
-                {instrument.stopLoss} {tickLabel}
-              </div>
-            </div>
-          </div>
-
-          {/* Price scale visualization */}
-          <div className="mb-5">
-            <div className="relative h-8 rounded-lg bg-slate-400 dark:bg-slate-700">
-              {/* Progress range for entry */}
-              <div
-                className={cn(
-                  "absolute bottom-0 left-0 top-0 opacity-20",
-                  isBuy ? "bg-emerald-500" : "bg-rose-600",
-                )}
-                style={{ width: `${entryPosition}%` }}
-              />
-
-              {/* Progress from entry to current */}
-              <div
-                className={cn(
-                  "absolute bottom-0 top-0 opacity-40",
-                  isProfitable ? "bg-emerald-500" : "bg-rose-600",
-                )}
-                style={{
-                  left: `${Math.min(entryPosition, currentPosition)}%`,
-                  width: `${Math.abs(currentPosition - entryPosition)}%`,
-                }}
-              />
-
-              {/* Stop Loss marker */}
-              <div className="absolute bottom-0 left-0 top-0 flex items-center">
-                <div className="h-8 w-2 rounded-l-lg bg-rose-600" />
+                <span className="text-xl">{isBuy ? "BUY" : "SELL"}</span>
               </div>
 
-              {/* Entry price marker */}
-              <div
-                className="absolute bottom-0 top-0 z-10 flex items-center"
-                style={{
-                  left: `calc(${entryPosition}% - 1.5px)`,
-                }}
-              >
-                <div className="h-8 w-3 bg-blue-500" />
-              </div>
-
-              {/* Current price marker - with subtle animation */}
-              <div
-                className="absolute bottom-0 top-0 z-20 flex items-center transition-all duration-1000 ease-in-out"
-                style={{
-                  left: `calc(${currentPosition}% - 1px)`,
-                }}
-              >
-                <div className="h-8 w-2 bg-amber-500" />
-              </div>
-
-              {/* Take profit marker */}
-              <div className="absolute bottom-0 right-0 top-0 flex items-center">
-                <div className="h-8 w-2 rounded-r-lg bg-emerald-600" />
-              </div>
-            </div>
-
-            {/* Scale labels */}
-            <div className="mt-1 flex justify-between text-xs">
-              <div className="flex flex-col items-start">
-                <span className="font-medium text-rose-500">
-                  {runningT("stop")}
-                </span>
-                <span className="text-slate-400">
-                  {formatNumber(stopPrice)}
-                </span>
-              </div>
-
-              <div className="flex flex-col items-center">
-                <span className="font-medium text-blue-500">
-                  {runningT("entry")}
-                </span>
-                <span className="text-slate-400">
-                  {formatNumber(entryPrice)}
-                </span>
-              </div>
-
-              <div className="flex flex-col items-end">
-                <span className="font-medium text-emerald-600">
-                  {runningT("target")}
-                </span>
-                <span className="text-slate-400">
-                  {formatNumber(targetPrice)}
+              {/* Time info */}
+              <div className="mb-4 flex items-center gap-1.5 text-xs text-slate-400">
+                <Clock className="h-3.5 w-3.5" />
+                <span>
+                  {runningT("started")} 45 {runningT("tradeDuration")}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Trade direction */}
-          <div
-            className={cn(
-              "flex items-center justify-center rounded-md py-2",
-              isBuy
-                ? "bg-emerald-900/20 text-emerald-400"
-                : "bg-rose-900/20 text-rose-400",
-            )}
-          >
-            {isBuy ? (
-              <ArrowUp className="mr-1 h-4 w-4" />
-            ) : (
-              <ArrowDown className="mr-1 h-4 w-4" />
-            )}
-            <span className="font-medium">
-              {runningT("direction")}:{" "}
-              {isBuy ? runningT("long") : runningT("short")}
-            </span>
+          {/* Current Price Info Section - Similar to PriceInfoSection */}
+          <PriceInfoSection
+            instrumentName={instrumentName}
+            isLoading={false}
+            currentPrice={currentPrice}
+            entryPrice={entryPrice}
+            currentPnL={dollarValue}
+            isProfitable={isProfitable}
+            pnlPercentage={parseFloat(performancePercentage)}
+            isForex={instrument.format === "forex"}
+          />
+
+          {/* Key prices in a grid - Similar to KeyPricesGrid */}
+          <KeyPricesGrid
+            entryPrice={entryPrice}
+            takeProfitPrice={targetPrice}
+            stopLossPrice={stopPrice}
+            profitTargetPercent={
+              (Math.abs(targetPrice - entryPrice) / entryPrice) * 100
+            }
+            stopLossPercent={
+              (Math.abs(stopPrice - entryPrice) / entryPrice) * 100
+            }
+          />
+
+          {/* Price scale visualization - Matching PriceScaleVisualization */}
+          <PriceScaleVisualization
+            entryPrice={entryPrice}
+            takeProfitPrice={targetPrice}
+            stopLossPrice={stopPrice}
+            currentPosition={currentPosition}
+            entryPosition={entryPosition}
+            isProfitable={isProfitable}
+            isBuy={isBuy}
+          />
+
+          {/* Add TradingViewWidget in demo mode */}
+          <div className="mb-4">
+            <TradingViewWidget
+              symbol={instrumentName}
+              height={180}
+              showToolbar={false}
+              lightweight={true}
+              interval="15"
+              isBuy={isBuy}
+            />
           </div>
         </div>
       </div>
@@ -595,11 +319,16 @@ export default function DemoCard({
       >
         <div
           className={cn(
-            "py-1.5 text-center text-sm font-semibold text-white",
+            "relative py-1.5 text-center text-sm font-semibold text-white",
             "bg-gray-500",
           )}
         >
           {fulfilledT("tradePotentialOver")}
+
+          {/* Demo badge */}
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md bg-black/20 px-1.5 py-0.5 text-xs font-medium">
+            DEMO
+          </div>
         </div>
 
         <div className="flex h-full flex-col p-4">
@@ -716,7 +445,7 @@ export default function DemoCard({
       >
         <div
           className={cn(
-            "py-2 text-center font-medium text-white",
+            "relative py-2 text-center font-medium text-white",
             theme === "dark"
               ? "bg-gradient-to-r from-amber-700 to-amber-500"
               : "bg-gradient-to-r from-amber-600 to-amber-400",
@@ -725,6 +454,11 @@ export default function DemoCard({
           <div className="flex items-center justify-center gap-2">
             <div className="h-2 w-2 animate-pulse rounded-full bg-white"></div>
             <span>{marketT("marketClosed")}</span>
+          </div>
+
+          {/* Demo badge */}
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md bg-black/20 px-1.5 py-0.5 text-xs font-medium">
+            DEMO
           </div>
         </div>
 
@@ -871,7 +605,7 @@ export default function DemoCard({
       >
         <div
           className={cn(
-            "py-2 text-center font-medium text-white",
+            "relative py-2 text-center font-medium text-white",
             theme === "dark"
               ? "bg-gradient-to-r from-gray-900 to-gray-700"
               : "bg-gradient-to-r from-blue-700 to-blue-500",
@@ -879,6 +613,11 @@ export default function DemoCard({
         >
           <div className="flex items-center justify-center gap-2">
             <span>{systemT("alertsOffline")}</span>
+          </div>
+
+          {/* Demo badge */}
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md bg-black/20 px-1.5 py-0.5 text-xs font-medium">
+            DEMO
           </div>
         </div>
 

@@ -21,6 +21,7 @@ import SignalInfo from "./SignalInfo";
 import SignalLatestNews from "./SignalLatestNews";
 import SignalCard from "./SignalCard/SignalCard";
 import SignalHoursInfo from "./SignalHoursInfo";
+import TradingViewNewsWidget from "./TradingViewNewsWidget";
 
 // Tab type definition
 interface Tab {
@@ -70,12 +71,12 @@ const SignalLayout = ({ id, userId, isPro }) => {
       icon: <Info size={16} />,
       isPremium: true,
     },
-    // {
-    //   id: "news",
-    //   label: t("tabs.news"),
-    //   icon: <Newspaper size={16} />,
-    //   isPremium: true,
-    // },
+    {
+      id: "news",
+      label: t("tabs.news"),
+      icon: <Newspaper size={16} />,
+      isPremium: true,
+    },
   ];
 
   const handleUpgradeClick = () => {
@@ -360,7 +361,7 @@ const SignalLayout = ({ id, userId, isPro }) => {
           </motion.div>
         )}
 
-        {/* News Tab - Premium content */}
+        {/* News Tab - Premium content with TradingView News Widget */}
         {activeTab === "news" && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -381,7 +382,35 @@ const SignalLayout = ({ id, userId, isPro }) => {
               />
             )}
             <div className={!isPro ? "blur-sm" : ""}>
-              <SignalLatestNews symbol={instrumentName} />
+              <div className="p-4">
+                <div className="mb-3 flex items-center">
+                  <div
+                    className={cn(
+                      "mr-2 h-3 w-3 rounded-full",
+                      theme === "dark" ? "bg-blue-400" : "bg-blue-500",
+                    )}
+                  ></div>
+                  <h3
+                    className={cn(
+                      "text-sm font-medium uppercase tracking-wider",
+                      theme === "dark" ? "text-slate-300" : "text-slate-700",
+                    )}
+                  >
+                    {/* Use a hardcoded fallback for the missing translation */}
+                    {t("tabs.news")} - {instrumentName}
+                  </h3>
+                </div>
+
+                {/* Fixed TradingView News Widget implementation */}
+                <div className="mt-4">
+                  <TradingViewNewsWidget
+                    symbol={instrumentName}
+                    height={500}
+                    showHeader={false}
+                    newsCount={15}
+                  />
+                </div>
+              </div>
             </div>
           </motion.div>
         )}

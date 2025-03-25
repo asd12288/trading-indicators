@@ -20,14 +20,15 @@ import PriceScaleVisualization from "./components/PriceScaleVisualization";
 interface RunningSignalCardProps {
   instrument: Signal;
   isBuy: boolean;
+  demo?: boolean; // Add demo prop
 }
 
 const RunningSignalCard: FC<RunningSignalCardProps> = memo(
-  ({ instrument, isBuy }) => {
+  ({ instrument, isBuy, demo = false }) => {
     const { theme } = useTheme();
     const {
       entry_time,
-      instrument_name,
+      instrument_name= 'eurusd',
       trade_side,
       entry_price,
       take_profit_price,
@@ -38,12 +39,14 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
     const instrumentCategory = getInstrumentCategory(instrument_name);
     const isForex = instrumentCategory === "forex";
 
-    // Get real-time last price
-    const { lastPrice, isLoading } = useForexPrice(instrument_name);
+    // Get real-time last price (skip API call if demo)
+    const { lastPrice, isLoading } = useForexPrice(instrument_name, demo);
 
-    // Get instrument information
-    const { instrumentInfo, loading: infoLoading } =
-      useInstrumentInfo(instrument_name);
+    // Get instrument information (skip API call if demo)
+    const { instrumentInfo, loading: infoLoading } = useInstrumentInfo(
+      instrument_name,
+      demo,
+    );
 
     const t = useTranslations("RunningSignalCard");
 
@@ -56,8 +59,14 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
       addSuffix: true,
     });
 
+    // For demo mode, use fake price data
+    const currentPrice = demo
+      ? isBuy
+        ? entry_price * 1.001 // Slight profit for demo buy
+        : entry_price * 0.999 // Slight profit for demo sell
+      : lastPrice?.last || null;
+
     // Calculate profit/loss based on last price
-    const currentPrice = lastPrice?.last || null;
     const currentPnL = currentPrice
       ? isBuy
         ? currentPrice - entry_price
@@ -197,7 +206,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
               isBuy={isBuy}
             />
 
-            {/* TradingView Chart Widget - Customized colors based on trade direction */}
+            {/* TradingView Chart Widget with demo flag */}
             <div className="mb-4">
               <TradingViewWidget
                 symbol={instrument_name}
@@ -206,6 +215,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
                 lightweight={true}
                 interval="15"
                 isBuy={isBuy}
+                demo={demo} // Pass demo flag to prevent real API calls
               />
             </div>
           </div>

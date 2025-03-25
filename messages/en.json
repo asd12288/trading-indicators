@@ -435,11 +435,12 @@
     "signalSettings": "Smart Alert Settings:",
     "upgradeMessage": "Upgrade to add notifications and favoriting",
     "noSignalData": "No smart alert data available",
+    "newsFeedTitle": "Market News Feed",
     "tabs": {
       "overview": "Overview",
       "performance": "Performance",
       "details": "Instrument Details",
-      "news": "Latest News"
+      "news": "Market News"
     },
     "premium": {
       "performanceTitle": "Unlock Performance Analytics",

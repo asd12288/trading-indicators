@@ -6,7 +6,6 @@ import { ArrowRight } from "lucide-react";
 import dynamic from "next/dynamic";
 import { Link } from "@/i18n/routing";
 
-
 // Lazy load the DemoCard component which isn't needed for initial render
 const DemoCard = dynamic(() => import("@/components/demo/DemoCards"), {
   loading: () => (
@@ -17,8 +16,6 @@ const DemoCard = dynamic(() => import("@/components/demo/DemoCards"), {
 
 // Define card types for the carousel - organized by instrument
 const demoCards = [
-  { type: "running", instrument: "NQ", side: "Long" },
-  { type: "fulfilled", instrument: "NQ", side: "Short" },
   { type: "running", instrument: "EURUSD", side: "Short" },
   { type: "fulfilled", instrument: "EURUSD", side: "Long" },
 ];
@@ -28,7 +25,7 @@ export default function Hero() {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isCardVisible, setIsCardVisible] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  
+
   // Lazily load the card only after the critical content is rendered
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -36,15 +33,15 @@ export default function Hero() {
       const timer = setTimeout(() => {
         setIsCardVisible(true);
       }, 100); // Short delay to prioritize text rendering first
-      
+
       return () => clearTimeout(timer);
     }
   }, []);
-  
+
   // Improved auto-rotate with transition handling
   useEffect(() => {
     if (!isCardVisible) return;
-    
+
     const interval = setInterval(() => {
       setIsTransitioning(true);
       setTimeout(() => {
@@ -52,16 +49,16 @@ export default function Hero() {
         setIsTransitioning(false);
       }, 300); // Brief delay for transition
     }, 8000); // Change card every 8 seconds
-    
+
     return () => clearInterval(interval);
   }, [isCardVisible]);
-  
+
   const currentCard = demoCards[currentCardIndex];
 
   // Handle manual card change with transition
   const handleCardChange = (index: number) => {
     if (isTransitioning || index === currentCardIndex) return;
-    
+
     setIsTransitioning(true);
     setTimeout(() => {
       setCurrentCardIndex(index);
@@ -123,10 +120,12 @@ export default function Hero() {
               <div className="relative">
                 {/* Subtle glow effect behind the card */}
                 <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-emerald-800/15 to-blue-800/15 blur-xl"></div>
-                
+
                 <div className="relative h-[550px]">
-                  <div className={`transition-opacity duration-300 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
-                    <DemoCard 
+                  <div
+                    className={`transition-opacity duration-300 ${isTransitioning ? "opacity-0" : "opacity-100"}`}
+                  >
+                    <DemoCard
                       key={`${currentCard.instrument}-${currentCard.type}-${currentCard.side}`}
                       type={currentCard.type as any}
                       instrumentName={currentCard.instrument}
@@ -134,15 +133,15 @@ export default function Hero() {
                     />
                   </div>
                 </div>
-                
+
                 {/* Card indicators */}
                 <div className="mt-4 flex justify-center gap-3">
                   {demoCards.map((_, index) => (
                     <button
                       key={index}
                       className={`h-2.5 w-2.5 rounded-full transition-all ${
-                        index === currentCardIndex 
-                          ? "scale-110 bg-emerald-600 shadow-lg shadow-emerald-700/30" 
+                        index === currentCardIndex
+                          ? "scale-110 bg-emerald-600 shadow-lg shadow-emerald-700/30"
                           : "bg-slate-700 hover:bg-slate-600"
                       }`}
                       onClick={() => handleCardChange(index)}

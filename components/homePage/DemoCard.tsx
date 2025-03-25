@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Signal } from "@/lib/types"; // adjust this import if needed
+import { Signal } from "@/lib/types";
 import RunningSignalCard from "../SignalCard/RunningSignalCard";
 import FufilledSignalCard from "../SignalCard/FufilledSignalCard";
 
@@ -10,14 +10,14 @@ type DemoSignalCardProps = {
 };
 
 const DemoSignalCard: React.FC<DemoSignalCardProps> = ({ type }) => {
-  // Convert your "type" into milliseconds, e.g. "nq" toggles every 10s, else 2s
-  const time = type === "nq" ? 10000 : 8000;
+  // Use a consistent toggle time for all instruments
+  const toggleTime = 8000;
 
   // State to toggle between running and fulfilled
   const [isRunning, setIsRunning] = useState(true);
 
   useEffect(() => {
-    // Random initial delay (0–2 seconds) so multiple cards don’t line up exactly
+    // Random initial delay (0–2 seconds) so multiple cards don't line up exactly
     const randomOffset = Math.floor(Math.random() * 2000);
     let intervalId: NodeJS.Timeout;
 
@@ -25,7 +25,7 @@ const DemoSignalCard: React.FC<DemoSignalCardProps> = ({ type }) => {
     const offsetTimeout = setTimeout(() => {
       intervalId = setInterval(() => {
         setIsRunning((prev) => !prev);
-      }, time);
+      }, toggleTime);
     }, randomOffset);
 
     // Cleanup
@@ -35,53 +35,29 @@ const DemoSignalCard: React.FC<DemoSignalCardProps> = ({ type }) => {
         clearInterval(intervalId);
       }
     };
-  }, [time]);
+  }, [toggleTime]);
 
-  // Build sample data
-  let instrument: Signal;
-  if (type === "nq") {
-    instrument = {
-      client_trade_id: "123",
-      result_ticks: 20,
-      trade_duration: "1h",
-      instrument_name: "NQ",
-      trade_side: "Buy",
-      entry_price: 20000,
-      exit_price: 21000,
-      take_profit_price: 21000,
-      stop_loss_price: 19000,
-      mae: 150,
-      mfe: 300,
-      signal: "demo",
-      // Pretend the entry time was 10 min ago
-      entry_time: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-      // Pretend the exit time was 4 min ago
-      exit_time: new Date(Date.now() - 4 * 60 * 1000).toISOString(),
-    };
-  } else {
-    instrument = {
-      instrument_name: "ES",
-      trade_side: "Short",
-      entry_price: 5622,
-      exit_price: 5612,         // assuming a target hit at take profit
-      take_profit_price: 5612,
-      stop_loss_price: 5626,
-      mae: 4,                   // Maximum Adverse Excursion
-      mfe: 10,                  // Maximum Favorable Excursion
-      signal: "demo",
-      result_ticks: 100,
-      trade_duration: "1h"
-    };
-    
+  // Build sample data - create a consistent demo instrument
+  const instrument: Signal = {
+    client_trade_id: "demo-123",
+    result_ticks: 20,
+    trade_duration: "1h",
+    instrument_name: "ES", // Default to ES (S&P 500 futures)
+    trade_side: "Buy",
+    entry_price: 5622,
+    exit_price: 5642,
+    take_profit_price: 5652,
+    stop_loss_price: 5592,
+    mae: 5,
+    mfe: 30,
+    signal: "demo",
+    // Pretend the entry time was 10 min ago
+    entry_time: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
+    // Pretend the exit time was 4 min ago
+    exit_time: new Date(Date.now() - 4 * 60 * 1000).toISOString(),
+  };
 
-      // Pretend the entry time was 10 min ago
-      entry_time: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-      // Pretend the exit time was 2 min ago
-      exit_time: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
-    };
-  }
-
-  // For demonstration, assume “Buy” side means isBuy = true
+  // For demonstration, assume "Buy" side means isBuy = true
   const isBuy = instrument.trade_side.toLowerCase() === "buy";
 
   return (

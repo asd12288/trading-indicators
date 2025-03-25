@@ -27,7 +27,9 @@ const KeyPricesGrid: FC<KeyPricesGridProps> = ({
       <div
         className={cn(
           "rounded-md p-2",
-          theme === "dark" ? "bg-slate-800 text-blue-500" : "bg-slate-100",
+          theme === "dark"
+            ? "bg-slate-800" // Changed: removed text-blue-500 here
+            : "bg-slate-100",
         )}
       >
         <div className="text-xs text-blue-500">{t("entry")}</div>
