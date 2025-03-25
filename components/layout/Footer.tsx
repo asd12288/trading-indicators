@@ -42,15 +42,7 @@ const Footer = () => {
             >
               <Mail size={18} />
             </a>
-            <a
-              href="https://twitter.com"
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-slate-300 transition-all hover:bg-slate-700 hover:text-white"
-              aria-label="Twitter"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Twitter size={18} />
-            </a>
+            
             <a
               href="https://facebook.com"
               className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-slate-300 transition-all hover:bg-slate-700 hover:text-white"
@@ -61,7 +53,7 @@ const Footer = () => {
               <Facebook size={18} />
             </a>
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/trader_map2025"
               className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-slate-300 transition-all hover:bg-slate-700 hover:text-white"
               aria-label="Instagram"
               target="_blank"

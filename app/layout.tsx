@@ -52,12 +52,7 @@ export default async function RootLayout({
         <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
 
         {/* Preload critical fonts */}
-        <link
-          rel="preload"
-          href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap"
-          as="style"
-          onLoad="this.onload=null;this.rel='stylesheet'"
-        />
+      
       </head>
       <body>
         <NextIntlClientProvider locale={params.locale} messages={messages}>
