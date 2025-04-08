@@ -1,26 +1,19 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/database/supabase/server";
-
-// Cache structure
-interface CacheEntry {
-  data: {
-    last: number;
-    timestamp: string;
-    instrument_name: string;
-    priceHistory?: number[];
-  };
-  fetchedAt: number;
-}
-
-// In-memory cache with TTL
-const cache: Record<string, CacheEntry> = {};
-const CACHE_TTL = 10 * 1000; // 10 seconds cache
+import { PRICE_CACHE_CONFIG, priceCache, CacheEntry } from "./config";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const instrumentName = searchParams.get("instrument");
   const purgeCache = searchParams.get("purge") === "true";
-  const historySize = parseInt(searchParams.get("history") || "20", 10);
+  const historySize = Math.min(
+    parseInt(
+      searchParams.get("history") ||
+        PRICE_CACHE_CONFIG.DEFAULT_HISTORY_SIZE.toString(),
+      10,
+    ),
+    PRICE_CACHE_CONFIG.MAX_HISTORY_SIZE,
+  );
 
   // Validate input
   if (!instrumentName) {
@@ -32,8 +25,8 @@ export async function GET(request: Request) {
 
   // Handle cache purge
   if (purgeCache) {
-    if (cache[instrumentName]) {
-      delete cache[instrumentName];
+    if (priceCache[instrumentName]) {
+      delete priceCache[instrumentName];
       console.log(`Cache purged for ${instrumentName}`);
     }
     return NextResponse.json({ message: "Cache purged" });
@@ -42,38 +35,73 @@ export async function GET(request: Request) {
   // Check cache first
   const now = Date.now();
   if (
-    cache[instrumentName] &&
-    now - cache[instrumentName].fetchedAt < CACHE_TTL
+    priceCache[instrumentName] &&
+    now - priceCache[instrumentName].fetchedAt < PRICE_CACHE_CONFIG.TTL
   ) {
     console.log(`Serving cached data for ${instrumentName}`);
     return NextResponse.json({
-      ...cache[instrumentName].data,
+      ...priceCache[instrumentName].data,
       source: "cache",
+      cacheAge: now - priceCache[instrumentName].fetchedAt,
     });
   }
+
+  // Check if we can use stale cache during timeout issues
+  const canUseStaleCache =
+    priceCache[instrumentName] &&
+    now - priceCache[instrumentName].fetchedAt < PRICE_CACHE_CONFIG.STALE_TTL;
 
   console.log(`Fetching fresh data for ${instrumentName} from Supabase`);
 
   try {
     const supabase = await createClient();
 
-    // Fetch last price data from Supabase
-    const { data: lastPriceData, error: lastPriceError } = await supabase
+    // Use a promise with timeout to avoid hanging requests
+    const fetchWithTimeout = async (
+      promise: Promise<any>,
+      timeoutMs: number,
+    ) => {
+      let timeout: NodeJS.Timeout;
+      const timeoutPromise = new Promise((_, reject) => {
+        timeout = setTimeout(() => {
+          reject(new Error(`Query timed out after ${timeoutMs}ms`));
+        }, timeoutMs);
+      });
+
+      try {
+        const result = await Promise.race([promise, timeoutPromise]);
+        clearTimeout(timeout!);
+        return result;
+      } catch (error) {
+        clearTimeout(timeout!);
+        throw error;
+      }
+    };
+
+    // Fetch last price data with optimized query and timeout
+    const lastPricePromise = supabase
       .from("instruments_status")
       .select("last, timestamp, instrument_name")
       .eq("instrument_name", instrumentName)
       .order("timestamp", { ascending: false })
       .limit(1);
 
+    const { data: lastPriceData, error: lastPriceError } =
+      await fetchWithTimeout(
+        lastPricePromise,
+        PRICE_CACHE_CONFIG.QUERY_TIMEOUT,
+      );
+
     if (lastPriceError) {
       console.error(`Supabase error for ${instrumentName}:`, lastPriceError);
 
       // Try to serve stale data rather than failing completely
-      if (cache[instrumentName]) {
+      if (canUseStaleCache) {
         console.log(`Serving stale cache for ${instrumentName} due to error`);
         return NextResponse.json({
-          ...cache[instrumentName].data,
+          ...priceCache[instrumentName].data,
           source: "stale-cache",
+          cacheAge: now - priceCache[instrumentName].fetchedAt,
         });
       }
 
@@ -88,13 +116,14 @@ export async function GET(request: Request) {
       console.log(`No price data found for ${instrumentName}`);
 
       // Try to serve stale data rather than returning nothing
-      if (cache[instrumentName]) {
+      if (canUseStaleCache) {
         console.log(
           `Serving stale cache for ${instrumentName} due to empty result`,
         );
         return NextResponse.json({
-          ...cache[instrumentName].data,
+          ...priceCache[instrumentName].data,
           source: "stale-cache",
+          cacheAge: now - priceCache[instrumentName].fetchedAt,
         });
       }
 
@@ -107,9 +136,12 @@ export async function GET(request: Request) {
     // Fetch historical price data
     let priceHistory: number[] = [];
 
-    if (cache[instrumentName] && cache[instrumentName].data.priceHistory) {
-      // Use existing history and append new price
-      priceHistory = [...cache[instrumentName].data.priceHistory];
+    // Use existing history if available and append new price
+    if (
+      priceCache[instrumentName] &&
+      priceCache[instrumentName].data.priceHistory
+    ) {
+      priceHistory = [...priceCache[instrumentName].data.priceHistory];
 
       // Only add if the price is different from the last one
       if (
@@ -119,50 +151,76 @@ export async function GET(request: Request) {
         priceHistory.push(lastPriceData[0].last);
         // Keep only the latest N prices
         if (priceHistory.length > historySize) {
-          priceHistory.shift();
+          priceHistory = priceHistory.slice(-historySize);
         }
       }
     } else {
       // Fetch historical prices from database when cache is empty
-      const { data: historyData, error: historyError } = await supabase
-        .from("instruments_status")
-        .select("last")
-        .eq("instrument_name", instrumentName)
-        .order("timestamp", { ascending: false })
-        .limit(historySize);
+      try {
+        const historyPromise = supabase
+          .from("instruments_status")
+          .select("last, timestamp")
+          .eq("instrument_name", instrumentName)
+          .order("timestamp", { ascending: false })
+          .limit(historySize);
 
-      if (!historyError && historyData && historyData.length > 0) {
-        // Reverse to get chronological order
-        priceHistory = historyData.map((item) => item.last).reverse();
-      } else {
-        // Fallback to single price point if history fetch fails
+        const { data: historyData, error: historyError } =
+          await fetchWithTimeout(
+            historyPromise,
+            PRICE_CACHE_CONFIG.QUERY_TIMEOUT,
+          );
+
+        if (!historyError && historyData && historyData.length > 0) {
+          // Filter out null values and reverse to get chronological order
+          priceHistory = historyData
+            .filter((item) => item.last !== null)
+            .map((item) => item.last)
+            .reverse();
+        } else {
+          // Fallback to single price point if history fetch fails
+          priceHistory = [lastPriceData[0].last];
+          console.warn(
+            `Failed to fetch history for ${instrumentName}, using single price point`,
+          );
+        }
+      } catch (historyError) {
+        // On history fetch error, use single price point
+        console.error(
+          `Error fetching history for ${instrumentName}:`,
+          historyError,
+        );
         priceHistory = [lastPriceData[0].last];
       }
     }
 
     // Add price history to the response
-    lastPriceData[0].priceHistory = priceHistory;
+    const result = {
+      ...lastPriceData[0],
+      priceHistory,
+    };
 
     // Update cache
-    cache[instrumentName] = {
-      data: lastPriceData[0],
+    priceCache[instrumentName] = {
+      data: result,
       fetchedAt: now,
     };
 
     // Return the result
     return NextResponse.json({
-      ...lastPriceData[0],
+      ...result,
       source: "supabase",
     });
   } catch (error: any) {
     console.error(`Error fetching price for ${instrumentName}:`, error);
 
     // Try to serve stale data in case of errors
-    if (cache[instrumentName]) {
+    if (canUseStaleCache) {
       console.log(`Serving stale cache for ${instrumentName} due to error`);
       return NextResponse.json({
-        ...cache[instrumentName].data,
+        ...priceCache[instrumentName].data,
         source: "stale-cache",
+        cacheAge: now - priceCache[instrumentName].fetchedAt,
+        error: error.message,
       });
     }
 
