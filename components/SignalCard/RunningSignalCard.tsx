@@ -164,7 +164,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
                   ) : (
                     <ArrowDown className="h-5 w-5" />
                   )}
-                  <span className="text-xl">{trade_side}</span>
+                  <span className="md:text-lg">{trade_side}</span>
                 </Badge>
                 {/* Time info */}
                 <div className="mb-4 flex items-center gap-1.5 text-xs text-slate-400">
