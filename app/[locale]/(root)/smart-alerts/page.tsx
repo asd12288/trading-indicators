@@ -1,3 +1,4 @@
+
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
 import { Metadata } from "next";

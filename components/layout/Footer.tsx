@@ -1,13 +1,9 @@
+"use client";
+
 import { useTranslations } from "next-intl";
-import {
-  Mail,
-  Twitter,
-  Facebook,
-  Instagram,
-  Globe,
-  MapPin,
-} from "lucide-react";
+import { Mail, Facebook, Instagram, MapPin } from "lucide-react";
 import { Link } from "@/i18n/routing";
+import ShareButtons from "../ShareButtons";
 
 const Footer = () => {
   const t = useTranslations("Footer");
@@ -42,7 +38,7 @@ const Footer = () => {
             >
               <Mail size={18} />
             </a>
-            
+
             <a
               href="https://facebook.com"
               className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-slate-300 transition-all hover:bg-slate-700 hover:text-white"
@@ -61,6 +57,8 @@ const Footer = () => {
             >
               <Instagram size={18} />
             </a>
+
+           
           </div>
         </div>
 
@@ -68,14 +66,6 @@ const Footer = () => {
           <div>
             <h3 className="mb-4 text-lg font-semibold text-white">Company</h3>
             <ul className="space-y-3">
-              {/* <li>
-                <Link
-                  href="/about-us"
-                  className="hover:text-primary text-slate-300 transition-colors"
-                >
-                  About Us
-                </Link>
-              </li> */}
               <li>
                 <Link
                   href="/contact"
@@ -98,14 +88,6 @@ const Footer = () => {
           <div>
             <h3 className="mb-4 text-lg font-semibold text-white">Resources</h3>
             <ul className="space-y-3">
-              {/* <li>
-                <Link
-                  href="/docs/getting-started"
-                  className="hover:text-primary text-slate-300 transition-colors"
-                >
-                  Documentation
-                </Link>
-              </li> */}
               <li>
                 <Link
                   href="/blogs"

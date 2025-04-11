@@ -1,26 +1,23 @@
 "use client";
 
+import { useTheme } from "@/context/theme-context";
+import useInstrumentInfo from "@/hooks/useInstrumentInfo";
+import { getInstrumentCategory } from "@/lib/instrumentCategories"; // Import the function
 import { Signal } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { format, parseISO } from "date-fns";
-import { useTranslations } from "next-intl";
 import {
-  ArrowUp,
   ArrowDown,
+  ArrowUp,
+  Award,
   CalendarClock,
-  TrendingDown,
   DollarSign,
   InfoIcon,
   RefreshCw,
-  Award,
-  ShieldAlert,
-  ShieldCheck,
   Star,
+  TrendingDown
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
-import useInstrumentInfo from "@/hooks/useInstrumentInfo";
-import { Badge } from "../ui/badge";
-import { getInstrumentCategory } from "@/lib/instrumentCategories"; // Import the function
+import { useTranslations } from "next-intl";
 
 interface FufilledSignalCardProps {
   instrument: Signal;
@@ -150,14 +147,14 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
   // Calculate risk/reward ratio for trade quality badge
   const riskRewardRatio = maeTicks > 0 ? mfeTicks / maeTicks : mfeTicks;
 
-  // Determine trade quality based on risk/reward ratio - only show for exceptional trades
+  // Determine trade quality based on risk/reward ratio - show for all trades
   let tradeQuality: {
     label: string;
     icon: React.ReactNode;
     color: string;
     bgColor: string;
     borderColor: string;
-  } | null = null;
+  };
 
   if (riskRewardRatio >= 4) {
     tradeQuality = {
@@ -175,8 +172,16 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
       bgColor: "bg-emerald-900/20",
       borderColor: "border-emerald-500/40",
     };
+  } else {
+    // Default badge for standard trades
+    tradeQuality = {
+      label: "Standard Trade",
+      icon: <RefreshCw className="h-3.5 w-3.5" />,
+      color: "text-slate-400",
+      bgColor: "bg-slate-800/30",
+      borderColor: "border-slate-500/30",
+    };
   }
-  // No badge for average or high-risk trades
 
   return (
     <div className="h-full">
@@ -240,24 +245,22 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
 
           {/* Trade quality badge - only shown for high quality trades */}
           <div className="mb-4 flex flex-wrap items-center gap-2">
-            {tradeQuality && (
-              <div
-                className={cn(
-                  "flex items-center gap-1 rounded-md border px-2 py-1",
-                  tradeQuality.borderColor,
-                  tradeQuality.bgColor,
-                  tradeQuality.color,
-                )}
-              >
-                {tradeQuality.icon}
-                <span className="text-xs font-medium">
-                  {tradeQuality.label}
-                </span>
-                <span className="ml-1 text-xs opacity-80">
-                  ({riskRewardRatio.toFixed(1)}x)
-                </span>
-              </div>
-            )}
+            <div
+              className={cn(
+                "flex items-center gap-1 rounded-md border px-2 py-1",
+                tradeQuality.borderColor,
+                tradeQuality.bgColor,
+                tradeQuality.color,
+              )}
+            >
+              {tradeQuality.icon}
+              <span className="text-xs font-medium">
+                {tradeQuality.label}
+              </span>
+              <span className="ml-1 text-xs opacity-80">
+                ({riskRewardRatio.toFixed(1)}x)
+              </span>
+            </div>
 
             {/* Warning badge for limited data */}
             {!hasCompleteInstrumentInfo && (
