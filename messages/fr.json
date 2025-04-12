@@ -110,6 +110,20 @@
       }
     }
   },
+  "BestTrades": {
+    "title": "LES MEILLEURES OPPORTUNITÉS DU JOUR",
+    "subtitle": "Signaux principaux avec le plus fort potentiel de profit",
+    "loading": "Recherche des meilleures opportunités du jour...",
+    "noData": "Les meilleures transactions apparaîtront ici bientôt",
+    "topPotential": "Classé par profit",
+    "noTradesTitle": "Aucune transaction complétée aujourd'hui",
+    "long": "ACHAT",
+    "short": "VENTE",
+    "potentialProfit": "Profit potentiel",
+    "pips": "pips",
+    "ticks": "ticks"
+  },
+
   "HomePage": {
     "hero": {
       "rating": "⭐⭐⭐⭐⭐",

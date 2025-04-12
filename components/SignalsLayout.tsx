@@ -1,13 +1,11 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
-import React from "react";
-import { useTranslations } from "next-intl";
-import { Info } from "lucide-react";
 import { motion } from "framer-motion";
-import AlertNotification from "./AlertNotification";
+import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import SignalsList from "./SignalCard/SignalsList";
-import EconomicCalendar from "./EconomicCalendar";
+import BestTrades from "./BestTrades";
 
 const SignalsLayout = ({ userId }) => {
   const t = useTranslations("Signals");
@@ -39,7 +37,7 @@ const SignalsLayout = ({ userId }) => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <AlertNotification userId={userId} />
+          <BestTrades userId={userId} />
         </motion.div>
 
         <motion.div

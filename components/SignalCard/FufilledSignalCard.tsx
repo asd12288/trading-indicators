@@ -15,7 +15,7 @@ import {
   InfoIcon,
   RefreshCw,
   Star,
-  TrendingDown
+  TrendingDown,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -254,9 +254,7 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
               )}
             >
               {tradeQuality.icon}
-              <span className="text-xs font-medium">
-                {tradeQuality.label}
-              </span>
+              <span className="text-xs font-medium">{tradeQuality.label}</span>
               <span className="ml-1 text-xs opacity-80">
                 ({riskRewardRatio.toFixed(1)}x)
               </span>

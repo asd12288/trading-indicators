@@ -1005,6 +1005,19 @@
     "readFullStory": "Read full story",
     "externalLink": "External link"
   },
+  "BestTrades": {
+    "title": "TODAY'S BEST OPPORTUNITIES",
+    "subtitle": "Top signals with highest profit potential",
+    "loading": "Discovering today's best trades...",
+    "noData": "Best trades will appear here soon",
+    "topPotential": "Ranked by profit",
+    "noTradesTitle": "No completed trades today",
+    "long": "LONG",
+    "short": "SHORT",
+    "potentialProfit": "Potential profit",
+    "pips": "pips",
+    "ticks": "ticks"
+  },
   "BlurOverlay": {
     "title": "Upgrade to Pro",
     "description": "This premium feature helps you make better trading decisions and maximize your profits.",
