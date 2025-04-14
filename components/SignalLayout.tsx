@@ -11,16 +11,15 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Activity, ArrowLeft, Eye, Info, Lock, Newspaper } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { notFound, useRouter } from "next/navigation";
-import { useState } from "react";
+import { notFound, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import AlertNotification from "./AlertNotification";
 import BlurOverlay from "./BlurOverlay";
 import InstrumentStatusCard from "./InstrumentStatusCard";
 import SignalLayoutLoader from "./loaders/SignalLayoutLoader";
-import SignalInfo from "./SignalInfo";
-import SignalLatestNews from "./SignalLatestNews";
 import SignalCard from "./SignalCard/SignalCard";
 import SignalHoursInfo from "./SignalHoursInfo";
+import SignalInfo from "./SignalInfo";
 import TradingViewNewsWidget from "./TradingViewNewsWidget";
 
 // Tab type definition
@@ -38,20 +37,49 @@ const SignalLayout = ({ id, userId, isPro }) => {
     useInstrumentData(id);
   const t = useTranslations("SignalLayout");
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Get the trade_id from URL if present
+  const tradeId = searchParams.get("trade_id");
+
+  // State to hold the selected signal
+  const [selectedSignal, setSelectedSignal] = useState(null);
 
   // Tab state management
   const [activeTab, setActiveTab] = useState("overview");
-  // Remove the market status state since it's now handled in the SignalCard
 
   const instrumentName = instrumentData[0]?.instrument_name;
 
-  // Remove the market status check effect
+  // Effect to find the specific trade by ID when data is loaded
+  useEffect(() => {
+    if (!loadingInstrumentData && instrumentData && instrumentData.length > 0) {
+      if (tradeId) {
+        // Find the specific trade if trade_id is in the URL
+        const foundSignal = instrumentData.find(
+          (signal) =>
+            String(signal.id) === tradeId ||
+            String(signal.client_trade_id) === tradeId,
+        );
+
+        if (foundSignal) {
+          setSelectedSignal(foundSignal);
+        } else {
+          // If not found, default to the latest signal
+          setSelectedSignal(instrumentData[0]);
+        }
+      } else {
+        // Default to latest signal if no trade_id specified
+        setSelectedSignal(instrumentData[0]);
+      }
+    }
+  }, [loadingInstrumentData, instrumentData, tradeId]);
 
   if (isLoading || loadingInstrumentData || !profile) {
     return <SignalLayoutLoader />;
   }
 
-  const lastSignal = instrumentData?.[0] || null;
+  // Use the selected signal or fall back to the latest one
+  const lastSignal = selectedSignal || instrumentData?.[0] || null;
 
   if (!lastSignal) {
     notFound();
@@ -117,6 +145,11 @@ const SignalLayout = ({ id, userId, isPro }) => {
           >
             {t("signal")}{" "}
             <span className="text-primary font-semibold">{id}</span>
+            {tradeId && (
+              <span className="ml-2 text-sm text-slate-400">
+                (Trade ID: {tradeId.substring(0, 6)}...)
+              </span>
+            )}
           </h2>
           <div className="ml-4"></div>
         </div>
@@ -202,21 +235,32 @@ const SignalLayout = ({ id, userId, isPro }) => {
               >
                 {/* Reduced padding */}
                 <div className="p-4">
-                  <div className="mb-3 flex items-center">
-                    <div
-                      className={cn(
-                        "mr-2 h-3 w-3 rounded-full",
-                        theme === "dark" ? "bg-blue-400" : "bg-blue-500",
-                      )}
-                    ></div>
-                    <h3
-                      className={cn(
-                        "text-sm font-medium uppercase tracking-wider",
-                        theme === "dark" ? "text-slate-300" : "text-slate-700",
-                      )}
-                    >
-                      {t("signalStatusTitle")}
-                    </h3>
+                  <div className="mb-3 flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div
+                        className={cn(
+                          "mr-2 h-3 w-3 rounded-full",
+                          theme === "dark" ? "bg-blue-400" : "bg-blue-500",
+                        )}
+                      ></div>
+                      <h3
+                        className={cn(
+                          "text-sm font-medium uppercase tracking-wider",
+                          theme === "dark"
+                            ? "text-slate-300"
+                            : "text-slate-700",
+                        )}
+                      >
+                        {t("signalStatusTitle")}
+                      </h3>
+                    </div>
+
+                    {/* Show indicator when viewing a specific trade */}
+                    {tradeId && (
+                      <div className="rounded bg-blue-900/20 px-2 py-1 text-xs text-blue-400">
+                        Viewing specific trade
+                      </div>
+                    )}
                   </div>
 
                   <SignalCard signalPassed={lastSignal} />
@@ -315,7 +359,10 @@ const SignalLayout = ({ id, userId, isPro }) => {
               )}
             >
               <div>
-                <SignalTable allSignal={instrumentData} />
+                <SignalTable
+                  allSignal={instrumentData}
+                  highlightTradeId={tradeId}
+                />
               </div>
             </div>
 

@@ -10,7 +10,10 @@ type PreferencesMap = Record<
   { notifications: boolean; volume: boolean }
 >;
 
-const useSignals = (preferences: PreferencesMap = {}) => {
+const useSignals = (
+  preferences: PreferencesMap = {},
+  allSignals: boolean = false,
+) => {
   const [signals, setSignals] = useState<Signal[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,12 +28,25 @@ const useSignals = (preferences: PreferencesMap = {}) => {
     setLastFetch(now);
     setIsLoading(true);
     try {
-      // Optimize the query by getting the server to do more work
-      // This uses a custom PostgreSQL view/function that returns only the latest signal per instrument
-      const { data, error } = await supabaseClient
-        .from("latest_signals_per_instrument") // Assuming this view exists or can be created
-        .select("*")
-        .order("entry_time", { ascending: false });
+      // Choose data source based on allSignals parameter
+      let query;
+
+      if (allSignals) {
+        // Get all signals for things like best trades view
+        query = supabaseClient
+          .from("all_signals")
+          .select("*")
+          .order("entry_time", { ascending: false })
+          .limit(100); // Reasonable limit to prevent loading too much data
+      } else {
+        // Default behavior - get latest signal per instrument
+        query = supabaseClient
+          .from("latest_signals_per_instrument")
+          .select("*")
+          .order("entry_time", { ascending: false });
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         console.error("Error fetching signals:", error);
@@ -48,7 +64,7 @@ const useSignals = (preferences: PreferencesMap = {}) => {
     } finally {
       setIsLoading(false);
     }
-  }, [lastFetch]);
+  }, [lastFetch, allSignals]);
 
   // Handle real-time updates more efficiently
   const handleRealtimeUpdate = useCallback(
@@ -72,28 +88,41 @@ const useSignals = (preferences: PreferencesMap = {}) => {
 
         console.log(updatedSignal);
 
-        // Using immutable update patterns for better performance
-        if (payload.eventType === "INSERT") {
-          return [
-            updatedSignal,
-            ...current.filter(
-              (s) => s.instrument_name !== updatedSignal.instrument_name,
-            ),
-          ];
-        } else if (payload.eventType === "UPDATE") {
-          return current.map((signal) =>
-            signal.instrument_name === updatedSignal.instrument_name
-              ? updatedSignal
-              : signal,
-          );
-        } else if (payload.eventType === "DELETE") {
-          return current.filter((s) => s.id !== payload.old.id);
+        // When showing all signals, just append new ones
+        if (allSignals) {
+          if (payload.eventType === "INSERT") {
+            return [updatedSignal, ...current];
+          } else if (payload.eventType === "UPDATE") {
+            return current.map((signal) =>
+              signal.id === updatedSignal.id ? updatedSignal : signal,
+            );
+          } else if (payload.eventType === "DELETE") {
+            return current.filter((s) => s.id !== payload.old.id);
+          }
+        } else {
+          // Original behavior for latest signals per instrument
+          if (payload.eventType === "INSERT") {
+            return [
+              updatedSignal,
+              ...current.filter(
+                (s) => s.instrument_name !== updatedSignal.instrument_name,
+              ),
+            ];
+          } else if (payload.eventType === "UPDATE") {
+            return current.map((signal) =>
+              signal.instrument_name === updatedSignal.instrument_name
+                ? updatedSignal
+                : signal,
+            );
+          } else if (payload.eventType === "DELETE") {
+            return current.filter((s) => s.id !== payload.old.id);
+          }
         }
 
         return current;
       });
     },
-    [preferences],
+    [preferences, allSignals],
   );
 
   useEffect(() => {

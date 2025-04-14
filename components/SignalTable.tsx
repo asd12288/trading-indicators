@@ -13,8 +13,9 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 import { getInstrumentCategory } from "@/lib/instrumentCategories";
+import { cn } from "@/lib/utils";
 
-const SignalTable = ({ allSignal }) => {
+const SignalTable = ({ allSignal, highlightTradeId }) => {
   const t = useTranslations("SignalTable");
   const [tableData, setTableData] = useState([]);
   const [summary, setSummary] = useState({
@@ -56,6 +57,12 @@ const SignalTable = ({ allSignal }) => {
       const isForex = instrumentCategory === "forex";
       const measurementUnit = isForex ? "pips" : "ticks";
 
+      // Check if this trade should be highlighted
+      const isHighlighted =
+        highlightTradeId &&
+        (String(trade.id) === highlightTradeId ||
+          String(trade.client_trade_id) === highlightTradeId);
+
       return {
         ...trade,
         entry_price: entryPrice,
@@ -65,6 +72,7 @@ const SignalTable = ({ allSignal }) => {
         trade_duration: tradeDuration,
         isForex,
         measurementUnit,
+        isHighlighted, // Add highlight flag
       };
     });
 
@@ -88,7 +96,7 @@ const SignalTable = ({ allSignal }) => {
       avgMFE: Number(avgMFE.toFixed(2)),
       avgMAE: Number(avgMAE.toFixed(2)), // Store avgMAE
     });
-  }, [allSignal]);
+  }, [allSignal, highlightTradeId]);
 
   const StatCard = ({ label, value, icon, color, tooltip }) => (
     <TooltipProvider>
@@ -117,6 +125,9 @@ const SignalTable = ({ allSignal }) => {
     </TooltipProvider>
   );
 
+  // Find if we have a highlighted trade and its info
+  const highlightedTrade = tableData.find((trade) => trade.isHighlighted);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -135,6 +146,21 @@ const SignalTable = ({ allSignal }) => {
             <p className="text-slate-400">{t("subTitle")}</p>
           </div>
         </div>
+
+        {/* Show highlighted trade info if present */}
+        {highlightedTrade && (
+          <div className="flex items-center rounded-lg border border-blue-500/30 bg-blue-900/20 px-3 py-1">
+            <span className="mr-2 text-sm text-blue-400">Selected Trade:</span>
+            <span className="font-medium text-blue-300">
+              {new Date(highlightedTrade.entry_time).toLocaleString(undefined, {
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Stats Cards */}
@@ -179,7 +205,11 @@ const SignalTable = ({ allSignal }) => {
       {/* Table */}
       <div className="overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/80 shadow-lg">
         <div className="min-h-[550px] overflow-x-auto p-4">
-          <DataTableTrades data={tableData} columns={tradeSummaryColumns} />
+          <DataTableTrades
+            data={tableData}
+            columns={tradeSummaryColumns}
+            highlightTradeId={highlightTradeId}
+          />
         </div>
       </div>
     </motion.div>
