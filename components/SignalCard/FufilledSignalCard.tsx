@@ -18,19 +18,26 @@ import {
   TrendingDown,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
+import { NotificationService } from "@/lib/notification-service";
+import { useSession } from "@/hooks/use-session";
 
 interface FufilledSignalCardProps {
   instrument: Signal;
   isBuy: boolean;
+  notifyUser?: boolean;
 }
 
 const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
   instrument,
   isBuy,
+  notifyUser = false,
 }) => {
   const { theme } = useTheme();
   const { instrument_name, trade_side, entry_price, entry_time, mae, mfe } =
     instrument;
+  const { session } = useSession();
+  const userId = session?.user?.id;
 
   // Get instrument information
   const { instrumentInfo, loading, error } = useInstrumentInfo(instrument_name);
@@ -182,6 +189,45 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
       borderColor: "border-slate-500/30",
     };
   }
+
+  // Send notification when signal completes with significant potential profit
+  useEffect(() => {
+    // Only send notification if explicitly requested and user is logged in
+    if (notifyUser && userId && mfeTicks > 0) {
+      const sendNotification = async () => {
+        try {
+          await NotificationService.notifySignalCompleted(
+            userId,
+            instrument_name,
+            mfeTicks,
+          );
+
+          // For exceptional trades, send an additional notification
+          if (riskRewardRatio >= 4 && mfeDollarValue > 100) {
+            await NotificationService.notifyHighPotentialSignal(
+              userId,
+              instrument_name,
+              mfeTicks,
+            );
+          }
+        } catch (error) {
+          console.error(
+            "Failed to send signal completion notification:",
+            error,
+          );
+        }
+      };
+
+      sendNotification();
+    }
+  }, [
+    notifyUser,
+    userId,
+    instrument_name,
+    mfeTicks,
+    riskRewardRatio,
+    mfeDollarValue,
+  ]);
 
   return (
     <div className="h-full">

@@ -1533,5 +1533,26 @@
     "nextSession": "Next Session",
     "session": "Session",
     "startsIn": "Starts in"
+  },
+  "NotificationPreferences": {
+    "title": "Notification Preferences",
+    "description": "Customize which notifications you want to receive",
+    "allNotifications": "All Notifications",
+    "tradingNotifications": "Trading Notifications",
+    "otherNotifications": "Other Notifications",
+    "tradingSignals": "Trading Signals",
+    "priceBreakouts": "Price Breakouts",
+    "volatilityAlerts": "Volatility Alerts",
+    "patternAlerts": "Chart Pattern Alerts",
+    "economicEvents": "Economic Calendar Events",
+    "subscriptionReminders": "Subscription Reminders",
+    "performanceMilestones": "Performance Milestones",
+    "riskAlerts": "Risk Level Alerts",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "saveSuccess": "Preferences Saved",
+    "saveSuccessMessage": "Your notification preferences have been updated successfully.",
+    "saveError": "Save Failed",
+    "saveErrorMessage": "Failed to save your preferences. Please try again."
   }
 }

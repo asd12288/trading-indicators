@@ -212,13 +212,16 @@ export function useNotifications(passedUserId?: string) {
     if (!userId) return;
 
     try {
-      // Create a unique channel name to avoid conflicts
-      const channelName = `notifications-${userId}-${Date.now()}`;
-      console.log(`[useNotifications] Setting up channel: ${channelName}`);
+      // Create unique channel names for each subscription type
+      const notificationChannel = `notifications-${userId}-${Date.now()}`;
+      const signalsChannel = `signals-${userId}-${Date.now()}`;
+      const statusChannel = `status-${userId}-${Date.now()}`;
 
-      // 1. Subscription to notifications table
+      console.log(`[useNotifications] Setting up channels`);
+
+      // 1. Main notifications subscription
       const notificationsSubscription = supabaseClient
-        .channel(channelName)
+        .channel(notificationChannel)
         .on(
           "postgres_changes",
           {
@@ -227,16 +230,16 @@ export function useNotifications(passedUserId?: string) {
             table: "notifications",
             filter: `user_id=eq.${userId}`,
           },
-          (payload) => {
+          async (payload) => {
             console.log(
-              `[useNotifications] Received real-time event:`,
+              `[useNotifications] Received notification event:`,
               payload.eventType,
+              payload
             );
 
             if (payload.eventType === "INSERT") {
-              // Add new notification to state
               const newNotification = payload.new as any;
-
+              
               // Transform to match interface
               const notification: Notification = {
                 id: newNotification.id,
@@ -244,25 +247,18 @@ export function useNotifications(passedUserId?: string) {
                 title: newNotification.title,
                 message: newNotification.message,
                 timestamp: newNotification.created_at,
-                read: newNotification.read || false, // Ensure read status is properly set
+                read: newNotification.read || false,
                 link: newNotification.link,
                 data: newNotification.additional_data,
               };
 
-              console.log(
-                `[useNotifications] Adding new notification:`,
-                notification,
-              );
-
-              // Play sound with better error handling using the new playSound function
-              playSound();
+              setNotifications((prev) => [notification, ...prev]);
+              
+              // Play sound for new notifications
+              if (soundEnabledRef.current) {
+                playSound();
+              }
             } else if (payload.eventType === "UPDATE") {
-              // Update existing notification
-              console.log(
-                `[useNotifications] Updating notification:`,
-                payload.new.id,
-              );
-
               setNotifications((prev) =>
                 prev.map((n) =>
                   n.id === payload.new.id
@@ -272,30 +268,21 @@ export function useNotifications(passedUserId?: string) {
                         message: payload.new.message,
                         read: payload.new.read,
                       }
-                    : n,
-                ),
+                    : n
+                )
               );
             } else if (payload.eventType === "DELETE") {
-              // Remove deleted notification
-              console.log(
-                `[useNotifications] Removing notification:`,
-                payload.old.id,
-              );
-
               setNotifications((prev) =>
-                prev.filter((n) => n.id !== payload.old.id),
+                prev.filter((n) => n.id !== payload.old.id)
               );
             }
-          },
+          }
         )
-        .subscribe((status) => {
-          console.log(`[useNotifications] Subscription status:`, status);
-        });
+        .subscribe();
 
-      // 2. Generate notifications from signals
-      // Similar pattern to useSignals but creating notifications instead
+      // 2. Signal notifications subscription
       const signalsSubscription = supabaseClient
-        .channel("signals_notification_generator")
+        .channel(signalsChannel)
         .on(
           "postgres_changes",
           {
@@ -304,40 +291,31 @@ export function useNotifications(passedUserId?: string) {
             table: "all_signals",
           },
           async (payload) => {
-            // Generate a notification for important signals
-            // This pattern is similar to what's in useSignals
             const signal = payload.new as any;
-
-            if (signal && signal.importance === "high") {
-              try {
-                // Create a notification in the notifications table
-                await supabaseClient.from("notifications").insert({
-                  user_id: userId,
-                  type: "signal",
-                  title: `New Signal: ${signal.instrument_name}`,
-                  message: `${signal.signal_type} signal detected at ${signal.price}`,
-                  read: false,
-                  link: `/smart-alerts/${signal.instrument_name}`,
-                  additional_data: {
-                    instrument: signal.instrument_name,
-                    price: signal.price,
-                    signal_type: signal.signal_type,
-                    timestamp: signal.entry_time,
-                  },
-                });
-              } catch (err) {
-                console.error("Failed to create signal notification:", err);
-              }
+            
+            if (signal?.importance === "high") {
+              await supabaseClient.from("notifications").insert({
+                user_id: userId,
+                type: "signal",
+                title: `New Signal: ${signal.instrument_name}`,
+                message: `${signal.signal_type} signal detected at ${signal.price}`,
+                read: false,
+                link: `/signals/${signal.instrument_name}`,
+                additional_data: {
+                  instrument: signal.instrument_name,
+                  price: signal.price,
+                  signal_type: signal.signal_type,
+                  timestamp: signal.entry_time,
+                },
+              });
             }
-          },
+          }
         )
         .subscribe();
 
-      // Remove the alerts notification generator since it's already handled by a component
-
-      // 4. Generate notifications from instrument status changes (inspired by useInstrumentStatus)
+      // 3. Status notifications subscription
       const statusSubscription = supabaseClient
-        .channel("status_notification_generator")
+        .channel(statusChannel)
         .on(
           "postgres_changes",
           {
@@ -347,43 +325,39 @@ export function useNotifications(passedUserId?: string) {
           },
           async (payload) => {
             const status = payload.new as any;
-
-            // Check if this is a significant trend change
-            if (
-              status.trend &&
-              (status.trend === "strongly_bullish" ||
-                status.trend === "strongly_bearish")
-            ) {
-              try {
-                await supabaseClient.from("notifications").insert({
-                  user_id: userId,
-                  type: "system",
-                  title: `Trend Change: ${status.instrument_name}`,
-                  message: `${status.instrument_name} trend has changed to ${status.trend.replace("_", " ")}`,
-                  read: false,
-                  additional_data: {
-                    instrument: status.instrument_name,
-                    trend: status.trend,
-                    timestamp: status.timestamp,
-                  },
-                });
-              } catch (err) {
-                console.error("Failed to create status notification:", err);
-              }
+            
+            if (status?.trend && 
+                (status.trend === "strongly_bullish" || 
+                 status.trend === "strongly_bearish")) {
+              await supabaseClient.from("notifications").insert({
+                user_id: userId,
+                type: "system",
+                title: `Trend Change: ${status.instrument_name}`,
+                message: `${status.instrument_name} trend has changed to ${status.trend.replace(
+                  "_",
+                  " "
+                )}`,
+                read: false,
+                additional_data: {
+                  instrument: status.instrument_name,
+                  trend: status.trend,
+                  timestamp: status.timestamp,
+                },
+              });
             }
-          },
+          }
         )
         .subscribe();
 
+      // Cleanup subscriptions
       return () => {
-        console.log(`[useNotifications] Cleaning up channel: ${channelName}`);
+        console.log("[useNotifications] Cleaning up subscriptions");
         supabaseClient.removeChannel(notificationsSubscription);
         supabaseClient.removeChannel(signalsSubscription);
-        // Remove reference to the alertsSubscription that no longer exists
         supabaseClient.removeChannel(statusSubscription);
       };
     } catch (err) {
-      console.error("Error setting up notification subscriptions:", err);
+      console.error("[useNotifications] Subscription error:", err);
     }
   }, [userId, playSound]);
 

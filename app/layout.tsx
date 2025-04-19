@@ -2,7 +2,12 @@ import { Suspense } from "react";
 import { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
+import { Analytics } from "@vercel/analytics/react"
 import "./globals.css";
+
+// Import the NotificationManagerInitializer component
+import NotificationManagerInitializer from "@/components/NotificationManagerInitializer";
+import SignalNotificationTrigger from "@/components/SignalNotificationTrigger";
 
 export const metadata: Metadata = {
   title: {
@@ -52,7 +57,6 @@ export default async function RootLayout({
         <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
 
         {/* Preload critical fonts */}
-      
       </head>
       <body>
         <NextIntlClientProvider locale={params.locale} messages={messages}>
@@ -63,6 +67,9 @@ export default async function RootLayout({
             <LazyLoadedComponents />
           </Suspense>
         </NextIntlClientProvider>
+        <Analytics />
+
+        {/* Load non-critical scripts */}
       </body>
     </html>
   );
@@ -75,6 +82,10 @@ const LazyLoadedComponents = () => {
       <div id="maintenance-banner-container" data-load-delay="true" />
       <div id="alerts-container" data-load-delay="true" />
       <div id="toaster-container" data-load-delay="true" />
+      {/* Initialize notification system */}
+      <NotificationManagerInitializer />
+      {/* Add Signal Notification Trigger */}
+      <SignalNotificationTrigger />
     </>
   );
 };

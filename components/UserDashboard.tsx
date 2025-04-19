@@ -14,6 +14,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/routing";
+import NotificationPreferencesManager from "./NotificationPreferencesManager";
+import NotificationExample from "./NotificationExample";
 
 const UserDashboard = ({ user }) => {
   const searchParams = useSearchParams();
@@ -158,7 +160,11 @@ const UserDashboard = ({ user }) => {
                   {tab === "password" && <ResetPasswordForm />}
                   {tab === "manage" && <ManageAccount profile={profile} />}
                   {tab === "notification" && (
-                    <TelegramAuth profile={profile} userId={user?.id} />
+                    <div className="space-y-8">
+                      <TelegramAuth profile={profile} userId={user?.id} />
+                      <NotificationPreferencesManager />
+                      <NotificationExample />
+                    </div>
                   )}
                 </motion.div>
               </AnimatePresence>

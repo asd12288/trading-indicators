@@ -4,26 +4,20 @@ import Navbar from "./Navbar";
 export default async function Header() {
   const supabase = await createClient();
 
-  // Get the authenticated user
-  const { data: authData } = await supabase.auth.getUser();
-  const user = authData?.user || null;
+  // Get the server-side session
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user || null;
 
   let profile = null;
-
-  // Only query profile if user exists
   if (user) {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", user.id)
       .single();
 
-    if (error) {
-      console.error("Error fetching profile:", error);
-    } else {
-      profile = data;
-    }
+    profile = data || null;
   }
 
-  return <Navbar user={user} profile={profile} />;
+  return <Navbar serverUser={user} serverProfile={profile} />;
 }

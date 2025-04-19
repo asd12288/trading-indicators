@@ -11,26 +11,36 @@ import { BellIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import NotificationPanel from "./NotificationPanel";
+import useSession from "@/hooks/useSession";
 
-export default function NotificationBell({ userId }: { userId?: string }) {
+export default function NotificationBell() {
+  const { session, isLoading } = useSession();
+  const userId = session?.user?.id;
   const t = useTranslations("Notifications");
   const {
     notifications,
     unreadCount,
     markAllAsRead,
-    loading,
+    loading: notificationsLoading,
     refetch,
     bulkDelete,
   } = useNotifications(userId);
   const [hasPulse, setHasPulse] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   // Handle clearing all notifications
   const handleClearAll = async () => {
     if (!notifications || notifications.length === 0) return;
-
-    // Get all notification IDs
     const notificationIds = notifications.map((n) => n.id);
     await bulkDelete(notificationIds);
+  };
+
+  // Force refresh notifications when dropdown opens
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (open && userId) {
+      refetch();
+    }
   };
 
   // Animate the bell when new notifications arrive
@@ -40,47 +50,39 @@ export default function NotificationBell({ userId }: { userId?: string }) {
       const timer = setTimeout(() => setHasPulse(false), 2000);
       return () => clearTimeout(timer);
     }
-  }, [unreadCount, notifications.length]);
+  }, [unreadCount]);
 
   // Auto-check for new notifications periodically
   useEffect(() => {
     if (!userId) return;
 
+    // Initial fetch
+    refetch();
+
     const intervalId = setInterval(() => {
-      refetch();
-    }, 60000); // Check every minute
+      if (!isOpen) { // Only auto-refresh when dropdown is closed
+        refetch();
+      }
+    }, 30000); // Check every 30 seconds
 
     return () => clearInterval(intervalId);
-  }, [userId, refetch]);
+  }, [userId, refetch, isOpen]);
 
-  // Log notification count changes for debugging
-  useEffect(() => {
-    console.log(`[NotificationBell] Unread count: ${unreadCount}`);
-  }, [unreadCount]);
-
-  // Log notification data for debugging
-  useEffect(() => {
-    if (notifications.length > 0) {
-      console.log("Current notifications:", notifications);
-    }
-  }, [notifications]);
-
-  if (!userId) {
+  // Only show if user is authenticated
+  if (!userId || isLoading) {
     return null;
   }
 
+  // Always render the bell for authenticated users
   return (
-    <DropdownMenu>
+    <DropdownMenu open={isOpen} onOpenChange={handleOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="relative h-8 w-8 p-0" // More compact button
+          className="relative h-8 w-8 p-0"
           aria-label={t("aria.notifications")}
         >
-          <BellIcon
-            className={`h-4 w-4 ${hasPulse ? "animate-pulse text-amber-400" : ""}`}
-          />
-
+          <BellIcon className={hasPulse ? "text-amber-400 animate-pulse" : "text-slate-400 hover:text-slate-300"} />
           {unreadCount > 0 && (
             <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-medium text-white">
               {unreadCount > 99 ? "99+" : unreadCount}
@@ -94,7 +96,7 @@ export default function NotificationBell({ userId }: { userId?: string }) {
       >
         <NotificationPanel
           notifications={notifications}
-          loading={loading}
+          loading={notificationsLoading}
           onMarkAllAsRead={markAllAsRead}
           onClearAll={handleClearAll}
           unreadCount={unreadCount}
