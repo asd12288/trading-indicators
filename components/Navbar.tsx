@@ -5,10 +5,11 @@ import {
   User,
   LogOut,
   Lightbulb,
+  BookOpen,
   LineChart,
   ChevronRight,
 } from "lucide-react";
-import { useEffect, useState, MouseEvent } from "react";
+import { useEffect, useState } from "react";
 import { RxHamburgerMenu, RxCross1 } from "react-icons/rx";
 import LogoutBtn from "./LogoutBtn";
 import UpgradeButton from "./UpgradeButton";
@@ -17,31 +18,9 @@ import { useTranslations } from "next-intl";
 import { useParams, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import NotificationBell from "@/components/NotificationBell";
-import { useAuth } from "@/context/auth-context";
-import { User as SupabaseUser } from "@supabase/supabase-js";
 
-interface UserProfile {
-  id: string;
-  role?: string;
-  plan?: "free" | "pro" | "premium";
-  username?: string;
-  email?: string;
-  created_at?: string;
-  avatar_url?: string;
-  preferences?: Record<string, unknown>;
-}
-
-interface NavbarProps {
-  serverUser: SupabaseUser | null;
-  serverProfile: UserProfile | null;
-}
-
-export default function Navbar({ serverUser, serverProfile }: NavbarProps) {
-  const { user } = useAuth();
-  // Use server data initially, then client data once available
-  const currentUser = user || serverUser;
-  const currentProfile = serverProfile; // Profile is only needed from server
-
+export default function Navbar({ user, profile }) {
+  // State to handle mobile menu toggle
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { locale } = useParams<{ locale: string }>();
   const pathname = usePathname();
@@ -58,15 +37,15 @@ export default function Navbar({ serverUser, serverProfile }: NavbarProps) {
 
     window.addEventListener("click", handleOutsideClick);
     return () => window.removeEventListener("click", handleOutsideClick);
-  }, [pathname, isMobileOpen]);
+  }, [pathname]);
 
   // Prevent clicks inside the menu from closing it
-  const handleMenuClick = (e: MouseEvent) => {
+  const handleMenuClick = (e) => {
     e.stopPropagation();
   };
 
   // Check if a link is active
-  const isActive = (path: string) => {
+  const isActive = (path) => {
     return pathname.startsWith(`/${locale}${path}`);
   };
 
@@ -95,7 +74,7 @@ export default function Navbar({ serverUser, serverProfile }: NavbarProps) {
               }`}
             >
               <LineChart size={18} />
-              {t("signals")}
+              <span>{t("signals")}</span>
             </Link>
 
             <Link
@@ -107,50 +86,65 @@ export default function Navbar({ serverUser, serverProfile }: NavbarProps) {
               }`}
             >
               <Lightbulb size={18} />
-              {t("blog")}
+              <span>{t("blog")}</span>
             </Link>
 
-            <div className="ml-2 flex items-center gap-2">
-              <LanguageSwitcher />
-
-              <div className="mx-3 h-5 w-px bg-slate-700/50"></div>
-
-              <NotificationBell />
-
-              {currentUser ? (
-                <div className="flex items-center gap-3">
-                  <Link
-                    href="/profile"
-                    className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium ${
-                      isActive("/profile")
-                        ? "bg-slate-800 text-blue-400"
-                        : "text-slate-300 hover:bg-slate-800/50 hover:text-white"
-                    }`}
-                  >
-                    <User size={18} />
-                    <span>{t("profile")}</span>
-                  </Link>
-
-                  <UpgradeButton profile={currentProfile} variant="default" />
-
-                  <div className="group flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800/50 hover:text-white">
-                    <LogOut size={18} />
-                    <LogoutBtn locale={locale} />
-                  </div>
-                </div>
-              ) : (
-                <Link href="/login">
-                  <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-                  >
-                    {t("login")}
-                  </motion.button>
-                </Link>
-              )}
-            </div>
+            {profile?.role === "admin" && (
+              <Link
+                href="/admin"
+                className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium ${
+                  isActive("/admin")
+                    ? "bg-slate-800 text-blue-400"
+                    : "text-slate-300 hover:bg-slate-800/50 hover:text-white"
+                }`}
+              >
+                <span>Admin</span>
+              </Link>
+            )}
           </nav>
+
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+
+            <div className="mx-3 h-5 w-px bg-slate-700/50"></div>
+
+            {/* Pass userId to NotificationBell */}
+            <NotificationBell userId={user?.id} />
+
+            {user ? (
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/profile"
+                  className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium ${
+                    isActive("/profile")
+                      ? "bg-slate-800 text-blue-400"
+                      : "text-slate-300 hover:bg-slate-800/50 hover:text-white"
+                  }`}
+                >
+                  <User size={18} />
+                  <span>{t("profile")}</span>
+                </Link>
+
+                {/* Updated UpgradeButton with no wrapper */}
+                <UpgradeButton profile={profile} variant="default" />
+
+                <div className="group flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800/50 hover:text-white">
+                  <LogOut size={18} />
+                  <LogoutBtn locale={locale} />
+                </div>
+              </div>
+            ) : (
+              <Link href="/login">
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                >
+                  {t("login")}
+                </motion.button>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
@@ -165,7 +159,6 @@ export default function Navbar({ serverUser, serverProfile }: NavbarProps) {
 
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
-          <NotificationBell />
 
           {/* Mobile Menu Button */}
           <button
@@ -228,7 +221,7 @@ export default function Navbar({ serverUser, serverProfile }: NavbarProps) {
                 <ChevronRight size={16} className="opacity-50" />
               </Link>
 
-              {currentProfile?.role === "admin" && (
+              {profile?.role === "admin" && (
                 <Link
                   href="/admin"
                   onClick={() => setIsMobileOpen(false)}
@@ -247,7 +240,7 @@ export default function Navbar({ serverUser, serverProfile }: NavbarProps) {
 
               <div className="my-1.5 h-px w-full bg-slate-700/50" />
 
-              {currentUser ? (
+              {user ? (
                 <>
                   <Link
                     href="/profile"
@@ -267,7 +260,7 @@ export default function Navbar({ serverUser, serverProfile }: NavbarProps) {
 
                   {/* Updated UpgradeButton for mobile */}
                   <div className="mt-3 px-1">
-                    <UpgradeButton profile={currentProfile} variant="mobile" />
+                    <UpgradeButton profile={profile} variant="mobile" />
                   </div>
 
                   <div className="px-3 py-2">

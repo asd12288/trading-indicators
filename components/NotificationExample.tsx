@@ -26,21 +26,10 @@ import {
  * This allows you to generate test notifications of each type
  */
 export default function NotificationExample() {
-  const { session, isLoading } = useSession();
+  const { session } = useSession();
   const userId = session?.user?.id;
   const [notificationType, setNotificationType] = useState("signal");
   const [isGenerating, setIsGenerating] = useState(false);
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Loading...</CardTitle>
-          <CardDescription>Checking authentication status</CardDescription>
-        </CardHeader>
-      </Card>
-    );
-  }
 
   if (!userId) {
     return (

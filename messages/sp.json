@@ -845,19 +845,18 @@
     }
   },
   "BestTrades": {
-    "title": "MEJORES OPORTUNIDADES DE HOY",
-    "subtitle": "Señales principales con mayor potencial de beneficio",
-    "loading": "Descubriendo las mejores operaciones del día...",
-    "noData": "Las mejores operaciones aparecerán aquí pronto",
-    "topPotential": "Clasificado por beneficio",
-    "noTradesTitle": "No hay operaciones completadas hoy",
-    "long": "COMPRA",
-    "short": "VENTA",
-    "potentialProfit": "Beneficio potencial",
+    "title": "ÚLTIMAS MEJORES OPORTUNIDADES",
+    "subtitle": "Mejores señales con mayor potencial de ganancia",
+    "loading": "Buscando las mejores operaciones...",
+    "noData": "Las mejores oportunidades aparecerán aquí pronto",
+    "topPotential": "Clasificado por ganancia",
+    "noTradesTitle": "No hay operaciones completadas",
+    "long": "LARGO",
+    "short": "CORTO",
+    "potentialProfit": "Ganancia potencial",
     "pips": "pips",
     "ticks": "ticks"
   },
-
   "SignupForm": {
     "navigation": {
       "backHome": "Volver al inicio"

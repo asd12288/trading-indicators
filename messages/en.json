@@ -1006,12 +1006,12 @@
     "externalLink": "External link"
   },
   "BestTrades": {
-    "title": "TODAY'S BEST OPPORTUNITIES",
+    "title": "LATEST BEST OPPORTUNITIES",
     "subtitle": "Top signals with highest profit potential",
-    "loading": "Discovering today's best trades...",
+    "loading": "Discovering best trades...",
     "noData": "Best trades will appear here soon",
     "topPotential": "Ranked by profit",
-    "noTradesTitle": "No completed trades today",
+    "noTradesTitle": "No completed trades",
     "long": "LONG",
     "short": "SHORT",
     "potentialProfit": "Potential profit",
