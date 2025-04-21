@@ -1,6 +1,5 @@
 "use client";
 
-import useProfile from "@/hooks/useProfile";
 import { useEffect, useState, useRef } from "react";
 import { FaBell, FaCircleUser, FaLock, FaRegMoneyBill1 } from "react-icons/fa6";
 import { useTranslations } from "next-intl";
@@ -16,6 +15,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/routing";
 import NotificationPreferencesManager from "./NotificationPreferencesManager";
 import NotificationExample from "./NotificationExample";
+import supabaseClient from "@/database/supabase/supabase.js";
 
 const UserDashboard = ({ user }) => {
   const searchParams = useSearchParams();
@@ -24,8 +24,38 @@ const UserDashboard = ({ user }) => {
   const t = useTranslations("UserDashboard");
   const mainRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState<string>("auto");
+  
+  // Handle profile loading directly since we get user from props
+  const [profile, setProfile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Fetch profile based on the provided user ID
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user?.id) {
+        setIsLoading(false);
+        return;
+      }
+      
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabaseClient
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .single();
 
-  const { profile, isLoading } = useProfile(user?.id);
+        if (error) throw error;
+        setProfile(data);
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [user?.id]);
 
   useEffect(() => {
     // Handle tab from URL without causing page jumps

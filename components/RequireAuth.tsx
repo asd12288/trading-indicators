@@ -1,19 +1,43 @@
 "use client";
 
-import { usePathname } from "@/i18n/routing";
-// filepath: /c:/Users/ilanc/Desktop/indicators/components/RequireAuth.tsx
-import { useSession, signIn } from "next-auth/react";
-import React from "react";
+import { usePathname, useRouter } from "@/i18n/routing";
+import { useUser } from "@/providers/UserProvider";
+import { useEffect } from "react";
 
-export function RequireAuth({ children }: { children: React.ReactNode }) {
-  const { data: session, status } = useSession();
+interface RequireAuthProps {
+  children: React.ReactNode;
+}
+
+export function RequireAuth({ children }: RequireAuthProps) {
+  const { user, loading } = useUser();
   const pathname = usePathname();
+  const router = useRouter();
+  
+  useEffect(() => {
+    // Only redirect after loading is complete and we know there's no user
+    if (!loading && !user) {
+      // Store the current path for redirect after login
+      router.push(`/login?next=${encodeURIComponent(pathname)}`);
+    }
+  }, [user, loading, pathname, router]);
 
-  if (status === "loading") return <p>Loading...</p>;
-
-  if (!session) {
-    signIn(undefined, { callbackUrl: pathname });
-    return <p>Redirecting to login...</p>;
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-lg">Loading...</p>
+      </div>
+    );
   }
-  return <>{children}</>;
+
+  // If not loading and we have a user, render the children
+  if (!loading && user) {
+    return <>{children}</>;
+  }
+
+  // Otherwise show a loading state while redirecting
+  return (
+    <div className="flex h-screen items-center justify-center">
+      <p className="text-lg">Redirecting to login...</p>
+    </div>
+  );
 }

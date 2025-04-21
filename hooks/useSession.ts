@@ -1,46 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import supabaseClient from "@/database/supabase/supabase";
-import { Session } from "@supabase/supabase-js";
+import { useUser } from "@/providers/UserProvider";
 
+/**
+ * @deprecated Please use useUser() from "@/providers/UserProvider" instead.
+ * This hook provides backward compatibility with existing components.
+ */
 export function useSession() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchSession = async () => {
-      try {
-        setIsLoading(true);
-        const { data, error } = await supabaseClient.auth.getSession();
-
-        if (error) {
-          throw error;
-        }
-
-        setSession(data.session);
-      } catch (err) {
-        console.error("Error fetching session:", err);
-        setError(err instanceof Error ? err.message : "Failed to load session");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchSession();
-
-    const { data: authListener } = supabaseClient.auth.onAuthStateChange(
-      async (_event, session) => {
-        setSession(session);
-      },
-    );
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
-
+  const { session, loading: isLoading, error } = useUser();
   return { session, isLoading, error };
 }
 

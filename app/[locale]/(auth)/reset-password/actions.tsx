@@ -10,6 +10,7 @@ export async function updatePassword(prev, formData) {
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
     locale: formData.get("locale") || "en",
+    noRedirect: formData.get("noRedirect") === "true"
   };
 
   const { error } = await supabase.auth.updateUser({
@@ -23,7 +24,13 @@ export async function updatePassword(prev, formData) {
     };
   }
 
-  if (!error) {
-    redirect({ href: "/profile", locale: data.locale as string });
+  // If noRedirect is true, return success without redirecting
+  if (data.noRedirect) {
+    return {
+      success: true,
+    };
   }
+  
+  // Otherwise, redirect as normal
+  redirect({ href: "/profile", locale: data.locale as string });
 }

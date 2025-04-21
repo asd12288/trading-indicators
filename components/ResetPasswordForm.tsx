@@ -2,7 +2,7 @@
 
 import { updatePassword } from "@/app/[locale]/(auth)/reset-password/actions";
 import { EyeIcon, EyeOffIcon, LockIcon, CheckCircleIcon } from "lucide-react";
-import React, { startTransition, useActionState, useState } from "react";
+import React, { useTransition, useState } from "react";
 import { z } from "zod";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -22,11 +22,10 @@ const ResetPasswordForm = () => {
   const { locale } = useParams();
   const t = useTranslations("ResetPasswordForm");
   const [clientError, setClientError] = useState("");
+  const [serverError, setServerError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [showPassword, setShowPassword] = useState(false);
-  const [state, formAction, isPending] = useActionState(updatePassword, {
-    error: "",
-    success: false,
-  });
 
   const passwordSchema = z
     .object({
@@ -54,13 +53,33 @@ const ResetPasswordForm = () => {
     }
 
     setClientError("");
+    setServerError("");
+    setSuccess(false);
 
-    startTransition(() => {
-      formAction(formData);
+    // Create a modified FormData with a flag to disable redirect
+    const serverFormData = new FormData();
+    serverFormData.append("password", passwordData.password);
+    serverFormData.append("confirmPassword", passwordData.confirmPassword);
+    serverFormData.append("locale", locale as string);
+    serverFormData.append("noRedirect", "true");
+
+    startTransition(async () => {
+      try {
+        // Use the server action which has access to the session
+        const response = await updatePassword(null, serverFormData);
+        
+        if (response?.error) {
+          setServerError(response.error);
+        } else if (response?.success) {
+          setSuccess(true);
+          e.target.reset(); // Clear form on success
+        }
+      } catch (err) {
+        console.error("Error updating password:", err);
+        setServerError("An unexpected error occurred. Please try again.");
+      }
     });
   };
-
-  const { error, success } = state;
 
   return (
     <motion.div
@@ -86,6 +105,7 @@ const ResetPasswordForm = () => {
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-5">
             <input type="hidden" name="locale" value={locale} />
+            <input type="hidden" name="noRedirect" value="true" />
 
             <div className="space-y-2">
               <Label
@@ -149,9 +169,9 @@ const ResetPasswordForm = () => {
               </div>
             )}
 
-            {error && (
+            {serverError && (
               <div className="rounded-md border border-red-800 bg-red-900/20 p-3 text-sm text-red-400">
-                {error}
+                {serverError}
               </div>
             )}
 

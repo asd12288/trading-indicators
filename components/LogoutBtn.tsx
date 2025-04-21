@@ -3,7 +3,9 @@
 import { LogOut } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { useTransition } from "react";
+import { useState } from "react";
+import { useUser } from "@/providers/UserProvider";
+import { useRouter } from "@/i18n/routing";
 import { logout } from "@/app/[locale]/(auth)/login/actions";
 
 interface LogoutBtnProps {
@@ -16,20 +18,29 @@ export default function LogoutBtn({
   fullWidth = false,
 }: LogoutBtnProps) {
   const t = useTranslations("Navbar.links");
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
+  const router = useRouter();
 
-  const handleLogout = () => {
-    startTransition(async () => {
+  const handleLogout = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsPending(true);
+    
+    try {
+      // Use the server action for logout to ensure proper session clearing
       const formData = new FormData();
       formData.append("locale", locale);
       await logout(formData);
-    });
+      
+      // The server action will handle the redirect, but as a fallback:
+      window.location.href = `/${locale}`;
+    } catch (error) {
+      console.error("Logout error:", error);
+      setIsPending(false);
+    }
   };
 
   return (
-    <form action={handleLogout}>
-      <input type="hidden" name="locale" value={locale} />
-
+    <form onSubmit={handleLogout}>
       {fullWidth ? (
         <motion.button
           type="submit"
@@ -47,7 +58,6 @@ export default function LogoutBtn({
       ) : (
         <motion.button
           type="submit"
-          
           whileTap={{ scale: 0.98 }}
           className="flex items-center gap-1.5 rounded px-2.5 py-1 text-sm font-medium text-slate-200 transition-colors  disabled:opacity-70"
           disabled={isPending}
