@@ -23,13 +23,18 @@ interface UsePreferencesReturn {
   notificationsOn: string[];
 }
 
-function usePreferences(userId: string): UsePreferencesReturn {
+// Updated to safely handle empty/null userId
+function usePreferences(userId?: string): UsePreferencesReturn {
   const [preferences, setPreferences] = useState<PreferencesMap>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!userId) return;
+    // Skip fetching if no userId is provided
+    if (!userId) {
+      setIsLoading(false);
+      return;
+    }
 
     const fetchPreferences = async () => {
       setIsLoading(true);
@@ -59,6 +64,14 @@ function usePreferences(userId: string): UsePreferencesReturn {
     signalId: string,
     updatedValues: Partial<PreferenceValues>,
   ) => {
+    // If no userId, can't update preferences
+    if (!userId) {
+      console.error("Cannot update preferences: No user ID provided");
+      return Promise.reject(
+        new Error("User ID is required to update preferences"),
+      );
+    }
+
     try {
       // Get the current signal preference or use defaults
       const currentPreference = preferences[signalId] || {

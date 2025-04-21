@@ -29,39 +29,52 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // Do not run code between createServerClient and
-  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
-  // issues with users being randomly logged out.
-
   // IMPORTANT: DO NOT REMOVE auth.getUser()
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Check if path requires authentication
+  const authRequiredPaths = [
+    "/admin",
+    "/settings",
+    "/profile",
+    "/smart-alerts",
+    '/alerts',
+    "/notifications",
+    "/success"
+    // Add other protected paths here
+  ];
+
+  const pathWithoutLocale = request.nextUrl.pathname.replace(
+    /^\/(sp|en|fr|ru)/,
+    "",
+  );
+  const requiresAuth = authRequiredPaths.some((path) =>
+    pathWithoutLocale.startsWith(path),
+  );
+
   if (
     !user &&
+    requiresAuth &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth")
   ) {
-    // no user, potentially respond by redirecting the user to the login page
+    // Extract locale from URL or default to "en"
+    const urlPathParts = request.nextUrl.pathname.split("/");
+    const locale = ["en", "sp", "fr", "ru"].includes(urlPathParts[1])
+      ? urlPathParts[1]
+      : "en";
+
+    // Clone the URL and modify it to include locale
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    url.pathname = `/${locale}/login`;
+
+    // Add returnUrl as a query parameter
+    url.searchParams.set("returnUrl", request.nextUrl.pathname);
+
     return NextResponse.redirect(url);
   }
-
-  // IMPORTANT: You *must* return the supabaseResponse object as it is.
-  // If you're creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but avoid changing
-  //    the cookies!
-  // 4. Finally:
-  //    return myNewResponse
-  // If this is not done, you may be causing the browser and server to go out
-  // of sync and terminate the user's session prematurely!
 
   return supabaseResponse;
 }

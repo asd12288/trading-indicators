@@ -1,3 +1,5 @@
+"use client";
+
 import { Link } from "@/i18n/routing";
 import { Signal } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -7,7 +9,7 @@ import { useTranslations } from "next-intl";
 import { memo, useCallback, useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import SignalCard from "./SignalCard";
-import { useAuth } from "@/hooks/useAuth";
+import { useUser } from "@/providers/UserProvider";
 
 // Helper function to determine signal status priority
 const getSignalStatusPriority = (signal: Signal): number => {
@@ -33,8 +35,8 @@ interface SignalsGridProps {
 // Create memoized SignalItem to prevent unnecessary re-renders
 const SignalItem = memo(
   ({ signal, viewMode }: { signal: Signal; viewMode: string }) => {
-    // Get current user ID from auth context
-    const { user } = useAuth();
+    // Get current user ID from user provider
+    const { user } = useUser();
 
     return (
       <Link
@@ -54,7 +56,7 @@ const SignalItem = memo(
         >
           <SignalCard
             signalPassed={signal}
-            userId={user?.id} // Pass user ID from auth context
+            userId={user?.id} // Pass user ID from user provider
           />
         </div>
       </Link>
@@ -76,6 +78,7 @@ const SignalsGrid: React.FC<SignalsGridProps> = ({
     "status", // Changed default to "status" to prioritize by signal state
   );
   const t = useTranslations("SignalsGrid");
+  const { user } = useUser();
 
   // Memoize sorted signals to prevent re-sorting on every render
   const sortedSignals = useMemo(() => {

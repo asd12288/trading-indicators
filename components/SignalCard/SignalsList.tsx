@@ -1,23 +1,20 @@
 "use client";
 
 import usePreferences from "@/hooks/usePreferences";
-import useProfile from "@/hooks/useProfile";
 import useSignals from "@/hooks/useSignals";
-import { instrumentCategoryMap } from "@/lib/instrumentCategories";
-import { useMemo, useState, useCallback } from "react";
-import FavoriteSignals from "../FavoriteSignals";
-import LoaderCards from "../loaders/LoaderCards";
-import SignalsFilters from "./SignalsFilters";
-import UpgradePrompt from "../UpgradePrompt";
-import SignalsGrid from "./SignalGrid";
-import { useTranslations } from "next-intl";
-import { motion } from "framer-motion";
-import { Alert, AlertTitle, AlertDescription } from "../ui/alert";
-import { Search, Filter, AlertOctagon } from "lucide-react";
 import { Link } from "@/i18n/routing";
-import { cn } from "@/lib/utils";
-import SignalsDisplay from "../SignalsDisplay";
-import SignalDebugDisplay from "../debug/SignalDebugDisplay";
+import { instrumentCategoryMap } from "@/lib/instrumentCategories";
+import { motion } from "framer-motion";
+import { AlertOctagon, Filter, Search } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useCallback, useMemo, useState } from "react";
+import FavoriteSignals from "../FavoriteSignals";
+import UpgradePrompt from "../UpgradePrompt";
+import LoaderCards from "../loaders/LoaderCards";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import SignalsGrid from "./SignalGrid";
+import SignalsFilters from "./SignalsFilters";
+import { useUser } from "@/providers/UserProvider";
 
 // Helper function to determine signal status priority
 const getSignalStatusPriority = (signal) => {
@@ -35,26 +32,26 @@ const getSignalStatusPriority = (signal) => {
   }
 };
 
-interface SignalsListProps {
-  userId: string;
-}
-
-const SignalsList = ({ userId }: SignalsListProps) => {
+const SignalsList = () => {
   const t = useTranslations("Signals");
   const [searchedSignal, setSearchedSignal] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
+  // Get user data including isPro status from the UserProvider
+  const { user, isPro, loading: userLoading } = useUser();
+
   // Track locally removed favorites
   const [removedFavorites, setRemovedFavorites] = useState<string[]>([]);
 
+  // Only pass userId to hooks if we have one
   const {
     preferences,
     isLoading: isLoadingPrefs,
     error,
     favorites,
-  } = usePreferences(userId);
+  } = usePreferences(user?.id);
+
   const { signals, isLoading: isLoadingSignals } = useSignals(preferences);
-  const { isPro } = useProfile(userId);
 
   // Handle favorite removal to update UI immediately
   const handleFavoriteRemoved = useCallback((instrumentName: string) => {
@@ -97,40 +94,40 @@ const SignalsList = ({ userId }: SignalsListProps) => {
     );
   }, [signals, searchedSignal, selectedCategory]);
 
+  // Only limit signals for non-pro users
   const displaySignals = isPro ? filteredSignals : filteredSignals.slice(0, 5);
+
+  // Filter favorite signals
   const favouriteSignals = useMemo(() => {
-    if (!signals) return [];
+    if (!signals || !favorites) return [];
 
-    return (
-      signals
-        // Filter based on preferences AND local removed state
-        .filter(
-          (signal) =>
-            favorites.includes(signal.instrument_name) &&
-            !removedFavorites.includes(signal.instrument_name),
-        )
-        .sort((a, b) => {
-          // Sort by status priority first
-          const statusCompare =
-            getSignalStatusPriority(a) - getSignalStatusPriority(b);
-          if (statusCompare !== 0) {
-            return statusCompare;
-          }
-
-          // For signals with same status, sort by time (newest first within each category)
-          return (
-            new Date(b.entry_time || new Date()).getTime() -
-            new Date(a.entry_time || new Date()).getTime()
-          );
-        })
-    );
+    return signals
+      .filter(
+        (signal) =>
+          favorites.includes(signal.instrument_name) &&
+          !removedFavorites.includes(signal.instrument_name),
+      )
+      .sort((a, b) => {
+        const statusCompare =
+          getSignalStatusPriority(a) - getSignalStatusPriority(b);
+        if (statusCompare !== 0) {
+          return statusCompare;
+        }
+        return (
+          new Date(b.entry_time || new Date()).getTime() -
+          new Date(a.entry_time || new Date()).getTime()
+        );
+      });
   }, [signals, favorites, removedFavorites]);
 
-  // Instead of early returns, use conditional rendering with content variable
+  // Determine loading state - we're loading if either user or preferences are loading
+  const isLoading = userLoading || isLoadingSignals || isLoadingPrefs;
+
+  // Use conditional rendering with content variable
   let content;
 
-  // Adjust the content rendering with dark theme styling only
-  if (isLoadingSignals || isLoadingPrefs) {
+  // Show loading state
+  if (isLoading) {
     content = (
       <div className="space-y-6">
         <div className="flex animate-pulse items-center justify-between rounded-lg bg-slate-800 p-5">
@@ -140,7 +137,9 @@ const SignalsList = ({ userId }: SignalsListProps) => {
         <LoaderCards />
       </div>
     );
-  } else if (error) {
+  }
+  // Show error state
+  else if (error) {
     content = (
       <Alert
         variant="destructive"
@@ -153,7 +152,9 @@ const SignalsList = ({ userId }: SignalsListProps) => {
         </AlertDescription>
       </Alert>
     );
-  } else {
+  }
+  // Show content state
+  else {
     content = (
       <motion.div
         initial={{ opacity: 0 }}
@@ -161,7 +162,7 @@ const SignalsList = ({ userId }: SignalsListProps) => {
         transition={{ duration: 0.4 }}
         className="space-y-8 p-0 backdrop-blur-sm"
       >
-        {/* Favorites section */}
+        {/* Favorites section - only show if user is pro and has favorites */}
         {isPro && favouriteSignals.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -172,13 +173,13 @@ const SignalsList = ({ userId }: SignalsListProps) => {
             <FavoriteSignals
               favouriteSignals={favouriteSignals}
               isLoading={isLoadingSignals}
-              userId={userId}
-              onFavoriteRemoved={handleFavoriteRemoved} // Add the callback prop
+              userId={user?.id}
+              onFavoriteRemoved={handleFavoriteRemoved}
             />
           </motion.div>
         )}
 
-        {/* PRO upgrade prompt */}
+        {/* PRO upgrade prompt - only show for non-pro users */}
         {!isPro && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -189,7 +190,7 @@ const SignalsList = ({ userId }: SignalsListProps) => {
           </motion.div>
         )}
 
-        {/* Filters section with animation */}
+        {/* Filters section - only show for pro users */}
         {isPro && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}

@@ -18,19 +18,23 @@ export default async function NotificationsPage({ params, searchParams }) {
   const supabase = await createClient();
 
   // Check if the user is authenticated
-  const {
-    data: { session },
-    error,
-  } = await supabase.auth.getSession();
-  if (!session) {
-    redirect(`/login?callbackUrl=/notifications`);
+  const { user } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect(
+      {
+        href: "/login",
+        locale: params.locale,
+      }, // Redirect to login with return URL
+    );
+    // Redirect to login if not authenticated
   }
 
   // Get user profile for personalization
   const { data: profile } = await supabase
     .from("profiles")
     .select("*")
-    .eq("id", session.user.id)
+    .eq("id", user.id)
     .single();
 
   // Parse pagination and filter params
@@ -43,7 +47,7 @@ export default async function NotificationsPage({ params, searchParams }) {
   let query = supabase
     .from("notifications")
     .select("*", { count: "exact", head: true })
-    .eq("user_id", session.user.id);
+    .eq("user_id", user.id);
 
   // Add type filter if needed
   if (filter !== "all") {
@@ -73,7 +77,7 @@ export default async function NotificationsPage({ params, searchParams }) {
         />
 
         <NotificationsClient
-          userId={session.user.id}
+          userId={user.id}
           initialPage={page}
           initialPageSize={pageSize}
           initialFilter={filter}

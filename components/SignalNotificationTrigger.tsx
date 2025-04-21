@@ -4,15 +4,15 @@ import { useEffect } from "react";
 import supabaseClient from "@/database/supabase/supabase";
 import { NotificationService } from "@/lib/notification-service";
 import { toast } from "@/hooks/use-toast";
-import useSession from "@/hooks/useSession";
+import { useUser } from "@/providers/UserProvider";
 
 /**
  * Component that subscribes to new trading signals and creates notifications
  * This is an example implementation to trigger notifications when new signals are created
  */
 export default function SignalNotificationTrigger() {
-  const { session } = useSession();
-  const userId = session?.user?.id;
+  const { user } = useUser();
+  const userId = user?.id;
 
   useEffect(() => {
     // Only subscribe if a user is logged in

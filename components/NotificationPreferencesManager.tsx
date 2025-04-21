@@ -1,505 +1,255 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { useTranslations } from "next-intl";
+} from "./ui/card";
+import { Switch } from "./ui/switch";
+import { Label } from "./ui/label";
+import { Bell, Volume2 } from "lucide-react";
+import { Button } from "./ui/button";
 import supabaseClient from "@/database/supabase/supabase";
-import useSession from "@/hooks/useSession";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { useUser } from "@/providers/UserProvider";
+import { toast } from "@/hooks/use-toast";
 
-/**
- * Component for managing user notification preferences
- */
 export default function NotificationPreferencesManager() {
-  const t = useTranslations("NotificationPreferences");
-  const { toast } = useToast();
-  const { session } = useSession();
-  const userId = session?.user?.id;
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+  const { user } = useUser();
   const [preferences, setPreferences] = useState({
-    trading_signals: true,
-    price_breakouts: true,
-    volatility_alerts: true,
-    pattern_alerts: true,
-    economic_events: true,
-    subscription_reminders: true,
-    performance_milestones: true,
-    risk_alerts: true,
+    email: true,
+    pushNotifications: true,
+    soundAlerts: true,
+    marketUpdates: true,
+    priceAlerts: true,
+    systemAnnouncements: true,
   });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const [allNotifications, setAllNotifications] = useState(true);
-  const [tradingNotifications, setTradingNotifications] = useState(true);
-  const [otherNotifications, setOtherNotifications] = useState(true);
-
-  // Fetch user's notification preferences
   useEffect(() => {
-    async function fetchPreferences() {
-      if (!userId) return;
+    if (!user?.id) return;
 
+    const loadPreferences = async () => {
+      setLoading(true);
       try {
-        setIsLoading(true);
-
-        // Check if the user has preferences
         const { data, error } = await supabaseClient
           .from("notification_preferences")
           .select("*")
-          .eq("user_id", userId)
+          .eq("user_id", user.id)
           .single();
 
-        // Log for debugging
-        console.log("Notification preferences fetch:", { data, error });
+        if (error) throw error;
 
-        // Handle database errors or table not existing
-        if (error) {
-          console.error("Error fetching notification preferences:", error);
-          // Don't get stuck in loading - use default preferences if there's an error
-          setIsLoading(false);
-          return;
-        }
-
-        // If we have data, use it for the preferences
         if (data) {
-          setPreferences(data);
-
-          // Set the group toggles based on the individual preferences
-          const trading =
-            data.trading_signals &&
-            data.price_breakouts &&
-            data.volatility_alerts &&
-            data.pattern_alerts;
-
-          const other =
-            data.economic_events &&
-            data.subscription_reminders &&
-            data.performance_milestones &&
-            data.risk_alerts;
-
-          setTradingNotifications(trading);
-          setOtherNotifications(other);
-          setAllNotifications(trading && other);
-        } else {
-          // If no preferences found, create default ones - but don't wait for the result
-          supabaseClient
-            .from("notification_preferences")
-            .insert({ user_id: userId })
-            .then(({ error: insertError }) => {
-              if (insertError) {
-                console.error(
-                  "Error creating default preferences:",
-                  insertError,
-                );
-              }
-            });
+          setPreferences({
+            email: data.email_notifications ?? true,
+            pushNotifications: data.push_notifications ?? true,
+            soundAlerts: data.sound_alerts ?? true,
+            marketUpdates: data.market_updates ?? true,
+            priceAlerts: data.price_alerts ?? true,
+            systemAnnouncements: data.system_announcements ?? true,
+          });
         }
       } catch (error) {
-        console.error("Error in fetchPreferences:", error);
-        // Don't get stuck in loading if there's an exception
+        console.error("Error loading notification preferences:", error);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
-    }
-
-    fetchPreferences();
-  }, [userId]);
-
-  // Handle toggling all notifications
-  const handleToggleAll = (checked: boolean) => {
-    setAllNotifications(checked);
-    setTradingNotifications(checked);
-    setOtherNotifications(checked);
-
-    setPreferences({
-      trading_signals: checked,
-      price_breakouts: checked,
-      volatility_alerts: checked,
-      pattern_alerts: checked,
-      economic_events: checked,
-      subscription_reminders: checked,
-      performance_milestones: checked,
-      risk_alerts: checked,
-    });
-  };
-
-  // Handle toggling all trading notifications
-  const handleToggleTrading = (checked: boolean) => {
-    setTradingNotifications(checked);
-
-    const newPreferences = {
-      ...preferences,
-      trading_signals: checked,
-      price_breakouts: checked,
-      volatility_alerts: checked,
-      pattern_alerts: checked,
     };
 
-    setPreferences(newPreferences);
+    loadPreferences();
+  }, [user?.id]);
 
-    // Update "all" toggle if needed
-    const otherAllChecked =
-      preferences.economic_events &&
-      preferences.subscription_reminders &&
-      preferences.performance_milestones &&
-      preferences.risk_alerts;
-
-    setAllNotifications(checked && otherAllChecked);
-  };
-
-  // Handle toggling all other notifications
-  const handleToggleOther = (checked: boolean) => {
-    setOtherNotifications(checked);
-
-    const newPreferences = {
-      ...preferences,
-      economic_events: checked,
-      subscription_reminders: checked,
-      performance_milestones: checked,
-      risk_alerts: checked,
-    };
-
-    setPreferences(newPreferences);
-
-    // Update "all" toggle if needed
-    const tradingAllChecked =
-      preferences.trading_signals &&
-      preferences.price_breakouts &&
-      preferences.volatility_alerts &&
-      preferences.pattern_alerts;
-
-    setAllNotifications(checked && tradingAllChecked);
-  };
-
-  // Handle toggling a specific notification type
-  const handleTogglePreference = (key: string, checked: boolean) => {
-    const newPreferences = { ...preferences, [key]: checked };
-    setPreferences(newPreferences);
-
-    // Update group toggles
-    const tradingAllChecked =
-      key === "trading_signals" ? checked : newPreferences.trading_signals;
-    const priceAllChecked =
-      key === "price_breakouts" ? checked : newPreferences.price_breakouts;
-    const volatilityAllChecked =
-      key === "volatility_alerts" ? checked : newPreferences.volatility_alerts;
-    const patternAllChecked =
-      key === "pattern_alerts" ? checked : newPreferences.pattern_alerts;
-
-    const economicAllChecked =
-      key === "economic_events" ? checked : newPreferences.economic_events;
-    const subscriptionAllChecked =
-      key === "subscription_reminders"
-        ? checked
-        : newPreferences.subscription_reminders;
-    const performanceAllChecked =
-      key === "performance_milestones"
-        ? checked
-        : newPreferences.performance_milestones;
-    const riskAllChecked =
-      key === "risk_alerts" ? checked : newPreferences.risk_alerts;
-
-    const newTradingAll =
-      tradingAllChecked &&
-      priceAllChecked &&
-      volatilityAllChecked &&
-      patternAllChecked;
-    const newOtherAll =
-      economicAllChecked &&
-      subscriptionAllChecked &&
-      performanceAllChecked &&
-      riskAllChecked;
-
-    setTradingNotifications(newTradingAll);
-    setOtherNotifications(newOtherAll);
-    setAllNotifications(newTradingAll && newOtherAll);
-  };
-
-  // Save preferences to database
   const savePreferences = async () => {
-    if (!userId) return;
+    if (!user?.id) return;
 
+    setSaving(true);
     try {
-      setIsSaving(true);
-
       const { error } = await supabaseClient
         .from("notification_preferences")
-        .upsert({
-          user_id: userId,
-          ...preferences,
-          updated_at: new Date().toISOString(),
-        });
+        .upsert(
+          {
+            user_id: user.id,
+            email_notifications: preferences.email,
+            push_notifications: preferences.pushNotifications,
+            sound_alerts: preferences.soundAlerts,
+            market_updates: preferences.marketUpdates,
+            price_alerts: preferences.priceAlerts,
+            system_announcements: preferences.systemAnnouncements,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "user_id" },
+        );
 
-      if (error) {
-        console.error("Error saving preferences:", error);
-        toast({
-          title: t("saveError"),
-          description: t("saveErrorMessage"),
-          variant: "destructive",
-        });
-        return;
-      }
+      if (error) throw error;
 
       toast({
-        title: t("saveSuccess"),
-        description: t("saveSuccessMessage"),
+        title: "Preferences saved",
+        description: "Your notification preferences have been updated",
       });
     } catch (error) {
-      console.error("Error in savePreferences:", error);
+      console.error("Error saving notification preferences:", error);
       toast({
-        title: t("saveError"),
-        description: t("saveErrorMessage"),
+        title: "Error",
+        description: "Failed to save notification preferences",
         variant: "destructive",
       });
     } finally {
-      setIsSaving(false);
+      setSaving(false);
     }
   };
 
-  if (isLoading) {
+  if (!user) {
+    return <div>Please log in to manage notification preferences</div>;
+  }
+
+  if (loading) {
     return (
-      <Card className="w-full">
+      <Card>
         <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-          <CardDescription>{t("description")}</CardDescription>
+          <CardTitle>Notification Preferences</CardTitle>
+          <CardDescription>Loading preferences...</CardDescription>
         </CardHeader>
-        <CardContent className="flex items-center justify-center py-10">
-          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500" />
-        </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="w-full border border-slate-700 bg-slate-800/30">
+    <Card className="bg-slate-900 text-white shadow-md">
       <CardHeader>
-        <CardTitle className="text-xl text-slate-100">{t("title")}</CardTitle>
-        <CardDescription className="text-slate-400">
-          {t("description")}
+        <div className="flex items-center gap-2">
+          <Bell className="h-5 w-5 text-blue-400" />
+          <CardTitle>Notification Preferences</CardTitle>
+        </div>
+        <CardDescription className="text-slate-300">
+          Customize how you want to receive notifications
         </CardDescription>
       </CardHeader>
-
       <CardContent className="space-y-6">
-        {/* Main toggle for all notifications */}
-        <div className="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-800/50 p-4">
-          <div className="space-y-0.5">
-            <Label className="text-base text-slate-200">
-              {t("allNotifications")}
-            </Label>
-          </div>
-          <Switch
-            checked={allNotifications}
-            onCheckedChange={handleToggleAll}
-          />
-        </div>
-
-        <Separator className="bg-slate-700" />
-
-        {/* Trading notifications section */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label className="text-base font-medium text-slate-200">
-              {t("tradingNotifications")}
-            </Label>
+            <div className="space-y-0.5">
+              <Label
+                htmlFor="email-notifications"
+                className="text-base font-medium"
+              >
+                Email Notifications
+              </Label>
+              <p className="text-sm text-slate-400">
+                Receive notifications via email
+              </p>
+            </div>
             <Switch
-              checked={tradingNotifications}
-              onCheckedChange={handleToggleTrading}
+              id="email-notifications"
+              checked={preferences.email}
+              onCheckedChange={(checked) =>
+                setPreferences({ ...preferences, email: checked })
+              }
+              className="data-[state=checked]:bg-blue-500"
             />
           </div>
 
-          <div className="ml-4 space-y-3">
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="trading_signals"
-                checked={preferences.trading_signals}
-                onCheckedChange={(checked) =>
-                  handleTogglePreference("trading_signals", checked)
-                }
-                disabled={!tradingNotifications}
-              />
-              <Label
-                htmlFor="trading_signals"
-                className={
-                  !tradingNotifications ? "text-slate-500" : "text-slate-300"
-                }
-              >
-                {t("tradingSignals")}
-              </Label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="price_breakouts"
-                checked={preferences.price_breakouts}
-                onCheckedChange={(checked) =>
-                  handleTogglePreference("price_breakouts", checked)
-                }
-                disabled={!tradingNotifications}
-              />
-              <Label
-                htmlFor="price_breakouts"
-                className={
-                  !tradingNotifications ? "text-slate-500" : "text-slate-300"
-                }
-              >
-                {t("priceBreakouts")}
-              </Label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="volatility_alerts"
-                checked={preferences.volatility_alerts}
-                onCheckedChange={(checked) =>
-                  handleTogglePreference("volatility_alerts", checked)
-                }
-                disabled={!tradingNotifications}
-              />
-              <Label
-                htmlFor="volatility_alerts"
-                className={
-                  !tradingNotifications ? "text-slate-500" : "text-slate-300"
-                }
-              >
-                {t("volatilityAlerts")}
-              </Label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="pattern_alerts"
-                checked={preferences.pattern_alerts}
-                onCheckedChange={(checked) =>
-                  handleTogglePreference("pattern_alerts", checked)
-                }
-                disabled={!tradingNotifications}
-              />
-              <Label
-                htmlFor="pattern_alerts"
-                className={
-                  !tradingNotifications ? "text-slate-500" : "text-slate-300"
-                }
-              >
-                {t("patternAlerts")}
-              </Label>
-            </div>
-          </div>
-        </div>
-
-        <Separator className="bg-slate-700" />
-
-        {/* Other notifications section */}
-        <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <Label className="text-base font-medium text-slate-200">
-              {t("otherNotifications")}
-            </Label>
+            <div className="space-y-0.5">
+              <Label
+                htmlFor="push-notifications"
+                className="text-base font-medium"
+              >
+                Push Notifications
+              </Label>
+              <p className="text-sm text-slate-400">
+                Receive notifications on your devices
+              </p>
+            </div>
             <Switch
-              checked={otherNotifications}
-              onCheckedChange={handleToggleOther}
+              id="push-notifications"
+              checked={preferences.pushNotifications}
+              onCheckedChange={(checked) =>
+                setPreferences({ ...preferences, pushNotifications: checked })
+              }
+              className="data-[state=checked]:bg-blue-500"
             />
           </div>
 
-          <div className="ml-4 space-y-3">
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="economic_events"
-                checked={preferences.economic_events}
-                onCheckedChange={(checked) =>
-                  handleTogglePreference("economic_events", checked)
-                }
-                disabled={!otherNotifications}
-              />
-              <Label
-                htmlFor="economic_events"
-                className={
-                  !otherNotifications ? "text-slate-500" : "text-slate-300"
-                }
-              >
-                {t("economicEvents")}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 space-y-0.5">
+              <Volume2 className="h-4 w-4 text-slate-400" />
+              <Label htmlFor="sound-alerts" className="text-base font-medium">
+                Sound Alerts
               </Label>
             </div>
+            <Switch
+              id="sound-alerts"
+              checked={preferences.soundAlerts}
+              onCheckedChange={(checked) =>
+                setPreferences({ ...preferences, soundAlerts: checked })
+              }
+              className="data-[state=checked]:bg-blue-500"
+            />
+          </div>
+        </div>
 
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="subscription_reminders"
-                checked={preferences.subscription_reminders}
-                onCheckedChange={(checked) =>
-                  handleTogglePreference("subscription_reminders", checked)
-                }
-                disabled={!otherNotifications}
-              />
-              <Label
-                htmlFor="subscription_reminders"
-                className={
-                  !otherNotifications ? "text-slate-500" : "text-slate-300"
-                }
-              >
-                {t("subscriptionReminders")}
+        <div className="pt-2">
+          <h3 className="mb-3 text-lg font-medium">Notification Types</h3>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="market-updates" className="text-base">
+                Market Updates
               </Label>
+              <Switch
+                id="market-updates"
+                checked={preferences.marketUpdates}
+                onCheckedChange={(checked) =>
+                  setPreferences({ ...preferences, marketUpdates: checked })
+                }
+                className="data-[state=checked]:bg-blue-500"
+              />
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="performance_milestones"
-                checked={preferences.performance_milestones}
-                onCheckedChange={(checked) =>
-                  handleTogglePreference("performance_milestones", checked)
-                }
-                disabled={!otherNotifications}
-              />
-              <Label
-                htmlFor="performance_milestones"
-                className={
-                  !otherNotifications ? "text-slate-500" : "text-slate-300"
-                }
-              >
-                {t("performanceMilestones")}
+            <div className="flex items-center justify-between">
+              <Label htmlFor="price-alerts" className="text-base">
+                Price Alerts
               </Label>
+              <Switch
+                id="price-alerts"
+                checked={preferences.priceAlerts}
+                onCheckedChange={(checked) =>
+                  setPreferences({ ...preferences, priceAlerts: checked })
+                }
+                className="data-[state=checked]:bg-blue-500"
+              />
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="risk_alerts"
-                checked={preferences.risk_alerts}
-                onCheckedChange={(checked) =>
-                  handleTogglePreference("risk_alerts", checked)
-                }
-                disabled={!otherNotifications}
-              />
-              <Label
-                htmlFor="risk_alerts"
-                className={
-                  !otherNotifications ? "text-slate-500" : "text-slate-300"
-                }
-              >
-                {t("riskAlerts")}
+            <div className="flex items-center justify-between">
+              <Label htmlFor="system-announcements" className="text-base">
+                System Announcements
               </Label>
+              <Switch
+                id="system-announcements"
+                checked={preferences.systemAnnouncements}
+                onCheckedChange={(checked) =>
+                  setPreferences({
+                    ...preferences,
+                    systemAnnouncements: checked,
+                  })
+                }
+                className="data-[state=checked]:bg-blue-500"
+              />
             </div>
           </div>
         </div>
-      </CardContent>
 
-      <CardFooter>
         <Button
-          className="w-full"
           onClick={savePreferences}
-          disabled={isSaving}
+          className="w-full bg-blue-600 hover:bg-blue-700"
+          disabled={saving}
         >
-          {isSaving ? t("saving") : t("saveChanges")}
+          {saving ? "Saving..." : "Save Preferences"}
         </Button>
-      </CardFooter>
+      </CardContent>
     </Card>
   );
 }

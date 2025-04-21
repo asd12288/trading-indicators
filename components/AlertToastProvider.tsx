@@ -3,31 +3,29 @@
 import { useEffect, useRef } from "react";
 import useAlerts from "@/hooks/useAlerts";
 import usePreferences from "@/hooks/usePreferences";
-import { useAuth } from "@/context/auth-context";
+import { useUser } from "@/providers/UserProvider"; // Updated to use new UserProvider
 import { toast } from "@/hooks/use-toast";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { useRouter } from "@/i18n/routing";
 import { formatDistanceToNow } from "date-fns";
 
 const AlertToastProvider = () => {
-  // Get auth context for current user
-  const { user } = useAuth();
+  // Get auth context for current user - using the updated UserProvider
+  const { user } = useUser();
   const router = useRouter();
-
-  // Only proceed if we have a user
-  if (!user?.id) return null;
-
-  // Get user preferences
-  const { notificationsOn } = usePreferences(user.id);
-
-  // Subscribe to alerts with the onNewAlert callback
-  const { onNewAlert } = useAlerts();
 
   // Keep track of already shown alerts to prevent duplicates
   const shownAlertsRef = useRef<Set<string>>(new Set());
 
+  // Always call hooks regardless of conditions
+  const { notificationsOn } = usePreferences(user?.id || "");
+  const { onNewAlert } = useAlerts();
+
   // Handle new alert
   useEffect(() => {
+    // If no user is logged in, don't set up alert listener
+    if (!user?.id) return;
+
     const handleNewAlert = (alert) => {
       // Skip if notifications are disabled for this instrument
       if (!notificationsOn.includes(alert.instrument_name)) {
@@ -108,7 +106,7 @@ const AlertToastProvider = () => {
     return () => {
       unsubscribe();
     };
-  }, [notificationsOn, onNewAlert, router]);
+  }, [notificationsOn, onNewAlert, router, user?.id]); // Added user?.id to dependencies
 
   // This component doesn't render anything
   return null;

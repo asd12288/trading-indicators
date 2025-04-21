@@ -1,8 +1,8 @@
-
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
 import { Metadata } from "next";
 import SignalsLayout from "@/components/SignalsLayout";
+import { UserInitializer } from "@/providers/UserInitializer";
 
 export const metadata: Metadata = {
   title: "Smart Alerts",
@@ -20,7 +20,19 @@ async function page({ params }: { params: { locale: string } }) {
     redirect({ href: "/login", locale: locale });
   }
 
-  return <SignalsLayout userId={user?.id} />;
+  // Get the user profile from Supabase to pass to client components
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  // Return the client component with server-fetched auth data
+  return (
+    <UserInitializer user={user} profile={profile}>
+      <SignalsLayout />
+    </UserInitializer>
+  );
 }
 
 export default page;

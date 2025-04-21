@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import SignalsList from "./SignalCard/SignalsList";
 import BestTrades from "./BestTrades";
 
-const SignalsLayout = ({ userId }) => {
+const SignalsLayout = () => {
   const t = useTranslations("Signals");
 
   return (
@@ -37,7 +37,7 @@ const SignalsLayout = ({ userId }) => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <BestTrades userId={userId} />
+          <BestTrades />
         </motion.div>
 
         <motion.div
@@ -46,7 +46,7 @@ const SignalsLayout = ({ userId }) => {
           transition={{ delay: 0.3 }}
           className="mt-6"
         >
-          <SignalsList userId={userId} />
+          <SignalsList />
         </motion.div>
       </div>
     </motion.div>

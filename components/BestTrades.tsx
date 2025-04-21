@@ -24,8 +24,7 @@ interface BestTradesProps {
   userId?: string;
 }
 
-const BestTrades: FC<BestTradesProps> = ({ userId }) => {
-  const { theme } = useTheme();
+const BestTrades: FC<BestTradesProps> = () => {
   const t = useTranslations("BestTrades");
   // Use allSignals=true to get all trades, not just the latest per instrument
   const { signals, isLoading, refetch } = useSignals({}, true);
@@ -137,9 +136,7 @@ const BestTrades: FC<BestTradesProps> = ({ userId }) => {
     {} as Record<string, number>,
   );
 
-  const hasDuplicateInstruments = Object.values(instrumentCounts).some(
-    (count) => count > 1,
-  );
+
 
   return (
     <div className="space-y-4">
@@ -205,7 +202,7 @@ const TradeCard: FC<{
   trade: Signal & { dollarValue?: number };
   rank: number;
   isDuplicate?: boolean;
-}> = ({ trade, rank, isDuplicate }) => {
+}> = ({ trade, rank,  }) => {
   const { theme } = useTheme();
   const t = useTranslations("BestTrades");
   const isBuy = ["BUY", "LONG", "Buy", "Long"].includes(trade.trade_side);

@@ -68,9 +68,10 @@ export interface Profile {
   email: string;
   avatar_url: string;
   created_at: string;
-  plan?: "pro" | "free";
+  plan?: "pro" | "free" | "premium" | "paid" | string;
   role?: "admin" | "user";
   preferences: PreferenceValues;
+  subscription_end_date?: string;
 }
 
 export interface PreferenceValues {

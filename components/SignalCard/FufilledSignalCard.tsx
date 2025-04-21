@@ -20,7 +20,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { NotificationService } from "@/lib/notification-service";
-import { useSession } from "@/hooks/use-session";
+import { useUser } from "@/providers/UserProvider";
 
 interface FufilledSignalCardProps {
   instrument: Signal;
@@ -36,8 +36,8 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
   const { theme } = useTheme();
   const { instrument_name, trade_side, entry_price, entry_time, mae, mfe } =
     instrument;
-  const { session } = useSession();
-  const userId = session?.user?.id;
+  const { user } = useUser();
+  const userId = user?.id;
 
   // Get instrument information
   const { instrumentInfo, loading, error } = useInstrumentInfo(instrument_name);

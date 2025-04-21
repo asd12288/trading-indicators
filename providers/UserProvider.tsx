@@ -1,5 +1,12 @@
 "use client";
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  ReactNode,
+} from "react";
 import supabaseClient from "@/database/supabase/supabase";
 import { User, Session } from "@supabase/supabase-js";
 import { Profile } from "@/lib/types";
@@ -49,7 +56,23 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       if (profileError) throw profileError;
 
       setProfile(data);
-      setIsPro(data?.plan === "pro" || data?.plan === "premium");
+
+      // Use the more robust approach for determining pro status
+      const isPlanPro =
+        data?.plan &&
+        (data.plan.toLowerCase() === "pro" ||
+          data.plan.toLowerCase() === "premium" ||
+          data.plan.toLowerCase() === "paid" ||
+          data.plan.toLowerCase().includes("pro"));
+
+      setIsPro(isPlanPro);
+      console.log(
+        "Profile data fetched - plan:",
+        data?.plan,
+        "isPro:",
+        isPlanPro,
+      );
+
       return data;
     } catch (err) {
       console.error("Error fetching profile:", err);
@@ -63,15 +86,53 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       setLoading(true);
       setError(null);
 
-      const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+      // First check if we have server-provided auth data in localStorage
+      const serverUser = localStorage.getItem("serverAuthUser");
+      const serverProfile = localStorage.getItem("serverAuthProfile");
+
+      if (serverUser && serverProfile) {
+        console.log("Using server-provided auth data from localStorage");
+        const parsedUser = JSON.parse(serverUser);
+        const parsedProfile = JSON.parse(serverProfile);
+
+        setUser(parsedUser);
+        setProfile(parsedProfile);
+
+        // Set isPro status using the more robust approach
+        const isPlanPro =
+          parsedProfile?.plan &&
+          (parsedProfile.plan.toLowerCase() === "pro" ||
+            parsedProfile.plan.toLowerCase() === "premium" ||
+            parsedProfile.plan.toLowerCase() === "paid" ||
+            parsedProfile.plan.toLowerCase().includes("pro"));
+
+        setIsPro(isPlanPro);
+        console.log(
+          "Server auth data - plan:",
+          parsedProfile?.plan,
+          "isPro:",
+          isPlanPro,
+        );
+
+        // Clear the localStorage items after using them to avoid stale data on next refresh
+        localStorage.removeItem("serverAuthUser");
+        localStorage.removeItem("serverAuthProfile");
+
+        setLoading(false);
+        return;
+      }
+
+      // If no server auth data, proceed with normal client-side auth check
+      const { data: sessionData, error: sessionError } =
+        await supabaseClient.auth.getSession();
 
       if (sessionError) throw sessionError;
-      
+
       setSession(sessionData.session);
 
       if (sessionData?.session) {
         setUser(sessionData.session.user);
-        
+
         if (sessionData.session.user.id) {
           await fetchProfile(sessionData.session.user.id);
         }
@@ -107,19 +168,19 @@ export const UserProvider = ({ children }: UserProviderProps) => {
 
     const { data: authListener } = supabaseClient.auth.onAuthStateChange(
       async (event, session) => {
-        if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+        if (event === "SIGNED_IN" || event === "USER_UPDATED") {
           setSession(session);
           setUser(session?.user ?? null);
           if (session?.user) {
             await fetchProfile(session.user.id);
           }
-        } else if (event === 'SIGNED_OUT') {
+        } else if (event === "SIGNED_OUT") {
           setUser(null);
           setProfile(null);
           setSession(null);
         }
         setLoading(false);
-      }
+      },
     );
 
     return () => {
@@ -135,14 +196,10 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     error,
     isPro,
     signOut,
-    refreshUser
+    refreshUser,
   };
 
-  return (
-    <UserContext.Provider value={value}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
 export function useUser() {
