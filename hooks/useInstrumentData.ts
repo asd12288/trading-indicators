@@ -6,29 +6,48 @@ import supabaseClient from "@/database/supabase/supabase.js";
 const useInstrumentData = (instrumentName) => {
   const [instrumentData, setInstrumentData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchInstrumentData = async () => {
-    if (!instrumentName) return;
-
-    setIsLoading(true);
-
-    const { data, error } = await supabaseClient
-      .from("all_signals")
-      .select("*")
-      .eq("instrument_name", instrumentName) // Filter by instrument name
-      .order("entry_time", { ascending: false }); // Order by latest entry
-
-    if (error) {
-      console.error("Error fetching instrument data:", error);
-    } else {
-      setInstrumentData(data);
+    // Early exit with error if instrumentName is missing
+    if (!instrumentName) {
+      setError("Missing instrument name");
+      setIsLoading(false);
+      return;
     }
 
-    setIsLoading(false);
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { data, error } = await supabaseClient
+        .from("all_signals")
+        .select("*")
+        .eq("instrument_name", instrumentName)
+        .order("entry_time", { ascending: false });
+
+      if (error) throw error;
+
+      // Set data even if empty array
+      setInstrumentData(data || []);
+    } catch (err) {
+      console.error("Error fetching instrument data:", err);
+      setError(err.message || "Failed to fetch instrument data");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
+    // Reset state when instrument changes
+    setInstrumentData([]);
+    setIsLoading(true);
+    setError(null);
+
     fetchInstrumentData();
+
+    // Only set up real-time subscription if we have a valid instrument name
+    if (!instrumentName) return;
 
     const subscription = supabaseClient
       .channel(`instrument_data_${instrumentName}`)
@@ -40,9 +59,9 @@ const useInstrumentData = (instrumentName) => {
           table: "all_signals",
           filter: `instrument_name=eq.${instrumentName}`,
         },
-        (payload) => {
-          console.log("Instrument data updated:", payload);
-          fetchInstrumentData(); // Refetch data on changes
+        () => {
+          // Debounce the refetch to prevent multiple rapid refreshes
+          fetchInstrumentData();
         },
       )
       .subscribe();
@@ -52,7 +71,7 @@ const useInstrumentData = (instrumentName) => {
     };
   }, [instrumentName]);
 
-  return { instrumentData, isLoading };
+  return { instrumentData, isLoading, error };
 };
 
 export default useInstrumentData;

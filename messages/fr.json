@@ -692,11 +692,13 @@
     "loading": "Chargement...",
     "tabs": {
       "profile": "Mon profil",
+      "preferences": "Préférences",
       "password": "Mot de passe",
       "subscription": "Abonnement",
       "notification": "Notification",
       "upgrade": "Passer à la version supérieure",
-      "mySignals": "Mes Smart Alerts"
+      "mySignals": "Mes Smart Alerts",
+      "telegram": "Telegram"
     }
   },
   "ProfileCard": {

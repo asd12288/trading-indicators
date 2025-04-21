@@ -10,6 +10,7 @@ import SignalToolTooltip from "./SignalToolTooltip";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/context/theme-context";
+import { BellIcon, VolumeIcon, StarIcon } from "lucide-react";
 
 interface SignalToolProps {
   signalId: string;
@@ -34,54 +35,110 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
   async function handleNotifications() {
     const newValue = !notifications;
     const status = newValue ? "enabled" : "disabled";
+
+    // Enhanced toast with icon
     toast({
       title: t(`notifications.${status}`),
       description: t("notifications.description", { signalId, status }),
+      variant: newValue ? "default" : "destructive",
+      // Add icon to make it more visible
+      icon: (
+        <BellIcon className={newValue ? "text-blue-500" : "text-gray-500"} />
+      ),
     });
-    await updatePreference(signalId, { notifications: newValue });
+
+    try {
+      await updatePreference(signalId, { notifications: newValue });
+      // Success toast
+      if (newValue) {
+        toast({
+          title: "Notification Preferences Updated",
+          description: `You'll now receive notifications when ${signalId} trades start or finish`,
+          variant: "success",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update notification preferences",
+        variant: "destructive",
+      });
+    }
   }
 
   async function handleVolume() {
     const newValue = !volume;
     const status = newValue ? "enabled" : "disabled";
+
+    // Enhanced toast with icon
     toast({
       title: t(`volume.${status}`),
       description: t("volume.description", { signalId, status }),
+      variant: newValue ? "default" : "destructive",
+      icon: (
+        <VolumeIcon className={newValue ? "text-blue-500" : "text-gray-500"} />
+      ),
     });
-    await updatePreference(signalId, { volume: newValue });
+
+    try {
+      await updatePreference(signalId, { volume: newValue });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update volume preferences",
+        variant: "destructive",
+      });
+    }
   }
 
   async function handleFavorite() {
     const newValue = !favorite;
     const status = newValue ? "added" : "removed";
+
+    // Enhanced toast with icon
     toast({
       title: t(`favorite.${status}`),
       description: t("favorite.description", {
         signalId,
         status: status,
       }),
+      variant: newValue ? "default" : "destructive",
+      icon: (
+        <StarIcon className={newValue ? "text-amber-500" : "text-gray-500"} />
+      ),
     });
-    await updatePreference(signalId, { favorite: newValue });
+
+    try {
+      await updatePreference(signalId, { favorite: newValue });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update favorite preferences",
+        variant: "destructive",
+      });
+    }
   }
 
   const buttonClasses = cn(
     "relative rounded-full p-2.5 transition-all duration-200",
     isPro
-      ? theme === "dark" 
-        ? "hover:bg-slate-700/70 active:scale-95" 
+      ? theme === "dark"
+        ? "hover:bg-slate-700/70 active:scale-95"
         : "hover:bg-slate-100 active:scale-95"
-      : theme === "dark" 
-        ? "text-slate-700 cursor-not-allowed" 
-        : "text-slate-300 cursor-not-allowed"
+      : theme === "dark"
+        ? "text-slate-700 cursor-not-allowed"
+        : "text-slate-300 cursor-not-allowed",
   );
 
   const iconClasses = `text-2xl ${isPro ? "" : "opacity-50"}`;
 
   return (
-    <div className={cn(
-      "flex items-center space-x-3 border-l pl-4",
-      theme === "dark" ? "border-slate-700/70" : "border-slate-200"
-    )}>
+    <div
+      className={cn(
+        "flex items-center space-x-3 border-l pl-4",
+        theme === "dark" ? "border-slate-700/70" : "border-slate-200",
+      )}
+    >
       {!isLoading && (
         <>
           <SignalToolTooltip text={t("notifications.tooltip")}>
@@ -96,10 +153,14 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
                 <IoIosNotificationsOff className={iconClasses} />
               )}
               {!isPro && (
-                <span className={cn(
-                  "absolute inset-0 rounded-full border",
-                  theme === "dark" ? "border-slate-700/50" : "border-slate-200"
-                )}></span>
+                <span
+                  className={cn(
+                    "absolute inset-0 rounded-full border",
+                    theme === "dark"
+                      ? "border-slate-700/50"
+                      : "border-slate-200",
+                  )}
+                ></span>
               )}
             </button>
           </SignalToolTooltip>
@@ -116,10 +177,14 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
                 <FaVolumeMute className={iconClasses} />
               )}
               {!isPro && (
-                <span className={cn(
-                  "absolute inset-0 rounded-full border",
-                  theme === "dark" ? "border-slate-700/50" : "border-slate-200"
-                )}></span>
+                <span
+                  className={cn(
+                    "absolute inset-0 rounded-full border",
+                    theme === "dark"
+                      ? "border-slate-700/50"
+                      : "border-slate-200",
+                  )}
+                ></span>
               )}
             </button>
           </SignalToolTooltip>
@@ -132,26 +197,34 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
             >
               {favorite ? (
                 <MdFavorite
-                  className={`${iconClasses} ${favorite ? "text-rose-500" : ""}`}
+                  className={`${iconClasses} ${
+                    favorite ? "text-rose-500" : ""
+                  }`}
                 />
               ) : (
                 <MdFavoriteBorder className={iconClasses} />
               )}
               {!isPro && (
-                <span className={cn(
-                  "absolute inset-0 rounded-full border",
-                  theme === "dark" ? "border-slate-700/50" : "border-slate-200"
-                )}></span>
+                <span
+                  className={cn(
+                    "absolute inset-0 rounded-full border",
+                    theme === "dark"
+                      ? "border-slate-700/50"
+                      : "border-slate-200",
+                  )}
+                ></span>
               )}
             </button>
           </SignalToolTooltip>
         </>
       )}
       {isLoading && (
-        <div className={cn(
-          "h-8 w-24 animate-pulse rounded-full",
-          theme === "dark" ? "bg-slate-700/50" : "bg-slate-200/70"
-        )}></div>
+        <div
+          className={cn(
+            "h-8 w-24 animate-pulse rounded-full",
+            theme === "dark" ? "bg-slate-700/50" : "bg-slate-200/70",
+          )}
+        ></div>
       )}
     </div>
   );

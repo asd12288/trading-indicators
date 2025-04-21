@@ -196,20 +196,16 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
     if (notifyUser && userId && mfeTicks > 0) {
       const sendNotification = async () => {
         try {
+          // Send a single notification with quality information included
           await NotificationService.notifySignalCompleted(
             userId,
             instrument_name,
             mfeTicks,
+            riskRewardRatio >= 4 && mfeDollarValue > 100
+              ? "exceptional"
+              : "standard",
+            mfeDollarValue,
           );
-
-          // For exceptional trades, send an additional notification
-          if (riskRewardRatio >= 4 && mfeDollarValue > 100) {
-            await NotificationService.notifyHighPotentialSignal(
-              userId,
-              instrument_name,
-              mfeTicks,
-            );
-          }
         } catch (error) {
           console.error(
             "Failed to send signal completion notification:",

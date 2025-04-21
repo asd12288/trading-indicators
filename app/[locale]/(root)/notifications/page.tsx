@@ -18,7 +18,7 @@ export default async function NotificationsPage({ params, searchParams }) {
   const supabase = await createClient();
 
   // Check if the user is authenticated
-  const { user } = await supabase.auth.getUser();
+  const { data: user } = await supabase.auth.getUser();
 
   if (!user) {
     redirect(

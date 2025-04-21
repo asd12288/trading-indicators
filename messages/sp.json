@@ -678,10 +678,12 @@
     "tabs": {
       "profile": "Mi perfil",
       "password": "Contraseña",
+      "preferences": "Preferencias",
       "subscription": "Suscripción",
       "notification": "Notificaciones",
       "upgrade": "Mejorar",
-      "mySignals": "Mis señales"
+      "mySignals": "Mis señales",
+      "telegram": "Telegram"
     }
   },
   "ProfileCard": {

@@ -12,7 +12,7 @@ export async function generateMetadata({
   params: { id: string; locale: string };
 }): Promise<Metadata> {
   return {
-    title: params ? `${params.id}` : "Trader Map",
+    title: params ? `${params.id} - Signal Details` : "Trader Map",
   };
 }
 
@@ -21,38 +21,40 @@ export default async function Page({
 }: {
   params: { id: string; locale: string };
 }) {
+  // Check if we have instrument ID - early redirect if not
   if (!params?.id) {
+    console.error("Missing instrument ID in URL params");
     redirect({ href: "/smart-alerts", locale: params.locale });
+    return null;
   }
 
   const supabase = await createClient();
+
+  // Get current user data
   const {
     data: { user },
     error: userError,
   } = await supabase.auth.getUser();
 
+  // Redirect to login if no user or error
   if (userError || !user?.id) {
+    console.error("Authentication error or no user");
     redirect({ href: "/login", locale: params.locale });
+    return null;
   }
 
-  // Validate that we have both required parameters before rendering
-  if (!params.id || !user.id) {
-    console.error("Missing required parameters:", {
-      signalId: params.id,
-      userId: user.id,
-    });
-    redirect({ href: "/smart-alerts", locale: params.locale });
-  }
-
-  const { data: profile } = await supabase
+  // Get user profile
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("*")
-    .eq("id", user.id)
+    .eq("id", user?.id)
     .single();
 
-  if (!profile) {
+  // Redirect if no profile found
+  if (profileError || !profile) {
     console.error("No profile found for user ID:", user.id);
     redirect({ href: "/login", locale: params.locale });
+    return null;
   }
 
   // Check if this is the first time viewing this signal
@@ -63,46 +65,51 @@ export default async function Page({
     .eq("signal_id", params.id)
     .single();
 
-  // Get signal details
-  const { data: signalData } = await supabase
-    .from("signals")
-    .select("*")
-    .eq("id", params.id)
-    .single();
-
-  // If first time viewing or no view in last 24 hours, record the view
+  // Record the view if first time (not using await to not block rendering)
   if (!viewHistory) {
-    await supabase.from("signal_views").insert({
-      user_id: user.id,
-      signal_id: params.id,
-      viewed_at: new Date().toISOString(),
-    });
+    try {
+      // Use RPC function to insert signal view and return signal data
+      const { data: signalData } = await supabase.rpc(
+        "record_signal_view_and_get_signal",
+        {
+          p_user_id: user.id,
+          p_signal_id: params.id,
+        },
+      );
 
-    // Send relevant notifications only if this is a new signal viewing
-    if (signalData) {
-      // If signal has high potential (MFE > 50), notify user
-      if (signalData.mfe && signalData.mfe > 50) {
-        await NotificationService.notifyHighPotentialSignal(
-          user.id,
-          params.id,
-          signalData.mfe,
-        );
-      }
-
-      // For non-pro users, suggest upgrade when viewing high-value signals
-      if (!profile.plan || profile.plan !== "pro") {
-        // Only trigger this for certain high-value signals to avoid spamming
-        if (signalData.priority === "high") {
-          await NotificationService.notifyProFeature(
+      // Only send notifications if we actually have signal data
+      if (signalData && Object.keys(signalData).length > 0) {
+        // If signal has high potential (MFE > 50), notify user
+        if (signalData.mfe && signalData.mfe > 50) {
+          NotificationService.notifyNewSignal(
             user.id,
-            "Advanced Signal Analysis",
-          );
+            params.id,
+            signalData.trade_side || "unknown",
+            signalData.entry_price,
+          ).catch((e) => console.error("Failed to send notification:", e));
+        }
+
+        // For non-pro users, suggest upgrade when viewing high-value signals
+        if (!profile.plan || profile.plan !== "pro") {
+          // Only trigger this for certain high-value signals to avoid spamming
+          if (signalData.priority === "high") {
+            NotificationService.notifySystem(
+              user.id,
+              "Unlock Advanced Features",
+              "Upgrade to PRO to access advanced signal analysis tools",
+            ).catch((e) =>
+              console.error("Failed to send upgrade notification:", e),
+            );
+          }
         }
       }
+    } catch (error) {
+      console.error("Error recording view:", error);
+      // Non-blocking error - continue showing the page
     }
   }
 
-  const isPro = profile?.plan === "pro" ? true : false;
+  const isPro = profile?.plan === "pro";
 
   return (
     <div className="bg-gradient-to-b from-slate-900 to-slate-950">

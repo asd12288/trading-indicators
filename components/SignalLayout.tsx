@@ -9,7 +9,15 @@ import useProfile from "@/hooks/useProfile";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Activity, ArrowLeft, Eye, Info, Lock, Newspaper } from "lucide-react";
+import {
+  Activity,
+  ArrowLeft,
+  Eye,
+  Info,
+  Lock,
+  Newspaper,
+  AlertCircle,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -32,9 +40,12 @@ interface Tab {
 
 const SignalLayout = ({ id, userId, isPro }) => {
   const { theme } = useTheme();
-  const { isLoading, profile } = useProfile(userId);
-  const { instrumentData, isLoading: loadingInstrumentData } =
-    useInstrumentData(id);
+  const { isLoading: profileLoading, profile } = useProfile(userId);
+  const {
+    instrumentData,
+    isLoading: dataLoading,
+    error: dataError,
+  } = useInstrumentData(id);
   const t = useTranslations("SignalLayout");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -48,11 +59,11 @@ const SignalLayout = ({ id, userId, isPro }) => {
   // Tab state management
   const [activeTab, setActiveTab] = useState("overview");
 
-  const instrumentName = instrumentData[0]?.instrument_name;
+  const instrumentName = id; // Use the id directly as the instrumentName
 
   // Effect to find the specific trade by ID when data is loaded
   useEffect(() => {
-    if (!loadingInstrumentData && instrumentData && instrumentData.length > 0) {
+    if (!dataLoading && instrumentData && instrumentData.length > 0) {
       if (tradeId) {
         // Find the specific trade if trade_id is in the URL
         const foundSignal = instrumentData.find(
@@ -72,18 +83,126 @@ const SignalLayout = ({ id, userId, isPro }) => {
         setSelectedSignal(instrumentData[0]);
       }
     }
-  }, [loadingInstrumentData, instrumentData, tradeId]);
+  }, [dataLoading, instrumentData, tradeId]);
 
-  if (isLoading || loadingInstrumentData || !profile) {
+  // Loading state handling
+  const isLoading = profileLoading || dataLoading;
+
+  // Show loading indicator only during initial load
+  if (isLoading) {
     return <SignalLayoutLoader />;
+  }
+
+  // Handle error states - prevent infinite loading
+  if (dataError) {
+    return (
+      <div className="mx-auto mb-8 flex max-w-7xl flex-col p-3 md:p-8 lg:p-12">
+        <Link href="/smart-alerts">
+          <div
+            className={cn(
+              "mb-6 flex cursor-pointer items-center gap-3 transition-colors duration-200",
+              theme === "dark"
+                ? "hover:text-primary"
+                : "text-slate-700 hover:text-blue-600",
+            )}
+          >
+            <ArrowLeft size={20} />
+            <p className="text-lg font-medium">{t("allSignals")}</p>
+          </div>
+        </Link>
+
+        <div
+          className={cn(
+            "flex w-full flex-col items-center gap-5 rounded-xl border p-6 shadow-lg backdrop-blur-sm",
+            theme === "dark"
+              ? "border-red-700/50 bg-red-800/20"
+              : "border-red-200 bg-red-50",
+          )}
+        >
+          <div className="flex items-center gap-3">
+            <AlertCircle className="h-8 w-8 text-red-500" />
+            <h2 className="text-xl font-medium text-red-500">
+              Error Loading Signal Data
+            </h2>
+          </div>
+          <p className="text-center">
+            {dataError ||
+              "Failed to load signal data. This instrument may not exist."}
+          </p>
+          <Link href="/smart-alerts">
+            <button
+              className={cn(
+                "mt-4 rounded-md border px-4 py-2",
+                theme === "dark"
+                  ? "border-slate-700 bg-slate-800 text-white hover:bg-slate-700"
+                  : "border-slate-200 bg-white text-slate-800 hover:bg-slate-50",
+              )}
+            >
+              Return to All Signals
+            </button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle no data case - prevent infinite loading
+  if (!instrumentData || instrumentData.length === 0) {
+    return (
+      <div className="mx-auto mb-8 flex max-w-7xl flex-col p-3 md:p-8 lg:p-12">
+        <Link href="/smart-alerts">
+          <div
+            className={cn(
+              "mb-6 flex cursor-pointer items-center gap-3 transition-colors duration-200",
+              theme === "dark"
+                ? "hover:text-primary"
+                : "text-slate-700 hover:text-blue-600",
+            )}
+          >
+            <ArrowLeft size={20} />
+            <p className="text-lg font-medium">{t("allSignals")}</p>
+          </div>
+        </Link>
+
+        <div
+          className={cn(
+            "flex w-full flex-col items-center gap-5 rounded-xl border p-6 shadow-lg backdrop-blur-sm",
+            theme === "dark"
+              ? "border-blue-700/50 bg-blue-800/20"
+              : "border-blue-200 bg-blue-50",
+          )}
+        >
+          <h2
+            className={cn(
+              "text-xl font-medium",
+              theme === "dark" ? "text-white" : "text-slate-800",
+            )}
+          >
+            No Signal Data Available for {id}
+          </h2>
+          <p className="text-center">
+            We couldn't find any trading signals for this instrument. Please
+            check back later or try another instrument.
+          </p>
+          <Link href="/smart-alerts">
+            <button
+              className={cn(
+                "mt-4 rounded-md border px-4 py-2",
+                theme === "dark"
+                  ? "border-slate-700 bg-slate-800 text-white hover:bg-slate-700"
+                  : "border-slate-200 bg-white text-slate-800 hover:bg-slate-50",
+              )}
+            >
+              Browse All Signals
+            </button>
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   // Use the selected signal or fall back to the latest one
   const lastSignal = selectedSignal || instrumentData?.[0] || null;
-
-  if (!lastSignal) {
-    notFound();
-  }
 
   // Define our tabs and mark premium ones
   const tabs: Tab[] = [

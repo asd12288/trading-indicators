@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { FaBell, FaCircleUser, FaLock, FaRegMoneyBill1 } from "react-icons/fa6";
+import {
+  FaBell,
+  FaCircleUser,
+  FaLock,
+  FaRegMoneyBill1,
+  FaGear,
+} from "react-icons/fa6";
+import { FaTelegram } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 import ManageAccount from "./ManageAccount";
 import ProfileCard from "./ProfileCard";
@@ -16,19 +23,19 @@ import { useRouter } from "@/i18n/routing";
 import NotificationPreferencesManager from "./NotificationPreferencesManager";
 import NotificationExample from "./NotificationExample";
 import supabaseClient from "@/database/supabase/supabase.js";
+import UserPreferencesTable from "./UserPreferencesTable";
 
 const UserDashboard = ({ user }) => {
   const searchParams = useSearchParams();
   const [tab, setTab] = useState<string>("profile");
-  const router = useRouter();
   const t = useTranslations("UserDashboard");
   const mainRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState<string>("auto");
-  
+
   // Handle profile loading directly since we get user from props
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Fetch profile based on the provided user ID
   useEffect(() => {
     const fetchProfile = async () => {
@@ -36,7 +43,7 @@ const UserDashboard = ({ user }) => {
         setIsLoading(false);
         return;
       }
-      
+
       try {
         setIsLoading(true);
         const { data, error } = await supabaseClient
@@ -152,9 +159,19 @@ const UserDashboard = ({ user }) => {
                       label={t("tabs.subscription")}
                     />
                     <TabItem
+                      id="telegram"
+                      icon={FaTelegram}
+                      label={t("tabs.telegram") || "Telegram"}
+                    />
+                    <TabItem
                       id="notification"
                       icon={FaBell}
                       label={t("tabs.notification")}
+                    />
+                    <TabItem
+                      id="preferences"
+                      icon={FaGear}
+                      label={t("tabs.preferences") || "Preferences"}
                     />
                   </>
                 ) : (
@@ -189,13 +206,15 @@ const UserDashboard = ({ user }) => {
                   {tab === "upgrade" && <UpgradeAccount user={user} />}
                   {tab === "password" && <ResetPasswordForm />}
                   {tab === "manage" && <ManageAccount profile={profile} />}
+                  {tab === "telegram" && isPro && (
+                    <TelegramAuth profile={profile} userId={user?.id} />
+                  )}
                   {tab === "notification" && (
                     <div className="space-y-8">
-                      <TelegramAuth profile={profile} userId={user?.id} />
                       <NotificationPreferencesManager />
-                      <NotificationExample />
                     </div>
                   )}
+                  {tab === "preferences" && isPro && <UserPreferencesTable />}
                 </motion.div>
               </AnimatePresence>
             </div>

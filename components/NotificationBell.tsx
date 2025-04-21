@@ -53,18 +53,6 @@ export default function NotificationBell({ userId }: { userId?: string }) {
     return () => clearInterval(intervalId);
   }, [userId, refetch]);
 
-  // Log notification count changes for debugging
-  useEffect(() => {
-    console.log(`[NotificationBell] Unread count: ${unreadCount}`);
-  }, [unreadCount]);
-
-  // Log notification data for debugging
-  useEffect(() => {
-    if (notifications.length > 0) {
-      console.log("Current notifications:", notifications);
-    }
-  }, [notifications]);
-
   if (!userId) {
     return null;
   }

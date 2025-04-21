@@ -679,11 +679,13 @@
     "loading": "Loading...",
     "tabs": {
       "profile": "My Profile",
+      "preferences": "My Preferences",
       "password": "Password",
       "subscription": "Subscription",
       "notification": "Notification",
       "upgrade": "Upgrade",
-      "mySignals": "My Smart Alerts"
+      "mySignals": "My Smart Alerts",
+      "telegram": "Telegram"
     }
   },
   "ProfileCard": {
@@ -903,9 +905,10 @@
   "TelegramAuth": {
     "title": "Telegram Notifications",
     "cta": "Connect Telegram",
-    "description": " Click to open Telegram and start the bot. This will link your chat to your account.",
+    "description": "Click to open Telegram and start the bot. This will link your chat to your account.",
     "remove": "Remove Telegram",
-    "success": "Telegram connected successfully"
+    "success": "Telegram connected successfully",
+    "activeDescription": "Receive real-time alerts directly in your Telegram app"
   },
   "ErrorPage": {
     "title": "Oops! Something went wrong.",

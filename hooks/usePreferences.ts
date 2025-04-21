@@ -59,14 +59,19 @@ function usePreferences(userId?: string): UsePreferencesReturn {
     fetchPreferences();
   }, [userId]);
 
-  // Simplify updatePreference to match exactly how it works in SignalTool
+  // Fixed updatePreference to properly return a Promise<void>
   const updatePreference = async (
     signalId: string,
     updatedValues: Partial<PreferenceValues>,
-  ) => {
+  ): Promise<void> => {
     // If no userId, can't update preferences
     if (!userId) {
       console.error("Cannot update preferences: No user ID provided");
+      toast({
+        title: "Error",
+        description: "Cannot update preferences: User not logged in",
+        variant: "destructive",
+      });
       return Promise.reject(
         new Error("User ID is required to update preferences"),
       );
@@ -99,12 +104,23 @@ function usePreferences(userId?: string): UsePreferencesReturn {
         .eq("id", userId);
 
       if (error) {
+        // Revert local state if database update fails
+        setPreferences(preferences);
         throw error;
       }
 
-      return true;
-    } catch (error) {
+      // Debug toast to verify function is being called
+      console.log("Preference updated:", signalId, updatedValues);
+
+      // Don't return anything (void)
+    } catch (error: any) {
       console.error("Error updating preferences:", error);
+      // Show error toast
+      toast({
+        title: "Error updating preference",
+        description: error.message || "An unexpected error occurred",
+        variant: "destructive",
+      });
       throw error;
     }
   };

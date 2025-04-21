@@ -26,7 +26,30 @@ export class NotificationService {
     metadata: Record<string, any> = {},
   ): Promise<boolean> {
     try {
-      // Check user notification preferences
+      // If instrument is specified, check if user has notifications enabled for it
+      const instrumentName = metadata.instrument;
+      if (instrumentName) {
+        // Get user's instrument-specific notification preferences
+        const { data: profile } = await supabaseClient
+          .from("profiles")
+          .select("preferences")
+          .eq("id", userId)
+          .single();
+
+        if (profile?.preferences) {
+          const instrumentPrefs = profile.preferences[instrumentName];
+
+          // If user has preferences for this instrument and notifications turned off, skip it
+          if (instrumentPrefs && instrumentPrefs.notifications === false) {
+            console.log(
+              `Notification skipped for ${instrumentName} - user has disabled notifications for this instrument`,
+            );
+            return false;
+          }
+        }
+      }
+
+      // Check user's global notification preferences
       const { data: preferences } = await supabaseClient
         .from("notification_preferences")
         .select("*")
@@ -98,19 +121,24 @@ export class NotificationService {
   }
 
   /**
-   * Notify a user about a new trading signal
+   * Notify a user about a new trading signal (trade starting)
    */
   public static async notifyNewSignal(
     userId: string,
     instrumentName: string,
     direction: string,
+    entryPrice?: number,
   ): Promise<boolean> {
-    const title = `New ${direction.toUpperCase()} Signal`;
-    const message = `A new ${direction.toLowerCase()} signal has been detected for ${instrumentName}`;
+    const title = `New ${direction.toUpperCase()} Signal: ${instrumentName}`;
+    const message = entryPrice
+      ? `A new ${direction.toLowerCase()} signal has started for ${instrumentName} at ${entryPrice}`
+      : `A new ${direction.toLowerCase()} signal has been detected for ${instrumentName}`;
 
     return this.createNotification(userId, title, message, "signal", {
       instrument: instrumentName,
       direction,
+      entry_price: entryPrice,
+      event_type: "trade_start",
     });
   }
 
@@ -284,5 +312,39 @@ export class NotificationService {
     message: string,
   ): Promise<boolean> {
     return this.createNotification(userId, title, message, "system", {});
+  }
+
+  /**
+   * Notify a user about a completed signal with results (trade finishing)
+   */
+  public static async notifySignalCompleted(
+    userId: string,
+    instrumentName: string,
+    ticks: number,
+    quality: "standard" | "exceptional" = "standard",
+    dollarValue: number = 0,
+  ): Promise<boolean> {
+    const title =
+      quality === "exceptional"
+        ? `⭐ Exceptional Signal Completed: ${instrumentName}`
+        : `Signal Completed: ${instrumentName}`;
+
+    let message = `${instrumentName} signal completed with ${ticks.toFixed(1)} ticks potential`;
+
+    if (dollarValue > 0) {
+      message += ` (approx. $${Math.round(dollarValue)})`;
+    }
+
+    if (quality === "exceptional") {
+      message += ". This was an exceptional trade opportunity!";
+    }
+
+    return this.createNotification(userId, title, message, "signal", {
+      instrument: instrumentName,
+      ticks,
+      quality,
+      dollar_value: dollarValue,
+      event_type: "trade_finish",
+    });
   }
 }

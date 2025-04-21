@@ -12,7 +12,6 @@ const checkFileExists = async (url: string): Promise<boolean> => {
     const response = await fetch(url, { method: "HEAD" });
     return response.ok;
   } catch (e) {
-    console.warn(`Failed to check if file exists at ${url}:`, e);
     return false;
   }
 };
@@ -25,7 +24,7 @@ export function useNotifications(passedUserId?: string) {
   const notificationSoundRef = useRef<HTMLAudioElement | null>(null);
   const soundEnabledRef = useRef<boolean>(true); // Track if sound is enabled
 
-  // Use passed userId directly instead of depending on the useUser hook
+  // Use passed userId directly
   const userId = passedUserId;
 
   // Calculate unread count - make sure this is accurate
@@ -49,9 +48,6 @@ export function useNotifications(passedUserId?: string) {
         // First check if the primary audio file exists
         checkFileExists(audioFormats[0].path).then((exists) => {
           if (!exists) {
-            console.warn(
-              `Audio file ${audioFormats[0].path} not found, will try fallbacks`,
-            );
             soundEnabledRef.current = false;
             return;
           }
@@ -60,24 +56,7 @@ export function useNotifications(passedUserId?: string) {
           const audio = new Audio();
 
           // Add comprehensive error handling
-          audio.addEventListener("error", (e) => {
-            const errorMessage =
-              e.target?.error?.message || "Unknown audio error";
-            console.error(
-              `Error loading notification sound: "${errorMessage}"`,
-            );
-
-            // If there was a format error, try the next format
-            if (
-              e.target?.error?.code ===
-                MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED ||
-              e.target?.error?.code === MediaError.MEDIA_ERR_FORMAT
-            ) {
-              console.log(
-                "Format not supported, will try fallbacks on next notification",
-              );
-            }
-
+          audio.addEventListener("error", () => {
             // Mark sound as unavailable
             soundEnabledRef.current = false;
             notificationSoundRef.current = null;
@@ -85,7 +64,6 @@ export function useNotifications(passedUserId?: string) {
 
           // Set up successful load handler
           audio.addEventListener("canplaythrough", () => {
-            console.log("Notification sound loaded successfully");
             soundEnabledRef.current = true;
           });
 
@@ -97,11 +75,9 @@ export function useNotifications(passedUserId?: string) {
           notificationSoundRef.current = audio;
         });
       } else {
-        console.log("Audio API not available in this browser");
         soundEnabledRef.current = false;
       }
     } catch (err) {
-      console.error("Failed to initialize notification sound:", err);
       notificationSoundRef.current = null;
       soundEnabledRef.current = false;
     }
@@ -112,7 +88,7 @@ export function useNotifications(passedUserId?: string) {
           notificationSoundRef.current.pause();
           notificationSoundRef.current = null;
         } catch (err) {
-          console.warn("Error cleaning up audio:", err);
+          // Silent catch
         }
       }
     };
@@ -130,13 +106,11 @@ export function useNotifications(passedUserId?: string) {
       // Use a silent catch for the play promise to avoid console errors
       const playPromise = notificationSoundRef.current.play();
       if (playPromise !== undefined) {
-        playPromise.catch((err) => {
-          console.log("Audio play prevented (user interaction may be needed)");
+        playPromise.catch(() => {
           // Don't disable sound entirely - it might be an autoplay restriction
         });
       }
     } catch (err) {
-      console.warn("Could not play notification sound:", err);
       soundEnabledRef.current = false;
     }
   }, []);
@@ -145,15 +119,11 @@ export function useNotifications(passedUserId?: string) {
   const fetchNotifications = useCallback(
     async (silent = false) => {
       if (!userId) {
-        console.log("No user ID available.");
         return;
       }
 
       if (!silent) setLoading(true);
       try {
-        console.log(
-          `[useNotifications] Fetching notifications for user ${userId}`,
-        );
         const { data, error } = await supabaseClient
           .from("notifications")
           .select("*")
@@ -162,7 +132,6 @@ export function useNotifications(passedUserId?: string) {
           .limit(20);
 
         if (error) {
-          console.warn("Error fetching notifications:", error);
           setError("Failed to load notifications");
           return;
         }
@@ -181,17 +150,11 @@ export function useNotifications(passedUserId?: string) {
           }));
 
           setNotifications(transformedData);
-          // Log the count of unread notifications for debugging
-          const unreadCount = transformedData.filter((n) => !n.read).length;
-          console.log(
-            `[useNotifications] Found ${transformedData.length} notifications, ${unreadCount} unread`,
-          );
         } else {
           // Set empty array if no notifications found
           setNotifications([]);
         }
       } catch (err) {
-        console.error("Unexpected error fetching notifications:", err);
         if (!silent) setError("An unexpected error occurred");
       } finally {
         if (!silent) setLoading(false);
@@ -207,14 +170,13 @@ export function useNotifications(passedUserId?: string) {
     }
   }, [userId, fetchNotifications]);
 
-  // Enhanced real-time subscription with better error handling
+  // Enhanced real-time subscription
   useEffect(() => {
     if (!userId) return;
 
     try {
       // Create a unique channel name to avoid conflicts
       const channelName = `notifications-${userId}-${Date.now()}`;
-      console.log(`[useNotifications] Setting up channel: ${channelName}`);
 
       // 1. Subscription to notifications table
       const notificationsSubscription = supabaseClient
@@ -228,11 +190,6 @@ export function useNotifications(passedUserId?: string) {
             filter: `user_id=eq.${userId}`,
           },
           (payload) => {
-            console.log(
-              `[useNotifications] Received real-time event:`,
-              payload.eventType,
-            );
-
             if (payload.eventType === "INSERT") {
               // Add new notification to state
               const newNotification = payload.new as any;
@@ -249,20 +206,13 @@ export function useNotifications(passedUserId?: string) {
                 data: newNotification.additional_data,
               };
 
-              console.log(
-                `[useNotifications] Adding new notification:`,
-                notification,
-              );
-
-              // Play sound with better error handling using the new playSound function
+              // Play sound
               playSound();
+
+              // Add to notifications array
+              setNotifications((prev) => [notification, ...prev]);
             } else if (payload.eventType === "UPDATE") {
               // Update existing notification
-              console.log(
-                `[useNotifications] Updating notification:`,
-                payload.new.id,
-              );
-
               setNotifications((prev) =>
                 prev.map((n) =>
                   n.id === payload.new.id
@@ -271,40 +221,33 @@ export function useNotifications(passedUserId?: string) {
                         title: payload.new.title,
                         message: payload.new.message,
                         read: payload.new.read,
+                        link: payload.new.link,
+                        data: payload.new.additional_data,
                       }
                     : n,
                 ),
               );
             } else if (payload.eventType === "DELETE") {
               // Remove deleted notification
-              console.log(
-                `[useNotifications] Removing notification:`,
-                payload.old.id,
-              );
-
               setNotifications((prev) =>
                 prev.filter((n) => n.id !== payload.old.id),
               );
             }
           },
         )
-        .subscribe((status) => {
-          console.log(`[useNotifications] Subscription status:`, status);
-        });
+        .subscribe();
 
-      // 2. Generate notifications from signals
-      // Similar pattern to useSignals but creating notifications instead
+      // 2. Subscription to signals table for high importance signals
       const signalsSubscription = supabaseClient
-        .channel("signals_notification_generator")
+        .channel(`signals-${userId}-${Date.now()}`)
         .on(
           "postgres_changes",
           {
             event: "INSERT",
             schema: "public",
-            table: "all_signals",
+            table: "signals",
           },
           async (payload) => {
-            // Generate a notification for important signals
             // This pattern is similar to what's in useSignals
             const signal = payload.new as any;
 
@@ -326,18 +269,16 @@ export function useNotifications(passedUserId?: string) {
                   },
                 });
               } catch (err) {
-                console.error("Failed to create signal notification:", err);
+                // Silent catch
               }
             }
           },
         )
         .subscribe();
 
-      // Remove the alerts notification generator since it's already handled by a component
-
-      // 4. Generate notifications from instrument status changes (inspired by useInstrumentStatus)
+      // 3. Subscription to instruments_status table for trend changes
       const statusSubscription = supabaseClient
-        .channel("status_notification_generator")
+        .channel(`status-${userId}-${Date.now()}`)
         .on(
           "postgres_changes",
           {
@@ -368,7 +309,7 @@ export function useNotifications(passedUserId?: string) {
                   },
                 });
               } catch (err) {
-                console.error("Failed to create status notification:", err);
+                // Silent catch
               }
             }
           },
@@ -376,14 +317,12 @@ export function useNotifications(passedUserId?: string) {
         .subscribe();
 
       return () => {
-        console.log(`[useNotifications] Cleaning up channel: ${channelName}`);
         supabaseClient.removeChannel(notificationsSubscription);
         supabaseClient.removeChannel(signalsSubscription);
-        // Remove reference to the alertsSubscription that no longer exists
         supabaseClient.removeChannel(statusSubscription);
       };
     } catch (err) {
-      console.error("Error setting up notification subscriptions:", err);
+      // Silent catch
     }
   }, [userId, playSound]);
 
@@ -396,7 +335,7 @@ export function useNotifications(passedUserId?: string) {
       // Update local state optimistically
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
 
-      // Update in database if table exists
+      // Update in database
       try {
         const { error } = await supabaseClient
           .from("notifications")
@@ -405,10 +344,12 @@ export function useNotifications(passedUserId?: string) {
           .eq("read", false);
 
         if (error) {
-          console.warn("Error updating notifications:", error);
+          // Revert on error by refetching
+          fetchNotifications();
         }
       } catch (err) {
-        console.warn("Error marking notifications as read:", err);
+        // Revert on error by refetching
+        fetchNotifications();
       }
     } finally {
       setLoading(false);
@@ -426,7 +367,7 @@ export function useNotifications(passedUserId?: string) {
         prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
       );
 
-      // Update in database if table exists
+      // Update in database
       try {
         const { error } = await supabaseClient
           .from("notifications")
@@ -434,10 +375,12 @@ export function useNotifications(passedUserId?: string) {
           .eq("id", id);
 
         if (error) {
-          console.warn("Error updating notification:", error);
+          // Revert on error by refetching
+          fetchNotifications();
         }
       } catch (err) {
-        console.warn("Error marking notification as read:", err);
+        // Revert on error by refetching
+        fetchNotifications();
       }
     } finally {
       setLoading(false);
@@ -463,15 +406,16 @@ export function useNotifications(passedUserId?: string) {
           .in("id", notificationIds);
 
         if (error) {
-          console.warn("Error deleting notifications:", error);
           toast({
             title: "Error",
             description: "Some notifications couldn't be deleted",
             variant: "destructive",
           });
+
+          // Revert on failure by refetching
+          fetchNotifications();
         }
       } catch (err) {
-        console.warn("Error deleting notifications:", err);
         // Revert on failure by refetching
         fetchNotifications();
       }
@@ -497,12 +441,10 @@ export function useNotifications(passedUserId?: string) {
           .eq("id", id);
 
         if (error) {
-          console.warn("Error deleting notification:", error);
           // Refetch on error to restore state
           fetchNotifications();
         }
       } catch (err) {
-        console.warn("Error deleting notification:", err);
         // Refetch on error to restore state
         fetchNotifications();
       }

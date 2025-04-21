@@ -2,11 +2,10 @@ import { Suspense } from "react";
 import { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { Analytics } from "@vercel/analytics/react"
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
-// Import the NotificationManagerInitializer component
-import NotificationManagerInitializer from "@/components/NotificationManagerInitializer";
+// Import the SignalNotificationTrigger component
 import SignalNotificationTrigger from "@/components/SignalNotificationTrigger";
 
 export const metadata: Metadata = {
@@ -83,7 +82,6 @@ const LazyLoadedComponents = () => {
       <div id="alerts-container" data-load-delay="true" />
       <div id="toaster-container" data-load-delay="true" />
       {/* Initialize notification system */}
-      <NotificationManagerInitializer />
       {/* Add Signal Notification Trigger */}
       <SignalNotificationTrigger />
     </>
