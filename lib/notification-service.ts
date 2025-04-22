@@ -1,350 +1,420 @@
 /**
  * Notification Service
- * Responsible for creating different types of notifications
+ * Utility functions for creating and managing notifications
  */
+import { createClient } from "@/database/supabase/client";
+import { NotificationType } from "@/types/notifications";
 
-import supabaseClient from "@/database/supabase/supabase";
+// Helper function to get the current locale (defaults to "en")
+const getCurrentLocale = (): string => {
+  // In a browser environment, we can try to get the locale from URL
+  if (typeof window !== "undefined") {
+    const pathParts = window.location.pathname.split("/");
+    // Typical path structure is /{locale}/rest-of-path
+    if (pathParts.length > 1 && pathParts[1]) {
+      const possibleLocale = pathParts[1];
+      // Basic validation - you may want to check against your supported locales
+      if (possibleLocale.length === 2) {
+        return possibleLocale;
+      }
+    }
+  }
+  return "en"; // Default locale
+};
 
-export class NotificationService {
+class NotificationService {
   /**
-   * Create a new notification in the database
+   * Create a new notification for a user
    */
-  private static async createNotification(
-    userId: string,
-    title: string,
-    message: string,
-    type:
-      | "signal"
-      | "price"
-      | "volatility"
-      | "pattern"
-      | "economic"
-      | "subscription"
-      | "milestone"
-      | "risk"
-      | "system",
-    metadata: Record<string, any> = {},
-  ): Promise<boolean> {
+  private static async createNotification({
+    userId,
+    title,
+    message,
+    type = "system",
+    link = null,
+    linkText = null,
+    expiresInDays = null,
+    additionalData = {},
+  }: {
+    userId: string;
+    title: string;
+    message: string;
+    type?: NotificationType;
+    link?: string | null;
+    linkText?: string | null;
+    expiresInDays?: number | null;
+    additionalData?: Record<string, any>;
+  }) {
     try {
-      // If instrument is specified, check if user has notifications enabled for it
-      const instrumentName = metadata.instrument;
-      if (instrumentName) {
-        // Get user's instrument-specific notification preferences
-        const { data: profile } = await supabaseClient
-          .from("profiles")
-          .select("preferences")
-          .eq("id", userId)
-          .single();
-
-        if (profile?.preferences) {
-          const instrumentPrefs = profile.preferences[instrumentName];
-
-          // If user has preferences for this instrument and notifications turned off, skip it
-          if (instrumentPrefs && instrumentPrefs.notifications === false) {
-            console.log(
-              `Notification skipped for ${instrumentName} - user has disabled notifications for this instrument`,
-            );
-            return false;
-          }
-        }
-      }
-
-      // Check user's global notification preferences
-      const { data: preferences } = await supabaseClient
-        .from("notification_preferences")
-        .select("*")
-        .eq("user_id", userId)
-        .single();
-
-      // Determine if notification should be sent based on user preferences
-      let shouldSend = true;
-
-      if (preferences) {
-        switch (type) {
-          case "signal":
-            shouldSend = preferences.trading_signals;
-            break;
-          case "price":
-            shouldSend = preferences.price_breakouts;
-            break;
-          case "volatility":
-            shouldSend = preferences.volatility_alerts;
-            break;
-          case "pattern":
-            shouldSend = preferences.pattern_alerts;
-            break;
-          case "economic":
-            shouldSend = preferences.economic_events;
-            break;
-          case "subscription":
-            shouldSend = preferences.subscription_reminders;
-            break;
-          case "milestone":
-            shouldSend = preferences.performance_milestones;
-            break;
-          case "risk":
-            shouldSend = preferences.risk_alerts;
-            break;
-          case "system":
-            shouldSend = true; // System notifications are always sent
-            break;
-        }
-      }
-
-      // If user preference is set to not receive this notification type, skip it
-      if (!shouldSend) {
-        console.log(`Notification skipped due to user preferences: ${type}`);
+      if (!userId) {
+        console.error("Error creating notification: userId is required");
         return false;
       }
 
-      // Insert the notification into the database
-      const { error } = await supabaseClient.from("notifications").insert({
+      const supabase = createClient();
+
+      // Calculate expiry date if provided
+      let expiresAt = null;
+      if (expiresInDays !== null) {
+        const date = new Date();
+        date.setDate(date.getDate() + expiresInDays);
+        expiresAt = date.toISOString();
+      }
+
+      // Add link text to additional data if provided
+      const data = { ...additionalData };
+      if (linkText) {
+        data.link_text = linkText;
+      }
+
+      // Prepend locale to link if it's a relative URL and doesn't already have a locale
+      let processedLink = link;
+      if (
+        link &&
+        link.startsWith("/") &&
+        !link.startsWith(`/${getCurrentLocale()}`)
+      ) {
+        processedLink = `/${getCurrentLocale()}${link}`;
+      }
+
+      // Create the notification payload
+      const notificationPayload = {
         user_id: userId,
         title,
         message,
         type,
-        metadata,
-        read: false,
-        created_at: new Date().toISOString(),
-      });
+        link: processedLink,
+        expires_at: expiresAt,
+        additional_data: Object.keys(data).length > 0 ? data : null,
+      };
+
+      console.log(
+        "Creating notification with payload:",
+        JSON.stringify(notificationPayload),
+      );
+
+      const { error } = await supabase
+        .from("notifications")
+        .insert(notificationPayload);
 
       if (error) {
-        console.error("Error creating notification:", error);
+        console.error("Error creating notification:", error.message);
+        console.error("Error details:", error);
         return false;
       }
 
       return true;
-    } catch (error) {
-      console.error("Error in createNotification:", error);
+    } catch (err) {
+      console.error("Error in createNotification:", err);
       return false;
     }
   }
 
   /**
-   * Notify a user about a new trading signal (trade starting)
+   * Create a custom notification with full control over all parameters
+   */
+  public static async createCustomNotification(
+    userId: string,
+    title: string,
+    message: string,
+    type: NotificationType = "system",
+    link?: string,
+    linkText?: string,
+    expiresInDays?: number | null,
+    additionalData: Record<string, any> = {},
+  ) {
+    return this.createNotification({
+      userId,
+      title,
+      message,
+      type,
+      link: link || null,
+      linkText: linkText || null,
+      expiresInDays: expiresInDays !== undefined ? expiresInDays : null,
+      additionalData,
+    });
+  }
+
+  /**
+   * Notify when a user first views a new signal/instrument
+   */
+  public static async notifyNewSignalView(
+    userId: string,
+    signalId: string,
+    signalData: any,
+  ) {
+    return this.createNotification({
+      userId,
+      title: "Signal Viewed",
+      message: `First view: ${signalId}`,
+      type: "info",
+      link: `/smart-alerts/${signalId}`,
+      linkText: "View",
+      expiresInDays: 7,
+      additionalData: {
+        signal_id: signalId,
+        first_view: true,
+      },
+    });
+  }
+
+  /**
+   * Notify when a new signal is detected
    */
   public static async notifyNewSignal(
     userId: string,
-    instrumentName: string,
-    direction: string,
-    entryPrice?: number,
-  ): Promise<boolean> {
-    const title = `New ${direction.toUpperCase()} Signal: ${instrumentName}`;
-    const message = entryPrice
-      ? `A new ${direction.toLowerCase()} signal has started for ${instrumentName} at ${entryPrice}`
-      : `A new ${direction.toLowerCase()} signal has been detected for ${instrumentName}`;
-
-    return this.createNotification(userId, title, message, "signal", {
-      instrument: instrumentName,
-      direction,
-      entry_price: entryPrice,
-      event_type: "trade_start",
+    signalId: string,
+    signalType: string,
+  ) {
+    return this.createNotification({
+      userId,
+      title: "New Signal",
+      message: `${signalType} signal for ${signalId}`,
+      type: "alert",
+      link: `/smart-alerts/${signalId}`,
+      linkText: "View",
+      additionalData: {
+        signal_id: signalId,
+        signal_type: signalType,
+      },
     });
   }
 
   /**
-   * Notify a user about a price breakout
+   * Notify when a signal is completed
    */
-  public static async notifyPriceBreakout(
+  public static async notifySignalCompleted(
     userId: string,
-    instrumentName: string,
-    price: number,
-    breakoutType: "resistance" | "support" | "key_level",
-    timeframe: string,
-  ): Promise<boolean> {
-    const breakoutTypeFormatted = breakoutType.replace("_", " ");
-    const title = `${instrumentName} Price Breakout`;
-    const message = `${instrumentName} has broken ${breakoutTypeFormatted} at ${price} on ${timeframe} timeframe`;
+    signalId: string,
+    profitLoss: number,
+  ) {
+    const isProfit = profitLoss >= 0;
+    const absValue = Math.abs(profitLoss).toFixed(2);
 
-    return this.createNotification(userId, title, message, "price", {
-      instrument: instrumentName,
-      price,
-      breakout_type: breakoutType,
-      timeframe,
+    return this.createNotification({
+      userId,
+      title: `${signalId} Completed`,
+      message: `${isProfit ? "+" : "-"}${absValue}% ${isProfit ? "profit" : "loss"}`,
+      type: "trade",
+      link: `/smart-alerts/${signalId}`,
+      linkText: "View results",
+      additionalData: {
+        signal_id: signalId,
+        profit_loss: profitLoss,
+        completed: true,
+      },
     });
   }
 
   /**
-   * Notify a user about a volatility change
+   * Notify about account events (subscription, payment, etc)
    */
-  public static async notifyVolatilityChange(
+  public static async notifyAccount(
     userId: string,
-    instrumentName: string,
-    volatilityLevel: "increasing" | "decreasing" | "extreme",
-    percentChange: number,
-  ): Promise<boolean> {
-    const title = `${instrumentName} Volatility Alert`;
-    const message = `${instrumentName} volatility is ${volatilityLevel} by ${percentChange.toFixed(1)}%`;
-
-    return this.createNotification(userId, title, message, "volatility", {
-      instrument: instrumentName,
-      volatility_level: volatilityLevel,
-      percent_change: percentChange,
+    title: string,
+    message: string,
+    link?: string,
+  ) {
+    return this.createNotification({
+      userId,
+      title,
+      message,
+      type: "account",
+      link,
+      expiresInDays: 30,
     });
   }
 
   /**
-   * Notify a user about a pattern detection
+   * Notify about payment processing
    */
-  public static async notifyPatternDetected(
+  public static async notifyPaymentProcessed(
     userId: string,
-    instrumentName: string,
-    patternType: string,
-    reliability: "low" | "medium" | "high",
-    timeframe: string,
-  ): Promise<boolean> {
-    const title = `${patternType} Pattern Detected`;
-    const message = `A ${reliability} reliability ${patternType} pattern was detected on ${instrumentName} ${timeframe}`;
+    amount: number,
+    currency: string,
+    subscriptionPlan?: string,
+  ) {
+    const formattedAmount = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency || "USD",
+    }).format(amount);
 
-    return this.createNotification(userId, title, message, "pattern", {
-      instrument: instrumentName,
-      pattern_type: patternType,
-      reliability,
-      timeframe,
+    const planInfo = subscriptionPlan
+      ? ` for your ${subscriptionPlan} plan`
+      : "";
+
+    return this.createNotification({
+      userId,
+      title: "Payment Processed",
+      message: `Payment of ${formattedAmount}${planInfo} processed.`,
+      type: "account",
+      link: "/profile",
+      linkText: "View subscription",
+      expiresInDays: 30,
+      additionalData: {
+        amount,
+        currency,
+        subscription_plan: subscriptionPlan,
+        payment_status: "completed",
+      },
     });
   }
 
   /**
-   * Notify a user about an economic event
+   * Notify about payment failure
    */
-  public static async notifyEconomicEvent(
+  public static async notifyPaymentFailed(
     userId: string,
-    eventName: string,
-    impact: "low" | "medium" | "high",
-    timeUntilEvent: string,
-    affectedInstruments: string[],
-  ): Promise<boolean> {
-    const title = `Economic Event: ${eventName}`;
-    const instrumentsList = affectedInstruments.join(", ");
-    const message = `${impact.toUpperCase()} impact event ${eventName} in ${timeUntilEvent}. May affect: ${instrumentsList}`;
+    amount: number,
+    currency: string,
+    errorMessage: string,
+  ) {
+    const formattedAmount = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency || "USD",
+    }).format(amount);
 
-    return this.createNotification(userId, title, message, "economic", {
-      event_name: eventName,
-      impact,
-      time_until_event: timeUntilEvent,
-      affected_instruments: affectedInstruments,
+    return this.createNotification({
+      userId,
+      title: "Payment Failed",
+      message: `Payment of ${formattedAmount} failed: ${errorMessage}`,
+      type: "account",
+      link: "/profile",
+      linkText: "Update payment",
+      expiresInDays: 7,
+      additionalData: {
+        amount,
+        currency,
+        payment_status: "failed",
+        error_message: errorMessage,
+      },
     });
   }
 
   /**
-   * Notify a user about their subscription expiration
+   * Notify about subscription changes
    */
-  public static async notifySubscriptionReminder(
+  public static async notifySubscriptionChanged(
     userId: string,
-    daysLeft: number,
-  ): Promise<boolean> {
-    const title = "Subscription Reminder";
-    let message = "";
+    newPlanName: string,
+    effectiveDate: Date = new Date(),
+  ) {
+    const formattedDate = effectiveDate.toLocaleDateString();
 
-    if (daysLeft === 1) {
-      message =
-        "Your subscription expires in 1 day. Renew now to avoid interruption.";
-    } else {
-      message = `Your subscription expires in ${daysLeft} days. Renew now to avoid interruption.`;
-    }
-
-    return this.createNotification(userId, title, message, "subscription", {
-      days_left: daysLeft,
+    return this.createNotification({
+      userId,
+      title: "Subscription Updated",
+      message: `Updated to ${newPlanName}, effective ${formattedDate}.`,
+      type: "account",
+      link: "/profile",
+      linkText: "View details",
+      expiresInDays: 30,
+      additionalData: {
+        new_plan: newPlanName,
+        effective_date: effectiveDate.toISOString(),
+      },
     });
   }
 
   /**
-   * Notify a user about a trading milestone
+   * Notify about subscription expiration
    */
-  public static async notifyTradingMilestone(
+  public static async notifySubscriptionExpiringSoon(
     userId: string,
-    milestoneType: "win-streak" | "trade-count" | "profit-goal" | "performance",
-    value: number,
-  ): Promise<boolean> {
-    let title = "";
-    let message = "";
+    planName: string,
+    expiryDate: Date,
+  ) {
+    const formattedDate = expiryDate.toLocaleDateString();
+    const daysUntilExpiry = Math.ceil(
+      (expiryDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24),
+    );
 
-    switch (milestoneType) {
-      case "win-streak":
-        title = "Trading Milestone: Win Streak";
-        message = `Congratulations! You've achieved a ${value} trade win streak.`;
-        break;
-      case "trade-count":
-        title = "Trading Milestone: Trade Count";
-        message = `Congratulations! You've completed ${value} trades.`;
-        break;
-      case "profit-goal":
-        title = "Trading Milestone: Profit Goal";
-        message = `Congratulations! You've reached your profit goal of ${value}.`;
-        break;
-      case "performance":
-        title = "Trading Milestone: Performance Improvement";
-        message = `Your trading performance has improved by ${value}% compared to your previous average.`;
-        break;
-    }
-
-    return this.createNotification(userId, title, message, "milestone", {
-      milestone_type: milestoneType,
-      value,
+    return this.createNotification({
+      userId,
+      title: "Subscription Expiring",
+      message: `${planName} expires in ${daysUntilExpiry} days (${formattedDate}).`,
+      type: "account",
+      link: "/profile?tab=subscription",
+      linkText: "Renew",
+      expiresInDays: daysUntilExpiry + 1,
+      additionalData: {
+        plan_name: planName,
+        expiry_date: expiryDate.toISOString(),
+        days_until_expiry: daysUntilExpiry,
+      },
     });
   }
 
   /**
-   * Notify a user about a risk level change
-   */
-  public static async notifyRiskLevelChange(
-    userId: string,
-    instrumentName: string,
-    riskLevel: "low" | "medium" | "high" | "extreme",
-    previousLevel: "low" | "medium" | "high" | "extreme",
-  ): Promise<boolean> {
-    const title = `Risk Alert: ${instrumentName}`;
-    const message = `${instrumentName} risk level has changed from ${previousLevel} to ${riskLevel}`;
-
-    return this.createNotification(userId, title, message, "risk", {
-      instrument: instrumentName,
-      risk_level: riskLevel,
-      previous_level: previousLevel,
-    });
-  }
-
-  /**
-   * Send a system notification to a user
+   * Notify for system alerts
    */
   public static async notifySystem(
     userId: string,
     title: string,
     message: string,
-  ): Promise<boolean> {
-    return this.createNotification(userId, title, message, "system", {});
+    link?: string,
+  ) {
+    return this.createNotification({
+      userId,
+      title,
+      message,
+      type: "system",
+      link,
+      expiresInDays: 7,
+    });
   }
 
   /**
-   * Notify a user about a completed signal with results (trade finishing)
+   * Notify about system maintenance
    */
-  public static async notifySignalCompleted(
+  public static async notifyMaintenance(
     userId: string,
-    instrumentName: string,
-    ticks: number,
-    quality: "standard" | "exceptional" = "standard",
-    dollarValue: number = 0,
-  ): Promise<boolean> {
-    const title =
-      quality === "exceptional"
-        ? `⭐ Exceptional Signal Completed: ${instrumentName}`
-        : `Signal Completed: ${instrumentName}`;
+    startTime: Date,
+    estimatedDuration: number, // in minutes
+    affectedServices: string[] = ["All services"],
+  ) {
+    const formattedTime = startTime.toLocaleString();
+    const services = affectedServices.join(", ");
 
-    let message = `${instrumentName} signal completed with ${ticks.toFixed(1)} ticks potential`;
+    return this.createNotification({
+      userId,
+      title: "Maintenance Scheduled",
+      message: `Maintenance on ${formattedTime} for ${estimatedDuration} mins. Affected: ${services}.`,
+      type: "system",
+      link: "/status",
+      linkText: "Status",
+      expiresInDays: 1,
+      additionalData: {
+        maintenance_start: startTime.toISOString(),
+        estimated_duration: estimatedDuration,
+        affected_services: affectedServices,
+      },
+    });
+  }
 
-    if (dollarValue > 0) {
-      message += ` (approx. $${Math.round(dollarValue)})`;
-    }
-
-    if (quality === "exceptional") {
-      message += ". This was an exceptional trade opportunity!";
-    }
-
-    return this.createNotification(userId, title, message, "signal", {
-      instrument: instrumentName,
-      ticks,
-      quality,
-      dollar_value: dollarValue,
-      event_type: "trade_finish",
+  /**
+   * Notify about a new feature
+   */
+  public static async notifyNewFeature(
+    userId: string,
+    featureName: string,
+    featureDescription: string,
+    featureLink?: string,
+  ) {
+    return this.createNotification({
+      userId,
+      title: `New: ${featureName}`,
+      message: featureDescription,
+      type: "system",
+      link: featureLink,
+      linkText: "Learn more",
+      expiresInDays: 14,
+      additionalData: {
+        feature_name: featureName,
+        is_feature_announcement: true,
+      },
     });
   }
 }
+
+export default NotificationService;

@@ -1,93 +1,66 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useNotifications } from "@/hooks/use-notifications";
-import { BellIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { Bell } from "lucide-react";
+import { useNotifications } from "@/hooks/useNotifications";
 import { useEffect, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import NotificationPanel from "./NotificationPanel";
 
-export default function NotificationBell({ userId }: { userId?: string }) {
-  const t = useTranslations("Notifications");
-  const {
-    notifications,
-    unreadCount,
-    markAllAsRead,
-    loading,
-    refetch,
-    bulkDelete,
-  } = useNotifications(userId);
-  const [hasPulse, setHasPulse] = useState(false);
+interface NotificationBellProps {
+  userId: string;
+}
 
-  // Handle clearing all notifications
-  const handleClearAll = async () => {
-    if (!notifications || notifications.length === 0) return;
+export default function NotificationBell({ userId }: NotificationBellProps) {
+  const [open, setOpen] = useState(false);
+  const { notifications, counts, loading, markAsRead, markAllAsRead } = useNotifications(userId);
 
-    // Get all notification IDs
-    const notificationIds = notifications.map((n) => n.id);
-    await bulkDelete(notificationIds);
-  };
+  // Play sound when new unread notification comes in
+  const [prevUnreadCount, setPrevUnreadCount] = useState(0);
 
-  // Animate the bell when new notifications arrive
   useEffect(() => {
-    if (unreadCount > 0) {
-      setHasPulse(true);
-      const timer = setTimeout(() => setHasPulse(false), 2000);
-      return () => clearTimeout(timer);
+    // Only play sound when unread count increases
+    if (counts.unread > prevUnreadCount && prevUnreadCount !== 0) {
+      // Simple sound notification
+      try {
+        const audio = new Audio('/sounds/notification.mp3');
+        audio.volume = 0.5;
+        audio.play().catch(err => console.log('Audio play failed:', err));
+      } catch (error) {
+        console.error('Error playing notification sound:', error);
+      }
     }
-  }, [unreadCount, notifications.length]);
 
-  // Auto-check for new notifications periodically
-  useEffect(() => {
-    if (!userId) return;
-
-    const intervalId = setInterval(() => {
-      refetch();
-    }, 60000); // Check every minute
-
-    return () => clearInterval(intervalId);
-  }, [userId, refetch]);
-
-  if (!userId) {
-    return null;
-  }
+    setPrevUnreadCount(counts.unread);
+  }, [counts.unread, prevUnreadCount]);
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="relative h-8 w-8 p-0" // More compact button
-          aria-label={t("aria.notifications")}
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button 
+          className="relative flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 text-slate-300 transition-colors hover:bg-slate-700 hover:text-white"
+          aria-label="Notifications"
         >
-          <BellIcon
-            className={`h-4 w-4 ${hasPulse ? "animate-pulse text-amber-400" : ""}`}
-          />
-
-          {unreadCount > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-medium text-white">
-              {unreadCount > 99 ? "99+" : unreadCount}
+          <Bell className="h-5 w-5" />
+          {counts.unread > 0 && (
+            <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs font-medium text-white">
+              {counts.unread > 9 ? '9+' : counts.unread}
             </span>
           )}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        className="w-72 border-slate-700 bg-slate-800 p-0 md:w-80"
+        </button>
+      </PopoverTrigger>
+      <PopoverContent 
+        align="end" 
+        className="p-0"
+        sideOffset={10}
       >
-        <NotificationPanel
+        <NotificationPanel 
           notifications={notifications}
           loading={loading}
+          onMarkAsRead={markAsRead}
           onMarkAllAsRead={markAllAsRead}
-          onClearAll={handleClearAll}
-          unreadCount={unreadCount}
+          unreadCount={counts.unread}
         />
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </PopoverContent>
+    </Popover>
   );
 }

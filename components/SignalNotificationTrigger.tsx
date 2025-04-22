@@ -1,130 +1,83 @@
 "use client";
 
-import { useEffect } from "react";
-import supabaseClient from "@/database/supabase/supabase";
-import { NotificationService } from "@/lib/notification-service";
-import { toast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
 import { useUser } from "@/providers/UserProvider";
-import usePreferences from "@/hooks/usePreferences";
+import useSignals from "@/hooks/useSignals";
+import { createClient } from "@/database/supabase/client";
+import { tradeNotificationManager } from "@/lib/managers/trade-notification-manager";
 
 /**
- * Component that subscribes to new trading signals and creates notifications
- * Triggers notifications when trades start or end based on user preferences
+ * SignalNotificationTrigger
+ * This component initializes the notification system for signals and trades.
+ * 
+ * It monitors:
+ * 1. Signal changes (new signals, completed signals)
+ * 2. Trade events (via TradeNotificationManager)
+ * 
+ * Notifications are only sent for instruments that the user has enabled in preferences.
  */
 export default function SignalNotificationTrigger() {
   const { user } = useUser();
-  const userId = user?.id;
-  const { notificationsOn } = usePreferences(userId);
-
+  const [userPreferences, setUserPreferences] = useState<Record<string, { notifications: boolean; volume: boolean }>>({});
+  
+  // Fetch user preferences when user changes
   useEffect(() => {
-    // Only subscribe if a user is logged in
-    if (!userId) return;
-
-    // Subscribe to new signals
-    const signalsChannel = supabaseClient
-      .channel("signals-start-channel")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "signals" },
-        async (payload) => {
-          const signal = payload.new;
-          if (!signal) return;
-
-          try {
-            // Check if this instrument is in the user's notification preferences
-            if (
-              notificationsOn &&
-              notificationsOn.includes(signal.instrument_name)
-            ) {
-              // Create a notification for the new signal with the trade direction and entry price
-              await NotificationService.notifyNewSignal(
-                userId,
-                signal.instrument_name,
-                signal.trade_direction || "unknown",
-                signal.entry_price,
-              );
-
-              // Show toast notification to the user
-              toast({
-                title: `New ${signal.trade_direction || ""} Signal`,
-                description: `A new trade has started for ${signal.instrument_name}`,
-                variant: "default",
-              });
-            }
-          } catch (error) {
-            console.error("Error creating signal notification:", error);
-          }
-        },
-      )
-      .subscribe();
-
-    // Subscribe to signal fulfillments (completed trades)
-    const fulfillmentChannel = supabaseClient
-      .channel("signals-end-channel")
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "signals",
-          filter: "exit_price=is.not.null", // Only match signals that now have an exit price
-        },
-        async (payload) => {
-          const signal = payload.new;
-          // Skip if signal is not fulfilled or doesn't have required data
-          if (!signal || !signal.exit_price) return;
-
-          try {
-            // Check if this instrument is in the user's notification preferences
-            if (
-              notificationsOn &&
-              notificationsOn.includes(signal.instrument_name)
-            ) {
-              // Calculate quality metrics if available
-              const mfe = signal.mfe || 0;
-              const mae = signal.mae || 0;
-              const riskRewardRatio = mae > 0 ? mfe / mae : mfe;
-              const quality = riskRewardRatio >= 4 ? "exceptional" : "standard";
-
-              // Estimate dollar value if available
-              let dollarValue = 0;
-              if (signal.tick_value) {
-                const valueMatch = String(signal.tick_value).match(
-                  /\$?(\d+(?:\.\d+)?)/,
-                );
-                if (valueMatch) {
-                  dollarValue = Math.round(mfe * parseFloat(valueMatch[1]));
-                } else {
-                  dollarValue = Math.round(mfe * 10); // Default multiplier
-                }
-              }
-
-              // Send notification for completed trade
-              await NotificationService.notifySignalCompleted(
-                userId,
-                signal.instrument_name,
-                mfe,
-                quality,
-                dollarValue,
-              );
-            }
-          } catch (error) {
-            console.error(
-              "Error creating signal completion notification:",
-              error,
-            );
-          }
-        },
-      )
-      .subscribe();
-
-    // Cleanup on unmount
-    return () => {
-      signalsChannel.unsubscribe();
-      fulfillmentChannel.unsubscribe();
+    const fetchUserPreferences = async () => {
+      if (!user || !user.id) return;
+      
+      try {
+        const supabase = createClient();
+        const { data: profile, error } = await supabase
+          .from("profiles")
+          .select("preferences")
+          .eq("id", user.id)
+          .single();
+          
+        if (error) {
+          console.error("Error fetching user preferences:", error);
+          return;
+        }
+        
+        if (profile && profile.preferences) {
+          setUserPreferences(profile.preferences);
+          console.log("Loaded notification preferences for user", user.id);
+        }
+      } catch (err) {
+        console.error("Error in fetchUserPreferences:", err);
+      }
     };
-  }, [userId, notificationsOn]);
+    
+    fetchUserPreferences();
+  }, [user]);
 
-  // This component doesn't render anything visible
+  // Initialize useSignals hook with user preferences to enable notifications
+  // The allSignals=true parameter ensures we get all signals, not just the latest per instrument
+  const { signals } = useSignals(userPreferences, true);
+  
+  // Initialize trade notification manager
+  useEffect(() => {
+    if (user && user.id) {
+      // The manager is already initialized through the singleton pattern
+      console.log("Trade notification monitoring initialized for user:", user.id);
+    }
+    
+    // Clean up trade subscriptions on unmount
+    return () => {
+      tradeNotificationManager.cleanup();
+    };
+  }, [user]);
+  
+  // Log the initialization
+  useEffect(() => {
+    if (user && Object.keys(userPreferences).length > 0) {
+      const enabledCount = Object.entries(userPreferences).filter(([_, prefs]) => prefs.notifications).length;
+      console.log(
+        `Signal notification system initialized for user ${user.id}. ` +
+        `Watching ${enabledCount} instruments for notifications.`
+      );
+    }
+  }, [user, userPreferences]);
+
+  // No UI is rendered by this component
   return null;
 }

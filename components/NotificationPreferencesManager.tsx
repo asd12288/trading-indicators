@@ -1,255 +1,230 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { useUser } from "@/providers/UserProvider";
+import { createClient } from "@/database/supabase/client";
+import { Bell, BellOff, Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "./ui/card";
 import { Switch } from "./ui/switch";
-import { Label } from "./ui/label";
-import { Bell, Volume2 } from "lucide-react";
 import { Button } from "./ui/button";
-import supabaseClient from "@/database/supabase/supabase";
-import { useUser } from "@/providers/UserProvider";
-import { toast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Badge } from "./ui/badge";
 
+/**
+ * NotificationPreferencesManager
+ * This component allows users to manage their notification preferences by instrument
+ */
 export default function NotificationPreferencesManager() {
   const { user } = useUser();
-  const [preferences, setPreferences] = useState({
-    email: true,
-    pushNotifications: true,
-    soundAlerts: true,
-    marketUpdates: true,
-    priceAlerts: true,
-    systemAnnouncements: true,
-  });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
+  const [instruments, setInstruments] = useState<string[]>([]);
+  const [preferences, setPreferences] = useState<Record<string, { notifications: boolean; volume: boolean }>>({});
+  const [activeTab, setActiveTab] = useState<string>("all");
+  
+  // Fetch instruments and user preferences
   useEffect(() => {
-    if (!user?.id) return;
-
-    const loadPreferences = async () => {
+    const fetchData = async () => {
+      if (!user) return;
+      
       setLoading(true);
       try {
-        const { data, error } = await supabaseClient
-          .from("notification_preferences")
-          .select("*")
-          .eq("user_id", user.id)
-          .single();
-
-        if (error) throw error;
-
-        if (data) {
-          setPreferences({
-            email: data.email_notifications ?? true,
-            pushNotifications: data.push_notifications ?? true,
-            soundAlerts: data.sound_alerts ?? true,
-            marketUpdates: data.market_updates ?? true,
-            priceAlerts: data.price_alerts ?? true,
-            systemAnnouncements: data.system_announcements ?? true,
-          });
+        const supabase = createClient();
+        
+        // Get distinct instrument names
+        const { data: instrumentsData, error: instrumentsError } = await supabase
+          .from("all_signals")
+          .select("instrument_name")
+          .not("instrument_name", "is", null)
+          .order("instrument_name");
+          
+        if (instrumentsError) {
+          console.error("Error fetching instruments:", instrumentsError);
+          return;
         }
-      } catch (error) {
-        console.error("Error loading notification preferences:", error);
+        
+        // Get user preferences
+        const { data: userProfile, error: profileError } = await supabase
+          .from("profiles")
+          .select("preferences")
+          .eq("id", user.id)
+          .single();
+          
+        if (profileError) {
+          console.error("Error fetching user preferences:", profileError);
+        }
+        
+        // Extract unique instruments
+        const uniqueInstruments = [...new Set(instrumentsData.map(i => i.instrument_name))];
+        setInstruments(uniqueInstruments);
+        
+        // Set preferences, initialize missing ones
+        const userPrefs = userProfile?.preferences || {};
+        const initializedPrefs: Record<string, { notifications: boolean; volume: boolean }> = {};
+        
+        uniqueInstruments.forEach(instrument => {
+          initializedPrefs[instrument] = {
+            notifications: userPrefs[instrument]?.notifications || false,
+            volume: userPrefs[instrument]?.volume || false,
+          };
+        });
+        
+        setPreferences(initializedPrefs);
+      } catch (err) {
+        console.error("Error loading preference data:", err);
+        toast({
+          title: "Error",
+          description: "Failed to load notification preferences",
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
     };
-
-    loadPreferences();
-  }, [user?.id]);
-
+    
+    fetchData();
+  }, [user]);
+  
+  // Save preferences to database
   const savePreferences = async () => {
-    if (!user?.id) return;
-
+    if (!user) return;
+    
     setSaving(true);
     try {
-      const { error } = await supabaseClient
-        .from("notification_preferences")
-        .upsert(
-          {
-            user_id: user.id,
-            email_notifications: preferences.email,
-            push_notifications: preferences.pushNotifications,
-            sound_alerts: preferences.soundAlerts,
-            market_updates: preferences.marketUpdates,
-            price_alerts: preferences.priceAlerts,
-            system_announcements: preferences.systemAnnouncements,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "user_id" },
-        );
-
-      if (error) throw error;
-
+      const supabase = createClient();
+      
+      const { error } = await supabase
+        .from("profiles")
+        .update({ preferences })
+        .eq("id", user.id);
+        
+      if (error) {
+        throw error;
+      }
+      
       toast({
-        title: "Preferences saved",
+        title: "Preferences Saved",
         description: "Your notification preferences have been updated",
+        variant: "success",
       });
-    } catch (error) {
-      console.error("Error saving notification preferences:", error);
+    } catch (err) {
+      console.error("Error saving preferences:", err);
       toast({
         title: "Error",
-        description: "Failed to save notification preferences",
+        description: "Failed to save your preferences",
         variant: "destructive",
       });
     } finally {
       setSaving(false);
     }
   };
-
-  if (!user) {
-    return <div>Please log in to manage notification preferences</div>;
-  }
-
+  
+  // Toggle notification preference for an instrument
+  const toggleNotification = (instrument: string) => {
+    setPreferences(prev => ({
+      ...prev,
+      [instrument]: {
+        ...prev[instrument],
+        notifications: !prev[instrument].notifications,
+      },
+    }));
+  };
+  
+  // Filter instruments based on active tab
+  const filteredInstruments = activeTab === "all" 
+    ? instruments 
+    : activeTab === "enabled"
+    ? instruments.filter(i => preferences[i]?.notifications)
+    : instruments.filter(i => !preferences[i]?.notifications);
+  
+  // Count enabled notifications
+  const enabledCount = instruments.filter(i => preferences[i]?.notifications).length;
+  
   if (loading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Notification Preferences</CardTitle>
-          <CardDescription>Loading preferences...</CardDescription>
+          <CardTitle>Notification Settings</CardTitle>
+          <CardDescription>Loading your preferences...</CardDescription>
         </CardHeader>
+        <CardContent className="flex justify-center py-6">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </CardContent>
       </Card>
     );
   }
-
+  
   return (
-    <Card className="bg-slate-900 text-white shadow-md">
+    <Card>
       <CardHeader>
-        <div className="flex items-center gap-2">
-          <Bell className="h-5 w-5 text-blue-400" />
-          <CardTitle>Notification Preferences</CardTitle>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Notification Settings</CardTitle>
+            <CardDescription>
+              Choose which instruments you want to receive notifications for
+            </CardDescription>
+          </div>
+          <Badge variant="outline" className="ml-2">
+            {enabledCount} enabled
+          </Badge>
         </div>
-        <CardDescription className="text-slate-300">
-          Customize how you want to receive notifications
-        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label
-                htmlFor="email-notifications"
-                className="text-base font-medium"
-              >
-                Email Notifications
-              </Label>
-              <p className="text-sm text-slate-400">
-                Receive notifications via email
-              </p>
-            </div>
-            <Switch
-              id="email-notifications"
-              checked={preferences.email}
-              onCheckedChange={(checked) =>
-                setPreferences({ ...preferences, email: checked })
-              }
-              className="data-[state=checked]:bg-blue-500"
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label
-                htmlFor="push-notifications"
-                className="text-base font-medium"
-              >
-                Push Notifications
-              </Label>
-              <p className="text-sm text-slate-400">
-                Receive notifications on your devices
-              </p>
-            </div>
-            <Switch
-              id="push-notifications"
-              checked={preferences.pushNotifications}
-              onCheckedChange={(checked) =>
-                setPreferences({ ...preferences, pushNotifications: checked })
-              }
-              className="data-[state=checked]:bg-blue-500"
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 space-y-0.5">
-              <Volume2 className="h-4 w-4 text-slate-400" />
-              <Label htmlFor="sound-alerts" className="text-base font-medium">
-                Sound Alerts
-              </Label>
-            </div>
-            <Switch
-              id="sound-alerts"
-              checked={preferences.soundAlerts}
-              onCheckedChange={(checked) =>
-                setPreferences({ ...preferences, soundAlerts: checked })
-              }
-              className="data-[state=checked]:bg-blue-500"
-            />
-          </div>
-        </div>
-
-        <div className="pt-2">
-          <h3 className="mb-3 text-lg font-medium">Notification Types</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="market-updates" className="text-base">
-                Market Updates
-              </Label>
-              <Switch
-                id="market-updates"
-                checked={preferences.marketUpdates}
-                onCheckedChange={(checked) =>
-                  setPreferences({ ...preferences, marketUpdates: checked })
-                }
-                className="data-[state=checked]:bg-blue-500"
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <Label htmlFor="price-alerts" className="text-base">
-                Price Alerts
-              </Label>
-              <Switch
-                id="price-alerts"
-                checked={preferences.priceAlerts}
-                onCheckedChange={(checked) =>
-                  setPreferences({ ...preferences, priceAlerts: checked })
-                }
-                className="data-[state=checked]:bg-blue-500"
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <Label htmlFor="system-announcements" className="text-base">
-                System Announcements
-              </Label>
-              <Switch
-                id="system-announcements"
-                checked={preferences.systemAnnouncements}
-                onCheckedChange={(checked) =>
-                  setPreferences({
-                    ...preferences,
-                    systemAnnouncements: checked,
-                  })
-                }
-                className="data-[state=checked]:bg-blue-500"
-              />
-            </div>
-          </div>
-        </div>
-
-        <Button
-          onClick={savePreferences}
-          className="w-full bg-blue-600 hover:bg-blue-700"
+      <CardContent className="space-y-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="all">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="all">All Instruments</TabsTrigger>
+            <TabsTrigger value="enabled">Enabled</TabsTrigger>
+            <TabsTrigger value="disabled">Disabled</TabsTrigger>
+          </TabsList>
+          <TabsContent value={activeTab} className="mt-4">
+            {filteredInstruments.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-6 text-center text-muted-foreground">
+                <BellOff className="h-12 w-12 mb-2 opacity-50" />
+                <p>No instruments found in this category</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {filteredInstruments.map(instrument => (
+                  <div 
+                    key={instrument} 
+                    className="flex items-center justify-between rounded-lg border p-3 shadow-sm"
+                  >
+                    <div className="flex items-center space-x-3">
+                      {preferences[instrument]?.notifications ? (
+                        <Bell className="h-5 w-5 text-primary" />
+                      ) : (
+                        <BellOff className="h-5 w-5 text-muted-foreground" />
+                      )}
+                      <span className="font-medium">{instrument}</span>
+                    </div>
+                    <Switch 
+                      checked={preferences[instrument]?.notifications || false}
+                      onCheckedChange={() => toggleNotification(instrument)}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+      <CardFooter className="flex justify-end">
+        <Button 
+          onClick={savePreferences} 
           disabled={saving}
         >
-          {saving ? "Saving..." : "Save Preferences"}
+          {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {saving ? "Saving..." : "Save Changes"}
         </Button>
-      </CardContent>
+      </CardFooter>
     </Card>
   );
 }

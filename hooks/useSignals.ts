@@ -1,14 +1,22 @@
 "use client";
 
 import supabaseClient from "@/database/supabase/supabase.js";
-import { notifyUser, soundNotification } from "@/lib/notification";
 import { Signal } from "@/lib/types";
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useUser } from "@/providers/UserProvider";
+import { toast } from "@/hooks/use-toast";
+import NotificationService from "@/lib/notification-service";
 
 type PreferencesMap = Record<
   string,
   { notifications: boolean; volume: boolean }
 >;
+
+interface RealtimePayload {
+  eventType: "INSERT" | "UPDATE" | "DELETE";
+  new: Signal & Record<string, unknown>;
+  old?: Signal & Record<string, unknown>;
+}
 
 const useSignals = (
   preferences: PreferencesMap = {},
@@ -18,6 +26,8 @@ const useSignals = (
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [lastFetch, setLastFetch] = useState<number>(0);
+  // Use the user context to get current user ID
+  const { user } = useUser();
 
   // Use memoized fetch function to prevent unnecessary re-creation
   const fetchData = useCallback(async () => {
@@ -56,55 +66,117 @@ const useSignals = (
         }
         setSignals(finalSignals);
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Unexpected error in useSignals:", err);
-      setError(err.message);
+      setError(err instanceof Error ? err.message : "Unknown error occurred");
     } finally {
       setIsLoading(false);
     }
   }, [lastFetch, allSignals]);
 
+  // Handle notifications for signal events based on user preferences
+  const handleSignalNotification = useCallback(
+    async (signal: Signal, eventType: "new" | "completed" | "updated") => {
+      // Only send notifications if we have a user and the signal's instrument is in preferences
+      if (!user || !preferences || !signal.instrument_name) return;
+
+      // Check if this user has enabled notifications for this instrument
+      const instrumentPrefs = preferences[signal.instrument_name];
+      if (!instrumentPrefs?.notifications) return;
+
+      const isBuy = ["BUY", "LONG", "Buy", "Long"].includes(signal.direction || "");
+      const instrumentName = signal.instrument_name;
+
+      // Different notification types based on event type
+      switch (eventType) {
+        case "new":
+          // Show an immediate toast notification
+          toast({
+            title: `New ${isBuy ? "Buy" : "Sell"} Signal`,
+            description: `${instrumentName} signal started at ${signal.entry_price}`,
+            variant: "default",
+            icon: isBuy ? "arrow-up-right" : "arrow-down-right"
+          });
+
+          // Also create a persistent notification in the database
+          if (user.id) {
+            await NotificationService.notifyNewSignal(
+              user.id,
+              instrumentName,
+              isBuy ? "Buy" : "Sell"
+            );
+          }
+          break;
+
+        case "completed":
+          if (!signal.exit_price || !signal.entry_price) return;
+
+          // Calculate P&L
+          let profitLoss = 0;
+
+          // Calculate P&L based on the direction of the trade
+          if (isBuy) {
+            profitLoss = signal.exit_price - signal.entry_price;
+          } else {
+            profitLoss = signal.entry_price - signal.exit_price;
+          }
+
+          const isProfit = profitLoss > 0;
+          const plDisplay = Math.abs(profitLoss).toFixed(2);
+
+          // Show toast notification
+          toast({
+            title: `Signal Completed`,
+            description: `${instrumentName} ${isBuy ? "Buy" : "Sell"} signal ended at ${signal.exit_price} (${isProfit ? "+" : "-"}${plDisplay})`,
+            variant: isProfit ? "success" : "default",
+            icon: isProfit ? "arrow-up-right" : "arrow-down-right"
+          });
+
+          // Create persistent notification
+          if (user.id) {
+            await NotificationService.notifySignalCompleted(
+              user.id,
+              instrumentName,
+              profitLoss
+            );
+          }
+          break;
+
+        case "updated":
+          // This could be used for target/stop changes or other updates
+          // Currently not implemented, but ready for future expansion
+          break;
+      }
+    },
+    [user, preferences, toast]
+  );
+
   // Handle real-time updates more efficiently
   const handleRealtimeUpdate = useCallback(
-    async (payload: any) => {
-      // If this update only changes the stop or target, handle silently
-      if (
-        payload.eventType === "UPDATE" &&
-        (payload.old.take_profit_price !== payload.new.take_profit_price ||
-          payload.old.stop_loss_price !== payload.new.stop_loss_price)
-      ) {
-        const updatedSignal = payload.new as Signal;
-        // Update only the changed signal in place
-        setSignals((current) =>
-          current.map((s) =>
-            s.client_trade_id === updatedSignal.client_trade_id
-              ? updatedSignal
-              : s,
-          ),
-        );
-        // Do not refetch entire list to preserve the other cards' state
-        return;
+    async (payload: RealtimePayload) => {
+      const updatedSignal = payload.new;
+
+      // Check for notification triggers
+      if (payload.eventType === "INSERT" && user) {
+        // New signal started
+        handleSignalNotification(updatedSignal, "new");
+      } else if (payload.eventType === "UPDATE" && user) {
+        const oldSignal = payload.old;
+
+        // Signal completed (has exit_time now but didn't before)
+        if (updatedSignal.exit_time && oldSignal && !oldSignal.exit_time) {
+          handleSignalNotification(updatedSignal, "completed");
+        }
+
+        // Target/stop changes could be added here
+        // if (updatedSignal.take_profit !== oldSignal.take_profit || 
+        //     updatedSignal.stop_loss !== oldSignal.stop_loss) {
+        //   handleSignalNotification(updatedSignal, "updated");
+        // }
       }
 
-      // Check if user has notifications or volume turned on for this instrument
-      const instrumentName = (payload.new as { instrument_name: string })
-        .instrument_name;
-      const userPrefs = preferences[instrumentName] || {};
-
-      if (userPrefs.notifications) {
-        notifyUser(payload);
-      }
-
-      if (userPrefs.volume) {
-        soundNotification(payload);
-      }
-
-      // Optimize how we update signals
+      // Update signals state based on the event type
       setSignals((current) => {
-        const updatedSignal = payload.new as Signal;
-
-        console.log(updatedSignal);
-
         // When showing all signals, just append new ones
         if (allSignals) {
           if (payload.eventType === "INSERT") {
@@ -115,9 +187,9 @@ const useSignals = (
                 ? updatedSignal
                 : signal,
             );
-          } else if (payload.eventType === "DELETE") {
+          } else if (payload.eventType === "DELETE" && payload.old) {
             return current.filter(
-              (s) => s.client_trade_id !== payload.old.client_trade_id,
+              (s) => s.client_trade_id !== payload.old?.client_trade_id,
             );
           }
         } else {
@@ -135,9 +207,9 @@ const useSignals = (
                 ? updatedSignal
                 : signal,
             );
-          } else if (payload.eventType === "DELETE") {
+          } else if (payload.eventType === "DELETE" && payload.old) {
             return current.filter(
-              (s) => s.client_trade_id !== payload.old.client_trade_id,
+              (s) => s.client_trade_id !== payload.old?.client_trade_id,
             );
           }
         }
@@ -145,7 +217,7 @@ const useSignals = (
         return current;
       });
     },
-    [preferences, allSignals],
+    [allSignals, user, handleSignalNotification]
   );
 
   useEffect(() => {
@@ -155,7 +227,7 @@ const useSignals = (
     const subscription = supabaseClient
       .channel("all_signals_changes")
       .on(
-        "postgres_changes",
+        "postgres_changes" as any,
         { event: "*", schema: "public", table: "all_signals" },
         handleRealtimeUpdate,
       )

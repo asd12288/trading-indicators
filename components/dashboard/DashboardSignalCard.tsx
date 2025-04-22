@@ -29,7 +29,6 @@ const DashboardSignalCard = memo(
           "border-yellow-500/20 hover:border-yellow-500/40 hover:shadow-yellow-400/10",
           "bg-slate-900",
         )}
-        whileHover={{ y: -5, transition: { duration: 0.2 } }}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}

@@ -1,119 +1,122 @@
+"use client";
+
+import { Notification } from "@/types/notifications";
+import { formatDistanceToNow } from "date-fns";
 import {
-  BellIcon,
-  CreditCardIcon,
-  LineChartIcon,
-  InfoIcon,
+  Bell,
+  Info,
+  AlertTriangle,
+  User,
+  LineChart,
+  Check,
+  ExternalLink,
 } from "lucide-react";
-import { formatDistanceToNow, differenceInHours } from "date-fns";
-import { cn } from "@/lib/utils";
-import { Notification } from "@/lib/notification-types";
-import { useRouter } from "@/i18n/routing";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface NotificationItemProps {
   notification: Notification;
-  onClick: () => void;
+  onRead: (id: string) => void;
 }
 
 export default function NotificationItem({
   notification,
-  onClick,
+  onRead,
 }: NotificationItemProps) {
   const router = useRouter();
 
-  // Get the appropriate icon based on notification type
+  // Get icon based on notification type
   const getIcon = () => {
     switch (notification.type) {
       case "alert":
-        return <BellIcon className="h-3.5 w-3.5 text-orange-400" />;
-      case "signal":
-        return <LineChartIcon className="h-3.5 w-3.5 text-green-400" />;
+        return <AlertTriangle className="h-4 w-4 text-amber-400" />;
       case "account":
-        return <CreditCardIcon className="h-3.5 w-3.5 text-blue-400" />;
+        return <User className="h-4 w-4 text-blue-400" />;
+      case "trade":
+        return <LineChart className="h-4 w-4 text-green-400" />;
       case "system":
+      case "info":
       default:
-        return <InfoIcon className="h-3.5 w-3.5 text-slate-300" />;
+        return <Info className="h-4 w-4 text-slate-400" />;
     }
   };
 
-  // Format timestamp with more robust handling
-  const formatTimeAgo = (timestamp: string) => {
-    try {
-      const date = new Date(timestamp);
-      const now = new Date();
-
-      // Log for debugging
-      console.log(
-        `Notification timestamp: ${timestamp}, parsed as: ${date.toISOString()}`,
-      );
-
-      // Check if date is valid
-      if (isNaN(date.getTime())) {
-        console.warn("Invalid timestamp:", timestamp);
-        return "recently";
-      }
-
-      // Check for timezone or future date issues
-      if (date > now || differenceInHours(now, date) > 24) {
-        console.warn(`Suspicious timestamp difference: ${timestamp}`);
-      }
-
-      return formatDistanceToNow(date, {
-        addSuffix: true,
-        includeSeconds: true,
-      });
-    } catch (e) {
-      console.error("Error formatting time:", e);
-      return "recently";
-    }
-  };
-
-  // Handle click with proper link navigation
+  // Handle click on the notification
   const handleClick = () => {
-    // If there's a valid link, navigate to it
+    // Mark as read
+    if (!notification.is_read) {
+      onRead(notification.id);
+    }
+
+    // Navigate to link if available
     if (notification.link) {
       router.push(notification.link);
     }
-
-    // Always call the onClick handler (for marking as read, etc.)
-    onClick();
   };
 
   return (
-    <button
-      className={cn(
-        "w-full px-2 py-1.5 text-left transition-colors",
-        notification.read
-          ? "bg-slate-800/70 hover:bg-slate-700"
-          : "bg-slate-700 hover:bg-slate-600",
-        notification.link ? "cursor-pointer" : "cursor-default",
-      )}
+    <div
       onClick={handleClick}
-      disabled={!notification.link && !onClick}
+      className={`group flex cursor-pointer items-start gap-3 rounded-md p-3 transition-colors hover:bg-slate-800 ${
+        notification.is_read ? "bg-slate-900/40" : "bg-slate-800/80"
+      }`}
     >
-      <div className="flex items-start gap-2">
-        <div className="mt-0.5 rounded-full bg-slate-900 p-0.5">
-          {getIcon()}
-        </div>
-        <div className="flex-1 space-y-0.5">
-          <p
-            className={cn(
-              "text-xs font-medium leading-tight",
-              !notification.read ? "text-white" : "text-slate-200",
-            )}
+      {/* Icon */}
+      <div
+        className={`flex h-8 w-8 items-center justify-center rounded-full ${
+          notification.is_read ? "bg-slate-800" : "bg-slate-700"
+        }`}
+      >
+        {getIcon()}
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 space-y-1">
+        <div className="flex items-center justify-between">
+          <h4
+            className={`font-medium ${
+              notification.is_read ? "text-slate-300" : "text-white"
+            }`}
           >
             {notification.title}
-          </p>
-          <p className="text-[10px] leading-tight text-slate-300">
-            {notification.message}
-          </p>
-          <p className="text-[9px] text-slate-400">
-            {formatTimeAgo(notification.timestamp)}
-          </p>
+          </h4>
+          {!notification.is_read && (
+            <span className="h-2 w-2 rounded-full bg-blue-500"></span>
+          )}
         </div>
-        {!notification.read && (
-          <div className="mt-1 h-1.5 w-1.5 rounded-full bg-blue-400"></div>
+        <p className="text-sm text-slate-400">{notification.message}</p>
+        
+        {/* Link if available */}
+        {notification.link && (
+          <div className="flex items-center pt-1 text-xs text-blue-400 group-hover:underline">
+            <span>{notification.additional_data?.link_text || "View details"}</span>
+            <ExternalLink className="ml-1 h-3 w-3" />
+          </div>
         )}
+        
+        {/* Timestamp */}
+        <div className="text-xs text-slate-500">
+          {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+        </div>
       </div>
-    </button>
+
+      {/* Read indicator/button */}
+      {notification.is_read ? (
+        <div className="flex h-6 w-6 items-center justify-center text-slate-600">
+          <Check className="h-4 w-4" />
+        </div>
+      ) : (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onRead(notification.id);
+          }}
+          className="flex h-6 w-6 items-center justify-center rounded-full text-slate-400 hover:bg-slate-700 hover:text-white"
+          aria-label="Mark as read"
+        >
+          <Check className="h-3 w-3" />
+        </button>
+      )}
+    </div>
   );
 }

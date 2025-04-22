@@ -29,8 +29,8 @@ import {
   Settings,
   Sliders,
   BellRing,
+  LineChart,
 } from "lucide-react";
-import supabaseClient from "@/database/supabase/supabase";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
@@ -48,11 +48,14 @@ import {
 } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
+import { createClient } from "@/database/supabase/client";
+import NotificationService from "@/lib/notification-service";
+import { NotificationType } from "@/types/notifications";
 
 export default function SendNotificationForm() {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
-  const [notificationType, setNotificationType] = useState<string>("system");
+  const [notificationType, setNotificationType] = useState<NotificationType>("system");
   const [priority, setPriority] = useState<string>("normal");
   const [link, setLink] = useState<string>("");
   const [linkText, setLinkText] = useState<string>("");
@@ -63,12 +66,14 @@ export default function SendNotificationForm() {
     type: "success" | "error" | null;
     message: string;
   }>({ type: null, message: "" });
+  const [sendToSpecificUser, setSendToSpecificUser] = useState<boolean>(false);
+  const [specificUserEmail, setSpecificUserEmail] = useState<string>("");
 
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
 
-  // Function to send notification to all users
-  const sendNotificationToAllUsers = async (e: React.FormEvent) => {
+  // Function to send notification to all users or specific user
+  const sendNotifications = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!title.trim() || !message.trim()) {
@@ -80,85 +85,187 @@ export default function SendNotificationForm() {
       return;
     }
 
+    if (sendToSpecificUser && !specificUserEmail.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a user email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     setStatus({ type: null, message: "" });
 
     try {
-      // Get all users
-      const { data: users, error: usersError } = await supabaseClient
-        .from("profiles")
-        .select("id")
-        .not("id", "is", null);
+      const supabase = createClient();
+      
+      // Get users to send notifications to
+      let users;
+      
+      if (sendToSpecificUser) {
+        // Get the specific user by email
+        const { data: userData, error: userError } = await supabase
+          .from("profiles")
+          .select("id, email")
+          .eq("email", specificUserEmail.trim())
+          .single();
+          
+        if (userError || !userData) {
+          throw new Error(`User not found: ${specificUserEmail}`);
+        }
+        
+        console.log("Found user:", userData);
+        users = [userData];
+      } else {
+        // Get all users
+        const { data: allUsers, error: usersError } = await supabase
+          .from("profiles")
+          .select("id, email")
+          .not("id", "is", null);
 
-      if (usersError)
-        throw new Error(`Failed to fetch users: ${usersError.message}`);
-
-      if (!users || users.length === 0) {
-        throw new Error("No users found in the database");
+        if (usersError) throw new Error(`Failed to fetch users: ${usersError.message}`);
+        
+        if (!allUsers || allUsers.length === 0) {
+          throw new Error("No users found in the database");
+        }
+        
+        console.log(`Found ${allUsers.length} users for notifications`);
+        users = allUsers;
       }
 
-      // Prepare additional data
-      const additionalData: any = {
+      // Calculate expiry days
+      let expiresInDays = null;
+      if (expiresAfter !== "never") {
+        expiresInDays = parseInt(expiresAfter);
+      }
+      
+      // Set up additional data
+      const additionalData: Record<string, any> = {
         admin_generated: true,
         priority: priority,
       };
-
-      // Add link text to additional data as fallback
-      if (addLink && linkText) {
-        additionalData.link_text = linkText;
+      
+      // Batch process notifications for all users
+      let successCount = 0;
+      let failCount = 0;
+      
+      // Process notifications in batches to prevent overloading
+      for (const user of users) {
+        if (!user.id) {
+          console.warn("Skipping notification for user with no ID:", user);
+          failCount++;
+          continue;
+        }
+        
+        try {
+          console.log(`Sending ${notificationType} notification to user: ${user.id}`);
+          
+          // Using the new NotificationService to create notifications
+          let success = false;
+          
+          switch (notificationType) {
+            case "alert":
+              success = await NotificationService.createCustomNotification(
+                user.id,
+                title,
+                message,
+                "alert", // Use explicit string for notification type
+                addLink ? link : null,
+                addLink && linkText ? linkText : null,
+                expiresInDays,
+                additionalData
+              );
+              break;
+            case "account":
+              success = await NotificationService.createCustomNotification(
+                user.id,
+                title,
+                message,
+                "account", // Use explicit string for notification type
+                addLink ? link : null,
+                addLink && linkText ? linkText : null,
+                expiresInDays,
+                additionalData
+              );
+              break;
+            case "trade":
+              success = await NotificationService.createCustomNotification(
+                user.id,
+                title,
+                message,
+                "trade", // Use explicit string for notification type
+                addLink ? link : null,
+                addLink && linkText ? linkText : null,
+                expiresInDays,
+                additionalData
+              );
+              break;
+            case "info":
+              success = await NotificationService.createCustomNotification(
+                user.id,
+                title,
+                message,
+                "info", // Use explicit string for notification type
+                addLink ? link : null,
+                addLink && linkText ? linkText : null,
+                expiresInDays,
+                additionalData
+              );
+              break;
+            case "system":
+            default:
+              success = await NotificationService.createCustomNotification(
+                user.id,
+                title,
+                message,
+                "system", // Use explicit string for notification type
+                addLink ? link : null,
+                addLink && linkText ? linkText : null,
+                expiresInDays,
+                additionalData
+              );
+          }
+          
+          if (success) {
+            console.log(`Successfully sent notification to user: ${user.id}`);
+            successCount++;
+          } else {
+            console.error(`Failed to send notification to user: ${user.id}`);
+            failCount++;
+          }
+        } catch (err) {
+          console.error(`Failed to send notification to user ${user.id}:`, err);
+          failCount++;
+        }
       }
 
-      if (expiresAfter !== "never") {
-        const expiryDays = parseInt(expiresAfter);
-        const expiryDate = new Date();
-        expiryDate.setDate(expiryDate.getDate() + expiryDays);
-        additionalData.expires_at = expiryDate.toISOString();
+      const totalAttempted = users.length;
+      
+      if (successCount > 0) {
+        setStatus({
+          type: "success",
+          message: `Success! Sent to ${successCount}/${totalAttempted} users${failCount > 0 ? ` (${failCount} failed)` : ''}.`,
+        });
+
+        toast({
+          title: "Notifications Sent",
+          description: `Successfully sent to ${successCount} users.`,
+        });
+
+        // Reset form
+        setTitle("");
+        setMessage("");
+        setNotificationType("system");
+        setPriority("normal");
+        setLink("");
+        setLinkText("");
+        setAddLink(false);
+        setExpiresAfter("never");
+        setSpecificUserEmail("");
+      } else {
+        throw new Error(`Failed to send any notifications. Please check the console for more details.`);
       }
-
-      // Create notifications with corrected timestamp (adding 2 hours)
-      const currentTime = new Date();
-      currentTime.setHours(currentTime.getHours() + 2); // Add 2 hours to fix timezone issue
-
-      console.log(
-        "Setting notification timestamp to:",
-        currentTime.toISOString(),
-      );
-
-      const { data, error } = await supabaseClient.rpc(
-        "create_manual_notifications",
-        {
-          p_title: title,
-          p_message: message,
-          p_type: notificationType,
-          p_link: addLink && link ? link : null,
-          p_link_text: addLink && linkText ? linkText : null,
-          p_additional_data: additionalData,
-          p_created_at: currentTime.toISOString(), // Use the adjusted time
-        },
-      );
-
-      if (error)
-        throw new Error(`Failed to create notifications: ${error.message}`);
-
-      setStatus({
-        type: "success",
-        message: `Success! Sent to ${data || users.length} users.`,
-      });
-
-      toast({
-        title: "Notifications Sent",
-        description: `Successfully sent to ${data || users.length} users.`,
-      });
-
-      // Reset form
-      setTitle("");
-      setMessage("");
-      setNotificationType("system");
-      setPriority("normal");
-      setLink("");
-      setLinkText("");
-      setAddLink(false);
-      setExpiresAfter("never");
     } catch (err: any) {
       console.error("Error sending notifications:", err);
       setStatus({
@@ -180,12 +287,13 @@ export default function SendNotificationForm() {
   const getNotificationTypeIcon = () => {
     switch (notificationType) {
       case "alert":
-        return <Bell className="h-4 w-4 text-orange-400" />;
+        return <Bell className="h-4 w-4 text-amber-400" />;
       case "account":
         return <User className="h-4 w-4 text-blue-400" />;
-      case "admin":
-        return <ShieldAlert className="h-4 w-4 text-purple-400" />;
+      case "trade":
+        return <LineChart className="h-4 w-4 text-green-400" />;
       case "system":
+      case "info":
       default:
         return <Info className="h-4 w-4 text-slate-400" />;
     }
@@ -205,7 +313,7 @@ export default function SendNotificationForm() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white">Notifications</h1>
-            <p className="text-slate-400">Send notifications to all platform users</p>
+            <p className="text-slate-400">Send notifications to users</p>
           </div>
         </div>
         <Badge variant="outline" className="bg-slate-700 px-2 text-slate-300">
@@ -251,7 +359,7 @@ export default function SendNotificationForm() {
                 </Label>
                 <Select
                   value={notificationType}
-                  onValueChange={setNotificationType}
+                  onValueChange={(value) => setNotificationType(value as NotificationType)}
                 >
                   <SelectTrigger className="border-slate-700 bg-slate-900 text-slate-50">
                     <SelectValue placeholder="Select type" />
@@ -260,7 +368,8 @@ export default function SendNotificationForm() {
                     <SelectItem value="system">System</SelectItem>
                     <SelectItem value="alert">Alert</SelectItem>
                     <SelectItem value="account">Account</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="trade">Trade</SelectItem>
+                    <SelectItem value="info">Info</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-slate-500">
@@ -296,7 +405,7 @@ export default function SendNotificationForm() {
                   required
                 />
                 <p className="text-xs text-slate-500">
-                  Clear, concise message that will be shown to all users
+                  Clear, concise message that will be shown to users
                 </p>
               </div>
             </div>
@@ -334,6 +443,35 @@ export default function SendNotificationForm() {
 
             <CollapsibleContent className="space-y-5 px-5 pb-5 pt-1">
               <Separator className="mb-3 bg-slate-700" />
+              
+              {/* Send to Specific User */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label className="text-sm font-medium text-slate-300">
+                      Send to Specific User
+                    </Label>
+                    <p className="text-xs text-slate-500">
+                      Send to one user instead of all users
+                    </p>
+                  </div>
+                  <Switch checked={sendToSpecificUser} onCheckedChange={setSendToSpecificUser} />
+                </div>
+                
+                {sendToSpecificUser && (
+                  <div className="space-y-2 rounded-md bg-slate-900/50 p-4">
+                    <Label className="text-sm font-medium text-slate-300">
+                      User Email
+                    </Label>
+                    <Input
+                      placeholder="user@example.com"
+                      value={specificUserEmail}
+                      onChange={(e) => setSpecificUserEmail(e.target.value)}
+                      className="border-slate-700 bg-slate-900 text-slate-50"
+                    />
+                  </div>
+                )}
+              </div>
 
               {/* Priority */}
               <div className="space-y-2">
@@ -479,7 +617,6 @@ export default function SendNotificationForm() {
                 <div className="rounded-md bg-slate-800 p-4">
                   <div className="flex items-start gap-4">
                     <div className="rounded-full bg-slate-700 p-2">
-                      {/* Use the existing getNotificationTypeIcon function */}
                       {getNotificationTypeIcon()}
                     </div>
                     <div className="flex-1">
@@ -526,7 +663,7 @@ export default function SendNotificationForm() {
             Required fields filled
           </div>
           <Button
-            onClick={sendNotificationToAllUsers}
+            onClick={sendNotifications}
             disabled={isSubmitting || !title.trim() || !message.trim()}
             className="bg-blue-600 hover:bg-blue-700"
           >
@@ -536,7 +673,8 @@ export default function SendNotificationForm() {
               </>
             ) : (
               <>
-                <Send className="mr-2 h-4 w-4" /> Send to All Users
+                <Send className="mr-2 h-4 w-4" /> 
+                {sendToSpecificUser ? "Send to User" : "Send to All Users"}
               </>
             )}
           </Button>

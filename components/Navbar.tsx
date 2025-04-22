@@ -14,10 +14,10 @@ import { RxHamburgerMenu, RxCross1 } from "react-icons/rx";
 import LogoutBtn from "./LogoutBtn";
 import UpgradeButton from "./UpgradeButton";
 import LanguageSwitcher from "./LanguageSwitcher";
+import NotificationBell from "./NotificationBell";
 import { useTranslations } from "next-intl";
 import { useParams, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import NotificationBell from "@/components/NotificationBell";
 
 export default function Navbar({ user, profile }) {
   // State to handle mobile menu toggle
@@ -108,11 +108,11 @@ export default function Navbar({ user, profile }) {
 
             <div className="mx-3 h-5 w-px bg-slate-700/50"></div>
 
-            {/* Pass userId to NotificationBell */}
-            <NotificationBell userId={user?.id} />
-
             {user ? (
               <div className="flex items-center gap-3">
+                {/* Add NotificationBell here */}
+                {user?.id && <NotificationBell userId={user.id} />}
+                
                 <Link
                   href="/profile"
                   className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium ${
@@ -158,6 +158,8 @@ export default function Navbar({ user, profile }) {
         </Link>
 
         <div className="flex items-center gap-3">
+          {/* Add NotificationBell to mobile view too */}
+          {user?.id && <NotificationBell userId={user.id} />}
           <LanguageSwitcher />
 
           {/* Mobile Menu Button */}

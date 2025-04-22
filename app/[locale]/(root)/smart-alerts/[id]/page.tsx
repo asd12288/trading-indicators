@@ -1,10 +1,8 @@
 import SignalLayout from "@/components/SignalLayout";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
+import NotificationService from "@/lib/notification-service";
 import { Metadata } from "next";
-import { ClientThemeProvider } from "@/components/ui/client-theme-provider";
-import { cn } from "@/lib/utils";
-import { NotificationService } from "@/lib/notification-service";
 
 export async function generateMetadata({
   params,
@@ -77,31 +75,15 @@ export default async function Page({
         },
       );
 
-      // Only send notifications if we actually have signal data
-      if (signalData && Object.keys(signalData).length > 0) {
-        // If signal has high potential (MFE > 50), notify user
-        if (signalData.mfe && signalData.mfe > 50) {
-          NotificationService.notifyNewSignal(
-            user.id,
-            params.id,
-            signalData.trade_side || "unknown",
-            signalData.entry_price,
-          ).catch((e) => console.error("Failed to send notification:", e));
-        }
-
-        // For non-pro users, suggest upgrade when viewing high-value signals
-        if (!profile.plan || profile.plan !== "pro") {
-          // Only trigger this for certain high-value signals to avoid spamming
-          if (signalData.priority === "high") {
-            NotificationService.notifySystem(
-              user.id,
-              "Unlock Advanced Features",
-              "Upgrade to PRO to access advanced signal analysis tools",
-            ).catch((e) =>
-              console.error("Failed to send upgrade notification:", e),
-            );
-          }
-        }
+      // Create a notification for first time viewing this signal
+      if (signalData) {
+        NotificationService.notifyNewSignalView(
+          user.id,
+          params.id,
+          signalData
+        ).catch(error => {
+          console.error("Error creating notification:", error);
+        });
       }
     } catch (error) {
       console.error("Error recording view:", error);

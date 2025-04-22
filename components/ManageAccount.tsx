@@ -7,7 +7,6 @@ import { useState } from "react";
 import ConfirmDialog from "./ConfirmDialog";
 import { Button } from "./ui/button";
 import { useTranslations } from "next-intl";
-import { Tooltip } from "./ui/tooltip";
 import SignalToolTooltip from "./SignalCard/SignalToolTooltip";
 import { CalendarIcon, CreditCardIcon, AlertTriangleIcon } from "lucide-react";
 import { motion } from "framer-motion";
@@ -24,7 +23,6 @@ const ManageAccount = ({ profile }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const router = useRouter();
-  const { toast } = useToast();
   const t = useTranslations("ManageAccount");
 
   // Status styling helper

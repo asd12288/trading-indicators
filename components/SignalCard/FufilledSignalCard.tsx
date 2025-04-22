@@ -18,8 +18,6 @@ import {
   TrendingDown,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect } from "react";
-import { NotificationService } from "@/lib/notification-service";
 import { useUser } from "@/providers/UserProvider";
 import SignalLoadingCard from "./SignalLoadingCard";
 
@@ -183,41 +181,6 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
       borderColor: "border-slate-500/30",
     };
   }
-
-  // Send notification when signal completes with significant potential profit
-  useEffect(() => {
-    // Only send notification if explicitly requested and user is logged in
-    if (notifyUser && userId && mfeTicks > 0) {
-      const sendNotification = async () => {
-        try {
-          // Send a single notification with quality information included
-          await NotificationService.notifySignalCompleted(
-            userId,
-            instrument_name,
-            mfeTicks,
-            riskRewardRatio >= 4 && mfeDollarValue > 100
-              ? "exceptional"
-              : "standard",
-            mfeDollarValue,
-          );
-        } catch (error) {
-          console.error(
-            "Failed to send signal completion notification:",
-            error,
-          );
-        }
-      };
-
-      sendNotification();
-    }
-  }, [
-    notifyUser,
-    userId,
-    instrument_name,
-    mfeTicks,
-    riskRewardRatio,
-    mfeDollarValue,
-  ]);
 
   return (
     <div className="h-full">

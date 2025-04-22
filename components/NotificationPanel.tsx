@@ -1,193 +1,97 @@
-import { Notification } from "@/lib/notification-types";
-import { useTranslations } from "next-intl";
-import { Loader2, BellOff, Check, Trash2 } from "lucide-react";
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Notification } from "@/types/notifications";
+import { useEffect, useState } from "react";
 import NotificationItem from "./NotificationItem";
-import { Button } from "./ui/button";
-import { Separator } from "./ui/separator";
-import { useState } from "react";
-import { Link } from "@/i18n/routing";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { Loader2, Check } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 
 interface NotificationPanelProps {
   notifications: Notification[];
   loading: boolean;
-  onMarkAllAsRead: () => Promise<void>;
-  unreadCount?: number;
-  onClearAll?: () => Promise<void>;
+  onMarkAsRead: (id: string) => void;
+  onMarkAllAsRead: () => void;
+  unreadCount: number;
 }
 
 export default function NotificationPanel({
   notifications,
   loading,
+  onMarkAsRead,
   onMarkAllAsRead,
-  unreadCount = 0,
-  onClearAll,
+  unreadCount,
 }: NotificationPanelProps) {
-  const t = useTranslations("Notifications");
-  const [markingRead, setMarkingRead] = useState(false);
-  const [clearing, setClearing] = useState(false);
-  const [showClearConfirm, setShowClearConfirm] = useState(false);
-
-  // Handle mark all as read with proper loading state
-  const handleMarkAllAsRead = async () => {
-    if (markingRead || unreadCount === 0) return;
-
-    setMarkingRead(true);
-    try {
-      await onMarkAllAsRead();
-    } finally {
-      setMarkingRead(false);
-    }
-  };
-
-  // Handle clearing all notifications
-  const handleClearAll = async () => {
-    if (clearing || notifications.length === 0 || !onClearAll) return;
-
-    setClearing(true);
-    try {
-      await onClearAll();
-      setShowClearConfirm(false);
-    } finally {
-      setClearing(false);
-    }
-  };
-
   return (
-    <div className="flex max-h-[70vh] flex-col">
-      {/* Confirmation dialog for clearing all notifications */}
-      <AlertDialog open={showClearConfirm} onOpenChange={setShowClearConfirm}>
-        <AlertDialogContent className="border-slate-700 bg-slate-800 text-slate-200">
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t("clearAllConfirmTitle")}</AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-400">
-              {t("clearAllConfirmDescription")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600">
-              {t("cancel")}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleClearAll}
-              className="bg-red-600 hover:bg-red-700"
-              disabled={clearing}
-            >
-              {clearing ? (
-                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-              ) : null}
-              {t("clearAll")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <div className="flex items-center justify-between p-4">
-        <h2 className="text-sm font-medium text-slate-100">
-          {t("title")}
+    <div className="flex h-[28rem] w-80 flex-col rounded-lg border border-slate-700 bg-slate-900 shadow-lg">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-slate-800 p-4">
+        <h3 className="font-medium text-slate-100">Notifications</h3>
+        <div className="flex items-center">
           {unreadCount > 0 && (
-            <span className="ml-1 rounded-full bg-blue-600 px-1.5 py-0.5 text-xs">
-              {unreadCount}
-            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onMarkAllAsRead}
+              className="text-xs text-slate-400 hover:text-slate-100"
+            >
+              <Check className="mr-1 h-3 w-3" />
+              Mark all read
+            </Button>
           )}
-        </h2>
-
-        {/* Only keep Mark All as Read button at the top */}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 px-2.5 text-xs"
-          disabled={loading || markingRead || unreadCount === 0}
-          onClick={handleMarkAllAsRead}
-        >
-          {markingRead ? (
-            <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />
-          ) : (
-            <Check className="mr-1.5 h-3 w-3" />
-          )}
-          {t("markAllRead")}
-        </Button>
+        </div>
       </div>
 
-      <Separator />
-
-      <div className="flex-1 overflow-auto">
+      {/* Content */}
+      <ScrollArea className="flex-1">
         {loading ? (
-          <div className="flex items-center justify-center p-4">
-            <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+          <div className="flex h-full items-center justify-center">
+            <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
           </div>
         ) : notifications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center p-8 text-center">
-            <BellOff className="mb-2 h-8 w-8 text-slate-500" />
-            <p className="text-sm text-slate-300">{t("empty.title")}</p>
-            <p className="mt-1 text-xs text-slate-500">
-              {t("empty.description")}
-            </p>
+          <div className="flex h-full flex-col items-center justify-center p-4 text-center">
+            <div className="mb-2 rounded-full bg-slate-800 p-3">
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                className="h-6 w-6 text-slate-400" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" 
+                />
+              </svg>
+            </div>
+            <h4 className="mb-1 text-sm font-medium text-slate-300">No notifications yet</h4>
+            <p className="text-xs text-slate-500">When you get notifications, they'll appear here</p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-700">
-            {notifications.slice(0, 5).map((notification) => (
+          <div className="divide-y divide-slate-800/50">
+            {notifications.map((notification) => (
               <NotificationItem
                 key={notification.id}
                 notification={notification}
-                onClick={() => {}}
+                onRead={onMarkAsRead}
               />
             ))}
-            {notifications.length > 5 && (
-              <div className="p-2 text-center">
-                <Button
-                  variant="ghost"
-                  className="text-xs text-slate-400 hover:text-slate-300"
-                  asChild
-                >
-                  <Link href="/notifications">
-                    {t("seeAll", { count: notifications.length - 5 })}
-                  </Link>
-                </Button>
-              </div>
-            )}
           </div>
         )}
-      </div>
+      </ScrollArea>
 
+      {/* Footer */}
       {notifications.length > 0 && (
-        <>
-          <Separator />
-          <div className="flex flex-col gap-2 p-3">
-            {/* View All button */}
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full border-slate-700 bg-slate-800/60 text-xs text-slate-300 hover:bg-slate-700"
-              asChild
-            >
-              <Link href="/notifications">{t("viewAll")}</Link>
-            </Button>
-
-            {/* Clear All button moved to bottom */}
-            {onClearAll && notifications.length > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="mt-1 w-full text-xs text-rose-400 hover:bg-rose-900/20 hover:text-rose-300"
-                disabled={loading || clearing}
-                onClick={() => setShowClearConfirm(true)}
-              >
-                <Trash2 className="mr-1.5 h-3.5 w-3.5" />
-                {t("clearAll")}
-              </Button>
-            )}
-          </div>
-        </>
+        <div className="border-t border-slate-800 p-3">
+          <p className="text-center text-xs text-slate-500">
+            {unreadCount > 0 
+              ? `You have ${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}` 
+              : 'All caught up!'}
+          </p>
+        </div>
       )}
     </div>
   );
