@@ -1,6 +1,6 @@
 // New hook to sort signals by status priority and entry time
-import { useMemo } from 'react';
-import { Signal } from '@/lib/types';
+import { useMemo } from "react";
+import { Signal } from "@/lib/types";
 
 // Determine priority: running < fulfilled < others
 const getSignalStatusPriority = (signal: Signal): number => {
@@ -20,8 +20,8 @@ const useSignalSort = (signals?: Signal[]): Signal[] => {
       const pb = getSignalStatusPriority(b);
       if (pa !== pb) return pa - pb;
       // Same status: newest entry_time first
-      const ta = new Date(a.entry_time || '').getTime();
-      const tb = new Date(b.entry_time || '').getTime();
+      const ta = new Date(a.entry_time || "").getTime();
+      const tb = new Date(b.entry_time || "").getTime();
       return tb - ta;
     });
   }, [signals]);

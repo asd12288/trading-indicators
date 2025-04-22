@@ -21,6 +21,7 @@ import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { NotificationService } from "@/lib/notification-service";
 import { useUser } from "@/providers/UserProvider";
+import SignalLoadingCard from "./SignalLoadingCard";
 
 interface FufilledSignalCardProps {
   instrument: Signal;
@@ -55,16 +56,9 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
 
   const t = useTranslations("FufilledSignalCard");
 
-  // Early validation
+  // Early validation: show loading skeleton during transitions instead of error
   if (!entry_time || !entry_price) {
-    return (
-      <div className="flex h-[500px] w-full flex-col items-center justify-center rounded-lg border border-yellow-500 bg-yellow-950/10 p-3 text-center">
-        <InfoIcon className="h-6 w-6 text-yellow-500" />
-        <p className="mt-1 text-xs text-slate-400">
-          Incomplete data for {instrument_name}
-        </p>
-      </div>
-    );
+    return <SignalLoadingCard />;
   }
 
   // Format numbers consistently with full precision

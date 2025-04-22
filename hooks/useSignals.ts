@@ -70,13 +70,17 @@ const useSignals = (
       // If this update only changes the stop or target, handle silently
       if (
         payload.eventType === "UPDATE" &&
-        ((payload.old.take_profit_price !== payload.new.take_profit_price) ||
-         (payload.old.stop_loss_price !== payload.new.stop_loss_price))
+        (payload.old.take_profit_price !== payload.new.take_profit_price ||
+          payload.old.stop_loss_price !== payload.new.stop_loss_price)
       ) {
         const updatedSignal = payload.new as Signal;
         // Update only the changed signal in place
         setSignals((current) =>
-          current.map((s) => (s.client_trade_id === updatedSignal.client_trade_id ? updatedSignal : s)),
+          current.map((s) =>
+            s.client_trade_id === updatedSignal.client_trade_id
+              ? updatedSignal
+              : s,
+          ),
         );
         // Do not refetch entire list to preserve the other cards' state
         return;
@@ -107,10 +111,14 @@ const useSignals = (
             return [updatedSignal, ...current];
           } else if (payload.eventType === "UPDATE") {
             return current.map((signal) =>
-              signal.client_trade_id === updatedSignal.client_trade_id ? updatedSignal : signal,
+              signal.client_trade_id === updatedSignal.client_trade_id
+                ? updatedSignal
+                : signal,
             );
           } else if (payload.eventType === "DELETE") {
-            return current.filter((s) => s.client_trade_id !== payload.old.client_trade_id);
+            return current.filter(
+              (s) => s.client_trade_id !== payload.old.client_trade_id,
+            );
           }
         } else {
           // Original behavior for latest signals per instrument
@@ -128,7 +136,9 @@ const useSignals = (
                 : signal,
             );
           } else if (payload.eventType === "DELETE") {
-            return current.filter((s) => s.client_trade_id !== payload.old.client_trade_id);
+            return current.filter(
+              (s) => s.client_trade_id !== payload.old.client_trade_id,
+            );
           }
         }
 

@@ -13,6 +13,7 @@ import TradingViewWidget from "../TradingViewWidget";
 
 // Import the new components
 import ErrorCard from "./components/ErrorCard";
+import SignalLoadingCard from "./SignalLoadingCard";
 import PriceInfoSection from "./components/PriceInfoSection";
 import KeyPricesGrid from "./components/KeyPricesGrid";
 import PriceScaleVisualization from "./components/PriceScaleVisualization";
@@ -28,7 +29,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
     const { theme } = useTheme();
     const {
       entry_time,
-      instrument_name= 'eurusd',
+      instrument_name = "eurusd",
       trade_side,
       entry_price,
       take_profit_price,
@@ -51,7 +52,8 @@ const RunningSignalCard: FC<RunningSignalCardProps> = memo(
     const t = useTranslations("RunningSignalCard");
 
     if (!entry_time || !entry_price || !take_profit_price || !stop_loss_price) {
-      return <ErrorCard instrumentName={instrument_name} />;
+      // Show loading skeleton while data propagates
+      return <SignalLoadingCard />;
     }
 
     // Calculate time since entry
