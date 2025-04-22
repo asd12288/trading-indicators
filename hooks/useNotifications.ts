@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/database/supabase/client";
 import { Notification, NotificationCount } from "@/types/notifications";
 import { toast } from "./use-toast";
+import { playNotificationSound } from "@/utils/notificationSounds";
 
 export function useNotifications(userId?: string) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -143,13 +144,9 @@ export function useNotifications(userId?: string) {
         return newCounts;
       });
       
-      // Optionally play a sound for new notifications
-      try {
-        const audio = new Audio('/sounds/notification.mp3');
-        audio.volume = 0.5;
-        audio.play().catch(err => console.log('Audio play failed:', err));
-      } catch (error) {
-        console.error('Error playing notification sound:', error);
+      // Use the centralized sound utility
+      if (!newNotification.is_read) {
+        playNotificationSound();
       }
     } 
     else if (payload.eventType === 'UPDATE') {

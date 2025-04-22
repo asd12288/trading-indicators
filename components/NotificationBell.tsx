@@ -14,24 +14,13 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
   const [open, setOpen] = useState(false);
   const { notifications, counts, loading, markAsRead, markAllAsRead } = useNotifications(userId);
 
-  // Play sound when new unread notification comes in
+  // Track previous unread count
   const [prevUnreadCount, setPrevUnreadCount] = useState(0);
 
   useEffect(() => {
-    // Only play sound when unread count increases
-    if (counts.unread > prevUnreadCount && prevUnreadCount !== 0) {
-      // Simple sound notification
-      try {
-        const audio = new Audio('/sounds/notification.mp3');
-        audio.volume = 0.5;
-        audio.play().catch(err => console.log('Audio play failed:', err));
-      } catch (error) {
-        console.error('Error playing notification sound:', error);
-      }
-    }
-
+    // Just update the previous count
     setPrevUnreadCount(counts.unread);
-  }, [counts.unread, prevUnreadCount]);
+  }, [counts.unread]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
