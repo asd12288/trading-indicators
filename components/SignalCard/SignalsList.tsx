@@ -3,11 +3,12 @@
 import usePreferences from "@/hooks/usePreferences";
 import useSignals from "@/hooks/useSignals";
 import { Link } from "@/i18n/routing";
-import { instrumentCategoryMap } from "@/lib/instrumentCategories";
 import { motion } from "framer-motion";
 import { AlertOctagon, Filter, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
+import useSignalFilter from "@/hooks/useSignalFilter";
+import useSignalSort from "@/hooks/useSignalSort";
 import FavoriteSignals from "../FavoriteSignals";
 import UpgradePrompt from "../UpgradePrompt";
 import LoaderCards from "../loaders/LoaderCards";
@@ -58,67 +59,24 @@ const SignalsList = () => {
     setRemovedFavorites((prev) => [...prev, instrumentName]);
   }, []);
 
-  // Derived state using useMemo
-  const filteredSignals = useMemo(() => {
-    if (!signals) return [];
-
-    return (
-      [...signals]
-        .filter((signal) => {
-          const name = signal.instrument_name?.toLowerCase() || "";
-          const category =
-            instrumentCategoryMap[signal.instrument_name] || "unknown";
-          const matchesCategory =
-            selectedCategory === "all" ? true : category === selectedCategory;
-          const matchesSearch =
-            searchedSignal.trim() === ""
-              ? true
-              : name.includes(searchedSignal.toLowerCase());
-          return matchesCategory && matchesSearch;
-        })
-        // Sort by status priority first before slicing
-        .sort((a, b) => {
-          // Sort by status priority first
-          const statusCompare =
-            getSignalStatusPriority(a) - getSignalStatusPriority(b);
-          if (statusCompare !== 0) {
-            return statusCompare;
-          }
-
-          // For signals with same status, sort by time (newest first within each category)
-          return (
-            new Date(b.entry_time || new Date()).getTime() -
-            new Date(a.entry_time || new Date()).getTime()
-          );
-        })
-    );
-  }, [signals, searchedSignal, selectedCategory]);
+  // Filter and sort signals via custom hooks
+  const filteredSignals = useSignalFilter(signals, {
+    search: searchedSignal,
+    category: selectedCategory,
+  });
+  const sortedSignals = useSignalSort(filteredSignals);
 
   // Only limit signals for non-pro users
-  const displaySignals = isPro ? filteredSignals : filteredSignals.slice(0, 5);
+  const displaySignals = isPro ? sortedSignals : sortedSignals.slice(0, 5);
 
   // Filter favorite signals
-  const favouriteSignals = useMemo(() => {
-    if (!signals || !favorites) return [];
-
-    return signals
-      .filter(
-        (signal) =>
-          favorites.includes(signal.instrument_name) &&
-          !removedFavorites.includes(signal.instrument_name),
-      )
-      .sort((a, b) => {
-        const statusCompare =
-          getSignalStatusPriority(a) - getSignalStatusPriority(b);
-        if (statusCompare !== 0) {
-          return statusCompare;
-        }
-        return (
-          new Date(b.entry_time || new Date()).getTime() -
-          new Date(a.entry_time || new Date()).getTime()
-        );
-      });
-  }, [signals, favorites, removedFavorites]);
+  const favouriteSignals = useSignalSort(
+    signals?.filter(
+      (signal) =>
+        favorites.includes(signal.instrument_name) &&
+        !removedFavorites.includes(signal.instrument_name),
+    ),
+  );
 
   // Determine loading state - we're loading if either user or preferences are loading
   const isLoading = userLoading || isLoadingSignals || isLoadingPrefs;
@@ -231,10 +189,10 @@ const SignalsList = () => {
         <SignalsGrid signals={displaySignals} isLoading={isLoadingSignals} />
 
         {/* Footer - if needed */}
-        {!isPro && displaySignals.length >= 5 && filteredSignals.length > 5 && (
+        {!isPro && displaySignals.length >= 5 && sortedSignals.length > 5 && (
           <div className="mt-4 rounded-lg bg-blue-950/30 p-5 text-center">
             <p className="text-base text-slate-300">
-              Viewing 5 of {filteredSignals.length} signals.
+              Viewing 5 of {sortedSignals.length} signals.
               <Link
                 href="/profile?tab=upgrade"
                 className="ml-2 font-medium text-blue-500 hover:underline"

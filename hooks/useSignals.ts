@@ -128,11 +128,13 @@ const useSignals = (
   useEffect(() => {
     fetchData();
 
+    // Subscribe to real-time updates on the appropriate table
+    const tableName = allSignals ? "all_signals" : "latest_signals_per_instrument";
     const subscription = supabaseClient
-      .channel("all_signals_changes")
+      .channel(`signal_changes_${tableName}`)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "all_signals" },
+        { event: "*", schema: "public", table: tableName },
         handleRealtimeUpdate,
       )
       .subscribe();
@@ -140,7 +142,7 @@ const useSignals = (
     return () => {
       supabaseClient.removeChannel(subscription);
     };
-  }, [fetchData, handleRealtimeUpdate]);
+  }, [fetchData, handleRealtimeUpdate, allSignals]);
 
   return { signals, isLoading, error, refetch: fetchData };
 };
