@@ -101,6 +101,8 @@ const SignalCard: React.FC<SignalCardProps> = React.memo(
       prevProps.signalPassed.change_24h === nextProps.signalPassed.change_24h &&
       prevProps.signalPassed.exit_price === nextProps.signalPassed.exit_price &&
       prevProps.signalPassed.entry_time === nextProps.signalPassed.entry_time &&
+      prevProps.signalPassed.take_profit_price === nextProps.signalPassed.take_profit_price &&
+      prevProps.signalPassed.stop_loss_price === nextProps.signalPassed.stop_loss_price &&
       prevProps.showFavoriteControls === nextProps.showFavoriteControls
     );
   },

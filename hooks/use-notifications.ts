@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import supabaseClient from "@/database/supabase/supabase";
 import { Notification } from "@/lib/notification-types";
 import { toast } from "@/hooks/use-toast";
-import { BellOff } from "lucide-react";
+import usePreferences from "@/hooks/usePreferences";
 
 // Helper function to check if a file exists at a given URL
 const checkFileExists = async (url: string): Promise<boolean> => {
@@ -26,6 +26,8 @@ export function useNotifications(passedUserId?: string) {
 
   // Use passed userId directly
   const userId = passedUserId;
+  // Load user signal notification preferences
+  const { notificationsOn } = usePreferences(userId);
 
   // Calculate unread count - make sure this is accurate
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -191,8 +193,8 @@ export function useNotifications(passedUserId?: string) {
           },
           (payload) => {
             if (payload.eventType === "INSERT") {
-              // Add new notification to state
-              const newNotification = payload.new as any;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const newNotification = payload.new as any; // raw DB row
 
               // Transform to match interface
               const notification: Notification = {
@@ -249,6 +251,7 @@ export function useNotifications(passedUserId?: string) {
           },
           async (payload) => {
             // This pattern is similar to what's in useSignals
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const signal = payload.new as any;
 
             if (signal && signal.importance === "high") {
@@ -287,6 +290,7 @@ export function useNotifications(passedUserId?: string) {
             table: "instruments_status",
           },
           async (payload) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const status = payload.new as any;
 
             // Check if this is a significant trend change
@@ -316,15 +320,59 @@ export function useNotifications(passedUserId?: string) {
         )
         .subscribe();
 
+      // 4. Subscription to signal stop/target changes for user preferences
+      const priceChangeSubscription = supabaseClient
+        .channel(`signals-update-${userId}-${Date.now()}`)
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "signals" },
+          async (payload) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const oldSignal = payload.old as any;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const newSignal = payload.new as any;
+            // Only notify on stop/target changes
+            if (
+              oldSignal.stop_loss_price !== newSignal.stop_loss_price ||
+              oldSignal.take_profit_price !== newSignal.take_profit_price
+            ) {
+              // Check if user wants notifications for this instrument
+              if (notificationsOn.includes(newSignal.instrument_name)) {
+                try {
+                  await supabaseClient.from("notifications").insert({
+                    user_id: userId,
+                    type: "signal",
+                    title: `Update on ${newSignal.instrument_name}`,
+                    message: `Stop: ${newSignal.stop_loss_price}, Target: ${newSignal.take_profit_price}`,
+                    read: false,
+                    link: `/smart-alerts/${newSignal.instrument_name}`,
+                    additional_data: {
+                      old_stop_loss: oldSignal.stop_loss_price,
+                      new_stop_loss: newSignal.stop_loss_price,
+                      old_take_profit: oldSignal.take_profit_price,
+                      new_take_profit: newSignal.take_profit_price,
+                      instrument: newSignal.instrument_name,
+                    },
+                  });
+                } catch {
+                  // silent catch
+                }
+              }
+            }
+          },
+        )
+        .subscribe();
+
       return () => {
         supabaseClient.removeChannel(notificationsSubscription);
         supabaseClient.removeChannel(signalsSubscription);
         supabaseClient.removeChannel(statusSubscription);
+        supabaseClient.removeChannel(priceChangeSubscription);
       };
-    } catch (err) {
-      // Silent catch
+    } catch {
+      // silent catch
     }
-  }, [userId, playSound]);
+  }, [userId, playSound, notificationsOn]);
 
   // Mark all notifications as read
   const markAllAsRead = async () => {

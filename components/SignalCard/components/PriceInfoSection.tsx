@@ -3,6 +3,7 @@ import { cn, formatNumber } from "@/lib/utils";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { FC } from "react";
+import { motion } from "framer-motion";
 import LastPriceDisplay from "../../LastPriceDisplay";
 
 interface PriceInfoSectionProps {
@@ -33,7 +34,8 @@ const PriceInfoSection: FC<PriceInfoSectionProps> = ({
   const unit = isForex ? "pips" : "points";
 
   return (
-    <div
+    <motion.div
+      layout
       className={cn(
         "mb-4 grid grid-cols-3 gap-1 overflow-hidden rounded-lg",
         theme === "dark" ? "bg-slate-800/70" : "bg-slate-50",
@@ -47,9 +49,15 @@ const PriceInfoSection: FC<PriceInfoSectionProps> = ({
         )}
       >
         <div className="mb-1 text-xs text-slate-400">{t("currentPrice")}</div>
-        <div className="text-2xl font-bold">
-          {isLoading ? "..." : formatNumber(currentPrice || entryPrice)}
-        </div>
+        <motion.div
+          key={isLoading ? "loading" : currentPrice}
+          initial={{ opacity: 0.3 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="text-2xl font-bold"
+        >
+          {isLoading ? "..." : formatNumber(currentPrice ?? entryPrice)}
+        </motion.div>
         <div className="mt-1 h-1 w-full rounded-full bg-amber-500"></div>
       </div>
 
@@ -80,10 +88,14 @@ const PriceInfoSection: FC<PriceInfoSectionProps> = ({
       <div className="flex flex-col items-center justify-center px-2 py-3">
         <div className="mb-1 text-xs text-slate-400">PnL</div>
 
-        {currentPnL && currentPrice !== entryPrice ? (
+        {currentPnL != null && currentPrice !== entryPrice ? (
           <div className="flex flex-col items-center">
             {/* PnL Amount - Compact */}
-            <div
+            <motion.div
+              key={currentPnL}
+              initial={{ x: -10, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.3 }}
               className={cn(
                 "flex items-center text-xs font-semibold",
                 isProfitable ? "text-emerald-400" : "text-rose-400",
@@ -95,10 +107,14 @@ const PriceInfoSection: FC<PriceInfoSectionProps> = ({
                 <ArrowDown className="mr-0.5 h-3 w-3" />
               )}
               {formatNumber(Math.abs(currentPnL))} {unit}
-            </div>
+            </motion.div>
 
             {/* Percentage - Smaller */}
-            <div
+            <motion.div
+              key={pnlPercentage}
+              initial={{ x: 10, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
               className={cn(
                 "text-xs",
                 isProfitable ? "text-emerald-400" : "text-rose-400",
@@ -106,13 +122,13 @@ const PriceInfoSection: FC<PriceInfoSectionProps> = ({
             >
               {isProfitable ? "+" : "-"}
               {pnlPercentage}%
-            </div>
+            </motion.div>
           </div>
         ) : (
           <div className="text-xs text-slate-400">No change</div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -221,7 +221,7 @@ const SignalsGrid: React.FC<SignalsGridProps> = ({
         >
           {sortedSignals.map((signal, index) => (
             <motion.div
-              key={`${signal.instrument_name}-${index}`}
+              key={signal.client_trade_id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{

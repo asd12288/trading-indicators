@@ -2,6 +2,7 @@ import { useTheme } from "@/context/theme-context";
 import { cn, formatNumber } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { FC } from "react";
+import { motion } from "framer-motion";
 
 interface KeyPricesGridProps {
   entryPrice: number;
@@ -27,13 +28,19 @@ const KeyPricesGrid: FC<KeyPricesGridProps> = ({
       <div
         className={cn(
           "rounded-md p-2",
-          theme === "dark"
-            ? "bg-slate-800" // Changed: removed text-blue-500 here
-            : "bg-slate-100",
+          theme === "dark" ? "bg-slate-800" : "bg-slate-100",
         )}
       >
         <div className="text-xs text-blue-500">{t("entry")}</div>
-        <div className="font-medium">{formatNumber(entryPrice)}</div>
+        <motion.div
+          key={entryPrice}
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="font-medium"
+        >
+          {formatNumber(entryPrice)}
+        </motion.div>
       </div>
 
       {/* Target Price */}
@@ -45,7 +52,15 @@ const KeyPricesGrid: FC<KeyPricesGridProps> = ({
         )}
       >
         <div className="text-xs opacity-80">{t("target")}</div>
-        <div className="font-medium">{formatNumber(takeProfitPrice)}</div>
+        <motion.div
+          key={takeProfitPrice}
+          initial={{ y: -5, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="font-medium"
+        >
+          {formatNumber(takeProfitPrice)}
+        </motion.div>
       </div>
 
       {/* Stop Loss */}
@@ -57,7 +72,15 @@ const KeyPricesGrid: FC<KeyPricesGridProps> = ({
         )}
       >
         <div className="text-xs opacity-80">{t("stop")}</div>
-        <div className="font-medium">{formatNumber(stopLossPrice)}</div>
+        <motion.div
+          key={stopLossPrice}
+          initial={{ y: 5, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="font-medium"
+        >
+          {formatNumber(stopLossPrice)}
+        </motion.div>
       </div>
     </div>
   );

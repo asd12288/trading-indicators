@@ -28,23 +28,13 @@ const useSignals = (
     setLastFetch(now);
     setIsLoading(true);
     try {
-      // Choose data source based on allSignals parameter
-      let query;
-
-      if (allSignals) {
-        // Get all signals for things like best trades view
-        query = supabaseClient
-          .from("all_signals")
-          .select("*")
-          .order("entry_time", { ascending: false })
-          .limit(100); // Reasonable limit to prevent loading too much data
-      } else {
-        // Default behavior - get latest signal per instrument
-        query = supabaseClient
-          .from("latest_signals_per_instrument")
-          .select("*")
-          .order("entry_time", { ascending: false });
-      }
+      // Always fetch from all_signals table
+      const query = supabaseClient
+        .from("all_signals")
+        .select("*")
+        .order("entry_time", { ascending: false })
+        // Limit overall fetch size for performance
+        .limit(allSignals ? 100 : 1000);
 
       const { data, error } = await query;
 
@@ -52,11 +42,19 @@ const useSignals = (
         console.error("Error fetching signals:", error);
         setError(error.message);
       } else if (data) {
-        // Remove debug logs in production
-        if (process.env.NODE_ENV !== "production") {
-          console.log("Processed signals:", data);
+        // Derive final signals list
+        let finalSignals: Signal[] = data;
+        if (!allSignals) {
+          // Pick latest per instrument
+          const map = new Map<string, Signal>();
+          for (const sig of data) {
+            if (!map.has(sig.instrument_name)) {
+              map.set(sig.instrument_name, sig);
+            }
+          }
+          finalSignals = Array.from(map.values());
         }
-        setSignals(data);
+        setSignals(finalSignals);
       }
     } catch (err) {
       console.error("Unexpected error in useSignals:", err);
@@ -68,7 +66,22 @@ const useSignals = (
 
   // Handle real-time updates more efficiently
   const handleRealtimeUpdate = useCallback(
-    (payload: any) => {
+    async (payload: any) => {
+      // If this update only changes the stop or target, handle silently
+      if (
+        payload.eventType === "UPDATE" &&
+        ((payload.old.take_profit_price !== payload.new.take_profit_price) ||
+         (payload.old.stop_loss_price !== payload.new.stop_loss_price))
+      ) {
+        const updatedSignal = payload.new as Signal;
+        // Update only the changed signal in place
+        setSignals((current) =>
+          current.map((s) => (s.client_trade_id === updatedSignal.client_trade_id ? updatedSignal : s)),
+        );
+        // Do not refetch entire list to preserve the other cards' state
+        return;
+      }
+
       // Check if user has notifications or volume turned on for this instrument
       const instrumentName = (payload.new as { instrument_name: string })
         .instrument_name;
@@ -94,10 +107,10 @@ const useSignals = (
             return [updatedSignal, ...current];
           } else if (payload.eventType === "UPDATE") {
             return current.map((signal) =>
-              signal.id === updatedSignal.id ? updatedSignal : signal,
+              signal.client_trade_id === updatedSignal.client_trade_id ? updatedSignal : signal,
             );
           } else if (payload.eventType === "DELETE") {
-            return current.filter((s) => s.id !== payload.old.id);
+            return current.filter((s) => s.client_trade_id !== payload.old.client_trade_id);
           }
         } else {
           // Original behavior for latest signals per instrument
@@ -115,7 +128,7 @@ const useSignals = (
                 : signal,
             );
           } else if (payload.eventType === "DELETE") {
-            return current.filter((s) => s.id !== payload.old.id);
+            return current.filter((s) => s.client_trade_id !== payload.old.client_trade_id);
           }
         }
 
@@ -128,13 +141,12 @@ const useSignals = (
   useEffect(() => {
     fetchData();
 
-    // Subscribe to real-time updates on the appropriate table
-    const tableName = allSignals ? "all_signals" : "latest_signals_per_instrument";
+    // Subscribe to real-time events on the base all_signals table
     const subscription = supabaseClient
-      .channel(`signal_changes_${tableName}`)
+      .channel("all_signals_changes")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: tableName },
+        { event: "*", schema: "public", table: "all_signals" },
         handleRealtimeUpdate,
       )
       .subscribe();
@@ -142,7 +154,7 @@ const useSignals = (
     return () => {
       supabaseClient.removeChannel(subscription);
     };
-  }, [fetchData, handleRealtimeUpdate, allSignals]);
+  }, [fetchData, handleRealtimeUpdate]);
 
   return { signals, isLoading, error, refetch: fetchData };
 };
