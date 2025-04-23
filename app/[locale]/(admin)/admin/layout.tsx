@@ -1,6 +1,6 @@
 import Footer from "@/components/Footer";
 import { Metadata } from "next";
-\import { Poppins } from "next/font/google";
+import { Poppins } from "next/font/google";
 import Header from "@/components/Header";
 
 const poppins = Poppins({
