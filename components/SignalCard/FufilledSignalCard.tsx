@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useUser } from "@/providers/UserProvider";
-import SignalLoadingCard from "./SignalLoadingCard";
 
 interface FufilledSignalCardProps {
   instrument: Signal;
@@ -53,11 +52,6 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
         String(instrumentInfo.contract_size).includes("$")));
 
   const t = useTranslations("FufilledSignalCard");
-
-  // Early validation: show loading skeleton during transitions instead of error
-  if (!entry_time || !entry_price) {
-    return <SignalLoadingCard />;
-  }
 
   // Format numbers consistently with full precision
   const formatNumber = (num) => {

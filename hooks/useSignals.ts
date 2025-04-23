@@ -24,9 +24,7 @@ export default function useSignals(mode: Mode = "latest") {
     (async () => {
       const { data, error } = await supabase
         .from(
-          mode === "latest"
-            ? "latest_signals_per_instrument"
-            : "all_signals",
+          mode === "latest" ? "latest_signals_per_instrument" : "all_signals",
         )
         .select("*")
         .order("entry_time", { ascending: false });
@@ -87,9 +85,7 @@ export default function useSignals(mode: Mode = "latest") {
           });
         },
       )
-      .subscribe((status) =>
-        console.log("[realtime]", status),
-      );
+      .subscribe();
 
     channelRef.current = channel;
 

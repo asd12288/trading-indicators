@@ -14,7 +14,6 @@ import { Badge } from "../ui/badge";
 import KeyPricesGrid from "./components/KeyPricesGrid";
 import PriceInfoSection from "./components/PriceInfoSection";
 import PriceScaleVisualization from "./components/PriceScaleVisualization";
-import SignalLoadingCard from "./SignalLoadingCard";
 
 interface RunningSignalCardProps {
   instrument: Signal;
@@ -60,15 +59,14 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
 
   const t = useTranslations("RunningSignalCard");
 
-  if (!entry_time || !entry_price || !take_profit_price || !stop_loss_price) {
-    // Show loading skeleton while data propagates
-    return <SignalLoadingCard />;
-  }
+  // Determine if data is still propagating
+  const isPropagating =
+    !entry_time || !entry_price || !take_profit_price || !stop_loss_price;
 
   // Calculate time since entry
-  const timeAgo = formatDistanceToNow(parseISO(entry_time), {
-    addSuffix: true,
-  });
+  const timeAgo = entry_time
+    ? formatDistanceToNow(parseISO(entry_time), { addSuffix: true })
+    : "-";
 
   // For demo mode, use fake price data
   const currentPrice = demo
@@ -121,10 +119,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
     ((stop_loss_price - entry_price) / entry_price) * 100,
   ).toFixed(1);
 
-  // Handle chart error
-  const handleChartError = () => {
-    setChartLoadFailed(true);
-  };
+
 
   return (
     <div className="h-full">
@@ -145,6 +140,11 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
         >
           {t("live")}
         </div>
+        {isPropagating && (
+          <div className="px-4 py-2 text-center text-sm text-gray-500">
+            Meanwhile the data propagates...
+          </div>
+        )}
 
         <div className="p-4">
           {/* Header with full name */}
@@ -192,7 +192,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
           {/* Price Info Section */}
           <PriceInfoSection
             instrumentName={instrument_name}
-            isLoading={isLoading}
+            isLoading={isLoading || isPropagating}
             currentPrice={currentPrice}
             entryPrice={entry_price}
             currentPnL={currentPnL}
