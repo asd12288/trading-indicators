@@ -89,3 +89,14 @@ export interface BlogProps {
     subTitle: string;
   };
 }
+
+export interface Notification {
+  id: string;
+  url?: string;
+  type: "trade" | "news" | "system" | "alert" | "signal";
+  created_at: string;
+  is_read: boolean;
+  user_id: string;
+  body?: string;
+  title: string;
+}

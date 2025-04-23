@@ -1,7 +1,6 @@
 import SignalLayout from "@/components/SignalLayout";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
-import NotificationService from "@/lib/notification-service";
 import { Metadata } from "next";
 
 export async function generateMetadata({
@@ -53,42 +52,6 @@ export default async function Page({
     console.error("No profile found for user ID:", user.id);
     redirect({ href: "/login", locale: params.locale });
     return null;
-  }
-
-  // Check if this is the first time viewing this signal
-  const { data: viewHistory } = await supabase
-    .from("signal_views")
-    .select("*")
-    .eq("user_id", user.id)
-    .eq("signal_id", params.id)
-    .single();
-
-  // Record the view if first time (not using await to not block rendering)
-  if (!viewHistory) {
-    try {
-      // Use RPC function to insert signal view and return signal data
-      const { data: signalData } = await supabase.rpc(
-        "record_signal_view_and_get_signal",
-        {
-          p_user_id: user.id,
-          p_signal_id: params.id,
-        },
-      );
-
-      // Create a notification for first time viewing this signal
-      if (signalData) {
-        NotificationService.notifyNewSignalView(
-          user.id,
-          params.id,
-          signalData,
-        ).catch((error) => {
-          console.error("Error creating notification:", error);
-        });
-      }
-    } catch (error) {
-      console.error("Error recording view:", error);
-      // Non-blocking error - continue showing the page
-    }
   }
 
   const isPro = profile?.plan === "pro";

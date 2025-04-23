@@ -1,9 +1,8 @@
+import SignalsLayout from "@/components/SignalsLayout";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
-import { Metadata } from "next";
-import SignalsLayout from "@/components/SignalsLayout";
 import { UserInitializer } from "@/providers/UserInitializer";
-import SignalsTest from "@/components/SignalsTest";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Smart Alerts",

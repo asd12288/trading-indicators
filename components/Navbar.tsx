@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { RxCross1, RxHamburgerMenu } from "react-icons/rx";
 import LanguageSwitcher from "./LanguageSwitcher";
 import LogoutBtn from "./LogoutBtn";
-import NotifBell from "./notif/NotifBell";
+import NotificationCenter from "./notif/NotificationCenter";
 import UpgradeButton from "./UpgradeButton";
 
 export default function Navbar({ user, profile }) {
@@ -109,7 +109,7 @@ export default function Navbar({ user, profile }) {
 
             {user ? (
               <div className="flex items-center gap-3">
-                {user?.id && <NotifBell userId={user.id} />}
+                {user?.id && <NotificationCenter userId={user.id} />}
 
                 <Link
                   href="/profile"
@@ -157,7 +157,7 @@ export default function Navbar({ user, profile }) {
 
         <div className="flex items-center gap-3">
           {/* Add NotificationBell to mobile view too */}
-          {user?.id && <NotifBell userId={user.id} />}
+          {user?.id && <NotificationCenter userId={user.id} />}
           <LanguageSwitcher />
 
           {/* Mobile Menu Button */}
