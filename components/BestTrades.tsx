@@ -27,7 +27,7 @@ interface BestTradesProps {
 const BestTrades: FC<BestTradesProps> = () => {
   const t = useTranslations("BestTrades");
   // Use allSignals=true to get all trades, not just the latest per instrument
-  const { signals, isLoading, refetch } = useSignals({}, true);
+  const { signals } = useSignals({}, true);
   // Keep track of last update time for refreshing
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
 
@@ -35,14 +35,13 @@ const BestTrades: FC<BestTradesProps> = () => {
   useEffect(() => {
     const interval = setInterval(
       () => {
-        refetch();
         setLastUpdate(new Date());
       },
       5 * 60 * 1000,
     ); // 5 minutes
 
     return () => clearInterval(interval);
-  }, [refetch]);
+  }, []);
 
   // Always show 5 trades, prioritizing high-value trades ($150+)
   const topTrades = useMemo(() => {
@@ -102,7 +101,7 @@ const BestTrades: FC<BestTradesProps> = () => {
     return [...highValueTrades, ...regularTrades].slice(0, 5);
   }, [signals]);
 
-  if (isLoading && signals.length === 0) {
+  if (signals.length === 0) {
     return (
       <div className="flex h-28 items-center justify-center rounded-lg bg-slate-800/50">
         <div className="text-sm text-slate-400">
@@ -136,8 +135,6 @@ const BestTrades: FC<BestTradesProps> = () => {
     {} as Record<string, number>,
   );
 
-
-
   return (
     <div className="space-y-4">
       {/* Header with background */}
@@ -166,16 +163,6 @@ const BestTrades: FC<BestTradesProps> = () => {
 
         {/* Last update display and refresh button */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              refetch();
-              setLastUpdate(new Date());
-            }}
-            className="flex items-center gap-1 rounded-md bg-slate-800/80 px-2 py-1 text-xs text-slate-300 hover:bg-slate-700/80"
-          >
-            <RefreshCw className="h-3 w-3" />
-            <span className="xs:inline hidden">Refresh</span>
-          </button>
           <div className="hidden text-xs text-slate-400 sm:block">
             Updated: {format(lastUpdate, "HH:mm")}
           </div>
@@ -202,7 +189,7 @@ const TradeCard: FC<{
   trade: Signal & { dollarValue?: number };
   rank: number;
   isDuplicate?: boolean;
-}> = ({ trade, rank,  }) => {
+}> = ({ trade, rank }) => {
   const { theme } = useTheme();
   const t = useTranslations("BestTrades");
   const isBuy = ["BUY", "LONG", "Buy", "Long"].includes(trade.trade_side);

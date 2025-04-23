@@ -21,7 +21,6 @@ import {
 import { useTranslations } from "next-intl";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import AlertNotification from "./AlertNotification";
 import BlurOverlay from "./BlurOverlay";
 import InstrumentStatusCard from "./InstrumentStatusCard";
 import SignalLayoutLoader from "./loaders/SignalLayoutLoader";
@@ -271,10 +270,6 @@ const SignalLayout = ({ id, userId, isPro }) => {
             )}
           </h2>
           <div className="ml-4"></div>
-        </div>
-
-        <div>
-          <AlertNotification instrumentName={instrumentName} userId={userId} />
         </div>
 
         <div className="flex items-center gap-4">

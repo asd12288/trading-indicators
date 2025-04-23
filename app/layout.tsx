@@ -5,7 +5,6 @@ import { getMessages } from "next-intl/server";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
-
 export const metadata: Metadata = {
   title: {
     default: "Trader Map",
@@ -58,8 +57,6 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider locale={params.locale} messages={messages}>
           {children}
-
-          {/* Load non-critical components lazily */}
           <Suspense fallback={null}>
             <LazyLoadedComponents />
           </Suspense>

@@ -25,7 +25,6 @@ import { motion } from "framer-motion";
 import AlertHoursManager from "@/components/admin/AlertHoursManager";
 import BlogTable from "@/components/admin/BlogTable";
 import InstrumentInfoTable from "@/components/admin/InstrumentInfoTable";
-import SendNotificationForm from "@/components/admin/SendNotificationForm";
 import SignalDebugTab from "@/components/admin/SignalDebugTab";
 import SignalsMonitoring from "@/components/admin/SignalsMonitoring";
 import SignalsTable from "@/components/admin/SignalsTable";
@@ -286,13 +285,6 @@ export default function AdminLayout({
               className="rounded-lg bg-slate-800 p-6 shadow-lg"
             >
               <InstrumentInfoTable />
-            </TabsContent>
-
-            <TabsContent
-              value="notifications"
-              className="rounded-lg bg-slate-800 p-6 shadow-lg"
-            >
-              <SendNotificationForm />
             </TabsContent>
 
             <TabsContent
