@@ -1,127 +1,104 @@
 "use client";
 
-import supabaseClient from "@/database/supabase/supabase.js";
+import { useEffect, useRef, useState, startTransition } from "react";
+import { createClient } from "@supabase/supabase-js";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import { Signal } from "@/lib/types";
-import { useCallback, useEffect, useState } from "react";
 
-interface RealtimePayload {
-  eventType: "INSERT" | "UPDATE" | "DELETE";
-  new: Signal & Record<string, unknown>;
-  old?: Signal & Record<string, unknown>;
-}
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+);
 
-const useSignals = (allSignals: boolean = false) => {
+type Mode = "all" | "latest";
+
+export default function useSignals(mode: Mode = "latest") {
   const [signals, setSignals] = useState<Signal[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [lastFetch, setLastFetch] = useState<number>(0);
+  const channelRef = useRef<RealtimeChannel | null>(null);
 
-  // Use memoized fetch function to prevent unnecessary re-creation
-  const fetchData = useCallback(async () => {
-    // Throttle fetches to prevent excessive database calls
-    const now = Date.now();
-    if (now - lastFetch < 2000) return; // Only fetch if last fetch was > 2 seconds ago
+  // 1. Initial fetch (SSR friendly)
+  useEffect(() => {
+    let cancelled = false;
 
-    setLastFetch(now);
-    setIsLoading(true);
-    try {
-      // Always fetch from latest_signals_per_instrument table
-      const query = supabaseClient
-        .from("latest_signals_per_instrument")
+    (async () => {
+      const { data, error } = await supabase
+        .from(
+          mode === "latest"
+            ? "latest_signals_per_instrument"
+            : "all_signals",
+        )
         .select("*")
         .order("entry_time", { ascending: false });
 
-      const { data, error } = await query;
-
-      if (error) {
-        console.error("Error fetching signals:", error);
-        setError(error.message);
-      } else if (data) {
-        setSignals(data as Signal[]);
-      }
-    } catch (err: unknown) {
-      console.error("Unexpected error in useSignals:", err);
-      setError(err instanceof Error ? err.message : "Unknown error occurred");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [lastFetch]);
-
-  // Handle real-time updates
-  const handleRealtimeUpdate = useCallback(
-    (payload: RealtimePayload) => {
-      const updatedSignal = payload.new;
-
-      // Update signals state based on the event type
-      setSignals((current) => {
-        // When showing all signals, just append new ones
-        if (allSignals) {
-          if (payload.eventType === "INSERT") {
-            return [updatedSignal, ...current];
-          } else if (payload.eventType === "UPDATE") {
-            console.log("Updating signal:", updatedSignal);
-            return current.map((signal) =>
-              signal.client_trade_id === updatedSignal.client_trade_id
-                ? updatedSignal
-                : signal,
-            );
-          } else if (payload.eventType === "DELETE" && payload.old) {
-            return current.filter(
-              (s) => s.client_trade_id !== payload.old?.client_trade_id,
-            );
-          }
-        } else {
-          // Original behavior for latest signals per instrument
-          if (payload.eventType === "INSERT") {
-            return [
-              updatedSignal,
-              ...current.filter(
-                (s) => s.instrument_name !== updatedSignal.instrument_name,
-              ),
-            ];
-          } else if (payload.eventType === "UPDATE") {
-            return current.map((signal) =>
-              signal.instrument_name === updatedSignal.instrument_name
-                ? updatedSignal
-                : signal,
-            );
-          } else if (payload.eventType === "DELETE" && payload.old) {
-            return current.filter(
-              (s) => s.client_trade_id !== payload.old?.client_trade_id,
-            );
-          }
-        }
-
-        return current;
-      });
-    },
-    [allSignals],
-  );
-
-  useEffect(() => {
-    // Initial data fetch
-    fetchData();
-
-    // Subscribe to real-time events on the latest_signals_per_instrument table
-    const subscription = supabaseClient
-      .channel("latest_signals_per_instrument_changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "latest_signals_per_instrument",
-        },
-        handleRealtimeUpdate,
-      )
-      .subscribe();
+      if (cancelled) return;
+      if (error) return setError(error.message);
+      setSignals(data as Signal[]);
+    })();
 
     return () => {
-      supabaseClient.removeChannel(subscription);
+      cancelled = true;
     };
-  }, [fetchData, handleRealtimeUpdate]);
+  }, [mode]);
 
-  return { signals, isLoading, error, refetch: fetchData };
-};
+  // 2. Realtime
+  useEffect(() => {
+    // close any previous channel (React 18 strict-mode safe)
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+    }
 
-export default useSignals;
+    const channel = supabase
+      .channel(`signals-${mode}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "all_signals" },
+        (payload) => {
+          const row = payload.new as Signal;
+          startTransition(() => {
+            setSignals((prev) => {
+              switch (payload.eventType) {
+                case "INSERT":
+                  if (mode === "latest") {
+                    // keep only one row per instrument
+                    return [
+                      row,
+                      ...prev.filter(
+                        (s) => s.instrument_name !== row.instrument_name,
+                      ),
+                    ];
+                  }
+                  return [row, ...prev];
+
+                case "UPDATE":
+                  return prev.map((s) =>
+                    s.client_trade_id === row.client_trade_id ? row : s,
+                  );
+
+                case "DELETE":
+                  return prev.filter(
+                    (s) => s.client_trade_id !== payload.old?.client_trade_id,
+                  );
+
+                default:
+                  return prev;
+              }
+            });
+          });
+        },
+      )
+      .subscribe((status) =>
+        console.log("[realtime]", status),
+      );
+
+    channelRef.current = channel;
+
+    return () => {
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+      }
+    };
+  }, [mode]);
+
+  return { signals, error };
+}

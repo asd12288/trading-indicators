@@ -3,6 +3,7 @@ import { redirect } from "@/i18n/routing";
 import { Metadata } from "next";
 import SignalsLayout from "@/components/SignalsLayout";
 import { UserInitializer } from "@/providers/UserInitializer";
+import SignalsTest from "@/components/SignalsTest";
 
 export const metadata: Metadata = {
   title: "Smart Alerts",
@@ -31,6 +32,7 @@ async function page({ params }: { params: { locale: string } }) {
   return (
     <UserInitializer user={user} profile={profile}>
       <SignalsLayout />
+
     </UserInitializer>
   );
 }

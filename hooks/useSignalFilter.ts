@@ -13,7 +13,7 @@ const useSignalFilter = (
   { search, category }: FilterOptions,
 ) => {
   return useMemo(() => {
-    if (!signals) return [];
+    if (!Array.isArray(signals)) return [];
 
     return signals.filter((signal) => {
       const name = signal.instrument_name?.toLowerCase() || "";

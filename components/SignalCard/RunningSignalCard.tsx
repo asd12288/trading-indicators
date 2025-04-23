@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { ArrowDown, ArrowUp, Clock } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { Badge } from "../ui/badge";
 
 // Import the new components
@@ -39,6 +39,11 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
 
   // Add state to track chart loading errors
   const [chartLoadFailed, setChartLoadFailed] = useState(false);
+
+  // Reset chart load error state when switching instruments
+  useEffect(() => {
+    setChartLoadFailed(false);
+  }, [instrument_name]);
 
   // Determine if the instrument is forex to display pips or ticks
   const instrumentCategory = getInstrumentCategory(instrument_name);

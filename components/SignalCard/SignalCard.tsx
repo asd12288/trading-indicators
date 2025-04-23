@@ -3,7 +3,7 @@
 import { useAlertHours } from "@/hooks/useAlertHours";
 import { isMarketOpen } from "@/lib/market-hours";
 import { Signal } from "@/lib/types";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import LoaderCards from "../loaders/LoaderCards";
 import FufilledSignalCard from "./FufilledSignalCard";
 import MarketClosedCard from "./MarketClosedCard";
@@ -89,7 +89,28 @@ const SignalCard: React.FC<SignalCardProps> = ({
   );
 };
 
-// Make sure to set display name for React DevTools
+// Display name for DevTools
 SignalCard.displayName = "SignalCard";
 
-export default SignalCard;
+// Only re-render when key signal properties change
+const areEqual = (
+  prev: React.ComponentProps<typeof SignalCard>,
+  next: React.ComponentProps<typeof SignalCard>,
+) => {
+  const p = prev.signalPassed;
+  const n = next.signalPassed;
+  if (!p || !n) return p === n;
+  return (
+    p.client_trade_id === n.client_trade_id &&
+    p.entry_time === n.entry_time &&
+    p.exit_time === n.exit_time &&
+    p.entry_price === n.entry_price &&
+    p.exit_price === n.exit_price &&
+    p.take_profit_price === n.take_profit_price &&
+    p.stop_loss_price === n.stop_loss_price &&
+    prev.showFavoriteControls === next.showFavoriteControls &&
+    prev.className === next.className
+  );
+};
+
+export default memo(SignalCard, areEqual);

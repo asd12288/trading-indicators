@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import useSWR from "swr";
+import supabaseClient from "@/database/supabase/supabase.js";
 
 // Type for the API response
 interface LastPriceData {
@@ -28,11 +29,34 @@ export default function useLast(instrumentName: string) {
       : null,
     fetcher,
     {
-      refreshInterval: 5000, // Refresh every 5 seconds
       revalidateOnFocus: false,
       dedupingInterval: 2000,
     },
   );
+
+  // Subscribe to real-time price updates via Supabase
+  useEffect(() => {
+    if (!instrumentName) return;
+    const channel = supabaseClient
+      .channel(`price-channel-${instrumentName}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "instrument_price",
+          filter: `instrument_name=eq.${instrumentName}`,
+        },
+        (payload) => {
+          const newData = payload.new as LastPriceData;
+          mutate(newData, false);
+        },
+      )
+      .subscribe();
+    return () => {
+      supabaseClient.removeChannel(channel);
+    };
+  }, [instrumentName, mutate]);
 
   // Keep track of the last value for UI transition purposes
   const prevPriceRef = useRef<number | null>(null);

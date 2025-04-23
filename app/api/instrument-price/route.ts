@@ -27,7 +27,6 @@ export async function GET(request: Request) {
   if (purgeCache) {
     if (priceCache[instrumentName]) {
       delete priceCache[instrumentName];
-      console.log(`Cache purged for ${instrumentName}`);
     }
     return NextResponse.json({ message: "Cache purged" });
   }
@@ -38,7 +37,6 @@ export async function GET(request: Request) {
     priceCache[instrumentName] &&
     now - priceCache[instrumentName].fetchedAt < PRICE_CACHE_CONFIG.TTL
   ) {
-    console.log(`Serving cached data for ${instrumentName}`);
     return NextResponse.json({
       ...priceCache[instrumentName].data,
       source: "cache",
@@ -51,7 +49,6 @@ export async function GET(request: Request) {
     priceCache[instrumentName] &&
     now - priceCache[instrumentName].fetchedAt < PRICE_CACHE_CONFIG.STALE_TTL;
 
-  console.log(`Fetching fresh data for ${instrumentName} from Supabase`);
 
   try {
     const supabase = await createClient();
@@ -97,7 +94,6 @@ export async function GET(request: Request) {
 
       // Try to serve stale data rather than failing completely
       if (canUseStaleCache) {
-        console.log(`Serving stale cache for ${instrumentName} due to error`);
         return NextResponse.json({
           ...priceCache[instrumentName].data,
           source: "stale-cache",
@@ -113,13 +109,10 @@ export async function GET(request: Request) {
       lastPriceData.length === 0 ||
       lastPriceData[0].last === null
     ) {
-      console.log(`No price data found for ${instrumentName}`);
 
       // Try to serve stale data rather than returning nothing
       if (canUseStaleCache) {
-        console.log(
-          `Serving stale cache for ${instrumentName} due to empty result`,
-        );
+      
         return NextResponse.json({
           ...priceCache[instrumentName].data,
           source: "stale-cache",
@@ -215,7 +208,6 @@ export async function GET(request: Request) {
 
     // Try to serve stale data in case of errors
     if (canUseStaleCache) {
-      console.log(`Serving stale cache for ${instrumentName} due to error`);
       return NextResponse.json({
         ...priceCache[instrumentName].data,
         source: "stale-cache",

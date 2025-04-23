@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { AlertCircle, ArrowDownWideNarrow, Grid2X2, List } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import SignalCard from "./SignalCard";
 import { useUser } from "@/providers/UserProvider";
@@ -66,6 +66,18 @@ const SignalItem: React.FC<{ signal: Signal; viewMode: string }> = ({
 };
 
 SignalItem.displayName = "SignalItem";
+
+// Memoized SignalItem to only re-render when signal props change
+const MemoSignalItem = React.memo(SignalItem, (prevProps, nextProps) => {
+  return (
+    prevProps.signal.client_trade_id === nextProps.signal.client_trade_id &&
+    prevProps.signal.entry_time === nextProps.signal.entry_time &&
+    prevProps.signal.exit_time === nextProps.signal.exit_time &&
+    prevProps.signal.take_profit_price === nextProps.signal.take_profit_price &&
+    prevProps.signal.stop_loss_price === nextProps.signal.stop_loss_price &&
+    prevProps.viewMode === nextProps.viewMode
+  );
+});
 
 const SignalsGrid: React.FC<SignalsGridProps> = ({
   signals,
@@ -216,12 +228,12 @@ const SignalsGrid: React.FC<SignalsGridProps> = ({
               viewMode === "grid" ? "minmax(min-content, 1fr)" : "auto",
           }}
         >
-          {sortedSignals.map((signal, index) => (
+          {sortedSignals.map((signal) => (
             <div
               key={signal.client_trade_id}
               className={viewMode === "list" ? "w-full" : "h-full"}
             >
-              <SignalItem signal={signal} viewMode={viewMode} />
+              <MemoSignalItem signal={signal} viewMode={viewMode} />
             </div>
           ))}
         </div>
