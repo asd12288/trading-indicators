@@ -1,11 +1,11 @@
 "use client";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { CreditCardIcon, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 import { useRouter } from "@/i18n/routing";
+import { toast } from "sonner";
 import {
   Elements,
   PaymentElement,
@@ -29,7 +29,6 @@ function CheckoutForm({ user, plan }) {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
-  const { toast } = useToast();
 
   const handleStripeCheckout = async () => {
     try {
@@ -62,11 +61,7 @@ function CheckoutForm({ user, plan }) {
       }
 
       // Visual feedback before redirect
-      toast({
-        title: "Redirecting to secure payment",
-        description: "You'll be taken to Stripe's secure checkout page...",
-        duration: 3000,
-      });
+      toast.success("Redirecting to payment page...");
 
       setPaymentStatus("redirecting");
 
@@ -85,11 +80,9 @@ function CheckoutForm({ user, plan }) {
     } catch (err) {
       console.error("Stripe checkout error:", err);
       setPaymentStatus("error");
-      toast({
-        title: "Checkout Error",
-        description: "Could not initialize payment. Please try again.",
-        variant: "destructive",
-      });
+      toast.error(
+        "An error occurred while processing your payment. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }

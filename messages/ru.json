@@ -748,6 +748,9 @@
   },
   "ResetPasswordForm": {
     "title": "Сброс пароля",
+    "successMessage": "Пароль успешно сброшен",
+    "errorMessage": "Ошибка при сбросе пароля",
+    
     "labels": {
       "password": "Пароль",
       "confirmPassword": "Подтвердите пароль"

@@ -9,6 +9,7 @@ import { ArrowDown, ArrowUp, Clock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { FC, useState, useEffect } from "react";
 import { Badge } from "../ui/badge";
+import Script from "next/script";
 
 // Import the new components
 import KeyPricesGrid from "./components/KeyPricesGrid";
@@ -119,8 +120,6 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
     ((stop_loss_price - entry_price) / entry_price) * 100,
   ).toFixed(1);
 
-
-
   return (
     <div className="h-full">
       <div
@@ -221,20 +220,16 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
             isBuy={isBuy}
           />
 
-          {/* TradingView Chart Widget with enhanced error handling */}
-          <div className="relative mb-4">
-            {/* <TradingViewWidget
-              symbol={instrument_name}
-              height={180}
-              showToolbar={false}
-              lightweight={true}
-              interval="15"
-              isBuy={isBuy}
-              demo={demo} // Pass demo flag to prevent real API calls
-            /> */}
-
-            {/* Note: Our improved TradingViewWidget component now handles error and loading states internally */}
-          </div>
+          {/* MQL5 chart container and script embed */}
+          <div
+            id={`mql5-chart-${instrument_name}`}
+            style={{ width: "100%", height: "180px" }}
+          />
+          <Script
+            id={`mql5-chart-script-${instrument_name}`}
+            src={`https://static.mql5.com/quotes/widgets/chart/script.js?symbol=${instrument_name.toUpperCase()}&timeframe=M15&language=en&autosize=true&container_id=mql5-chart-${instrument_name}`}
+            strategy="afterInteractive"
+          />
         </div>
       </div>
     </div>

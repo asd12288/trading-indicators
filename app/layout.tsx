@@ -5,8 +5,6 @@ import { getMessages } from "next-intl/server";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
-// Import the SignalNotificationTrigger component
-import SignalNotificationTrigger from "@/components/SignalNotificationTrigger";
 
 export const metadata: Metadata = {
   title: {

@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import supabaseClient from "@/database/supabase/supabase";
-import { toast } from "@/hooks/use-toast";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -15,6 +14,7 @@ import {
 import { Check, Link, X } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 interface TelegramAuthProps {
   userId: string;
@@ -33,11 +33,7 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
   const handleTelegramConnect = async () => {
     if (!userId) {
       console.error("handleTelegramConnect: No userId provided");
-      toast({
-        title: "Error",
-        description: "No user ID available",
-        variant: "destructive",
-      });
+      toast.error('"Error: No userId provided");');
       return;
     }
 
@@ -67,10 +63,9 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
         );
         clearInterval(pollInterval);
         setTelegramActive(true);
-        toast({
-          title: "Success",
-          description: t("success"),
-        });
+        toast.success(
+          "Telegram connected successfully! You will now receive alerts.",
+        );
       } else {
         console.log("Polling: telegram_chat_id not yet updated");
       }
@@ -96,28 +91,22 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
         .eq("id", userId);
 
       if (error) {
-        console.error("handleRemoveTelegram: Error updating profile", error);
-        toast({
-          title: "Error",
-          description: "Error removing Telegram",
-        });
+        toast.error("Error removing Telegram: " + error.message);
       } else {
         console.log(
           "handleRemoveTelegram: Successfully removed telegram_chat_id:",
           data,
         );
-        toast({
-          title: "Success",
-          description: "Telegram removed",
-        });
+        toast.success(
+          "Telegram disconnected successfully! You will no longer receive alerts.",
+        );
         setTelegramActive(false);
       }
     } catch (error) {
       console.error("handleRemoveTelegram: Exception occurred:", error);
-      toast({
-        title: "Error",
-        description: "Error removing Telegram",
-      });
+      toast.error(
+        "An error occurred while disconnecting Telegram. Please try again.",
+      );
     } finally {
       setIsLoaded(false);
     }

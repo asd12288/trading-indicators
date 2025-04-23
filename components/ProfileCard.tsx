@@ -10,11 +10,8 @@ import {
   updateEmail,
   updateAvatar,
 } from "@/app/[locale]/(root)/profile/actions";
-import { useToast } from "@/hooks/use-toast";
 import { Link } from "@/i18n/routing";
-import { useClients } from "@/hooks/useClients";
 import { useTranslations } from "next-intl";
-import { useParams } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -33,6 +30,7 @@ import {
   ArrowUpRightIcon,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 interface ProfileCardProps {
   user: {
@@ -50,34 +48,22 @@ interface ProfileCardProps {
 }
 
 const ProfileCard = ({ user, profile }: ProfileCardProps) => {
-  const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = useTranslations("ProfileCard");
-  const params = useParams();
-  const locale = params.locale || "en";
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
   const { username, avatarUrl, plan, email } = profile || {};
   const userId = user.id;
 
-  const { clients } = useClients();
-
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true);
     try {
       const result = await updateEmail(userId, user, formData);
       if (result.error) {
-        toast({
-          variant: "destructive",
-          title: t("toast.error.title"),
-          description: result.error.message,
-        });
+        toast.error(t("toast.error.title"));
       } else {
-        toast({
-          title: t("toast.success.title"),
-          description: t("toast.success.profileUpdate"),
-        });
+        toast.success(t("toast.success.title"));
       }
     } finally {
       setIsSubmitting(false);
@@ -92,16 +78,9 @@ const ProfileCard = ({ user, profile }: ProfileCardProps) => {
     try {
       const result = await updateAvatar(user.id, file);
       if (result.error) {
-        toast({
-          variant: "destructive",
-          title: t("toast.error.title"),
-          description: result.error.message,
-        });
+        toast.error(t("toast.error.title"));
       } else {
-        toast({
-          title: t("toast.success.title"),
-          description: t("toast.success.avatarUpdate"),
-        });
+        toast.success(t("toast.avatar.success"));
       }
     } finally {
       setIsUploading(false);
@@ -113,7 +92,7 @@ const ProfileCard = ({ user, profile }: ProfileCardProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="w-full max-w-md mx-auto"
+      className="mx-auto w-full max-w-md"
     >
       <Card className="overflow-hidden border border-slate-700 bg-slate-900/50 shadow-lg backdrop-blur-sm">
         <CardHeader className="bg-slate-800/30 pb-6">
@@ -209,7 +188,8 @@ const ProfileCard = ({ user, profile }: ProfileCardProps) => {
                   className={`h-5 w-5 ${plan === "pro" ? "text-yellow-500" : "text-slate-500"}`}
                 />
                 <span className="text-sm text-slate-50">
-                  {t("plan.label")}{"  "}
+                  {t("plan.label")}
+                  {"  "}
                   <span className="font-medium text-slate-100">
                     {plan === "pro" ? "Premium" : "Free"}
                   </span>

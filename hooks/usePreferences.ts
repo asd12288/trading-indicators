@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { toast } from "@/hooks/use-toast";
 import supabaseClient from "@/database/supabase/supabase";
 import { PreferenceValues } from "@/lib/types";
 
@@ -67,11 +66,6 @@ function usePreferences(userId?: string): UsePreferencesReturn {
     // If no userId, can't update preferences
     if (!userId) {
       console.error("Cannot update preferences: No user ID provided");
-      toast({
-        title: "Error",
-        description: "Cannot update preferences: User not logged in",
-        variant: "destructive",
-      });
       return Promise.reject(
         new Error("User ID is required to update preferences"),
       );
@@ -116,11 +110,7 @@ function usePreferences(userId?: string): UsePreferencesReturn {
     } catch (error: any) {
       console.error("Error updating preferences:", error);
       // Show error toast
-      toast({
-        title: "Error updating preference",
-        description: error.message || "An unexpected error occurred",
-        variant: "destructive",
-      });
+
       throw error;
     }
   };

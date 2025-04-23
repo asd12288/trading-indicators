@@ -1,16 +1,15 @@
 "use client";
 
-import { IoIosNotifications, IoIosNotificationsOff } from "react-icons/io";
-import { FaVolumeUp, FaVolumeMute } from "react-icons/fa";
-import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
-import React from "react";
-import { toast } from "@/hooks/use-toast";
-import usePreferences from "@/hooks/usePreferences";
-import SignalToolTooltip from "./SignalToolTooltip";
-import { useTranslations } from "next-intl";
-import { cn } from "@/lib/utils";
 import { useTheme } from "@/context/theme-context";
-import { BellIcon, VolumeIcon, StarIcon } from "lucide-react";
+import usePreferences from "@/hooks/usePreferences";
+import { cn } from "@/lib/utils";
+import { BellIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { FaVolumeMute, FaVolumeUp } from "react-icons/fa";
+import { IoIosNotifications, IoIosNotificationsOff } from "react-icons/io";
+import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
+import { toast } from "sonner";
+import SignalToolTooltip from "./SignalToolTooltip";
 
 interface SignalToolProps {
   signalId: string;
@@ -37,32 +36,18 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
     const status = newValue ? "enabled" : "disabled";
 
     // Enhanced toast with icon
-    toast({
-      title: t(`notifications.${status}`),
-      description: t("notifications.description", { signalId, status }),
-      variant: newValue ? "default" : "destructive",
-      // Add icon to make it more visible
-      icon: (
-        <BellIcon className={newValue ? "text-blue-500" : "text-gray-500"} />
-      ),
-    });
+    toast.success(`Notifications have been ${status} for ${signalId}`);
 
     try {
       await updatePreference(signalId, { notifications: newValue });
       // Success toast
       if (newValue) {
-        toast({
-          title: "Notification Preferences Updated",
-          description: `You'll now receive notifications when ${signalId} trades start or finish`,
-          variant: "success",
-        });
+        toast.success(
+          `You'll now receive notifications when ${signalId} trades start or finish`,
+        );
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update notification preferences",
-        variant: "destructive",
-      });
+      toast.error("Failed to update notification preferences");
     }
   }
 
@@ -70,24 +55,12 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
     const newValue = !volume;
     const status = newValue ? "enabled" : "disabled";
 
-    // Enhanced toast with icon
-    toast({
-      title: t(`volume.${status}`),
-      description: t("volume.description", { signalId, status }),
-      variant: newValue ? "default" : "destructive",
-      icon: (
-        <VolumeIcon className={newValue ? "text-blue-500" : "text-gray-500"} />
-      ),
-    });
+    toast.success(`You've ${status} volume for ${signalId}`);
 
     try {
       await updatePreference(signalId, { volume: newValue });
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update volume preferences",
-        variant: "destructive",
-      });
+      toast.error("Failed to update volume preferences");
     }
   }
 
@@ -96,26 +69,12 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
     const status = newValue ? "added" : "removed";
 
     // Enhanced toast with icon
-    toast({
-      title: t(`favorite.${status}`),
-      description: t("favorite.description", {
-        signalId,
-        status: status,
-      }),
-      variant: newValue ? "default" : "destructive",
-      icon: (
-        <StarIcon className={newValue ? "text-amber-500" : "text-gray-500"} />
-      ),
-    });
+    toast.success(`Signal ${signalId} has been ${status} to your favorites`);
 
     try {
       await updatePreference(signalId, { favorite: newValue });
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update favorite preferences",
-        variant: "destructive",
-      });
+      toast.error("Failed to update favorite preferences");
     }
   }
 

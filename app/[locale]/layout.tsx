@@ -1,13 +1,16 @@
-import AlertToastProvider from "@/components/AlertToastProvider";
-import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "@/context/auth-context";
+import { Toaster } from "@/components/ui/sonner";
+import { UserProvider } from "@/providers/UserProvider";
 
-export default function LocaleLayout({ children, params: { locale } }) {
+
+export default function LocaleLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <AuthProvider>
+    <UserProvider>
       {children}
       <Toaster />
-      <AlertToastProvider />
-    </AuthProvider>
+    </UserProvider>
   );
 }

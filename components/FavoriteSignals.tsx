@@ -3,9 +3,9 @@ import { Signal } from "@/lib/types";
 import { useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import usePreferences from "@/hooks/usePreferences";
-import { toast } from "@/hooks/use-toast";
 import DashboardSignalCard from "./dashboard/DashboardSignalCard";
 import DashboardHeader from "./dashboard/DashboardHeader";
+import { toast } from "sonner";
 
 // Helper function to determine signal status priority
 const getSignalStatusPriority = (signal: Signal): number => {
@@ -54,11 +54,7 @@ const FavoriteSignals: React.FC<FavoriteSignalsProps> = ({
   const handleRemoveFavorite = useCallback(
     (instrumentName: string) => {
       if (!updatePreference) {
-        toast({
-          title: "Error",
-          description: "Could not update favorites. Please try again.",
-          variant: "destructive",
-        });
+        toast.error("Unable to update preferences. Please try again.");
         return;
       }
 
@@ -72,11 +68,9 @@ const FavoriteSignals: React.FC<FavoriteSignalsProps> = ({
 
       updatePreference(instrumentName, { favorite: false })
         .then(() => {
-          toast({
-            title: "Success",
-            description: `${instrumentName} removed from favorites`,
-            variant: "default",
-          });
+          toast.success(
+            `${instrumentName} has been removed from your favorites.`,
+          );
         })
         .catch((error) => {
           console.error("Failed to remove favorite:", error);
@@ -85,11 +79,9 @@ const FavoriteSignals: React.FC<FavoriteSignalsProps> = ({
             prev.filter((name) => name !== instrumentName),
           );
 
-          toast({
-            title: "Error",
-            description: "Failed to remove from favorites. Please try again.",
-            variant: "destructive",
-          });
+          toast.error(
+            `Failed to remove ${instrumentName} from your favorites. Please try again.`,
+          );
         });
     },
     [updatePreference, onFavoriteRemoved],

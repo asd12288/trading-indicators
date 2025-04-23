@@ -735,6 +735,9 @@
   },
   "ResetPasswordForm": {
     "title": "Restablecer contraseña",
+    "successMessage": "Tu contraseña ha sido restablecida con éxito. Ahora puedes iniciar sesión.",
+    "errorMessage": "Error al restablecer la contraseña. Por favor, inténtalo de nuevo.",
+    
     "labels": {
       "password": "Contraseña",
       "confirmPassword": "Confirmar contraseña"

@@ -17,6 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
+import { toast } from "sonner";
 
 const ResetPasswordForm = () => {
   const { locale } = useParams();
@@ -67,15 +68,17 @@ const ResetPasswordForm = () => {
       try {
         // Use the server action which has access to the session
         const response = await updatePassword(null, serverFormData);
-        
+
         if (response?.error) {
           setServerError(response.error);
         } else if (response?.success) {
           setSuccess(true);
           e.target.reset(); // Clear form on success
+          toast.success(t("successMessage"));
         }
       } catch (err) {
         console.error("Error updating password:", err);
+        toast.error(t("errorMessage"));
         setServerError("An unexpected error occurred. Please try again.");
       }
     });

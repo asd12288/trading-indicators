@@ -1,19 +1,18 @@
 "use client";
 import supabaseClient from "@/database/supabase/supabase";
-import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "@/i18n/routing";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { CircleDollarSignIcon } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 export default function PaypalSubscribeButton({ user, plan = "monthly" }) {
   const [userId, setUserId] = useState(user.id);
   const [sdkReady, setSdkReady] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const router = useRouter();
-  const { toast } = useToast();
 
   // Handle PayPal SDK loading state
   useEffect(() => {
@@ -49,12 +48,7 @@ export default function PaypalSubscribeButton({ user, plan = "monthly" }) {
   // Error boundary for PayPal errors
   const handlePayPalError = (err) => {
     console.error("PayPal error occurred:", err);
-    toast({
-      title: "Payment System Error",
-      description:
-        "An error occurred with PayPal. Please try again or contact support.",
-      variant: "destructive",
-    });
+    toast.error(`PayPal error: ${err.message}`);
   };
 
   // Dynamic title and description based on plan
@@ -130,12 +124,9 @@ export default function PaypalSubscribeButton({ user, plan = "monthly" }) {
                         })
                         .catch((err) => {
                           console.error("Create subscription error:", err);
-                          toast({
-                            title: "Subscription Error",
-                            description:
-                              "Could not initialize subscription. Please try again.",
-                            variant: "destructive",
-                          });
+                          toast.error(
+                            "Failed to create subscription. Please try again.",
+                          );
                           throw err;
                         });
                     } catch (err) {
@@ -148,16 +139,9 @@ export default function PaypalSubscribeButton({ user, plan = "monthly" }) {
                   }}
                   onApprove={async (data) => {
                     try {
-                      console.log(
-                        "Subscription approved:",
-                        data.subscriptionID,
+                      toast.success(
+                        "Subscription approved! Redirecting to success page...",
                       );
-
-                      toast({
-                        title: "Processing Subscription",
-                        description:
-                          "Please wait while we activate your account...",
-                      });
 
                       // Update user profile directly after PayPal approval
                       await supabaseClient
@@ -171,29 +155,19 @@ export default function PaypalSubscribeButton({ user, plan = "monthly" }) {
                       router.push("/success");
                     } catch (error) {
                       console.error("Error updating profile:", error);
-                      toast({
-                        title: "Profile Update Error",
-                        description:
-                          "Your payment was successful, but we couldn't update your account. Please contact support.",
-                        variant: "destructive",
-                      });
+                      toast.error(
+                        "Failed to update profile. Please try again.",
+                      );
                     }
                   }}
                   onError={(err) => {
                     console.error("PayPal subscription error:", err);
-                    toast({
-                      title: "Subscription Error",
-                      description:
-                        "An error occurred during subscription. Please try again.",
-                      variant: "destructive",
-                    });
+                    toast.error(
+                      "An error occurred while processing your subscription. Please try again.",
+                    );
                   }}
                   onCancel={() => {
-                    toast({
-                      title: "Subscription Cancelled",
-                      description: "You've cancelled the subscription process.",
-                      variant: "default",
-                    });
+                    toast.success("Subscription cancelled.");
                   }}
                 />
               </div>

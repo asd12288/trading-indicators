@@ -1,9 +1,7 @@
 import "./globals.css";
 import { Metadata } from "next";
-import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Poppins } from "next/font/google";
-import { Toaster } from "@/components/ui/toaster";
 import Header from "@/components/Header";
 import Footer from "@/components/layout/Footer";
 
@@ -33,7 +31,6 @@ export default async function RootLayout({
     <>
       <Header />
       <main>{children}</main>
-      <Toaster />
       <Footer />
     </>
   );

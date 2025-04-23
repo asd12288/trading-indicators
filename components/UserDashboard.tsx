@@ -19,11 +19,7 @@ import ProfileLoader from "./loaders/ProfileLoader";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
-import { useRouter } from "@/i18n/routing";
-import NotificationPreferencesManager from "./NotificationPreferencesManager";
-import NotificationExample from "./NotificationExample";
 import supabaseClient from "@/database/supabase/supabase.js";
-import UserPreferencesTable from "./UserPreferencesTable";
 
 const UserDashboard = ({ user }) => {
   const searchParams = useSearchParams();
@@ -211,10 +207,9 @@ const UserDashboard = ({ user }) => {
                   )}
                   {tab === "notification" && (
                     <div className="space-y-8">
-                      <NotificationPreferencesManager />
                     </div>
                   )}
-                  {tab === "preferences" && isPro && <UserPreferencesTable />}
+                  {/* {tab === "preferences" && isPro && <UserPreferencesTable />} */}
                 </motion.div>
               </AnimatePresence>
             </div>

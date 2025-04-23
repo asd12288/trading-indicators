@@ -737,6 +737,9 @@
   },
   "ResetPasswordForm": {
     "title": "Reset your Password",
+    "successMessage": "Password reset successfully",
+    "errorMessage": "Error resetting password",
+
     "labels": {
       "password": "Password",
       "confirmPassword": "Confirm Password"
