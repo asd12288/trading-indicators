@@ -85,18 +85,22 @@ export default function NotificationItem({
           )}
         </div>
         <p className="text-sm text-slate-400">{notification.message}</p>
-        
+
         {/* Link if available */}
         {notification.link && (
           <div className="flex items-center pt-1 text-xs text-blue-400 group-hover:underline">
-            <span>{notification.additional_data?.link_text || "View details"}</span>
+            <span>
+              {notification.additional_data?.link_text || "View details"}
+            </span>
             <ExternalLink className="ml-1 h-3 w-3" />
           </div>
         )}
-        
+
         {/* Timestamp */}
         <div className="text-xs text-slate-500">
-          {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+          {formatDistanceToNow(new Date(notification.created_at), {
+            addSuffix: true,
+          })}
         </div>
       </div>
 

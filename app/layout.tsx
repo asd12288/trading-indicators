@@ -83,7 +83,6 @@ const LazyLoadedComponents = () => {
       <div id="toaster-container" data-load-delay="true" />
       {/* Initialize notification system */}
       {/* Add Signal Notification Trigger */}
-      <SignalNotificationTrigger />
     </>
   );
 };

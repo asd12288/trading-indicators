@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { AlertCircle, ArrowDownWideNarrow, Grid2X2, List } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { memo, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import SignalCard from "./SignalCard";
 import { useUser } from "@/providers/UserProvider";
@@ -32,37 +32,38 @@ interface SignalsGridProps {
   isLoading?: boolean;
 }
 
-// Create memoized SignalItem to prevent unnecessary re-renders
-const SignalItem = memo(
-  ({ signal, viewMode }: { signal: Signal; viewMode: string }) => {
-    // Get current user ID from user provider
-    const { user } = useUser();
+// SignalItem component now re-renders on every update
+const SignalItem: React.FC<{ signal: Signal; viewMode: string }> = ({
+  signal,
+  viewMode,
+}) => {
+  // Get current user ID from user provider
+  const { user } = useUser();
 
-    return (
-      <Link
+  return (
+    <Link
+      className={cn(
+        "block h-full w-full transition-all duration-300",
+        viewMode === "grid"
+          ? "transform rounded-xl hover:translate-y-[-4px] hover:shadow-xl hover:shadow-blue-500/20"
+          : "transform rounded-xl hover:bg-slate-700/40",
+      )}
+      href={`smart-alerts/${signal.instrument_name}`}
+    >
+      <div
         className={cn(
-          "block h-full w-full transition-all duration-300",
-          viewMode === "grid"
-            ? "transform rounded-xl hover:translate-y-[-4px] hover:shadow-xl hover:shadow-blue-500/20"
-            : "transform rounded-xl hover:bg-slate-700/40",
+          viewMode === "list" ? "w-full" : "h-full",
+          "overflow-hidden rounded-xl",
         )}
-        href={`smart-alerts/${signal.instrument_name}`}
       >
-        <div
-          className={cn(
-            viewMode === "list" ? "w-full" : "h-full",
-            "overflow-hidden rounded-xl",
-          )}
-        >
-          <SignalCard
-            signalPassed={signal}
-            userId={user?.id} // Pass user ID from user provider
-          />
-        </div>
-      </Link>
-    );
-  },
-);
+        <SignalCard
+          signalPassed={signal}
+          userId={user?.id} // Pass user ID from user provider
+        />
+      </div>
+    </Link>
+  );
+};
 
 SignalItem.displayName = "SignalItem";
 
@@ -202,11 +203,7 @@ const SignalsGrid: React.FC<SignalsGridProps> = ({
         </div>
 
         {/* Grid/List View with simpler animation */}
-        <motion.div
-          key={viewMode}
-          initial={{ opacity: 0.8 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.2 }}
+        <div
           className={cn(
             "w-full",
             viewMode === "grid"
@@ -220,20 +217,14 @@ const SignalsGrid: React.FC<SignalsGridProps> = ({
           }}
         >
           {sortedSignals.map((signal, index) => (
-            <motion.div
+            <div
               key={signal.client_trade_id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.2,
-                delay: Math.min(index * 0.03, 0.3), // Cap delay to 300ms max
-              }}
               className={viewMode === "list" ? "w-full" : "h-full"}
             >
               <SignalItem signal={signal} viewMode={viewMode} />
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </>
     );
   }

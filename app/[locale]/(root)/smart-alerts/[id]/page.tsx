@@ -80,8 +80,8 @@ export default async function Page({
         NotificationService.notifyNewSignalView(
           user.id,
           params.id,
-          signalData
-        ).catch(error => {
+          signalData,
+        ).catch((error) => {
           console.error("Error creating notification:", error);
         });
       }

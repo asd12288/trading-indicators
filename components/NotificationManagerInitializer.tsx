@@ -7,16 +7,18 @@ import { createClient } from "@/database/supabase/client";
 
 /**
  * NotificationManagerInitializer
- * 
+ *
  * NOTE: This component is currently DISABLED to prevent duplicate notifications.
  * Signal notifications are now handled by the SignalNotificationTrigger component.
- * 
- * If you need to re-enable this component, ensure SignalNotificationTrigger 
+ *
+ * If you need to re-enable this component, ensure SignalNotificationTrigger
  * is not also active at the same time to prevent duplicate notifications.
  */
 export default function NotificationManagerInitializer() {
   // Component has been disabled - returning null to prevent any processing
-  console.log("NotificationManagerInitializer is disabled to prevent duplicate notifications");
+  console.log(
+    "NotificationManagerInitializer is disabled to prevent duplicate notifications",
+  );
   return null;
 
   // The code below is kept for reference but will not execute due to the return above

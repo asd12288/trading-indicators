@@ -17,22 +17,6 @@ import SignalsGrid from "./SignalGrid";
 import SignalsFilters from "./SignalsFilters";
 import { useUser } from "@/providers/UserProvider";
 
-// Helper function to determine signal status priority
-const getSignalStatusPriority = (signal) => {
-  // Running signals (have entry_time but no exit_time)
-  if (signal.entry_time && !signal.exit_time) {
-    return 1; // Highest priority
-  }
-  // Fulfilled signals (have both entry_time and exit_time)
-  else if (signal.entry_time && signal.exit_time) {
-    return 2; // Medium priority
-  }
-  // Market closed signals (default to lowest priority)
-  else {
-    return 3; // Lowest priority
-  }
-};
-
 const SignalsList = () => {
   const t = useTranslations("Signals");
   const [searchedSignal, setSearchedSignal] = useState("");
@@ -52,7 +36,7 @@ const SignalsList = () => {
     favorites,
   } = usePreferences(user?.id);
 
-  const { signals, isLoading: isLoadingSignals } = useSignals(preferences);
+  const { signals, isLoading: isLoadingSignals } = useSignals();
 
   // Handle favorite removal to update UI immediately
   const handleFavoriteRemoved = useCallback((instrumentName: string) => {
@@ -122,19 +106,14 @@ const SignalsList = () => {
       >
         {/* Favorites section - only show if user is pro and has favorites */}
         {isPro && favouriteSignals.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="rounded-xl border border-slate-700/30 bg-gradient-to-b from-slate-800 to-slate-900 p-5 shadow-md"
-          >
+          <div className="rounded-xl border border-slate-700/30 bg-gradient-to-b from-slate-800 to-slate-900 p-5 shadow-md">
             <FavoriteSignals
               favouriteSignals={favouriteSignals}
               isLoading={isLoadingSignals}
               userId={user?.id}
               onFavoriteRemoved={handleFavoriteRemoved}
             />
-          </motion.div>
+          </div>
         )}
 
         {/* PRO upgrade prompt - only show for non-pro users */}

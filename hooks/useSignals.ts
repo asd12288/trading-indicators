@@ -3,14 +3,6 @@
 import supabaseClient from "@/database/supabase/supabase.js";
 import { Signal } from "@/lib/types";
 import { useCallback, useEffect, useState } from "react";
-import { useUser } from "@/providers/UserProvider";
-import { toast } from "@/hooks/use-toast";
-import NotificationService from "@/lib/notification-service";
-
-type PreferencesMap = Record<
-  string,
-  { notifications: boolean; volume: boolean }
->;
 
 interface RealtimePayload {
   eventType: "INSERT" | "UPDATE" | "DELETE";
@@ -18,16 +10,11 @@ interface RealtimePayload {
   old?: Signal & Record<string, unknown>;
 }
 
-const useSignals = (
-  preferences: PreferencesMap = {},
-  allSignals: boolean = false,
-) => {
+const useSignals = (allSignals: boolean = false) => {
   const [signals, setSignals] = useState<Signal[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [lastFetch, setLastFetch] = useState<number>(0);
-  // Use the user context to get current user ID
-  const { user } = useUser();
 
   // Use memoized fetch function to prevent unnecessary re-creation
   const fetchData = useCallback(async () => {
@@ -38,13 +25,11 @@ const useSignals = (
     setLastFetch(now);
     setIsLoading(true);
     try {
-      // Always fetch from all_signals table
+      // Always fetch from latest_signals_per_instrument table
       const query = supabaseClient
-        .from("all_signals")
+        .from("latest_signals_per_instrument")
         .select("*")
-        .order("entry_time", { ascending: false })
-        // Limit overall fetch size for performance
-        .limit(allSignals ? 100 : 1000);
+        .order("entry_time", { ascending: false });
 
       const { data, error } = await query;
 
@@ -52,19 +37,7 @@ const useSignals = (
         console.error("Error fetching signals:", error);
         setError(error.message);
       } else if (data) {
-        // Derive final signals list
-        let finalSignals: Signal[] = data;
-        if (!allSignals) {
-          // Pick latest per instrument
-          const map = new Map<string, Signal>();
-          for (const sig of data) {
-            if (!map.has(sig.instrument_name)) {
-              map.set(sig.instrument_name, sig);
-            }
-          }
-          finalSignals = Array.from(map.values());
-        }
-        setSignals(finalSignals);
+        setSignals(data as Signal[]);
       }
     } catch (err: unknown) {
       console.error("Unexpected error in useSignals:", err);
@@ -72,108 +45,12 @@ const useSignals = (
     } finally {
       setIsLoading(false);
     }
-  }, [lastFetch, allSignals]);
+  }, [lastFetch]);
 
-  // Handle notifications for signal events based on user preferences
-  const handleSignalNotification = useCallback(
-    async (signal: Signal, eventType: "new" | "completed" | "updated") => {
-      // Only send notifications if we have a user and the signal's instrument is in preferences
-      if (!user || !preferences || !signal.instrument_name) return;
-
-      // Check if this user has enabled notifications for this instrument
-      const instrumentPrefs = preferences[signal.instrument_name];
-      if (!instrumentPrefs?.notifications) return;
-
-      const isBuy = ["BUY", "LONG", "Buy", "Long"].includes(signal.direction || "");
-      const instrumentName = signal.instrument_name;
-
-      // Different notification types based on event type
-      switch (eventType) {
-        case "new":
-          // Show an immediate toast notification
-          toast({
-            title: `New ${isBuy ? "Buy" : "Sell"} Signal`,
-            description: `${instrumentName} signal started at ${signal.entry_price}`,
-            variant: "default",
-            icon: isBuy ? "arrow-up-right" : "arrow-down-right"
-          });
-
-          // Also create a persistent notification in the database
-          if (user.id) {
-            await NotificationService.notifyNewSignal(
-              user.id,
-              instrumentName,
-              isBuy ? "Buy" : "Sell"
-            );
-          }
-          break;
-
-        case "completed":
-          if (!signal.exit_price || !signal.entry_price) return;
-
-          // Calculate P&L
-          let profitLoss = 0;
-
-          // Calculate P&L based on the direction of the trade
-          if (isBuy) {
-            profitLoss = signal.exit_price - signal.entry_price;
-          } else {
-            profitLoss = signal.entry_price - signal.exit_price;
-          }
-
-          const isProfit = profitLoss > 0;
-          const plDisplay = Math.abs(profitLoss).toFixed(2);
-
-          // Show toast notification
-          toast({
-            title: `Signal Completed`,
-            description: `${instrumentName} ${isBuy ? "Buy" : "Sell"} signal ended at ${signal.exit_price} (${isProfit ? "+" : "-"}${plDisplay})`,
-            variant: isProfit ? "success" : "default",
-            icon: isProfit ? "arrow-up-right" : "arrow-down-right"
-          });
-
-          // Create persistent notification
-          if (user.id) {
-            await NotificationService.notifySignalCompleted(
-              user.id,
-              instrumentName,
-              profitLoss
-            );
-          }
-          break;
-
-        case "updated":
-          // This could be used for target/stop changes or other updates
-          // Currently not implemented, but ready for future expansion
-          break;
-      }
-    },
-    [user, preferences, toast]
-  );
-
-  // Handle real-time updates more efficiently
+  // Handle real-time updates
   const handleRealtimeUpdate = useCallback(
-    async (payload: RealtimePayload) => {
+    (payload: RealtimePayload) => {
       const updatedSignal = payload.new;
-
-      // Check for notification triggers
-      if (payload.eventType === "INSERT" && user) {
-        // New signal started
-        handleSignalNotification(updatedSignal, "new");
-      } else if (payload.eventType === "UPDATE" && user) {
-        const oldSignal = payload.old;
-
-        // Signal completed (has exit_time now but didn't before)
-        if (updatedSignal.exit_time && oldSignal && !oldSignal.exit_time) {
-          handleSignalNotification(updatedSignal, "completed");
-        }
-
-        // Target/stop changes could be added here
-        // if (updatedSignal.take_profit !== oldSignal.take_profit || 
-        //     updatedSignal.stop_loss !== oldSignal.stop_loss) {
-        //   handleSignalNotification(updatedSignal, "updated");
-        // }
-      }
 
       // Update signals state based on the event type
       setSignals((current) => {
@@ -182,6 +59,7 @@ const useSignals = (
           if (payload.eventType === "INSERT") {
             return [updatedSignal, ...current];
           } else if (payload.eventType === "UPDATE") {
+            console.log("Updating signal:", updatedSignal);
             return current.map((signal) =>
               signal.client_trade_id === updatedSignal.client_trade_id
                 ? updatedSignal
@@ -217,18 +95,23 @@ const useSignals = (
         return current;
       });
     },
-    [allSignals, user, handleSignalNotification]
+    [allSignals],
   );
 
   useEffect(() => {
+    // Initial data fetch
     fetchData();
 
-    // Subscribe to real-time events on the base all_signals table
+    // Subscribe to real-time events on the latest_signals_per_instrument table
     const subscription = supabaseClient
-      .channel("all_signals_changes")
+      .channel("latest_signals_per_instrument_changes")
       .on(
-        "postgres_changes" as any,
-        { event: "*", schema: "public", table: "all_signals" },
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "latest_signals_per_instrument",
+        },
         handleRealtimeUpdate,
       )
       .subscribe();

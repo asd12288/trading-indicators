@@ -1,23 +1,22 @@
 "use client";
 import { Link } from "@/i18n/routing";
+import { AnimatePresence, motion } from "framer-motion";
 import {
+  ChevronRight,
+  Lightbulb,
+  LineChart,
+  LogOut,
   MapIcon,
   User,
-  LogOut,
-  Lightbulb,
-  BookOpen,
-  LineChart,
-  ChevronRight,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { RxHamburgerMenu, RxCross1 } from "react-icons/rx";
-import LogoutBtn from "./LogoutBtn";
-import UpgradeButton from "./UpgradeButton";
-import LanguageSwitcher from "./LanguageSwitcher";
-import NotificationBell from "./NotificationBell";
 import { useTranslations } from "next-intl";
 import { useParams, usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import { RxCross1, RxHamburgerMenu } from "react-icons/rx";
+import LanguageSwitcher from "./LanguageSwitcher";
+import LogoutBtn from "./LogoutBtn";
+import NotifBell from "./notif/NotifBell";
+import UpgradeButton from "./UpgradeButton";
 
 export default function Navbar({ user, profile }) {
   // State to handle mobile menu toggle
@@ -110,9 +109,8 @@ export default function Navbar({ user, profile }) {
 
             {user ? (
               <div className="flex items-center gap-3">
-                {/* Add NotificationBell here */}
-                {user?.id && <NotificationBell userId={user.id} />}
-                
+                {user?.id && <NotifBell userId={user.id} />}
+
                 <Link
                   href="/profile"
                   className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium ${
@@ -159,7 +157,7 @@ export default function Navbar({ user, profile }) {
 
         <div className="flex items-center gap-3">
           {/* Add NotificationBell to mobile view too */}
-          {user?.id && <NotificationBell userId={user.id} />}
+          {user?.id && <NotifBell userId={user.id} />}
           <LanguageSwitcher />
 
           {/* Mobile Menu Button */}

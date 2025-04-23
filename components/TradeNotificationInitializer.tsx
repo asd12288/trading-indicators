@@ -10,21 +10,24 @@ import { useUser } from "@/providers/UserProvider";
  */
 export default function TradeNotificationInitializer() {
   const { user } = useUser();
-  
+
   useEffect(() => {
     // Only initialize if there's a logged-in user
     if (user && user.id) {
       // The manager is already initialized through the singleton pattern
       // This just ensures it's loaded when the app starts
-      console.log("Trade notification monitoring initialized for user:", user.id);
+      console.log(
+        "Trade notification monitoring initialized for user:",
+        user.id,
+      );
     }
-    
+
     // Clean up subscriptions on unmount
     return () => {
       tradeNotificationManager.cleanup();
     };
   }, [user]);
-  
+
   // This component doesn't render anything
   return null;
 }
