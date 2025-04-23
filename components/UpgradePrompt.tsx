@@ -9,10 +9,10 @@ const UpgradePrompt = () => {
 
   // Hard-code features rather than relying on translations initially
   const features = [
-    "Access to all signals",
-    "Unlimited alerts",
-    "Advanced filters",
-    "Priority support",
+    t("features.access"),
+    t("features.alerts"),
+    t("features.filters"),
+    t("features.support"),
   ];
 
   return (
@@ -26,13 +26,10 @@ const UpgradePrompt = () => {
         <div className="mb-6 flex-1 md:mb-0 md:pr-6">
           <div className="mb-2 flex items-center justify-center gap-2 md:justify-start">
             <Sparkles className="h-5 w-5 text-blue-400" />
-            <h3 className="text-xl font-bold text-white">Upgrade to PRO</h3>
+            <h3 className="text-xl font-bold text-white">{t("title")}</h3>
           </div>
 
-          <p className="mb-4 text-slate-300">
-            Get access to all premium features and signals with a PRO
-            subscription.
-          </p>
+          <p className="mb-4 text-slate-300">{t("description")}</p>
 
           <ul className="mb-6 space-y-2 text-sm">
             {features.map((feature) => (
@@ -56,7 +53,7 @@ const UpgradePrompt = () => {
               whileTap={{ scale: 0.95 }}
               className="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-3 font-medium text-white shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl hover:shadow-blue-500/30"
             >
-              Upgrade Now
+              {t("button")}
             </motion.button>
           </Link>
         </div>

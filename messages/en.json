@@ -894,10 +894,11 @@
     "login": "Back to login"
   },
   "UpgradePrompt": {
-    "title": "Upgrade to view all smart alerts and add favorites.",
+    "title": "Upgrade to PRO",
     "button": "Upgrade Now",
     "description": "Get access to all premium features and signals with a PRO subscription.",
     "price": "$35",
+
     "features": {
       "access": "Access to all signals",
       "alerts": "Unlimited alerts",
