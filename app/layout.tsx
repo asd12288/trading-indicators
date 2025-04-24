@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Analytics } from "@vercel/analytics/react";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import LazyLoadedComponents from "./LazyLoadedComponents";
 
@@ -14,13 +15,17 @@ export const metadata: Metadata = {
   description: "Get the best Smart Alerts for your trades",
 };
 
-// Import critical CSS in a non-blocking way
+// Optimize Poppins font with next/font
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+// Critical background and body styles
 const criticalCss = `
-  /* Inlining minimal critical CSS here to prevent render blocking */
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-  
   body {
-    font-family: 'Poppins', system-ui, sans-serif;
+    font-family: ${"poppins"}; /* next/font applied via className */
     background: linear-gradient(to bottom, rgb(15, 23, 42), rgb(10, 15, 30));
     color: white;
     margin: 0;
@@ -38,22 +43,16 @@ export default async function RootLayout({
   const messages = await getMessages({ locale: params.locale });
 
   return (
-    <html lang={params.locale}>
+    <html lang={params.locale} className={poppins.className}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        {/* Preconnect to Google Fonts */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
+        {/* Preload critical styles and fonts handled by next/font */}
 
         {/* Inline critical CSS */}
         <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
 
-        {/* Preload critical fonts */}
+        {/* Other preloads or meta */}
       </head>
       <body>
         <NextIntlClientProvider locale={params.locale} messages={messages}>

@@ -56,13 +56,13 @@ export default function useSignalNotification() {
           }
           // trigger server-side Telegram notifications
           try {
-            await fetch('/api/notifyNewSignal', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+            await fetch("/api/notifyNewSignal", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify(sig),
             });
           } catch (fetchErr) {
-            console.error('Error triggering Telegram notification:', fetchErr);
+            console.error("Error triggering Telegram notification:", fetchErr);
           }
         },
       )
@@ -104,13 +104,13 @@ export default function useSignalNotification() {
           }
           // trigger server-side Telegram notifications for closed signals
           try {
-            await fetch('/api/notifyNewSignal', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+            await fetch("/api/notifyNewSignal", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify(sig),
             });
           } catch (fetchErr) {
-            console.error('Error triggering Telegram notification:', fetchErr);
+            console.error("Error triggering Telegram notification:", fetchErr);
           }
         },
       )

@@ -18,12 +18,13 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
 
+// track which users we've subscribed to avoid duplicate handlers
+const subscribedUserChannels = new Set<string>();
+
 export default function useNotification(
   userId?: string,
   options?: { disableToast?: boolean },
 ) {
-  // track processed notification IDs to avoid duplicates
-  const processedIdsRef = useRef<Set<string>>(new Set());
   const router = useRouter();
   const disableToast = options?.disableToast ?? false;
   // load user preferences to check volume settings
@@ -54,88 +55,38 @@ export default function useNotification(
   // 2. Realtime subscription: prepend new notifications
   useEffect(() => {
     if (!userId) return;
+    if (subscribedUserChannels.has(userId)) return;
+    subscribedUserChannels.add(userId);
     const channel = supabase
       .channel(`notifications-${userId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${userId}`,
-        },
-        ({ new: row }) => {
-          // dedupe by notification ID
-          if (processedNotificationIds.has(row.id)) return;
-          processedNotificationIds.add(row.id);
-
-          // get latest preferences
-          const prefs = preferencesRef.current;
-
-          // Debug: log incoming notification and user prefs
-          if (row.type === "signal") {
-            const inst = row.url?.split("/").pop() || "";
-            console.log(
-              `[useNotification] Incoming signal for ${inst}, prefs:`,
-              prefs[inst],
-            );
-          } else {
-            console.log(
-              `[useNotification] Incoming non-signal notification:`,
-              row.title,
-            );
-          }
-
-          // prepend to notification list
-          mutate(
-            (prev) =>
-              prev ? [row as Notification, ...prev] : [row as Notification],
-            false,
-          );
-
-          // handle toast and sound
-          const isSignal = row.type === "signal";
-          // extract instrument name from URL
-          const inst = isSignal && row.url ? row.url.split("/").pop() : null;
-          const userPref = inst ? preferencesRef.current[inst] : null;
-          // for signals, skip only if notifications explicitly off
-          if (isSignal && userPref?.notifications === false) {
-            console.log(
-              `[useNotification] signal ${inst} notifications disabled, skipping`,
-            );
-            return;
-          }
-          // show toast
-          toast.success(row.title, {
-            action: {
-              label: "View",
-              onClick: () => row.url && router.push(row.url),
-            },
-          });
-          // play sound: always execute to verify functionality
-          if (isSignal) {
-            const inst = row.url?.split("/").pop() || "";
-            // play completed or new sound with instrument
-            if (row.title.toLowerCase().includes("closed")) {
-              console.log(
-                `[useNotification] playing completed sound for ${inst}`,
-              );
-              SoundService.playCompletedSignal(inst);
-            } else {
-              console.log(
-                `[useNotification] playing new signal sound for ${inst}`,
-              );
-              SoundService.playNewSignal(inst);
-            }
-          } else {
-            console.log("[useNotification] playing alert sound");
-            SoundService.playAlert();
-          }
-        },
-      )
+      .on("postgres_changes", {
+        event: "INSERT",
+        schema: "public",
+        table: "notifications",
+        filter: `user_id=eq.${userId}`,
+      }, ({ new: row }) => {
+        if (processedNotificationIds.has(row.id)) return;
+        processedNotificationIds.add(row.id);
+        const isSignal = row.type === "signal";
+        const inst = isSignal && row.url ? row.url.split("/").pop() : null;
+        const userPref = inst ? preferencesRef.current[inst] : null;
+        if (isSignal && userPref?.notifications === false) return;
+        mutate(prev => prev ? [row as Notification, ...prev] : [row as Notification], false);
+        if (!disableToast) {
+          toast.success(row.title, { action: { label: "View", onClick: () => row.url && router.push(row.url) }});
+        }
+        if (isSignal) {
+          if (row.title.toLowerCase().includes("closed")) SoundService.playCompletedSignal(inst || "");
+          else SoundService.playNewSignal(inst || "");
+        } else {
+          SoundService.playAlert();
+        }
+      })
       .subscribe();
-    // proper cleanup
-    return () => supabase.removeChannel(channel);
+    return () => {
+      subscribedUserChannels.delete(userId);
+      void supabase.removeChannel(channel);
+    };
   }, [userId, disableToast, router, mutate]);
 
   // 3. Mark a single notification as read
@@ -221,7 +172,7 @@ export default function useNotification(
 
   return {
     notification: notification ?? [],
-    error: error ? (error as any).message : null,
+    error: error instanceof Error ? error.message : null,
     loading,
     markAsRead,
     markAllAsRead,

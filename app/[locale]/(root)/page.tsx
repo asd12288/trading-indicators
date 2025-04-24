@@ -1,12 +1,10 @@
-import Contact from "@/components/homePage/Contact";
-import Cta from "@/components/homePage/Cta";
 import Hero from "@/components/homePage/Hero";
-import HowItWork from "@/components/homePage/HowItWork";
-import Plans from "@/components/homePage/Plans";
-import Service from "@/components/homePage/Service";
-import TestimonialsSection from "@/components/homePage/TestimonialsSection";
+import BelowTheFold from "@/components/homePage/BelowTheFold";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
+
+export const dynamic = "force-static";
+export const revalidate = 3600; // revalidate static page every hour
 
 async function page({ params }: { params: { locale: string } }) {
   const supabase = await createClient();
@@ -25,30 +23,8 @@ async function page({ params }: { params: { locale: string } }) {
         <section>
           <Hero />
         </section>
-
-        <section className="relative">
-          <Service />
-        </section>
-
-        <section className="relative">
-          <HowItWork />
-        </section>
-
-        <section className="relative p-2">
-          <Plans />
-        </section>
-
-        <section className="relative z-[1] p-2">
-          <TestimonialsSection />
-        </section>
-
-        <section className="relative">
-          <Cta />
-        </section>
-
-        <section className="relative p-2">
-          <Contact />
-        </section>
+        {/* render all client-side sections inside this client component */}
+        <BelowTheFold />
       </div>
     </>
   );
