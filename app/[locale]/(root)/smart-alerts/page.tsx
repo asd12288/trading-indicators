@@ -8,16 +8,15 @@ export const metadata: Metadata = {
   title: "Smart Alerts",
 };
 
-async function page({ params }: { params: { locale: string } }) {
+async function page() {
   const supabase = await createClient();
-  const { locale } = await params;
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect({ href: "/login", locale: locale });
+    redirect({ href: "/login" });
   }
 
   // Get the user profile from Supabase to pass to client components
@@ -31,7 +30,6 @@ async function page({ params }: { params: { locale: string } }) {
   return (
     <UserInitializer user={user} profile={profile}>
       <SignalsLayout />
-
     </UserInitializer>
   );
 }

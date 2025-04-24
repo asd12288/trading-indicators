@@ -2,54 +2,67 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { Bell, CheckCheck, Trash2, X, AlertCircle } from "lucide-react";
+import useSignalNotification from "../../hooks/useSignalNotification";
 import useNotification from "../../hooks/useNotification";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
+import SoundService from "@/lib/services/soundService";
 
 interface NotificationCenterProps {
   userId: string;
 }
 
 const NotificationCenter = ({ userId }: NotificationCenterProps) => {
-  const { notification, loading, markAsRead, markAllAsRead, clearNotifications } = useNotification(userId);
+  // subscribe to realtime signal notifications (handles all users)
+  useSignalNotification();
+  const {
+    notification,
+    loading,
+    markAsRead,
+    markAllAsRead,
+    clearNotifications,
+  } = useNotification(userId);
   const [open, setOpen] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
+
   // Count unread notifications
-  const unreadCount = notification.filter(n => !n.is_read).length;
-  
+  const unreadCount = notification.filter((n) => !n.is_read).length;
+
   // Handle outside clicks
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setOpen(false);
         setConfirmClear(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-  
+
   // Handle marking a notification as read
   const handleMarkAsRead = async (id: string) => {
     await markAsRead(id);
   };
-  
+
   // Handle notification click with URL redirection
   const handleNotificationClick = async (notif: any) => {
     if (notif.url) {
       // Mark as read first
       await markAsRead(notif.id);
-      
+
       // Close dropdown
       setOpen(false);
-      
+
       // Handle relative URLs vs. external URLs
-      if (notif.url.startsWith('http://') || notif.url.startsWith('https://')) {
+      if (notif.url.startsWith("http://") || notif.url.startsWith("https://")) {
         // External URL - open in new tab
-        window.open(notif.url, '_blank');
+        window.open(notif.url, "_blank");
       } else {
         // Internal URL - use client-side navigation
         window.location.href = notif.url;
@@ -61,13 +74,13 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
   const handleMarkAllAsRead = async () => {
     await markAllAsRead();
   };
-  
+
   // Handle clearing all notifications
   const handleClearAll = async () => {
     await clearNotifications();
     setConfirmClear(false);
   };
-  
+
   // Format notification time
   const formatNotificationTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -76,7 +89,7 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
     const diffMins = Math.round(diffMs / 60000);
     const diffHours = Math.round(diffMs / 3600000);
     const diffDays = Math.round(diffMs / 86400000);
-    
+
     if (diffMins < 60) {
       return `${diffMins}m ago`;
     } else if (diffHours < 24) {
@@ -91,8 +104,11 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
   return (
     <div className="relative z-50" ref={dropdownRef}>
       {/* Bell Button */}
-      <button 
-        onClick={() => setOpen(!open)} 
+      <button
+        onClick={() => {
+          SoundService.initializeAudio();
+          setOpen(!open);
+        }}
         className="relative flex h-9 w-9 items-center justify-center rounded-md border border-slate-700/40 bg-slate-800/90 text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
         aria-label="Notifications"
       >
@@ -103,7 +119,7 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
           </span>
         )}
       </button>
-      
+
       {/* Dropdown Panel */}
       <AnimatePresence>
         {open && (
@@ -112,12 +128,14 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="absolute right-0 mt-2 w-80 min-w-80 max-w-sm origin-top-right overflow-hidden rounded-md border border-slate-700/50 bg-slate-800 shadow-lg backdrop-blur-sm z-50"
+            className="absolute right-0 z-50 mt-2 w-80 min-w-80 max-w-sm origin-top-right overflow-hidden rounded-md border border-slate-700/50 bg-slate-800 shadow-lg backdrop-blur-sm"
           >
             {/* Header */}
             <div className="border-b border-slate-700/50 px-4 py-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-white">Notifications</h3>
+                <h3 className="text-lg font-semibold text-white">
+                  Notifications
+                </h3>
                 <div className="flex space-x-1">
                   {notification.length > 0 && (
                     <>
@@ -148,7 +166,7 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
                 </div>
               </div>
             </div>
-            
+
             {/* Notifications List */}
             <div className="max-h-[60vh] overflow-y-auto">
               {loading ? (
@@ -157,15 +175,19 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
                 </div>
               ) : notification.length > 0 ? (
                 <ul className="divide-y divide-slate-700/30">
-                  {notification.map(notif => (
-                    <li 
-                      key={notif.id} 
+                  {notification.map((notif) => (
+                    <li
+                      key={notif.id}
                       className={cn(
                         "group relative px-4 py-3 transition-colors",
-                        notif.is_read ? "bg-slate-800" : "bg-slate-800/60", 
-                        notif.url ? "cursor-pointer hover:bg-slate-700/80" : "hover:bg-slate-700/50"
+                        notif.is_read ? "bg-slate-800" : "bg-slate-800/60",
+                        notif.url
+                          ? "cursor-pointer hover:bg-slate-700/80"
+                          : "hover:bg-slate-700/50",
                       )}
-                      onClick={() => notif.url && handleNotificationClick(notif)}
+                      onClick={() =>
+                        notif.url && handleNotificationClick(notif)
+                      }
                     >
                       <div className={notif.url ? "pr-8" : ""}>
                         {/* Notification Title */}
@@ -174,20 +196,22 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
                             <span className="mt-1.5 flex h-2 w-2 flex-shrink-0 rounded-full bg-blue-500"></span>
                           )}
                           <div className="flex-1">
-                            <h4 className={cn(
-                              "line-clamp-2 font-medium",
-                              notif.is_read ? "text-slate-300" : "text-white"
-                            )}>
+                            <h4
+                              className={cn(
+                                "line-clamp-2 font-medium",
+                                notif.is_read ? "text-slate-300" : "text-white",
+                              )}
+                            >
                               {notif.title}
                             </h4>
-                            
+
                             {/* Notification Body */}
                             {(notif.body || (notif as any).message) && (
                               <p className="mt-0.5 line-clamp-2 text-xs text-slate-400">
                                 {notif.body ?? (notif as any).message}
                               </p>
                             )}
-                            
+
                             {/* Notification Time */}
                             <span className="mt-1 block text-xs text-slate-500">
                               {formatNotificationTime(notif.created_at)}
@@ -195,10 +219,10 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
                           </div>
                         </div>
                       </div>
-                      
+
                       {/* Mark as read button */}
                       {!notif.is_read && (
-                        <button 
+                        <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleMarkAsRead(notif.id);
@@ -209,13 +233,23 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
                           <CheckCheck className="h-4 w-4" />
                         </button>
                       )}
-                      
+
                       {/* Link Arrow for notification with URL */}
                       {notif.url && (
                         <div className="absolute right-4 top-1/2 -translate-y-1/2">
                           <div className="h-5 w-5 rounded-full border border-slate-600 text-slate-400 opacity-70 group-hover:border-slate-500 group-hover:text-slate-200">
-                            <svg className="h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            <svg
+                              className="h-full w-full"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 5l7 7-7 7"
+                              />
                             </svg>
                           </div>
                         </div>
@@ -230,11 +264,11 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
                 </div>
               )}
             </div>
-            
+
             {/* Footer */}
             {notification.length > 0 && (
               <div className="border-t border-slate-700/50 px-4 py-2">
-                <Link 
+                <Link
                   href="/notifications"
                   className="block text-center text-xs text-slate-400 hover:text-slate-200"
                   onClick={() => setOpen(false)}
@@ -243,13 +277,18 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
                 </Link>
               </div>
             )}
-            
+
             {/* Confirm Clear Dialog */}
             {confirmClear && (
               <div className="absolute inset-0 flex items-center justify-center bg-slate-900/95 backdrop-blur-sm">
                 <div className="w-64 rounded-lg bg-slate-800 p-4 shadow-lg">
-                  <h4 className="mb-1 text-lg font-semibold text-white">Clear all?</h4>
-                  <p className="mb-4 text-xs text-slate-400">This will delete all notifications. This action cannot be undone.</p>
+                  <h4 className="mb-1 text-lg font-semibold text-white">
+                    Clear all?
+                  </h4>
+                  <p className="mb-4 text-xs text-slate-400">
+                    This will delete all notifications. This action cannot be
+                    undone.
+                  </p>
                   <div className="flex justify-end space-x-2">
                     <button
                       onClick={() => setConfirmClear(false)}

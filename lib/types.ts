@@ -93,7 +93,7 @@ export interface BlogProps {
 export interface Notification {
   id: string;
   url?: string;
-  type: "trade" | "news" | "system" | "alert" | "signal";
+  type:  "news" | "system" | "alert" | "signal";
   created_at: string;
   is_read: boolean;
   user_id: string;

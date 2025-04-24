@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Analytics } from "@vercel/analytics/react";
+import LazyLoadedComponents from "./LazyLoadedComponents";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -57,9 +58,7 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider locale={params.locale} messages={messages}>
           {children}
-          <Suspense fallback={null}>
-            <LazyLoadedComponents />
-          </Suspense>
+          <LazyLoadedComponents />
         </NextIntlClientProvider>
         <Analytics />
 
@@ -68,16 +67,3 @@ export default async function RootLayout({
     </html>
   );
 }
-
-// Lazy load non-critical components
-const LazyLoadedComponents = () => {
-  return (
-    <>
-      <div id="maintenance-banner-container" data-load-delay="true" />
-      <div id="alerts-container" data-load-delay="true" />
-      <div id="toaster-container" data-load-delay="true" />
-      {/* Initialize notification system */}
-      {/* Add Signal Notification Trigger */}
-    </>
-  );
-};

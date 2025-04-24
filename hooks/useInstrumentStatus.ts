@@ -170,8 +170,6 @@ export default function useInstrumentStatus(instrumentName: string) {
           filter: `instrument_name=eq.${instrumentName}`,
         },
         (payload) => {
-          console.log("Received real-time update:", payload);
-
           if (
             payload.eventType === "INSERT" ||
             payload.eventType === "UPDATE"
@@ -220,7 +218,6 @@ export default function useInstrumentStatus(instrumentName: string) {
         },
       )
       .subscribe((status) => {
-        console.log("Subscription status:", status);
 
         if (status === "SUBSCRIBED") {
           console.log(

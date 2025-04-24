@@ -1,6 +1,5 @@
-import { Toaster } from "@/components/ui/sonner";
 import { UserProvider } from "@/providers/UserProvider";
-
+import { Toaster } from "@/components/ui/sonner";
 
 export default function LocaleLayout({
   children,
