@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { useUser } from "@/providers/UserProvider";
 import useNotification from "@/hooks/useNotification";
@@ -47,6 +47,14 @@ export default function NotificationsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [showConfirmClear, setShowConfirmClear] = useState(false);
+  // simple pagination
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
+  // Reset page when filters or search query change
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, activeFilter]);
 
   // Derived state
   const unreadCount = notifications.filter((n) => !n.is_read).length;
@@ -77,6 +85,11 @@ export default function NotificationsPage() {
   };
 
   const filteredNotifications = getFilteredNotifications();
+  const totalPages = Math.ceil(filteredNotifications.length / pageSize) || 1;
+  const paginatedNotifications = filteredNotifications.slice(
+    (page - 1) * pageSize,
+    page * pageSize,
+  );
 
   // Format notification date
   const formatNotificationDate = (dateString: string) => {
@@ -252,80 +265,102 @@ export default function NotificationsPage() {
               <p className="text-slate-400">Loading notifications...</p>
             </div>
           </div>
-        ) : filteredNotifications.length > 0 ? (
-          <ul className="divide-y divide-slate-700/30">
-            {filteredNotifications.map((notif) => (
-              <motion.li
-                key={notif.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className={cn(
-                  "group relative flex items-start gap-4 p-4 transition-colors md:p-6",
-                  notif.is_read
-                    ? "bg-transparent hover:bg-slate-700/20"
-                    : "bg-slate-700/10 hover:bg-slate-700/30",
-                )}
-              >
-                {/* Type indicator */}
-                <div
+        ) : paginatedNotifications.length > 0 ? (
+          <>
+            <ul className="divide-y divide-slate-700/30">
+              {paginatedNotifications.map((notif) => (
+                <motion.li
+                  key={notif.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   className={cn(
-                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
-                    getNotificationTypeColor(notif.type),
+                    "group relative flex items-start gap-4 p-4 transition-colors md:p-6",
+                    notif.is_read
+                      ? "bg-transparent hover:bg-slate-700/20"
+                      : "bg-slate-700/10 hover:bg-slate-700/30",
                   )}
                 >
-                  <span className="text-xs font-semibold uppercase">
-                    {notif.type?.slice(0, 1)}
-                  </span>
-                </div>
+                  {/* Type indicator */}
+                  <div
+                    className={cn(
+                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
+                      getNotificationTypeColor(notif.type),
+                    )}
+                  >
+                    <span className="text-xs font-semibold uppercase">
+                      {notif.type?.slice(0, 1)}
+                    </span>
+                  </div>
 
-                {/* Content */}
-                <div className="flex-1">
-                  <div className="mb-1 flex items-center gap-2">
-                    <h3
-                      className={cn(
-                        "font-medium",
-                        notif.is_read ? "text-slate-300" : "text-white",
+                  {/* Content */}
+                  <div className="flex-1">
+                    <div className="mb-1 flex items-center gap-2">
+                      <h3
+                        className={cn(
+                          "font-medium",
+                          notif.is_read ? "text-slate-300" : "text-white",
+                        )}
+                      >
+                        {notif.title}
+                      </h3>
+                      {!notif.is_read && (
+                        <span className="inline-flex h-2 w-2 rounded-full bg-blue-500"></span>
                       )}
-                    >
-                      {notif.title}
-                    </h3>
+                    </div>
+
+                    {(notif.body || (notif as any).message) && (
+                      <p className="text-sm text-slate-400">
+                        {notif.body || (notif as any).message}
+                      </p>
+                    )}
+
+                    <div className="mt-2 flex items-center gap-4 text-xs text-slate-500">
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3.5 w-3.5" />
+                        {formatNotificationDate(notif.created_at)}
+                      </span>
+                      <span className="rounded-full bg-slate-700/40 px-2 py-0.5">
+                        {getNotificationTypeLabel(notif.type)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex shrink-0 items-center gap-1 self-start">
                     {!notif.is_read && (
-                      <span className="inline-flex h-2 w-2 rounded-full bg-blue-500"></span>
+                      <button
+                        onClick={() => handleMarkAsRead(notif.id)}
+                        className="rounded-md p-2 text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
+                        title="Mark as read"
+                      >
+                        <CheckCircle className="h-4 w-4" />
+                      </button>
                     )}
                   </div>
-
-                  {(notif.body || (notif as any).message) && (
-                    <p className="text-sm text-slate-400">
-                      {notif.body || (notif as any).message}
-                    </p>
-                  )}
-
-                  <div className="mt-2 flex items-center gap-4 text-xs text-slate-500">
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3.5 w-3.5" />
-                      {formatNotificationDate(notif.created_at)}
-                    </span>
-                    <span className="rounded-full bg-slate-700/40 px-2 py-0.5">
-                      {getNotificationTypeLabel(notif.type)}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex shrink-0 items-center gap-1 self-start">
-                  {!notif.is_read && (
-                    <button
-                      onClick={() => handleMarkAsRead(notif.id)}
-                      className="rounded-md p-2 text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
-                      title="Mark as read"
-                    >
-                      <CheckCircle className="h-4 w-4" />
-                    </button>
-                  )}
-                </div>
-              </motion.li>
-            ))}
-          </ul>
+                </motion.li>
+              ))}
+            </ul>
+            {/* pagination controls */}
+            <div className="flex items-center justify-between border-t border-slate-700 bg-slate-800 px-4 py-2">
+              <button
+                onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                disabled={page === 1}
+                className="rounded bg-slate-700 px-3 py-1 text-slate-200 disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span className="text-sm text-slate-300">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+                disabled={page === totalPages}
+                className="rounded bg-slate-700 px-3 py-1 text-slate-200 disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </>
         ) : (
           <div className="flex h-64 flex-col items-center justify-center">
             <AlertCircle className="mb-2 h-10 w-10 text-slate-500 opacity-40" />

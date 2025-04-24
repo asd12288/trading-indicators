@@ -11,13 +11,13 @@ interface SoundConfig {
 
 // Map of event types to sound configurations
 const SOUND_CONFIG: Record<SignalEventType, SoundConfig> = {
-  new: { src: "/sounds/notification.mp3", volume: 0.6 },
-  completed: { src: "/sounds/notification.mp3", volume: 0.5 }, // Using default for now, can be changed later
-  alert: { src: "/sounds/notification.mp3", volume: 0.7 }, // Using default for now, can be changed later
+  new: { src: "/audio/newSignal.mp3", volume: 0.6 },
+  completed: { src: "/audio/endSignal.mp3", volume: 0.5 }, // Using default for now, can be changed later
+  alert: { src: "/audio/notification.mp3", volume: 0.7 }, // Using default for now, can be changed later
 };
 
 // Default sound for fallback
-const DEFAULT_SOUND = "/sounds/notification.mp3";
+const DEFAULT_SOUND = "/audio/notification.mp3";
 const DEFAULT_VOLUME = 0.5;
 
 // Track the last time a notification sound was played (debouncing)
@@ -30,8 +30,12 @@ const DEBOUNCE_TIME = 500; // Minimum time between sounds (milliseconds)
 class SoundService {
   /**
    * Play a sound for a specific event type with debouncing
+   * Try instrument-specific audio; fall back to configured sound.
    */
-  static playSound(eventType: SignalEventType = "new"): void {
+  static playSound(
+    eventType: SignalEventType = "new",
+    instrument?: string,
+  ): void {
     console.log(
       `[SoundService] Attempting to play sound for event type: ${eventType}`,
     );
@@ -48,17 +52,40 @@ class SoundService {
           `[SoundService] Playing sound: ${config.src} with volume: ${config.volume}`,
         );
 
-        const audio = new Audio(config.src);
+        // Try instrument-specific file
+        let src = config.src;
+        if (instrument) {
+          console.log(`Instrument provided: ${instrument}`);
+          const suffix =
+            eventType === "new"
+              ? "start"
+              : eventType === "completed"
+                ? "end"
+                : "notification";
+          src = `/audio/${instrument.toLowerCase()}-${suffix}.mp3`;
+        }
+        const audio = new Audio(src);
         audio.volume = config.volume;
 
         audio
           .play()
           .then(() =>
-            console.log(`[SoundService] Sound playback started successfully`),
+            console.log(`[SoundService] Sound playback started: ${src}`),
           )
-          .catch((err) =>
-            console.error(`[SoundService] Audio play failed:`, err),
-          );
+          .catch((err) => {
+            console.warn(
+              `[SoundService] Failed to play ${src}, falling back`,
+              err,
+            );
+            // fallback to default or config sound
+            const fallback = new Audio(config.src);
+            fallback.volume = config.volume;
+            fallback
+              .play()
+              .catch((e) =>
+                console.error(`[SoundService] Fallback play failed:`, e),
+              );
+          });
 
         lastPlayedTime = now;
       } catch (error) {
@@ -77,17 +104,17 @@ class SoundService {
   /**
    * Play a sound for a new signal
    */
-  static playNewSignal(): void {
-    console.log("[SoundService] playNewSignal called");
-    this.playSound("new");
+  static playNewSignal(instrument?: string): void {
+    console.log("[SoundService] playNewSignal called for", instrument);
+    this.playSound("new", instrument);
   }
 
   /**
    * Play a sound for a completed signal
    */
-  static playCompletedSignal(): void {
-    console.log("[SoundService] playCompletedSignal called");
-    this.playSound("completed");
+  static playCompletedSignal(instrument?: string): void {
+    console.log("[SoundService] playCompletedSignal called for", instrument);
+    this.playSound("completed", instrument);
   }
 
   /**

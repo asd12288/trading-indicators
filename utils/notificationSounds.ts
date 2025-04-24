@@ -15,7 +15,7 @@ export function playNotificationSound() {
   // Only play if enough time has elapsed since the last sound
   if (now - lastPlayedTime > DEBOUNCE_TIME) {
     try {
-      const audio = new Audio("/sounds/notification.mp3");
+      const audio = new Audio("/audio/notification.mp3");
       audio.volume = 0.5;
       audio.play().catch((err) => console.log("Audio play failed:", err));
       lastPlayedTime = now;

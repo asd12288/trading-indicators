@@ -3,19 +3,37 @@
 import type { Notification } from "@/lib/types";
 import { createClient } from "@supabase/supabase-js";
 import useSWR from "swr";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import usePreferences from "@/hooks/usePreferences";
 
 import SoundService from "@/lib/services/soundService";
 import { useRouter } from "@/i18n/routing";
 import { toast } from "sonner";
+
+// Top-level: track processed notification IDs across all hook instances
+const processedNotificationIds = new Set<string>();
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
 
-export default function useNotification(userId?: string) {
+export default function useNotification(
+  userId?: string,
+  options?: { disableToast?: boolean },
+) {
+  // track processed notification IDs to avoid duplicates
+  const processedIdsRef = useRef<Set<string>>(new Set());
   const router = useRouter();
+  const disableToast = options?.disableToast ?? false;
+  // load user preferences to check volume settings
+  const { preferences } = usePreferences(userId);
+  // keep a ref of preferences for stable access in subscription
+  const preferencesRef = useRef(preferences);
+  useEffect(() => {
+    preferencesRef.current = preferences;
+  }, [preferences]);
+
   // 1. Use SWR for fetching and caching
   const fetchNotifications = async (): Promise<Notification[]> => {
     const { data, error } = await supabase
@@ -47,25 +65,78 @@ export default function useNotification(userId?: string) {
           filter: `user_id=eq.${userId}`,
         },
         ({ new: row }) => {
+          // dedupe by notification ID
+          if (processedNotificationIds.has(row.id)) return;
+          processedNotificationIds.add(row.id);
+
+          // get latest preferences
+          const prefs = preferencesRef.current;
+
+          // Debug: log incoming notification and user prefs
+          if (row.type === "signal") {
+            const inst = row.url?.split("/").pop() || "";
+            console.log(
+              `[useNotification] Incoming signal for ${inst}, prefs:`,
+              prefs[inst],
+            );
+          } else {
+            console.log(
+              `[useNotification] Incoming non-signal notification:`,
+              row.title,
+            );
+          }
+
+          // prepend to notification list
           mutate(
             (prev) =>
               prev ? [row as Notification, ...prev] : [row as Notification],
             false,
           );
+
+          // handle toast and sound
+          const isSignal = row.type === "signal";
+          // extract instrument name from URL
+          const inst = isSignal && row.url ? row.url.split("/").pop() : null;
+          const userPref = inst ? preferencesRef.current[inst] : null;
+          // for signals, skip only if notifications explicitly off
+          if (isSignal && userPref?.notifications === false) {
+            console.log(
+              `[useNotification] signal ${inst} notifications disabled, skipping`,
+            );
+            return;
+          }
+          // show toast
           toast.success(row.title, {
             action: {
               label: "View",
-              onClick: () => {
-                if (row.url) router.push(row.url);
-              },
+              onClick: () => row.url && router.push(row.url),
             },
           });
-          SoundService.playNewSignal();
+          // play sound: always execute to verify functionality
+          if (isSignal) {
+            const inst = row.url?.split("/").pop() || "";
+            // play completed or new sound with instrument
+            if (row.title.toLowerCase().includes("closed")) {
+              console.log(
+                `[useNotification] playing completed sound for ${inst}`,
+              );
+              SoundService.playCompletedSignal(inst);
+            } else {
+              console.log(
+                `[useNotification] playing new signal sound for ${inst}`,
+              );
+              SoundService.playNewSignal(inst);
+            }
+          } else {
+            console.log("[useNotification] playing alert sound");
+            SoundService.playAlert();
+          }
         },
       )
       .subscribe();
-    return () => channel.unsubscribe();
-  }, [userId, mutate, router]);
+    // proper cleanup
+    return () => supabase.removeChannel(channel);
+  }, [userId, disableToast, router, mutate]);
 
   // 3. Mark a single notification as read
   const markAsRead = async (notificationId: string) => {
