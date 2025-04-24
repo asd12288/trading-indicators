@@ -2,10 +2,12 @@
 
 import type { Notification } from "@/lib/types";
 import { createClient } from "@supabase/supabase-js";
-import useSWR from 'swr';
-import { useEffect } from 'react';
-import { toast } from "sonner";
+import useSWR from "swr";
+import { useEffect } from "react";
+
 import SoundService from "@/lib/services/soundService";
+import { useRouter } from "@/i18n/routing";
+import { toast } from "sonner";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,37 +15,57 @@ const supabase = createClient(
 );
 
 export default function useNotification(userId?: string) {
+  const router = useRouter();
   // 1. Use SWR for fetching and caching
   const fetchNotifications = async (): Promise<Notification[]> => {
     const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .from("notifications")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
     if (error) throw error;
     return data as Notification[];
   };
-  const { data: notification, error, isLoading: loading, mutate } = useSWR(
-    userId ? ['notifications', userId] : null,
-    fetchNotifications
-  );
+  const {
+    data: notification,
+    error,
+    isLoading: loading,
+    mutate,
+  } = useSWR(userId ? ["notifications", userId] : null, fetchNotifications);
 
   // 2. Realtime subscription: prepend new notifications
   useEffect(() => {
     if (!userId) return;
     const channel = supabase
       .channel(`notifications-${userId}`)
-      .on('postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` },
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${userId}`,
+        },
         ({ new: row }) => {
-          mutate((prev) => prev ? [row as Notification, ...prev] : [row as Notification], false);
-          toast.success(row.title);
+          mutate(
+            (prev) =>
+              prev ? [row as Notification, ...prev] : [row as Notification],
+            false,
+          );
+          toast.success(row.title, {
+            action: {
+              label: "View",
+              onClick: () => {
+                if (row.url) router.push(row.url);
+              },
+            },
+          });
           SoundService.playNewSignal();
-        }
+        },
       )
       .subscribe();
     return () => channel.unsubscribe();
-  }, [userId, mutate]);
+  }, [userId, mutate, router]);
 
   // 3. Mark a single notification as read
   const markAsRead = async (notificationId: string) => {
@@ -58,11 +80,14 @@ export default function useNotification(userId?: string) {
       if (updateError) throw updateError;
 
       // Optimistic update
-      mutate((prev) =>
-        prev ? prev.map((n) =>
-          n.id === notificationId ? { ...n, is_read: true } : n,
-        ) : [],
-        false
+      mutate(
+        (prev) =>
+          prev
+            ? prev.map((n) =>
+                n.id === notificationId ? { ...n, is_read: true } : n,
+              )
+            : [],
+        false,
       );
 
       return true;
@@ -86,9 +111,9 @@ export default function useNotification(userId?: string) {
       if (updateError) throw updateError;
 
       // Optimistic update
-      mutate((prev) =>
-        prev ? prev.map((n) => ({ ...n, is_read: true })) : [],
-        false
+      mutate(
+        (prev) => (prev ? prev.map((n) => ({ ...n, is_read: true })) : []),
+        false,
       );
 
       return true;
@@ -99,7 +124,7 @@ export default function useNotification(userId?: string) {
   };
 
   const addNotificationOptimistic = (n: Notification) =>
-    mutate((prev) => prev ? [n, ...prev] : [n], false);
+    mutate((prev) => (prev ? [n, ...prev] : [n]), false);
 
   // 5. Clear all notifications
   const clearNotifications = async () => {

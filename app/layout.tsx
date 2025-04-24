@@ -3,8 +3,8 @@ import { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Analytics } from "@vercel/analytics/react";
-import LazyLoadedComponents from "./LazyLoadedComponents";
 import "./globals.css";
+import LazyLoadedComponents from "./LazyLoadedComponents";
 
 export const metadata: Metadata = {
   title: {

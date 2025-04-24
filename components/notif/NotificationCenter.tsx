@@ -5,7 +5,7 @@ import { Bell, CheckCheck, Trash2, X, AlertCircle } from "lucide-react";
 import useSignalNotification from "../../hooks/useSignalNotification";
 import useNotification from "../../hooks/useNotification";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "@/i18n/routing";
+import { Link, useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import SoundService from "@/lib/services/soundService";
 
@@ -26,6 +26,7 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
   const [open, setOpen] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   // Count unread notifications
   const unreadCount = notification.filter((n) => !n.is_read).length;
@@ -59,13 +60,11 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
       // Close dropdown
       setOpen(false);
 
-      // Handle relative URLs vs. external URLs
-      if (notif.url.startsWith("http://") || notif.url.startsWith("https://")) {
-        // External URL - open in new tab
+      // Navigate: external in new tab, internal via router
+      if (/^https?:\/\//.test(notif.url)) {
         window.open(notif.url, "_blank");
       } else {
-        // Internal URL - use client-side navigation
-        window.location.href = notif.url;
+        router.push(notif.url);
       }
     }
   };
