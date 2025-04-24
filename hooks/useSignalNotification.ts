@@ -54,6 +54,16 @@ export default function useSignalNotification() {
           } catch (err) {
             console.error("Failed to insert open notifications:", err);
           }
+          // trigger server-side Telegram notifications
+          try {
+            await fetch('/api/notifyNewSignal', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(sig),
+            });
+          } catch (fetchErr) {
+            console.error('Error triggering Telegram notification:', fetchErr);
+          }
         },
       )
       .on(
@@ -91,6 +101,16 @@ export default function useSignalNotification() {
             await supabase.from("notifications").insert<Notification>(records2);
           } catch (err) {
             console.error("Failed to insert close notifications:", err);
+          }
+          // trigger server-side Telegram notifications for closed signals
+          try {
+            await fetch('/api/notifyNewSignal', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(sig),
+            });
+          } catch (fetchErr) {
+            console.error('Error triggering Telegram notification:', fetchErr);
           }
         },
       )
