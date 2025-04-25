@@ -24,10 +24,28 @@ const DEFAULT_VOLUME = 0.5;
 let lastPlayedTime = 0;
 const DEBOUNCE_TIME = 500; // Minimum time between sounds (milliseconds)
 
+// Global mute state
+let globalMuteEnabled = false;
+
 /**
  * Sound Service that handles playing audio notifications for different signal events
  */
 class SoundService {
+  /**
+   * Set global mute status
+   */
+  static setGlobalMute(muted: boolean): void {
+    globalMuteEnabled = muted;
+    console.log(`[SoundService] Global mute set to: ${muted}`);
+  }
+
+  /**
+   * Get global mute status
+   */
+  static isGloballyMuted(): boolean {
+    return globalMuteEnabled;
+  }
+
   /**
    * Play a sound for a specific event type with debouncing
    * Try instrument-specific audio; fall back to configured sound.
@@ -36,6 +54,12 @@ class SoundService {
     eventType: SignalEventType = "new",
     instrument?: string,
   ): void {
+    // Check if globally muted
+    if (globalMuteEnabled) {
+      console.log('[SoundService] Sound not played due to global mute setting');
+      return;
+    }
+    
     console.log(
       `[SoundService] Attempting to play sound for event type: ${eventType}`,
     );

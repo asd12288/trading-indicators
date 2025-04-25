@@ -78,6 +78,7 @@ export interface PreferenceValues {
   notifications: boolean;
   volume: boolean;
   favorite: boolean;
+  globalMute?: boolean; // Add global mute preference
 }
 
 export interface BlogProps {

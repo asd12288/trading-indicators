@@ -28,6 +28,7 @@ import SignalCard from "./SignalCard/SignalCard";
 import SignalHoursInfo from "./SignalHoursInfo";
 import SignalInfo from "./SignalInfo";
 import TradingViewNewsWidget from "./TradingViewNewsWidget";
+import { EconomicCalendar } from "react-ts-tradingview-widgets";
 
 // Tab type definition
 interface Tab {
@@ -564,12 +565,11 @@ const SignalLayout = ({ id, userId, isPro }) => {
 
                 {/* Fixed TradingView News Widget implementation */}
                 <div className="mt-4">
-                  <TradingViewNewsWidget
-                    symbol={instrumentName}
-                    height={500}
-                    showHeader={false}
-                    newsCount={15}
-                  />
+                  <EconomicCalendar
+                    colorTheme="dark"
+                    height={700}
+                    width="100%"
+                  ></EconomicCalendar>
                 </div>
               </div>
             </div>

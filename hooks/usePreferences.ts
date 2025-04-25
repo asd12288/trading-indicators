@@ -7,6 +7,9 @@ import { PreferenceValues } from "@/lib/types";
 // The shape of your entire preferences object: { [instrumentId]: PreferenceValues }
 type PreferencesMap = Record<string, PreferenceValues>;
 
+// Add system level preferences with a special key
+const SYSTEM_PREFS_KEY = '_system';
+
 interface UsePreferencesReturn {
   preferences: PreferencesMap;
   isLoading: boolean;
@@ -15,6 +18,12 @@ interface UsePreferencesReturn {
     signalId: string,
     updatedValues: Partial<PreferenceValues>,
   ) => Promise<void>;
+  
+  // New method to update global sound preference
+  updateGlobalMute: (muted: boolean) => Promise<void>;
+  
+  // Global sound state
+  globalMute: boolean;
 
   // Derived arrays
   favorites: string[];
@@ -27,6 +36,7 @@ function usePreferences(userId?: string): UsePreferencesReturn {
   const [preferences, setPreferences] = useState<PreferencesMap>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [globalMute, setGlobalMute] = useState(false);
 
   useEffect(() => {
     // Skip fetching if no userId is provided
@@ -46,7 +56,13 @@ function usePreferences(userId?: string): UsePreferencesReturn {
           .single();
 
         if (error) throw error;
-        setPreferences(data?.preferences ?? {});
+        const prefs = data?.preferences ?? {};
+        setPreferences(prefs);
+        
+        // Initialize global mute state from preferences
+        if (prefs[SYSTEM_PREFS_KEY]) {
+          setGlobalMute(!!prefs[SYSTEM_PREFS_KEY].globalMute);
+        }
       } catch (err: any) {
         console.error("Error fetching preferences:", err);
         setError(err.message || "An error occurred while loading preferences.");
@@ -114,26 +130,78 @@ function usePreferences(userId?: string): UsePreferencesReturn {
       throw error;
     }
   };
+  
+  // New function to update global mute preference
+  const updateGlobalMute = async (muted: boolean): Promise<void> => {
+    if (!userId) {
+      console.error("Cannot update global mute: No user ID provided");
+      return Promise.reject(
+        new Error("User ID is required to update global mute setting"),
+      );
+    }
+    
+    try {
+      // Update local state immediately for UI responsiveness
+      setGlobalMute(muted);
+      
+      // Get current system preferences or create new ones
+      const systemPrefs = preferences[SYSTEM_PREFS_KEY] || {
+        notifications: false,
+        volume: false,
+        favorite: false,
+        globalMute: false
+      };
+      
+      // Create updated preferences object
+      const updatedPreferences = {
+        ...preferences,
+        [SYSTEM_PREFS_KEY]: {
+          ...systemPrefs,
+          globalMute: muted
+        }
+      };
+      
+      // Save to database
+      const { error } = await supabaseClient
+        .from("profiles")
+        .update({ preferences: updatedPreferences })
+        .eq("id", userId);
+        
+      if (error) {
+        // Revert local state if failed
+        setGlobalMute(!muted);
+        throw error;
+      }
+      
+      // Update local state with new preferences
+      setPreferences(updatedPreferences);
+      console.log("Global mute set to:", muted);
+      
+    } catch (error: any) {
+      console.error("Error updating global mute setting:", error);
+      throw error;
+    }
+  };
 
   // --- Derived arrays ---
   // 1. favorites: instruments where "favorite" is true
   const favorites = useMemo(() => {
     return Object.entries(preferences)
-      .filter(([_, prefs]) => prefs.favorite)
+      .filter(([key, prefs]) => key !== SYSTEM_PREFS_KEY && prefs.favorite)
       .map(([instrument]) => instrument);
   }, [preferences]);
 
   // 2. volumeOn: instruments where "volume" is true
   const volumeOn = useMemo(() => {
     return Object.entries(preferences)
-      .filter(([_, prefs]) => prefs.volume)
+      .filter(([key, prefs]) => key !== SYSTEM_PREFS_KEY && prefs.volume)
       .map(([instrument]) => instrument);
   }, [preferences]);
 
   // 3. notificationsOn: instruments where "notifications" is true
   const notificationsOn = useMemo(() => {
     return Object.entries(preferences)
-      .filter(([_, prefs]) => prefs.notifications)
+      .filter(([key, prefs]) => key !== SYSTEM_PREFS_KEY && prefs.notifications)
       .map(([instrument]) => instrument);
   }, [preferences]);
 
@@ -142,6 +210,8 @@ function usePreferences(userId?: string): UsePreferencesReturn {
     isLoading,
     error,
     updatePreference,
+    updateGlobalMute,
+    globalMute,
     favorites,
     volumeOn,
     notificationsOn,
