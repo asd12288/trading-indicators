@@ -55,6 +55,7 @@ export default function Navbar({ user, profile }) {
       <div className="hidden lg:block">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-8">
           <Link
+            title="TraderMap smart alerts"
             href={user ? "/smart-alerts" : "/"}
             className="flex items-center gap-2 transition-transform hover:scale-105"
           >
@@ -91,6 +92,7 @@ export default function Navbar({ user, profile }) {
 
             {profile?.role === "admin" && (
               <Link
+                title="Admin"
                 href="/admin"
                 className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium ${
                   isActive("/admin")
@@ -111,7 +113,7 @@ export default function Navbar({ user, profile }) {
             {user ? (
               <div className="flex items-center gap-3">
                 {user?.id && <NotificationCenter userId={user.id} />}
-                
+
                 {/* Add MuteButton component here */}
                 {user?.id && <MuteButton userId={user.id} />}
 
@@ -165,10 +167,10 @@ export default function Navbar({ user, profile }) {
         <div className="flex items-center gap-3">
           {/* Add NotificationBell to mobile view too */}
           {user?.id && <NotificationCenter userId={user.id} />}
-          
+
           {/* Add MuteButton component to mobile view */}
           {user?.id && <MuteButton userId={user.id} />}
-          
+
           <LanguageSwitcher />
 
           {/* Mobile Menu Button */}

@@ -56,10 +56,10 @@ class SoundService {
   ): void {
     // Check if globally muted
     if (globalMuteEnabled) {
-      console.log('[SoundService] Sound not played due to global mute setting');
+      console.log("[SoundService] Sound not played due to global mute setting");
       return;
     }
-    
+
     console.log(
       `[SoundService] Attempting to play sound for event type: ${eventType}`,
     );

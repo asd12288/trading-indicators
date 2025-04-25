@@ -141,6 +141,7 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
     <div className="relative z-50" ref={dropdownRef}>
       {/* Bell Button */}
       <button
+        title="Notifications" 
         onClick={() => {
           SoundService.initializeAudio();
           setOpen(!open);

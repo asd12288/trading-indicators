@@ -8,7 +8,7 @@ import { PreferenceValues } from "@/lib/types";
 type PreferencesMap = Record<string, PreferenceValues>;
 
 // Add system level preferences with a special key
-const SYSTEM_PREFS_KEY = '_system';
+const SYSTEM_PREFS_KEY = "_system";
 
 interface UsePreferencesReturn {
   preferences: PreferencesMap;
@@ -18,10 +18,10 @@ interface UsePreferencesReturn {
     signalId: string,
     updatedValues: Partial<PreferenceValues>,
   ) => Promise<void>;
-  
+
   // New method to update global sound preference
   updateGlobalMute: (muted: boolean) => Promise<void>;
-  
+
   // Global sound state
   globalMute: boolean;
 
@@ -58,7 +58,7 @@ function usePreferences(userId?: string): UsePreferencesReturn {
         if (error) throw error;
         const prefs = data?.preferences ?? {};
         setPreferences(prefs);
-        
+
         // Initialize global mute state from preferences
         if (prefs[SYSTEM_PREFS_KEY]) {
           setGlobalMute(!!prefs[SYSTEM_PREFS_KEY].globalMute);
@@ -130,7 +130,7 @@ function usePreferences(userId?: string): UsePreferencesReturn {
       throw error;
     }
   };
-  
+
   // New function to update global mute preference
   const updateGlobalMute = async (muted: boolean): Promise<void> => {
     if (!userId) {
@@ -139,44 +139,43 @@ function usePreferences(userId?: string): UsePreferencesReturn {
         new Error("User ID is required to update global mute setting"),
       );
     }
-    
+
     try {
       // Update local state immediately for UI responsiveness
       setGlobalMute(muted);
-      
+
       // Get current system preferences or create new ones
       const systemPrefs = preferences[SYSTEM_PREFS_KEY] || {
         notifications: false,
         volume: false,
         favorite: false,
-        globalMute: false
+        globalMute: false,
       };
-      
+
       // Create updated preferences object
       const updatedPreferences = {
         ...preferences,
         [SYSTEM_PREFS_KEY]: {
           ...systemPrefs,
-          globalMute: muted
-        }
+          globalMute: muted,
+        },
       };
-      
+
       // Save to database
       const { error } = await supabaseClient
         .from("profiles")
         .update({ preferences: updatedPreferences })
         .eq("id", userId);
-        
+
       if (error) {
         // Revert local state if failed
         setGlobalMute(!muted);
         throw error;
       }
-      
+
       // Update local state with new preferences
       setPreferences(updatedPreferences);
       console.log("Global mute set to:", muted);
-      
     } catch (error: any) {
       console.error("Error updating global mute setting:", error);
       throw error;

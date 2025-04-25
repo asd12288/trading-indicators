@@ -9,6 +9,8 @@ import useProfile from "@/hooks/useProfile";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { EconomicCalendar } from "react-ts-tradingview-widgets";
+
 import {
   Activity,
   ArrowLeft,
@@ -17,6 +19,7 @@ import {
   Lock,
   Newspaper,
   AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
@@ -27,8 +30,10 @@ import SignalLayoutLoader from "./loaders/SignalLayoutLoader";
 import SignalCard from "./SignalCard/SignalCard";
 import SignalHoursInfo from "./SignalHoursInfo";
 import SignalInfo from "./SignalInfo";
-import TradingViewNewsWidget from "./TradingViewNewsWidget";
-import { EconomicCalendar } from "react-ts-tradingview-widgets";
+// Import our custom component and related services
+import EconomicCalendarComponent from "./EconomicCalendar/EconomicCalendarComponent";
+import { EconomicEvent } from "../services/finnhub";
+import { Button } from "@/components/ui/button";
 
 // Tab type definition
 interface Tab {
@@ -59,7 +64,48 @@ const SignalLayout = ({ id, userId, isPro }) => {
   // Tab state management
   const [activeTab, setActiveTab] = useState("overview");
 
+  // Economic calendar state
+  const [economicEvents, setEconomicEvents] = useState<EconomicEvent[]>([]);
+  const [isCalendarLoading, setIsCalendarLoading] = useState(true);
+
   const instrumentName = id; // Use the id directly as the instrumentName
+
+  // Load economic calendar data using our server-side API
+  const loadCalendarData = async () => {
+    setIsCalendarLoading(true);
+    try {
+      // Get formatted date range - load next 7 days of events
+      const fromDate = new Date().toISOString().split("T")[0];
+      const toDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0];
+
+      // Call our server-side API instead of directly using Finnhub
+      const response = await fetch(
+        `/api/economic-calendar?from=${fromDate}&to=${toDate}`,
+      );
+
+      if (!response.ok) {
+        throw new Error(`API returned status ${response.status}`);
+      }
+
+      const data = await response.json();
+      setEconomicEvents(data.events || []);
+    } catch (error) {
+      console.error("Failed to load calendar data:", error);
+      // Fallback to empty array on error - server already handles fallbacks
+      setEconomicEvents([]);
+    } finally {
+      setIsCalendarLoading(false);
+    }
+  };
+
+  // Load economic data when the component mounts or when activeTab is "news"
+  useEffect(() => {
+    if (activeTab === "news") {
+      loadCalendarData();
+    }
+  }, [activeTab]);
 
   // Effect to find the specific trade by ID when data is loaded
   useEffect(() => {
@@ -563,13 +609,36 @@ const SignalLayout = ({ id, userId, isPro }) => {
                   </h3>
                 </div>
 
-                {/* Fixed TradingView News Widget implementation */}
+                {/* Economic Calendar Widget */}
                 <div className="mt-4">
-                  <EconomicCalendar
-                    colorTheme="dark"
-                    height={700}
-                    width="100%"
-                  ></EconomicCalendar>
+                  <div className="mb-4 flex items-center justify-between">
+                    <h4
+                      className={cn(
+                        "font-medium",
+                        theme === "dark" ? "text-slate-300" : "text-slate-700",
+                      )}
+                    >
+                      Economic Calendar
+                    </h4>
+                  </div>
+
+                  {economicEvents && economicEvents.length > 0 ? (
+                    <EconomicCalendarComponent
+                      events={economicEvents}
+                      isLoading={isCalendarLoading}
+                    />
+                  ) : (
+                    <>
+                      <p className="mb-2 text-center text-sm text-slate-400">
+                        Using TradingView Economic Calendar
+                      </p>
+                      <EconomicCalendar
+                        colorTheme="dark"
+                        height={400}
+                        width="100%"
+                      ></EconomicCalendar>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
