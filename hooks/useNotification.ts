@@ -1,13 +1,13 @@
 "use client";
 
+import usePreferences from "@/hooks/usePreferences";
 import type { Notification } from "@/lib/types";
 import { createClient } from "@supabase/supabase-js";
-import useSWR from "swr";
 import { useEffect, useRef } from "react";
-import usePreferences from "@/hooks/usePreferences";
+import useSWR from "swr";
 
-import SoundService from "@/lib/services/soundService";
 import { useRouter } from "@/i18n/routing";
+import SoundService from "@/lib/services/soundService";
 import { toast } from "sonner";
 
 // Top-level: track processed notification IDs across all hook instances
@@ -59,29 +59,117 @@ export default function useNotification(
     subscribedUserChannels.add(userId);
     const channel = supabase
       .channel(`notifications-${userId}`)
-      .on("postgres_changes", {
-        event: "INSERT",
-        schema: "public",
-        table: "notifications",
-        filter: `user_id=eq.${userId}`,
-      }, ({ new: row }) => {
-        if (processedNotificationIds.has(row.id)) return;
-        processedNotificationIds.add(row.id);
-        const isSignal = row.type === "signal";
-        const inst = isSignal && row.url ? row.url.split("/").pop() : null;
-        const userPref = inst ? preferencesRef.current[inst] : null;
-        if (isSignal && userPref?.notifications === false) return;
-        mutate(prev => prev ? [row as Notification, ...prev] : [row as Notification], false);
-        if (!disableToast) {
-          toast.success(row.title, { action: { label: "View", onClick: () => row.url && router.push(row.url) }});
-        }
-        if (isSignal) {
-          if (row.title.toLowerCase().includes("closed")) SoundService.playCompletedSignal(inst || "");
-          else SoundService.playNewSignal(inst || "");
-        } else {
-          SoundService.playAlert();
-        }
-      })
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${userId}`,
+        },
+        ({ new: row }) => {
+          if (processedNotificationIds.has(row.id)) return;
+          processedNotificationIds.add(row.id);
+          const isSignal = row.type === "signal";
+          const inst = isSignal && row.url ? row.url.split("/").pop() : null;
+          const userPref = inst ? preferencesRef.current[inst] : null;
+          if (isSignal && userPref?.notifications === false) return;
+          mutate(
+            (prev) =>
+              prev ? [row as Notification, ...prev] : [row as Notification],
+            false,
+          );
+          if (!disableToast) {
+            // Enhanced toast for signals with more visual indicators
+            if (isSignal) {
+              const isClosedSignal = row.title.toLowerCase().includes("closed");
+
+              // Use proper trade_side detection based on Signal type from types.ts
+              const tradeSide =
+                row.body?.toLowerCase().includes("buy") ||
+                row.body?.toLowerCase().includes("long")
+                  ? "buy"
+                  : row.body?.toLowerCase().includes("sell") ||
+                      row.body?.toLowerCase().includes("short")
+                    ? "sell"
+                    : null;
+
+              // Extract price from body if available: "BUY – entry 12345.67" or "exit 12345.67"
+              const priceMatch = row.body?.match(
+                /entry\s*([\d,.]+)|exit\s*([\d,.]+)/i,
+              );
+              const price = priceMatch ? priceMatch[1] || priceMatch[2] : null;
+
+              // Create enhanced description with formatted data
+              const formattedBody = row.body
+                ?.replace(/–/g, ":\n")
+                .replace("entry", "Entry: $")
+                .replace("exit", "Exit: $");
+              const description =
+                formattedBody +
+                (price && !formattedBody?.includes("$")
+                  ? `\nPrice: $${price}`
+                  : "") +
+                "\n\nTap to view details";
+
+              // Single toast with appropriate color based on signal type
+              if (isClosedSignal) {
+                // For closed signals - always blue
+                toast.info(row.title, {
+                  description,
+                  duration: 8000,
+                  action: {
+                    label: "Details",
+                    onClick: () => row.url && router.push(row.url),
+                  },
+                });
+              } else if (tradeSide === "buy") {
+                // For buy/long signals - green
+                toast.success(row.title, {
+                  description,
+                  duration: 8000,
+                  action: {
+                    label: "Details",
+                    onClick: () => row.url && router.push(row.url),
+                  },
+                });
+              } else if (tradeSide === "sell") {
+                // For sell/short signals - red
+                toast.error(row.title, {
+                  description,
+                  duration: 8000,
+                  action: {
+                    label: "Details",
+                    onClick: () => row.url && router.push(row.url),
+                  },
+                });
+              } else {
+                // Default for unknown signal types
+                toast(row.title, {
+                  description,
+                  duration: 8000,
+                  action: {
+                    label: "Details",
+                    onClick: () => row.url && router.push(row.url),
+                  },
+                });
+              }
+            } else {
+              // Non-signal notifications just get a basic toast
+              toast(row.title, {
+                description: row.body,
+              });
+            }
+          }
+          if (isSignal) {
+            if (row.title.toLowerCase().includes("closed"))
+              SoundService.playCompletedSignal(inst || "");
+            else SoundService.playNewSignal(inst || "");
+          } else {
+            SoundService.playAlert();
+          }
+        },
+      )
       .subscribe();
     return () => {
       subscribedUserChannels.delete(userId);

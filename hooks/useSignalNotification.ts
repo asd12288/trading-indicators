@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 import { createClient } from "@supabase/supabase-js";
 import type { Signal, Notification } from "@/lib/types";
 import SoundService from "@/lib/services/soundService";
+import { toast } from "sonner";
+import { useRouter } from "@/i18n/routing";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,6 +15,7 @@ const supabase = createClient(
 export default function useSignalNotification() {
   const notified = useRef<Record<string, number>>({});
   const DEDUPE_INTERVAL = 60000; // 60 seconds
+  const router = useRouter();
 
   useEffect(() => {
     // unlock audio playback via a silent initialization
@@ -50,10 +53,49 @@ export default function useSignalNotification() {
             url: `/smart-alerts/${signal.instrument_name}`,
           }));
           try {
-            await supabase.from("notifications").insert<Notification>(records);
+            await supabase.from("notifications").insert(records);
+
+            // Check if the trade is a buy/long or sell/short based on Signal types
+            const isBuyOrLong = ["BUY", "LONG", "Buy", "Long"].includes(
+              signal.trade_side,
+            );
+            const detailUrl = `/smart-alerts/${signal.instrument_name}`;
+
+            // Construct toast description with key signal details
+            const description =
+              `${signal.trade_side}
+Entry: $${signal.entry_price}` +
+              (signal.take_profit_price
+                ? `\nTarget: $${signal.take_profit_price}`
+                : "") +
+              (signal.stop_loss_price
+                ? `\nStop: $${signal.stop_loss_price}`
+                : "");
+
+            // Use green for long/buy trades and red for short/sell trades
+            if (isBuyOrLong) {
+              toast.success(`${signal.instrument_name}`, {
+                description,
+                duration: 10000,
+                action: {
+                  label: "Details",
+                  onClick: () => router.push(detailUrl),
+                },
+              });
+            } else {
+              toast.error(`${signal.instrument_name}`, {
+                description,
+                duration: 10000,
+                action: {
+                  label: "Details",
+                  onClick: () => router.push(detailUrl),
+                },
+              });
+            }
           } catch (err) {
             console.error("Failed to insert open notifications:", err);
           }
+
           // trigger server-side Telegram notifications
           try {
             await fetch("/api/notifyNewSignal", {
@@ -98,10 +140,50 @@ export default function useSignalNotification() {
             url: `/smart-alerts/${sig.instrument_name}`,
           }));
           try {
-            await supabase.from("notifications").insert<Notification>(records2);
+            await supabase.from("notifications").insert(records2);
+
+            const detailUrl = `/smart-alerts/${sig.instrument_name}`;
+            const isBuyOrLong = ["BUY", "LONG", "Buy", "Long"].includes(
+              sig.trade_side,
+            );
+            const entryPrice = parseFloat(sig.entry_price.toString());
+            const exitPrice = parseFloat(sig.exit_price.toString());
+
+            // Calculate profit/loss based on trade direction
+            let profitLoss = 0;
+            let isProfitable = false;
+
+            if (!isNaN(entryPrice) && !isNaN(exitPrice)) {
+              if (isBuyOrLong) {
+                profitLoss = exitPrice - entryPrice;
+              } else {
+                profitLoss = entryPrice - exitPrice;
+              }
+              isProfitable = profitLoss > 0;
+            }
+
+            // Format the description with clear trade details
+            const profitLossFormatted = Math.abs(profitLoss).toFixed(2);
+            const outcomeLabel = isProfitable ? "PROFIT" : "LOSS";
+            const description =
+              `Trade closed\nEntry: $${sig.entry_price}\nExit: $${sig.exit_price}` +
+              (!isNaN(profitLoss)
+                ? `\n${outcomeLabel}: ${isProfitable ? "+" : "-"}$${profitLossFormatted}`
+                : "");
+
+            // All closed trades use info (blue) toast, regardless of Long/Short or profit/loss
+            toast.info(`${sig.instrument_name} Closed`, {
+              description,
+              duration: 10000,
+              action: {
+                label: "Details",
+                onClick: () => router.push(detailUrl),
+              },
+            });
           } catch (err) {
             console.error("Failed to insert close notifications:", err);
           }
+
           // trigger server-side Telegram notifications for closed signals
           try {
             await fetch("/api/notifyNewSignal", {

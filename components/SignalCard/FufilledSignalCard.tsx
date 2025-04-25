@@ -83,7 +83,8 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
 
   // Calculate MFE in dollar value and determine if fallback should be shown once data has loaded
   // Show fallback estimate only after loading completes and we have instrumentInfo
-  const usingFallbackValues = !loading && instrumentInfo !== null && !hasCompleteInstrumentInfo;
+  const usingFallbackValues =
+    !loading && instrumentInfo !== null && !hasCompleteInstrumentInfo;
   let mfeDollarValue = 0;
 
   // Calculate MFE (Maximum Favorable Excursion)
@@ -251,7 +252,7 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
 
           {/* MFE - Maximum Favorable Excursion - Main focus */}
           {loading ? (
-            <div className="mb-6 h-40 rounded-lg bg-slate-700 animate-pulse" />
+            <div className="mb-6 h-40 animate-pulse rounded-lg bg-slate-700" />
           ) : (
             <div
               className={cn(

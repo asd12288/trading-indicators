@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import TestimonialCard from "./TestimonialCard";
 import Carousel from "../Carousel";
 import supabase from "@/database/supabase/supabase";
+import { InfiniteMovingCards } from "../ui/infinite-moving-cards";
 
 interface Testimonial {
   id: string;
@@ -13,7 +14,7 @@ interface Testimonial {
   rating?: number;
 }
 
-const Testimonials = () => {
+const Testimonials = ({ useInfiniteScroll = false }) => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
@@ -34,10 +35,33 @@ const Testimonials = () => {
     return <p>{error}</p>;
   }
 
+  // Format testimonials for InfiniteMovingCards
+  const formattedTestimonials = testimonials.map((testimonial) => ({
+    quote: testimonial.content,
+    name: testimonial.name,
+    title: testimonial.subText || "",
+    imageUrl: testimonial.imageUrl,
+    rating: testimonial.rating,
+  }));
+
   const slides = testimonials.map((testimonial) => (
     <TestimonialCard key={testimonial.id} testmonial={testimonial} />
   ));
 
+  // Use InfiniteMovingCards if useInfiniteScroll prop is true
+  if (useInfiniteScroll && testimonials.length > 0) {
+    return (
+      <section className="relative py-10">
+        <InfiniteMovingCards
+          items={formattedTestimonials}
+          direction="right"
+          speed="slow"
+        />
+      </section>
+    );
+  }
+
+  // Otherwise, use the traditional carousel
   return (
     <section className="relative">
       <Carousel>{slides}</Carousel>

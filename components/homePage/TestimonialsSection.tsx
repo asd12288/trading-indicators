@@ -6,7 +6,7 @@ const TestimonialsSection = () => {
   const t = useTranslations("HomePage.testimonials");
 
   return (
-    <div className="relative my-24 overflow-hidden py-10">
+    <div className="relative my-24 overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute -top-24 left-1/2 h-48 w-48 -translate-x-1/2 transform rounded-full bg-indigo-500/10 blur-3xl"></div>
       <div className="absolute -bottom-24 right-0 h-64 w-64 rounded-full bg-blue-500/5 blur-3xl"></div>
@@ -23,9 +23,9 @@ const TestimonialsSection = () => {
         <div className="mx-auto mt-6 h-1 w-16 rounded-full bg-indigo-500/50"></div>
       </div>
 
-      {/* Testimonials component */}
+      {/* Testimonials component with infinite scroll enabled */}
       <div className="relative z-10">
-        <Testimonials />
+        <Testimonials useInfiniteScroll={true} />
       </div>
     </div>
   );
