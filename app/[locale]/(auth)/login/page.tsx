@@ -13,7 +13,7 @@ export default async function LoginPage({ params }: { params: { locale: string }
   } = await supabase.auth.getUser();
 
   if (user) {
-    redirect({ href: "/signals", locale: params.locale });
+    redirect({ href: "/smart-alerts", locale: params.locale });
   }
   
 
