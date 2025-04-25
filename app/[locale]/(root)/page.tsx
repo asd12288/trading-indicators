@@ -15,9 +15,7 @@ async function getAuthStatus(locale: string) {
 
   if (user) {
     redirect({ href: "/smart-alerts", locale });
-    return true; // Won't be used due to redirect, but needed for typing
   }
-  return false;
 }
 
 // The main page component
