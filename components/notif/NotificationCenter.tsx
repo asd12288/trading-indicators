@@ -1,7 +1,18 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Bell, CheckCheck, Trash2, X, AlertCircle } from "lucide-react";
+import {
+  Bell,
+  CheckCheck,
+  Trash2,
+  X,
+  AlertCircle,
+  LockOpen,
+  Lock,
+  BarChart3,
+  Newspaper,
+  Info,
+} from "lucide-react";
 import useSignalNotification from "../../hooks/useSignalNotification";
 import useNotification from "../../hooks/useNotification";
 import { motion, AnimatePresence } from "framer-motion";
@@ -78,6 +89,32 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
   const handleClearAll = async () => {
     await clearNotifications();
     setConfirmClear(false);
+  };
+
+  // Get notification icon based on type and content
+  const getNotificationIcon = (notif: any) => {
+    // For signal notifications
+    if (notif.type === "signal") {
+      // Check if it's a trade open or close
+      if (
+        notif.title?.toLowerCase().includes("trade opened") ||
+        notif.body?.toLowerCase().includes("entry")
+      ) {
+        return <LockOpen className="h-5 w-5" />;
+      } else if (
+        notif.title?.toLowerCase().includes("trade closed") ||
+        notif.body?.toLowerCase().includes("exit")
+      ) {
+        return <Lock className="h-5 w-5" />;
+      }
+      return <BarChart3 className="h-5 w-5 text-blue-500" />;
+    }
+    // For news notifications
+    else if (notif.type === "news") {
+      return <Newspaper className="h-5 w-5 text-yellow-500" />;
+    }
+    // Default icon for other types
+    return <Info className="h-5 w-5 text-slate-400" />;
   };
 
   // Format notification time
@@ -174,7 +211,7 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
                 </div>
               ) : notification.length > 0 ? (
                 <ul className="divide-y divide-slate-700/30">
-                  {notification.map((notif) => (
+                  {notification.slice(0, 5).map((notif) => (
                     <li
                       key={notif.id}
                       className={cn(
@@ -191,9 +228,9 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
                       <div className={notif.url ? "pr-8" : ""}>
                         {/* Notification Title */}
                         <div className="flex items-start gap-2">
-                          {!notif.is_read && (
-                            <span className="mt-1.5 flex h-2 w-2 flex-shrink-0 rounded-full bg-blue-500"></span>
-                          )}
+                          <div className="mt-1 flex-shrink-0">
+                            {getNotificationIcon(notif)}
+                          </div>
                           <div className="flex-1">
                             <h4
                               className={cn(
@@ -272,7 +309,10 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
                   className="block text-center text-xs text-slate-400 hover:text-slate-200"
                   onClick={() => setOpen(false)}
                 >
-                  View all notifications
+                  {notification.length > 5
+                    ? `View all (${notification.length})`
+                    : "View all"}{" "}
+                  notifications
                 </Link>
               </div>
             )}

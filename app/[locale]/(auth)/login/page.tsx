@@ -1,11 +1,13 @@
 import { createClient } from "@/database/supabase/server";
 
-import React from "react";
 import { LoginForm } from "@/components/LoginForm";
-import { Link, redirect } from "@/i18n/routing";
-import { FaArrowLeft } from "react-icons/fa";
+import { redirect } from "@/i18n/routing";
 
-export default async function LoginPage({ params }: { params: { locale: string } }) {
+export default async function LoginPage({
+  params,
+}: {
+  params: { locale: string };
+}) {
   const supabase = await createClient();
 
   const {
@@ -15,13 +17,10 @@ export default async function LoginPage({ params }: { params: { locale: string }
   if (user) {
     redirect({ href: "/smart-alerts", locale: params.locale });
   }
-  
 
   return (
-    <section className="flex flex-col items-center justify-center max-h-screen">
-      <div className="col-span-2 md:my-10 flex flex-col items-center justify-center p-2">
-       
-
+    <section className="flex max-h-screen flex-col items-center justify-center">
+      <div className="col-span-2 flex flex-col items-center justify-center p-2 md:my-10">
         <LoginForm />
       </div>
     </section>

@@ -54,7 +54,7 @@ export default function Navbar({ user, profile }) {
       <div className="hidden lg:block">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-8">
           <Link
-            href="/"
+            href={user ? "/smart-alerts" : "/"}
             className="flex items-center gap-2 transition-transform hover:scale-105"
           >
             <MapIcon height={30} width={30} className="text-blue-400" />
@@ -148,7 +148,10 @@ export default function Navbar({ user, profile }) {
 
       {/* Mobile Header */}
       <div className="flex h-16 items-center justify-between px-4 lg:hidden">
-        <Link href="/" className="flex items-center gap-2">
+        <Link
+          href={user ? "/smart-alerts" : "/"}
+          className="flex items-center gap-2"
+        >
           <MapIcon height={24} width={24} className="text-blue-400" />
           <h1 className="text-xl font-bold tracking-tight text-white">
             Trader<span className="text-blue-400">Map</span>

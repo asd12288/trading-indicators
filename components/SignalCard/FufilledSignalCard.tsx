@@ -81,29 +81,25 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
     }).format(amount);
   };
 
-  // Calculate MFE in dollar value
+  // Calculate MFE in dollar value and determine if fallback should be shown once data has loaded
+  // Show fallback estimate only after loading completes and we have instrumentInfo
+  const usingFallbackValues = !loading && instrumentInfo !== null && !hasCompleteInstrumentInfo;
   let mfeDollarValue = 0;
-  let usingFallbackValues = false;
 
   // Calculate MFE (Maximum Favorable Excursion)
   const mfeTicks = parseFloat(String(mfe || 0));
 
-  if (instrumentInfo) {
+  if (instrumentInfo && hasCompleteInstrumentInfo) {
     let tickValue = 1;
 
     // Parse tick value
     if (instrumentInfo.tick_value) {
-      // Handle formats like "≈$10" or "$6.25"
       const valueMatch = String(instrumentInfo.tick_value).match(
         /\$?(\d+(?:\.\d+)?)/,
       );
       if (valueMatch) {
         tickValue = parseFloat(valueMatch[1]);
-      } else {
-        usingFallbackValues = true;
       }
-    } else {
-      usingFallbackValues = true;
     }
 
     // For contracts specified with multiplier like "$5 x Index"
@@ -113,24 +109,15 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
       );
       if (multiplierMatch) {
         const multiplier = parseFloat(multiplierMatch[1]);
-        // For index products, calculate based on direct price difference
         const priceDiff = Math.abs(mfeTicks);
         mfeDollarValue = priceDiff * multiplier;
-      } else {
-        // Standard calculation - MFE is already in ticks
-        mfeDollarValue = mfeTicks * tickValue;
-        usingFallbackValues = !instrumentInfo.tick_value;
       }
     } else {
       // Standard calculation - MFE is already in ticks
       mfeDollarValue = mfeTicks * tickValue;
-      if (!instrumentInfo.tick_value) {
-        usingFallbackValues = true;
-      }
     }
   } else {
-    // No instrument info at all
-    usingFallbackValues = true;
+    // No sufficient instrument info, fallback to ticks as dollars
     mfeDollarValue = mfeTicks; // Using 1 as multiplier
   }
 
@@ -263,34 +250,40 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
           </div>
 
           {/* MFE - Maximum Favorable Excursion - Main focus */}
-          <div
-            className={cn(
-              "mb-6 flex flex-col items-center justify-center rounded-lg border p-5",
-              "border-blue-500/30 bg-blue-900/10",
-              usingFallbackValues && "border-amber-500/30 bg-amber-900/10",
-            )}
-          >
-            <div className="flex items-center gap-1 text-xl font-medium text-blue-300">
-              <DollarSign className="h-5 w-5" />
-              {t("potentialProfit", { defaultValue: "Potential Profit" })}
-              {usingFallbackValues && (
-                <span className="ml-1 rounded-md bg-amber-900/40 px-1.5 py-0.5 text-xs text-amber-300">
-                  Estimate
-                </span>
+          {loading ? (
+            <div className="mb-6 h-40 rounded-lg bg-slate-700 animate-pulse" />
+          ) : (
+            <div
+              className={cn(
+                "mb-6 flex flex-col items-center justify-center rounded-lg border p-5",
+                "border-blue-500/30 bg-blue-900/10",
+                usingFallbackValues && "border-amber-500/30 bg-amber-900/10",
               )}
+            >
+              {/* existing MFE content */}
+              <div className="flex items-center gap-1 text-xl font-medium text-blue-300">
+                <DollarSign className="h-5 w-5" />
+                {t("potentialProfit", { defaultValue: "Potential Profit" })}
+                {usingFallbackValues && (
+                  <span className="ml-1 rounded-md bg-amber-900/40 px-1.5 py-0.5 text-xs text-amber-300">
+                    Estimate
+                  </span>
+                )}
+              </div>
+              <div className="mt-2 text-5xl font-bold text-blue-400">
+                {formatDollar(mfeDollarValue)}
+                <span className="ml-1 text-sm font-medium">(Per lot)</span>
+              </div>
+              <div className="mt-2 text-sm text-slate-400">
+                {mfeTicks.toFixed(1)} {measurementUnit} maximum potential
+                {usingFallbackValues && (
+                  <span className="ml-1 block text-xs text-amber-400">
+                    (Using default multiplier - partial data)
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="mt-2 text-5xl font-bold text-blue-400">
-              {formatDollar(mfeDollarValue)}
-            </div>
-            <div className="mt-2 text-sm text-slate-400">
-              {mfeTicks.toFixed(1)} {measurementUnit} maximum potential
-              {usingFallbackValues && (
-                <span className="ml-1 block text-xs text-amber-400">
-                  (Using default multiplier - partial data)
-                </span>
-              )}
-            </div>
-          </div>
+          )}
 
           {/* Entry and Max Drawdown in a grid */}
           <div className="mb-5 grid grid-cols-2 gap-3">
