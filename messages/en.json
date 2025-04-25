@@ -1021,7 +1021,7 @@
     "noTradesTitle": "No completed trades",
     "long": "LONG",
     "short": "SHORT",
-    "potentialProfit": "Potential profit",
+    "potentialProfit": "Potential profit (per lot)",
     "pips": "pips",
     "ticks": "ticks"
   },
