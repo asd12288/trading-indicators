@@ -1,11 +1,15 @@
-import { Suspense } from "react";
+import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/react";
 import { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { Analytics } from "@vercel/analytics/react";
 import { Poppins } from "next/font/google";
+
+import { UserProvider } from "@/providers/UserProvider";
 import "./globals.css";
 import LazyLoadedComponents from "./LazyLoadedComponents";
+import Header from "@/components/Header";
+import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: {
@@ -31,6 +35,9 @@ const criticalCss = `
     margin: 0;
     padding: 0;
   }
+
+
+  
 `;
 
 export default async function RootLayout({
@@ -56,9 +63,16 @@ export default async function RootLayout({
       </head>
       <body>
         <NextIntlClientProvider locale={params.locale} messages={messages}>
-          {children}
-          <LazyLoadedComponents />
+          <UserProvider>
+            <Header />
+            {children}
+            <Footer />
+            <LazyLoadedComponents />
+            <Toaster />
+          </UserProvider>
         </NextIntlClientProvider>
+
+        {/* Suspense fallback for lazy-loaded components */}
         <Analytics />
 
         {/* Load non-critical scripts */}

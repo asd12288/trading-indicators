@@ -598,7 +598,7 @@
       },
       "contact": {
         "title": "6. Contact Information",
-        "content": "If you have any questions about this privacy policy, contact us at",
+        "content": "If you have any questions about this privacy policy, contact us at support@trader-map.com",
         "email": "support@trader-map.com"
       }
     }
@@ -737,6 +737,7 @@
   },
   "ResetPasswordForm": {
     "title": "Reset your Password",
+    "subtitle": "Enter your new password below. Password must be at least 8 characters long. ",
     "successMessage": "Password reset successfully",
     "errorMessage": "Error resetting password",
 
@@ -1561,5 +1562,10 @@
     "saveSuccessMessage": "Your notification preferences have been updated successfully.",
     "saveError": "Save Failed",
     "saveErrorMessage": "Failed to save your preferences. Please try again."
+  },
+
+  "addons": {
+    "dashboard": "My Signal Dashboard",
+    "subtitle": "Your favorite signals in one place"
   }
 }

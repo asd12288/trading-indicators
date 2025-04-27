@@ -28,7 +28,7 @@ const TelegramAuth = ({ userId, profile }: TelegramAuthProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const t = useTranslations("TelegramAuth");
 
-  const TELEGRAM_BOT_USERNAME = "World_Trade_Signals_Bot";
+  const TELEGRAM_BOT_USERNAME = "TraderMapBot"; // Replace with your bot's username
 
   const handleTelegramConnect = async () => {
     if (!userId) {

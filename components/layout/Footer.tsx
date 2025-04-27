@@ -40,15 +40,6 @@ const Footer = () => {
             </a>
 
             <a
-              href="https://facebook.com"
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-slate-300 transition-all hover:bg-slate-700 hover:text-white"
-              aria-label="Facebook"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Facebook size={18} />
-            </a>
-            <a
               href="https://www.instagram.com/trader_map2025"
               className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-slate-300 transition-all hover:bg-slate-700 hover:text-white"
               aria-label="Instagram"
@@ -57,8 +48,6 @@ const Footer = () => {
             >
               <Instagram size={18} />
             </a>
-
-           
           </div>
         </div>
 
@@ -120,7 +109,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/terms-and-conditions"
+                  href="/refund-policy"
                   className="hover:text-primary text-slate-300 transition-colors"
                 >
                   Refund Policy

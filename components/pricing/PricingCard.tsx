@@ -1,8 +1,8 @@
 "use client";
 
 import { Check } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { useRouter } from "@/i18n/routing";
 
 interface PricingCardProps {
   name: string;

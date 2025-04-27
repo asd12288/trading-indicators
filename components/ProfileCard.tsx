@@ -191,7 +191,7 @@ const ProfileCard = ({ user, profile }: ProfileCardProps) => {
                   {t("plan.label")}
                   {"  "}
                   <span className="font-medium text-slate-100">
-                    {plan === "pro" ? "Premium" : "Free"}
+                    {plan === "pro" ? "Pro" : "Free"}
                   </span>
                 </span>
 

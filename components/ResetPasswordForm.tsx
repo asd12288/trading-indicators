@@ -99,10 +99,7 @@ const ResetPasswordForm = () => {
               {t("title")}
             </CardTitle>
           </div>
-          <p className="mt-2 text-sm text-slate-400">
-            Enter your new password below. Password must be at least 8
-            characters long.
-          </p>
+          <p className="mt-2 text-sm text-slate-400">{t("subtitle")}</p>
         </CardHeader>
 
         <CardContent className="p-6">

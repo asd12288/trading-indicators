@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { useTranslations } from "next-intl";
 import React from "react";
+import { Link } from "@/i18n/routing";
 
 export const metadata: Metadata = {
   title: "Terms and Conditions",
@@ -62,12 +63,12 @@ const TermsAndConditions = () => {
           ))}
         </div>
 
-        {/* Refund Policy */}
-        <div className="mt-10 rounded-xl bg-green-900/20 p-6 shadow-lg backdrop-blur-sm md:p-8">
-          <div className="mb-6 flex items-center">
-            <div className="mr-4 rounded-full bg-green-700/30 p-2">
+        {/* Refund Policy Reference */}
+        <div className="mt-10 rounded-xl bg-slate-800/60 p-6 shadow-lg backdrop-blur-sm md:p-8">
+          <div className="flex items-center">
+            <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-blue-700/20 text-blue-500">
               <svg
-                className="h-6 w-6 text-green-400"
+                className="h-5 w-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -77,29 +78,20 @@ const TermsAndConditions = () => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-white">
-              {t("refund.title")}
-            </h2>
-          </div>
-
-          <div className="space-y-6">
-            {Object.keys(t.raw("refund.sections")).map((section, index) => (
-              <div
-                key={section}
-                className={index > 0 ? "border-t border-green-800/40 pt-6" : ""}
+            <p className="text-slate-200">
+              For information about our refund policies, please visit our{" "}
+              <Link
+                href="/refund-policy"
+                className="text-blue-400 hover:text-blue-300 underline"
               >
-                <h3 className="mb-2 text-xl font-semibold text-green-300">
-                  {t(`refund.sections.${section}.title`)}
-                </h3>
-                <p className="text-slate-300">
-                  {t(`refund.sections.${section}.content`)}
-                </p>
-              </div>
-            ))}
+                Refund Policy
+              </Link>{" "}
+              page.
+            </p>
           </div>
         </div>
 

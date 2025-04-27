@@ -1,9 +1,7 @@
-import Hero from "@/components/homePage/Hero";
 import BelowTheFold from "@/components/homePage/BelowTheFold";
+import Hero from "@/components/homePage/Hero";
 import { createClient } from "@/database/supabase/server";
 import { redirect } from "@/i18n/routing";
-export const dynamic = "force-static";
-export const revalidate = 3600; // revalidate static page every hour
 
 // The main page component
 export default async function Page({ params }: { params: { locale: string } }) {
@@ -17,7 +15,6 @@ export default async function Page({ params }: { params: { locale: string } }) {
     redirect({ href: "/smart-alerts", locale: params.locale });
   }
 
-  // Render page content once we know user isn't authenticated
   return (
     <>
       <div className="relative">

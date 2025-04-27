@@ -133,7 +133,6 @@ const ContactForm = () => {
           >
             <option value="">{t("titleSelect")}</option>
             <option value="Trader">{t("titleTrader")}</option>
-            <option value="Investor">{t("titleInvestor")}</option>
             <option value="Broker">{t("titleBroker")}</option>
             <option value="Other">{t("titleOther")}</option>
           </select>

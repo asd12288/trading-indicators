@@ -6,6 +6,7 @@ import usePreferences from "@/hooks/usePreferences";
 import DashboardSignalCard from "./dashboard/DashboardSignalCard";
 import DashboardHeader from "./dashboard/DashboardHeader";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 // Helper function to determine signal status priority
 const getSignalStatusPriority = (signal: Signal): number => {
@@ -43,6 +44,7 @@ const FavoriteSignals: React.FC<FavoriteSignalsProps> = ({
   const [layout, setLayout] = useState<"grid" | "list">("grid");
   const [columns, setColumns] = useState<2 | 3 | 4>(3);
   const router = useRouter();
+  const t = useTranslations("addons");
 
   // Track locally removed signals to update UI immediately
   const [removedSignals, setRemovedSignals] = useState<string[]>([]);
@@ -154,8 +156,8 @@ const FavoriteSignals: React.FC<FavoriteSignalsProps> = ({
       <div className="mb-5">
         {/* Dashboard header - now extracted to component */}
         <DashboardHeader
-          title="My Signal Dashboard"
-          description="Your favorite signals at a glance"
+          title={t("dashboard")}
+          description={t("subtitle")}
           count={sortedSignals.length}
           layout={layout}
           setLayout={setLayout}

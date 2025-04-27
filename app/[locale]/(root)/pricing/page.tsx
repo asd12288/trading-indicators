@@ -1,6 +1,12 @@
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { CheckCheck, CreditCard, Bitcoin, DollarSign, Lock } from "lucide-react";
+import {
+  CheckCheck,
+  CreditCard,
+  Bitcoin,
+  DollarSign,
+  Lock,
+} from "lucide-react";
 import { Link } from "@/i18n/routing";
 import PricingCard from "@/components/pricing/PricingCard";
 import PaymentMethods from "@/components/pricing/PaymentMethods";
@@ -9,7 +15,8 @@ import PricingFAQ from "@/components/pricing/PricingFAQ";
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Trader Map | Pricing Plans",
-    description: "Choose the trading insights plan that's right for you. Monthly subscription or lifetime access options available with cryptocurrency payment support.",
+    description:
+      "Choose the trading insights plan that's right for you. Monthly subscription or lifetime access options available with cryptocurrency payment support.",
   };
 }
 
@@ -33,7 +40,7 @@ export default async function PricingPage() {
       href: "/register?plan=monthly",
       popular: false,
       tier: "monthly",
-      billingPeriod: "monthly"
+      billingPeriod: "monthly",
     },
     {
       name: t("plans.lifetime.name"),
@@ -48,11 +55,11 @@ export default async function PricingPage() {
         t("plans.lifetime.features.feature6"),
       ],
       cta: t("plans.lifetime.cta"),
-      href: "/register?plan=lifetime",
+      href: "/profile?tab=upgrade",
       popular: true,
       tier: "lifetime",
-      billingPeriod: "oneTime"
-    }
+      billingPeriod: "oneTime",
+    },
   ];
 
   return (
@@ -70,7 +77,7 @@ export default async function PricingPage() {
           </div>
 
           {/* Pricing Cards */}
-          <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 max-w-5xl mx-auto">
+          <div className="mx-auto mt-12 grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-2">
             {plans.map((plan) => (
               <PricingCard key={plan.tier} {...plan} />
             ))}
@@ -80,7 +87,7 @@ export default async function PricingPage() {
 
       {/* Payment Methods Section */}
       <PaymentMethods />
-      
+
       {/* Enterprise Section */}
       <section className="bg-slate-900/50 py-16">
         <div className="container mx-auto px-6">
@@ -107,7 +114,7 @@ export default async function PricingPage() {
           </div>
         </div>
       </section>
-      
+
       {/* FAQ Section */}
       <PricingFAQ />
 

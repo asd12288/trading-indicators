@@ -18,24 +18,27 @@ interface LastPriceDisplayProps {
 }
 
 // Generate fake price data for demo mode
-const generateFakePriceData = (pointCount: number = 20, trend: 'up' | 'down' | 'neutral' = 'neutral'): number[] => {
+const generateFakePriceData = (
+  pointCount: number = 20,
+  trend: "up" | "down" | "neutral" = "neutral",
+): number[] => {
   // Start with a base price between 1 and 100
   const basePrice = Math.random() * 99 + 1;
   const volatility = basePrice * 0.02; // 2% volatility
-  
+
   // Create price array with random movements but following the general trend
   return Array.from({ length: pointCount }, (_, i) => {
     // Random component
     const randomComponent = (Math.random() - 0.5) * volatility;
-    
+
     // Trend component
     let trendComponent = 0;
-    if (trend === 'up') {
+    if (trend === "up") {
       trendComponent = (i / pointCount) * (volatility * 2);
-    } else if (trend === 'down') {
+    } else if (trend === "down") {
       trendComponent = -(i / pointCount) * (volatility * 2);
     }
-    
+
     return basePrice + randomComponent + trendComponent;
   });
 };
@@ -156,23 +159,26 @@ const LastPriceDisplay = ({
   } = useForexPrice(instrumentName);
   const t = useTranslations("InstrumentStatusCard");
   const [isFlashing, setIsFlashing] = useState(false);
-  
+
   // Generate fake data for demo mode
   const [fakePriceData] = useState(() => {
     // Randomly choose a trend for the demo data
-    const trends: Array<'up' | 'down' | 'neutral'> = ['up', 'down', 'neutral'];
+    const trends: Array<"up" | "down" | "neutral"> = ["up", "down", "neutral"];
     const randomTrend = trends[Math.floor(Math.random() * trends.length)];
     return generateFakePriceData(20, randomTrend);
   });
-  
+
   // Use fake data for demo mode or real data otherwise
   const displayPriceHistory = isDemo ? fakePriceData : priceHistory;
-  const displayPriceDirection = isDemo 
-    ? (fakePriceData[fakePriceData.length - 1] > fakePriceData[0] ? 'up' : 
-       fakePriceData[fakePriceData.length - 1] < fakePriceData[0] ? 'down' : 'neutral') 
+  const displayPriceDirection = isDemo
+    ? fakePriceData[fakePriceData.length - 1] > fakePriceData[0]
+      ? "up"
+      : fakePriceData[fakePriceData.length - 1] < fakePriceData[0]
+        ? "down"
+        : "neutral"
     : priceDirection;
-  const displayLastPrice = isDemo 
-    ? fakePriceData[fakePriceData.length - 1] 
+  const displayLastPrice = isDemo
+    ? fakePriceData[fakePriceData.length - 1]
     : lastPrice?.last;
 
   const prevPriceRef = useRef<number | null>(null);
@@ -325,7 +331,10 @@ const LastPriceDisplay = ({
         {/* Price direction indicator */}
         {displayPriceDirection !== "neutral" && (
           <motion.div
-            initial={{ opacity: 0, y: displayPriceDirection === "up" ? 10 : -10 }}
+            initial={{
+              opacity: 0,
+              y: displayPriceDirection === "up" ? 10 : -10,
+            }}
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center"
           >
@@ -362,7 +371,9 @@ const LastPriceDisplay = ({
 
             <div className="mt-1 flex items-center justify-between text-[10px]">
               <div className="text-slate-500">
-                {displayPriceHistory.length > 1 ? `${displayPriceHistory.length} points` : ""}
+                {displayPriceHistory.length > 1
+                  ? `${displayPriceHistory.length} points`
+                  : ""}
               </div>
 
               {percentChange && (

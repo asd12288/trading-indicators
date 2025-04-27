@@ -1,35 +1,11 @@
 "use client";
 
-import dynamic from "next/dynamic";
-
-// Lazy-load each section as a client component
-const Service = dynamic(() => import("@/components/homePage/Service"), {
-  ssr: false,
-  loading: () => <div className="h-64 w-full animate-pulse bg-gray-200" />,
-});
-const HowItWork = dynamic(() => import("@/components/homePage/HowItWork"), {
-  ssr: false,
-  loading: () => <div className="h-64 w-full animate-pulse bg-gray-200" />,
-});
-const Plans = dynamic(() => import("@/components/homePage/Plans"), {
-  ssr: false,
-  loading: () => <div className="h-64 w-full animate-pulse bg-gray-200" />,
-});
-const TestimonialsSection = dynamic(
-  () => import("@/components/homePage/TestimonialsSection"),
-  {
-    ssr: false,
-    loading: () => <div className="h-64 w-full animate-pulse bg-gray-200" />,
-  },
-);
-const Cta = dynamic(() => import("@/components/homePage/Cta"), {
-  ssr: false,
-  loading: () => <div className="h-32 w-full animate-pulse bg-gray-200" />,
-});
-const Contact = dynamic(() => import("@/components/homePage/Contact"), {
-  ssr: false,
-  loading: () => <div className="h-64 w-full animate-pulse bg-gray-200" />,
-});
+import Service from "@/components/homePage/Service";
+import HowItWork from "@/components/homePage/HowItWork";
+import Plans from "@/components/homePage/Plans";
+import TestimonialsSection from "@/components/homePage/TestimonialsSection";
+import Cta from "@/components/homePage/Cta";
+import Contact from "@/components/homePage/Contact";
 
 export default function BelowTheFold() {
   return (

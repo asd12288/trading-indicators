@@ -596,7 +596,7 @@
       },
       "contact": {
         "title": "6. Información de contacto",
-        "content": "Si tienes preguntas sobre esta política de privacidad, contáctanos en",
+        "content": "Si tienes preguntas sobre esta política de privacidad, contáctanos en support@trader-map.com",
         "email": "support@trader-map.com"
       }
     }
@@ -735,9 +735,10 @@
   },
   "ResetPasswordForm": {
     "title": "Restablecer contraseña",
+    "subtitle": "Ingrese su nueva contraseña a continuación. La contraseña debe tener al menos 8 caracteres.",
     "successMessage": "Tu contraseña ha sido restablecida con éxito. Ahora puedes iniciar sesión.",
     "errorMessage": "Error al restablecer la contraseña. Por favor, inténtalo de nuevo.",
-    
+
     "labels": {
       "password": "Contraseña",
       "confirmPassword": "Confirmar contraseña"

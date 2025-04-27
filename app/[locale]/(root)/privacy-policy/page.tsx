@@ -51,7 +51,7 @@ const PrivacyPolicy = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-950 px-6 py-12 text-slate-200 md:px-16">
       <div className="mx-auto max-w-4xl rounded-xl bg-slate-800/80 p-8 shadow-xl backdrop-blur-sm">
         <div className="mb-6 border-b border-slate-600 pb-6">
-          <h1 className="from-primary bg-gradient-to-r text-slate-50 to-blue-400 bg-clip-text text-4xl font-bold text-transparent">
+          <h1 className="from-primary text-slate-50 text-4xl font-bold ">
             {t("title")}
           </h1>
           <div className="mt-4 inline-flex items-center rounded-full bg-slate-700/50 px-4 py-1.5 text-sm">
