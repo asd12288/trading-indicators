@@ -64,9 +64,7 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider locale={params.locale} messages={messages}>
           <UserProvider>
-            <Header />
             {children}
-            <Footer />
             <LazyLoadedComponents />
             <Toaster />
           </UserProvider>
