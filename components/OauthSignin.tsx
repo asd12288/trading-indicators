@@ -12,10 +12,8 @@ type OAuthProvider = {
   icon?: JSX.Element;
 };
 
-export function OAuthButtons() {
+export function OAuthButtons({ locale }: { locale: string }) {
   const t = useTranslations("OAuth");
-  const params = useParams();
-  const locale = (params.locale as string) || "en";
 
   const oAuthProviders: OAuthProvider[] = [
     {

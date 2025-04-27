@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   const next = searchParams.get("next") || "/smart-alerts";
 
   // If next is an invalid route (like /signals), redirect to /login
-  const invalidNextRoutes = ["/signals"]; // Add more invalid routes if needed
+  const invalidNextRoutes = ["/smart-alerts"]; // Add more invalid routes if needed
   const isInvalidNext = invalidNextRoutes.includes(next);
 
   if (code) {

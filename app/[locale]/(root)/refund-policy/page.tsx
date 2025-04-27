@@ -36,8 +36,6 @@ const RefundPolicy = () => {
           </h1>
         </div>
 
-        
-
         {/* Refund Policy Content */}
         <div className="rounded-xl bg-green-900/20 p-6 shadow-lg backdrop-blur-sm md:p-8">
           <div className="mb-6 flex items-center">
@@ -57,9 +55,7 @@ const RefundPolicy = () => {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-white">
-              {t("title")}
-            </h2>
+            <h2 className="text-2xl font-bold text-white">{t("title")}</h2>
           </div>
 
           <div className="space-y-6">
@@ -78,10 +74,6 @@ const RefundPolicy = () => {
             ))}
           </div>
         </div>
-
-
-
-      
       </div>
     </div>
   );

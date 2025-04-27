@@ -753,7 +753,7 @@
     "subtitle": "Entrez votre nouveau mot de passe ci-dessous. Le mot de passe doit comporter au moins 8 caractères.",
     "successMessage": "Votre mot de passe a été réinitialisé avec succès",
     "errorMessage": "Une erreur s’est produite lors de la réinitialisation de votre mot de passe",
-    
+
     "labels": {
       "password": "Mot de passe",
       "confirmPassword": "Confirmer le mot de passe"
@@ -1537,5 +1537,10 @@
     "nextSession": "Prochaine session",
     "session": "Session",
     "startsIn": "Commence dans"
+  },
+
+  "addons": {
+    "dashboard": "Mes Signaux favoris",
+    "subtitle": "Ajoutez des signaux à votre tableau de bord pour un accès rapide"
   }
 }

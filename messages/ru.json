@@ -1535,5 +1535,10 @@
     "nextSession": "Следующая сессия",
     "session": "Сессия",
     "startsIn": "Начнется через"
+  },
+
+  "addons": {
+    "dashboard": "Dashboard",
+    "subtitle": "Get real-time insights and alerts"
   }
 }

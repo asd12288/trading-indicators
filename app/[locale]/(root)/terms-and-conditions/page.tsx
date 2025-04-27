@@ -86,7 +86,7 @@ const TermsAndConditions = () => {
               For information about our refund policies, please visit our{" "}
               <Link
                 href="/refund-policy"
-                className="text-blue-400 hover:text-blue-300 underline"
+                className="text-blue-400 underline hover:text-blue-300"
               >
                 Refund Policy
               </Link>{" "}
