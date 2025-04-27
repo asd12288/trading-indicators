@@ -15,6 +15,7 @@ interface PriceInfoSectionProps {
   isProfitable: boolean;
   pnlPercentage: string | null;
   isForex: boolean;
+  isDemo?: boolean; // Add isDemo prop
 }
 
 const PriceInfoSection: FC<PriceInfoSectionProps> = ({
@@ -26,6 +27,7 @@ const PriceInfoSection: FC<PriceInfoSectionProps> = ({
   isProfitable,
   pnlPercentage,
   isForex,
+  isDemo = false, // Default to false
 }) => {
   const { theme } = useTheme();
   const t = useTranslations("RunningSignalCard");
@@ -80,6 +82,7 @@ const PriceInfoSection: FC<PriceInfoSectionProps> = ({
             showSparkline={true}
             className="market-pulse-only"
             hideChartDetails={true}
+            isDemo={isDemo} // Pass the isDemo prop
           />
         </div>
       </div>

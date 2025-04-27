@@ -30,37 +30,6 @@ interface DemoCardProps {
 
 // Market data with realistic pricing based on actual market values as of May 2024
 const instrumentData = {
-  ES: {
-    fullName: "E-mini S&P 500 Future",
-    basePrice: 5266.75,
-    tickSize: 0.25,
-    tickValue: 12.5,
-    profitTarget: 20, // ticks
-    stopLoss: 8, // ticks
-    volatilityRange: 0.5, // percentage
-    format: "futures",
-    priceHistory: [
-      5266.75, 5267.0, 5267.25, 5266.5, 5266.75, 5267.5, 5268.0, 5267.75,
-    ],
-    typicalDailyRange: 32, // points
-  },
-  NQ: {
-    fullName: "E-mini Nasdaq-100 Future",
-    basePrice: 18654.25,
-    tickSize: 0.25,
-    tickValue: 5.0,
-    profitTarget: 42, // ticks (10.5 points)
-    stopLoss: 24, // ticks (6 points)
-    volatilityRange: 0.8, // higher volatility than ES
-    format: "futures",
-    averageDailyRange: 180, // points
-    typicalMFE: 35, // ticks
-    typicalMAE: 18, // ticks
-    priceHistory: [
-      18654.25, 18656.5, 18657.75, 18655.25, 18653.0, 18654.5, 18656.25,
-      18655.75,
-    ],
-  },
   EURUSD: {
     fullName: "Euro/US Dollar",
     basePrice: 1.07732, // Example current market price
@@ -179,9 +148,6 @@ export default function DemoCard({
   // Calculate risk-reward ratio
   const riskReward = (instrument.profitTarget / instrument.stopLoss).toFixed(1);
 
-  // Format last update time - simplified since we use static time
-  const getTimeSinceUpdate = () => "just now";
-
   // For forex, use "pips" instead of "ticks"
   const tickLabel = instrument.format === "forex" ? "pips" : "ticks";
 
@@ -266,6 +232,7 @@ export default function DemoCard({
             isProfitable={isProfitable}
             pnlPercentage={parseFloat(performancePercentage)}
             isForex={instrument.format === "forex"}
+            isDemo={true} // Always use demo mode for demo cards
           />
 
           {/* Key prices in a grid - Similar to KeyPricesGrid */}

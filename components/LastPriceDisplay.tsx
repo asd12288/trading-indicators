@@ -14,7 +14,31 @@ interface LastPriceDisplayProps {
   className?: string;
   showSparkline?: boolean;
   hideChartDetails?: boolean; // New prop to hide chart details
+  isDemo?: boolean; // New prop to indicate demo mode
 }
+
+// Generate fake price data for demo mode
+const generateFakePriceData = (pointCount: number = 20, trend: 'up' | 'down' | 'neutral' = 'neutral'): number[] => {
+  // Start with a base price between 1 and 100
+  const basePrice = Math.random() * 99 + 1;
+  const volatility = basePrice * 0.02; // 2% volatility
+  
+  // Create price array with random movements but following the general trend
+  return Array.from({ length: pointCount }, (_, i) => {
+    // Random component
+    const randomComponent = (Math.random() - 0.5) * volatility;
+    
+    // Trend component
+    let trendComponent = 0;
+    if (trend === 'up') {
+      trendComponent = (i / pointCount) * (volatility * 2);
+    } else if (trend === 'down') {
+      trendComponent = -(i / pointCount) * (volatility * 2);
+    }
+    
+    return basePrice + randomComponent + trendComponent;
+  });
+};
 
 // Improved sparkline generator for actual price data
 const generateSparkline = (
@@ -117,7 +141,8 @@ const LastPriceDisplay = ({
   showLabel = true,
   className = "",
   showSparkline = false,
-  hideChartDetails = false, // New prop with default value
+  hideChartDetails = false,
+  isDemo = false, // Add the isDemo prop with default false
 }: LastPriceDisplayProps) => {
   const {
     lastPrice,
@@ -131,6 +156,24 @@ const LastPriceDisplay = ({
   } = useForexPrice(instrumentName);
   const t = useTranslations("InstrumentStatusCard");
   const [isFlashing, setIsFlashing] = useState(false);
+  
+  // Generate fake data for demo mode
+  const [fakePriceData] = useState(() => {
+    // Randomly choose a trend for the demo data
+    const trends: Array<'up' | 'down' | 'neutral'> = ['up', 'down', 'neutral'];
+    const randomTrend = trends[Math.floor(Math.random() * trends.length)];
+    return generateFakePriceData(20, randomTrend);
+  });
+  
+  // Use fake data for demo mode or real data otherwise
+  const displayPriceHistory = isDemo ? fakePriceData : priceHistory;
+  const displayPriceDirection = isDemo 
+    ? (fakePriceData[fakePriceData.length - 1] > fakePriceData[0] ? 'up' : 
+       fakePriceData[fakePriceData.length - 1] < fakePriceData[0] ? 'down' : 'neutral') 
+    : priceDirection;
+  const displayLastPrice = isDemo 
+    ? fakePriceData[fakePriceData.length - 1] 
+    : lastPrice?.last;
 
   const prevPriceRef = useRef<number | null>(null);
 
@@ -183,9 +226,9 @@ const LastPriceDisplay = ({
 
   // Calculate percentage change for the price history
   const calculateChange = () => {
-    if (!priceHistory || priceHistory.length < 2) return null;
-    const first = priceHistory[0];
-    const last = priceHistory[priceHistory.length - 1];
+    if (!displayPriceHistory || displayPriceHistory.length < 2) return null;
+    const first = displayPriceHistory[0];
+    const last = displayPriceHistory[displayPriceHistory.length - 1];
     const change = ((last - first) / first) * 100;
     return change.toFixed(2);
   };
@@ -202,13 +245,13 @@ const LastPriceDisplay = ({
     up: "text-green-400",
     down: "text-red-400",
     neutral: "text-primary",
-  }[priceDirection || "neutral"];
+  }[displayPriceDirection || "neutral"];
 
   // Sparkline color based on price direction with better opacity
   const sparklineColor =
-    priceDirection === "up"
+    displayPriceDirection === "up"
       ? "#10b981"
-      : priceDirection === "down"
+      : displayPriceDirection === "down"
         ? "#ef4444"
         : "#60a5fa";
 
@@ -223,7 +266,9 @@ const LastPriceDisplay = ({
     );
   }
 
-  if (error) {
+  // If in demo mode, always show the demo chart even if there's an error
+  // Otherwise, show the error message
+  if (error && !isDemo) {
     return <div className="text-amber-500">Error loading price</div>;
   }
 
@@ -234,13 +279,13 @@ const LastPriceDisplay = ({
   if (
     showSparkline &&
     hideChartDetails &&
-    priceHistory &&
-    priceHistory.length > 1
+    displayPriceHistory &&
+    displayPriceHistory.length > 1
   ) {
     return (
       <div className={className}>
         {generateSparkline(
-          priceHistory,
+          displayPriceHistory,
           size === "small" ? 90 : size === "medium" ? 120 : 150,
           30, // Increased height for better visibility
           sparklineColor,
@@ -272,19 +317,19 @@ const LastPriceDisplay = ({
           }}
           transition={{ duration: 0.5 }}
         >
-          {lastPrice?.last !== undefined
-            ? formatPrice(lastPrice.last)
+          {displayLastPrice !== undefined
+            ? formatPrice(displayLastPrice)
             : t("n/a")}
         </motion.div>
 
         {/* Price direction indicator */}
-        {priceDirection !== "neutral" && (
+        {displayPriceDirection !== "neutral" && (
           <motion.div
-            initial={{ opacity: 0, y: priceDirection === "up" ? 10 : -10 }}
+            initial={{ opacity: 0, y: displayPriceDirection === "up" ? 10 : -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center"
           >
-            {priceDirection === "up" ? (
+            {displayPriceDirection === "up" ? (
               <ArrowUp
                 size={size === "large" ? 20 : 16}
                 className="text-green-400"
@@ -301,13 +346,13 @@ const LastPriceDisplay = ({
 
       {/* Enhanced Sparkline display */}
       {showSparkline &&
-        priceHistory &&
-        priceHistory.length > 1 &&
+        displayPriceHistory &&
+        displayPriceHistory.length > 1 &&
         !hideChartDetails && (
           <div className="mt-2 rounded-md bg-slate-800/10 p-2 dark:bg-slate-700/20">
             <div className="h-[24px] w-full">
               {generateSparkline(
-                priceHistory,
+                displayPriceHistory,
                 size === "large" ? 150 : size === "medium" ? 100 : 70,
                 24,
                 sparklineColor,
@@ -317,7 +362,7 @@ const LastPriceDisplay = ({
 
             <div className="mt-1 flex items-center justify-between text-[10px]">
               <div className="text-slate-500">
-                {priceHistory.length > 1 ? `${priceHistory.length} points` : ""}
+                {displayPriceHistory.length > 1 ? `${displayPriceHistory.length} points` : ""}
               </div>
 
               {percentChange && (
