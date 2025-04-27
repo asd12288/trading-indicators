@@ -163,7 +163,10 @@ export default function useNotification(
           }
           if (isSignal) {
             // Stop loss or take profit updates: play standard notification sound
-            if (row.title.includes("Stop Loss Updated") || row.title.includes("Take Profit Updated")) {
+            if (
+              row.title.includes("Stop Loss Updated") ||
+              row.title.includes("Take Profit Updated")
+            ) {
               new Audio("/audio/notification.mp3").play();
             } else if (row.title.toLowerCase().includes("closed")) {
               SoundService.playCompletedSignal(inst || "");
@@ -185,21 +188,22 @@ export default function useNotification(
   // New: subscribe to signal updates for stop loss / take profit changes
   useEffect(() => {
     const channel = supabase
-      .channel('signal-updates-notifications')
+      .channel("signal-updates-notifications")
       .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'all_signals' },
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "all_signals" },
         async ({ new: sig, old }) => {
           const newSig = sig as Signal;
           const oldSig = old as Signal;
           const stopChanged = oldSig.stop_loss_price !== newSig.stop_loss_price;
-          const tpChanged = oldSig.take_profit_price !== newSig.take_profit_price;
+          const tpChanged =
+            oldSig.take_profit_price !== newSig.take_profit_price;
           if (!stopChanged && !tpChanged) return;
 
           // fetch user profiles with notifications enabled for this instrument
           const { data: users } = await supabase
-            .from('profiles')
-            .select('id, preferences');
+            .from("profiles")
+            .select("id, preferences");
           if (!users) return;
           const interested = users.filter(
             (u) => u.preferences?.[newSig.instrument_name]?.notifications,
@@ -208,25 +212,27 @@ export default function useNotification(
 
           // Notify only the first change that occurred
           if (stopChanged) {
-            const records: Omit<Notification, 'id' | 'created_at'>[] = interested.map((u) => ({
-              user_id: u.id,
-              type: 'signal',
-              title: `${newSig.instrument_name} Stop Loss Updated`,
-              body: `Stop Loss: $${newSig.stop_loss_price}`,
-              is_read: false,
-              url: `/smart-alerts/${newSig.instrument_name}`,
-            }));
-            await supabase.from('notifications').insert(records);
+            const records: Omit<Notification, "id" | "created_at">[] =
+              interested.map((u) => ({
+                user_id: u.id,
+                type: "signal",
+                title: `${newSig.instrument_name} Stop Loss Updated`,
+                body: `Stop Loss: $${newSig.stop_loss_price}`,
+                is_read: false,
+                url: `/smart-alerts/${newSig.instrument_name}`,
+              }));
+            await supabase.from("notifications").insert(records);
           } else if (tpChanged) {
-            const records: Omit<Notification, 'id' | 'created_at'>[] = interested.map((u) => ({
-              user_id: u.id,
-              type: 'signal',
-              title: `${newSig.instrument_name} Take Profit Updated`,
-              body: `Take Profit: $${newSig.take_profit_price}`,
-              is_read: false,
-              url: `/smart-alerts/${newSig.instrument_name}`,
-            }));
-            await supabase.from('notifications').insert(records);
+            const records: Omit<Notification, "id" | "created_at">[] =
+              interested.map((u) => ({
+                user_id: u.id,
+                type: "signal",
+                title: `${newSig.instrument_name} Take Profit Updated`,
+                body: `Take Profit: $${newSig.take_profit_price}`,
+                is_read: false,
+                url: `/smart-alerts/${newSig.instrument_name}`,
+              }));
+            await supabase.from("notifications").insert(records);
           }
         },
       )
