@@ -16,7 +16,6 @@ import ResetPasswordForm from "./ResetPasswordForm";
 import TelegramAuth from "./TelegramAuth";
 import UpgradeAccount from "./UpgradeAccount";
 import ProfileLoader from "./loaders/ProfileLoader";
-import NotificationPreferences from "./NotificationPreferences";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
@@ -206,9 +205,7 @@ const UserDashboard = ({ user }) => {
                   {tab === "telegram" && isPro && (
                     <TelegramAuth profile={profile} userId={user?.id} />
                   )}
-                  {tab === "notification" && isPro && (
-                    <NotificationPreferences userId={user?.id} />
-                  )}
+                  {tab === "notification" && <div className="space-y-8"></div>}
                 </motion.div>
               </AnimatePresence>
             </div>

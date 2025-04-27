@@ -4,7 +4,13 @@ import usePreferences from "@/hooks/usePreferences";
 import useSignals from "@/hooks/useSignals";
 import { Link } from "@/i18n/routing";
 import { motion } from "framer-motion";
-import { AlertOctagon, Filter, Search } from "lucide-react";
+import {
+  AlertOctagon,
+  Filter,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import useSignalFilter from "@/hooks/useSignalFilter";
@@ -13,6 +19,7 @@ import FavoriteSignals from "../FavoriteSignals";
 import UpgradePrompt from "../UpgradePrompt";
 import LoaderCards from "../loaders/LoaderCards";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { Button } from "../ui/button";
 import SignalsGrid from "./SignalGrid";
 import SignalsFilters from "./SignalsFilters";
 import { useUser } from "@/providers/UserProvider";
@@ -30,13 +37,12 @@ const SignalsList = () => {
 
   // Only pass userId to hooks if we have one
   const {
-    preferences,
     isLoading: isLoadingPrefs,
     error,
     favorites,
   } = usePreferences(user?.id);
 
-  const { signals, isLoading: isLoadingSignals } = useSignals();
+  const { signals } = useSignals();
 
   // Handle favorite removal to update UI immediately
   const handleFavoriteRemoved = useCallback((instrumentName: string) => {
@@ -50,8 +56,17 @@ const SignalsList = () => {
   });
   const sortedSignals = useSignalSort(filteredSignals);
 
-  // Only limit signals for non-pro users
-  const displaySignals = isPro ? sortedSignals : sortedSignals.slice(0, 5);
+  // Pagination: display 6 signals per page
+  const itemsPerPage = 6;
+  const totalPages = Math.ceil(sortedSignals.length / itemsPerPage);
+  const [currentPage, setCurrentPage] = useState(1);
+  const paginatedSignals = sortedSignals.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
+
+  // Signals to display on current page
+  const displaySignals = paginatedSignals;
 
   // Filter favorite signals
   const favouriteSignals = useSignalSort(
@@ -62,8 +77,8 @@ const SignalsList = () => {
     ),
   );
 
-  // Determine loading state - we're loading if either user or preferences are loading
-  const isLoading = userLoading || isLoadingSignals || isLoadingPrefs;
+  // Determine loading state - we're loading if user or preferences are loading
+  const isLoading = userLoading || isLoadingPrefs;
 
   // Use conditional rendering with content variable
   let content;
@@ -109,8 +124,8 @@ const SignalsList = () => {
           <div className="rounded-xl border border-slate-700/30 bg-gradient-to-b from-slate-800 to-slate-900 p-5 shadow-md">
             <FavoriteSignals
               favouriteSignals={favouriteSignals}
-              isLoading={isLoadingSignals}
-              userId={user?.id}
+              isLoading={false}
+              userId={user?.id ?? ""}
               onFavoriteRemoved={handleFavoriteRemoved}
             />
           </div>
@@ -158,14 +173,61 @@ const SignalsList = () => {
               {t("noResult")}
             </p>
             <p className="mt-3 text-base text-slate-500">
-              Try adjusting your search or filters to find what you're looking
-              for.
+              Try adjusting your search or filters to find what you&apos;re
+              looking for.
             </p>
           </div>
         )}
 
-        {/* Signal grid */}
-        <SignalsGrid signals={displaySignals} isLoading={isLoadingSignals} />
+        {/* Pagination controls above */}
+        {totalPages > 1 && (
+          <div className="mb-4 flex items-center justify-center gap-2">
+            <Button
+              size="sm"
+              onClick={() => setCurrentPage((p) => p - 1)}
+              disabled={currentPage === 1}
+              className="p-2"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-sm text-slate-300">
+              Page {currentPage} of {totalPages}
+            </span>
+            <Button
+              size="sm"
+              onClick={() => setCurrentPage((p) => p + 1)}
+              disabled={currentPage === totalPages}
+              className="p-2"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+        <SignalsGrid signals={displaySignals} />
+        {/* Pagination controls below */}
+        {totalPages > 1 && (
+          <div className="mt-4 flex items-center justify-center gap-2">
+            <Button
+              size="sm"
+              onClick={() => setCurrentPage((p) => p - 1)}
+              disabled={currentPage === 1}
+              className="p-2"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-sm text-slate-300">
+              Page {currentPage} of {totalPages}
+            </span>
+            <Button
+              size="sm"
+              onClick={() => setCurrentPage((p) => p + 1)}
+              disabled={currentPage === totalPages}
+              className="p-2"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
 
         {/* Footer - if needed */}
         {!isPro && displaySignals.length >= 5 && sortedSignals.length > 5 && (

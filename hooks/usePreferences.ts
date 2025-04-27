@@ -1,15 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { createClient } from "@/database/supabase/client";
-import { toast } from "sonner";
-
-// Define the structure of preference values for each instrument
-export interface PreferenceValues {
-  notifications: boolean;
-  volume: boolean;
-  favorite: boolean;
-}
+import { useState, useEffect, useMemo } from "react";
+import supabaseClient from "@/database/supabase/supabase";
+import { PreferenceValues } from "@/lib/types";
 
 // The shape of your entire preferences object: { [instrumentId]: PreferenceValues }
 type PreferencesMap = Record<string, PreferenceValues>;
@@ -43,172 +36,173 @@ function usePreferences(userId?: string): UsePreferencesReturn {
   const [preferences, setPreferences] = useState<PreferencesMap>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const supabase = createClient();
+  const [globalMute, setGlobalMute] = useState(false);
 
-  // Load user preferences from Supabase
   useEffect(() => {
-    async function loadUserPreferences() {
-      if (!userId) {
-        setIsLoading(false);
-        return;
-      }
+    // Skip fetching if no userId is provided
+    if (!userId) {
+      setIsLoading(false);
+      return;
+    }
 
+    const fetchPreferences = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
-        setIsLoading(true);
-        setError(null);
-
-        const { data: profile, error: profileError } = await supabase
+        const { data, error } = await supabaseClient
           .from("profiles")
           .select("preferences")
           .eq("id", userId)
           .single();
 
-        if (profileError) {
-          throw profileError;
-        }
+        if (error) throw error;
+        const prefs = data?.preferences ?? {};
+        setPreferences(prefs);
 
-        // If preferences exist in the profile, use them
-        if (profile?.preferences) {
-          setPreferences(profile.preferences);
-        } else {
-          // Initialize with empty preferences if none exist
-          setPreferences({});
+        // Initialize global mute state from preferences
+        if (prefs[SYSTEM_PREFS_KEY]) {
+          setGlobalMute(!!prefs[SYSTEM_PREFS_KEY].globalMute);
         }
-      } catch (err) {
-        console.error("Error loading preferences:", err);
-        setError("Failed to load user preferences");
+      } catch (err: any) {
+        console.error("Error fetching preferences:", err);
+        setError(err.message || "An error occurred while loading preferences.");
       } finally {
         setIsLoading(false);
       }
-    }
+    };
 
-    loadUserPreferences();
-  }, [userId, supabase]);
+    fetchPreferences();
+  }, [userId]);
 
-  // Update a specific preference
+  // Fixed updatePreference to properly return a Promise<void>
   const updatePreference = async (
     signalId: string,
     updatedValues: Partial<PreferenceValues>,
-  ) => {
+  ): Promise<void> => {
+    // If no userId, can't update preferences
     if (!userId) {
-      toast.error("You must be logged in to update preferences");
-      return;
+      console.error("Cannot update preferences: No user ID provided");
+      return Promise.reject(
+        new Error("User ID is required to update preferences"),
+      );
     }
 
     try {
-      // Optimistic update
-      const currentPrefs = preferences[signalId] || {
+      // Get the current signal preference or use defaults
+      const currentPreference = preferences[signalId] || {
         notifications: false,
         volume: false,
         favorite: false,
       };
 
-      const updatedPrefs = {
-        ...currentPrefs,
-        ...updatedValues,
-      };
-
-      // Update local state optimistically
-      setPreferences((prev) => ({
-        ...prev,
-        [signalId]: updatedPrefs,
-      }));
-
-      // Update in database
-      const newPreferences = {
+      // Create a new preferences object with the updated values
+      const updatedPreferences = {
         ...preferences,
-        [signalId]: updatedPrefs,
+        [signalId]: {
+          ...currentPreference,
+          ...updatedValues,
+        },
       };
 
-      const { error: updateError } = await supabase
+      // Update local state first for immediate UI feedback
+      setPreferences(updatedPreferences);
+
+      // Update the database
+      const { error } = await supabaseClient
         .from("profiles")
-        .update({ preferences: newPreferences })
+        .update({ preferences: updatedPreferences })
         .eq("id", userId);
 
-      if (updateError) {
-        throw updateError;
+      if (error) {
+        // Revert local state if database update fails
+        setPreferences(preferences);
+        throw error;
       }
-    } catch (err) {
-      console.error("Error updating preference:", err);
-      // Revert optimistic update on error
-      setError("Failed to update preference");
-      toast.error("Failed to update preference");
-      // Load the current state from database to revert changes
-      const { data } = await supabase
-        .from("profiles")
-        .select("preferences")
-        .eq("id", userId)
-        .single();
-      
-      if (data?.preferences) {
-        setPreferences(data.preferences);
-      }
+
+      // Debug toast to verify function is being called
+      console.log("Preference updated:", signalId, updatedValues);
+
+      // Don't return anything (void)
+    } catch (error: any) {
+      console.error("Error updating preferences:", error);
+      // Show error toast
+
+      throw error;
     }
   };
 
-  // Update global mute setting
+  // New function to update global mute preference
   const updateGlobalMute = async (muted: boolean): Promise<void> => {
     if (!userId) {
-      toast.error("You must be logged in to update preferences");
-      return;
+      console.error("Cannot update global mute: No user ID provided");
+      return Promise.reject(
+        new Error("User ID is required to update global mute setting"),
+      );
     }
 
     try {
-      // Get current system preferences or initialize empty object
-      const currentSystemPrefs = preferences[SYSTEM_PREFS_KEY] || {};
-      
-      // Update with new muted value
-      const newSystemPrefs = {
-        ...currentSystemPrefs,
-        globalMute: muted,
+      // Update local state immediately for UI responsiveness
+      setGlobalMute(muted);
+
+      // Get current system preferences or create new ones
+      const systemPrefs = preferences[SYSTEM_PREFS_KEY] || {
+        notifications: false,
+        volume: false,
+        favorite: false,
+        globalMute: false,
       };
 
-      // Optimistically update local state
-      setPreferences((prev) => ({
-        ...prev,
-        [SYSTEM_PREFS_KEY]: newSystemPrefs,
-      }));
-
-      // Update in database
-      const newPreferences = {
+      // Create updated preferences object
+      const updatedPreferences = {
         ...preferences,
-        [SYSTEM_PREFS_KEY]: newSystemPrefs,
+        [SYSTEM_PREFS_KEY]: {
+          ...systemPrefs,
+          globalMute: muted,
+        },
       };
 
-      const { error: updateError } = await supabase
+      // Save to database
+      const { error } = await supabaseClient
         .from("profiles")
-        .update({ preferences: newPreferences })
+        .update({ preferences: updatedPreferences })
         .eq("id", userId);
 
-      if (updateError) {
-        throw updateError;
+      if (error) {
+        // Revert local state if failed
+        setGlobalMute(!muted);
+        throw error;
       }
-    } catch (err) {
-      console.error("Error updating global mute:", err);
-      setError("Failed to update global mute setting");
-      toast.error("Failed to update sound preference");
+
+      // Update local state with new preferences
+      setPreferences(updatedPreferences);
+      console.log("Global mute set to:", muted);
+    } catch (error: any) {
+      console.error("Error updating global mute setting:", error);
+      throw error;
     }
   };
 
-  // Derived global mute state
-  const globalMute = preferences[SYSTEM_PREFS_KEY]?.globalMute || false;
+  // --- Derived arrays ---
+  // 1. favorites: instruments where "favorite" is true
+  const favorites = useMemo(() => {
+    return Object.entries(preferences)
+      .filter(([key, prefs]) => key !== SYSTEM_PREFS_KEY && prefs.favorite)
+      .map(([instrument]) => instrument);
+  }, [preferences]);
 
-  // Derived arrays for favorite and notification status
-  const favorites = Object.entries(preferences)
-    .filter(
-      ([key, value]) => key !== SYSTEM_PREFS_KEY && value.favorite === true
-    )
-    .map(([key]) => key);
+  // 2. volumeOn: instruments where "volume" is true
+  const volumeOn = useMemo(() => {
+    return Object.entries(preferences)
+      .filter(([key, prefs]) => key !== SYSTEM_PREFS_KEY && prefs.volume)
+      .map(([instrument]) => instrument);
+  }, [preferences]);
 
-  const volumeOn = Object.entries(preferences)
-    .filter(([key, value]) => key !== SYSTEM_PREFS_KEY && value.volume === true)
-    .map(([key]) => key);
-
-  const notificationsOn = Object.entries(preferences)
-    .filter(
-      ([key, value]) => key !== SYSTEM_PREFS_KEY && value.notifications === true
-    )
-    .map(([key]) => key);
+  // 3. notificationsOn: instruments where "notifications" is true
+  const notificationsOn = useMemo(() => {
+    return Object.entries(preferences)
+      .filter(([key, prefs]) => key !== SYSTEM_PREFS_KEY && prefs.notifications)
+      .map(([instrument]) => instrument);
+  }, [preferences]);
 
   return {
     preferences,

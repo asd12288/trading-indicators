@@ -1,4 +1,4 @@
-import { format, formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { Clock, Power, Calendar, Globe, MapPin, Timer } from "lucide-react";
 import { getNextMarketOpen, getMarketHoursDisplay } from "@/lib/market-hours";
