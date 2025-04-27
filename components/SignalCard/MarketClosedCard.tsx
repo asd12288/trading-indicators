@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 import { useTranslations } from "next-intl";
 import { Clock, Power, Calendar, Globe, MapPin, Timer } from "lucide-react";
 import { getNextMarketOpen, getMarketHoursDisplay } from "@/lib/market-hours";
@@ -25,7 +26,7 @@ const MarketClosedCard = ({ instrumentName }: MarketClosedCardProps) => {
   const getLocalTimeString = (utcDate: Date): string => {
     try {
       return format(utcDate, "EEEE, h:mm a");
-    } catch (error) {
+    } catch {
       return "Invalid date";
     }
   };
@@ -146,7 +147,7 @@ const MarketClosedCard = ({ instrumentName }: MarketClosedCardProps) => {
                 <div>
                   <div className="text-xs text-slate-500">UTC</div>
                   <div className="text-lg font-bold">
-                    {format(nextOpenTime, "EEEE, h:mm a")}
+                    {formatInTimeZone(nextOpenTime, 'UTC', "EEEE, h:mm a")}
                   </div>
                 </div>
               </div>
@@ -194,7 +195,7 @@ const MarketClosedCard = ({ instrumentName }: MarketClosedCardProps) => {
               {/* Trading days visualization */}
               <div className="mt-3 flex justify-between">
                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
-                  (day, index) => {
+                  (day) => {
                     const isActive = marketHours.includes(day);
                     return (
                       <div

@@ -60,6 +60,7 @@
     "cobe": "^0.6.3",
     "critters": "^0.0.23",
     "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "fast-xml-parser": "^4.5.1",
     "finnhub": "^1.2.19",
     "form": "^0.2.5",

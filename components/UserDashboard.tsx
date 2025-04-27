@@ -159,7 +159,7 @@ const UserDashboard = ({ user }) => {
                       icon={FaTelegram}
                       label={t("tabs.telegram") || "Telegram"}
                     />
-                    <TabItem
+                    {/* <TabItem
                       id="notification"
                       icon={FaBell}
                       label={t("tabs.notification")}
@@ -168,7 +168,7 @@ const UserDashboard = ({ user }) => {
                       id="preferences"
                       icon={FaGear}
                       label={t("tabs.preferences") || "Preferences"}
-                    />
+                    /> */}
                   </>
                 ) : (
                   <TabItem
@@ -205,7 +205,7 @@ const UserDashboard = ({ user }) => {
                   {tab === "telegram" && isPro && (
                     <TelegramAuth profile={profile} userId={user?.id} />
                   )}
-                  {tab === "notification" && <div className="space-y-8"></div>}
+                  {/* {tab === "notification" && <div className="space-y-8"></div>} */}
                 </motion.div>
               </AnimatePresence>
             </div>
