@@ -145,15 +145,15 @@ const MarketClosedCard = ({ instrumentName }: MarketClosedCardProps) => {
               <div className="mt-3 flex items-center space-x-2">
                 <Globe className="h-4 w-4 text-blue-400" />
                 <div>
-                  <div className="text-xs text-slate-500">UTC</div>
+                  <div className="text-xs text-slate-500">UTC Time</div>
                   <div className="text-lg font-bold">
-                    {formatInTimeZone(nextOpenTime, 'UTC', "EEEE, h:mm a")}
+                    {formatInTimeZone(nextOpenTime, "UTC", "EEEE, h:mm a")}
                   </div>
                 </div>
               </div>
 
               {/* Local time */}
-              <div className="mt-2 flex items-center space-x-2">
+              {/* <div className="mt-2 flex items-center space-x-2">
                 <MapPin className="h-4 w-4 text-emerald-400" />
                 <div>
                   <div className="text-xs text-slate-500">{t("localTime")}</div>
@@ -161,7 +161,7 @@ const MarketClosedCard = ({ instrumentName }: MarketClosedCardProps) => {
                     {getLocalTimeString(nextOpenTime)}
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           )}
 
