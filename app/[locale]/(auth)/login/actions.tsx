@@ -1,12 +1,11 @@
 "use server";
 
 import { createClient } from "@/database/supabase/server";
-import { Provider } from "@supabase/supabase-js";
-import { revalidatePath } from "next/cache";
-import { redirect as redirectNext } from "next/navigation";
 import { redirect } from "@/i18n/routing";
+import { Provider } from "@supabase/supabase-js";
+import { redirect as redirectNext } from "next/navigation";
 
-import { z } from "zod";
+import { z, ZodError } from "zod";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -51,12 +50,9 @@ export async function emailLogin(formData: FormData) {
 
     // If all good
     return { success: true };
-  } catch (err: any) {
-    if (err.name === "ZodError") {
-      // Return all validation errors as a single message
-      return {
-        error: err.issues.map((issue) => issue.message).join(", "),
-      };
+  } catch (err: unknown) {
+    if (err instanceof ZodError) {
+      return { error: err.issues.map((issue) => issue.message).join(", ") };
     }
     return { error: "Unknown error occurred" };
   }
@@ -79,18 +75,13 @@ export async function oAuthSignIn(provider: Provider, locale: string) {
 
   // e.g. `http://localhost:3000` in dev, no trailing slash
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.DEV_URL;
-  // Possibly include the locale part:
-  const redirectUrl = `${baseUrl}/auth/callback`;
+  // Possibly include the locale and next page in the callback URL:
+  const nextParam = `/smart-alerts`;
+  const redirectUrl = `${baseUrl}/auth/callback?locale=${locale}&next=${encodeURIComponent(nextParam)}`;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
-    options: {
-      redirectTo: redirectUrl,
-      queryParams: {
-        locale: locale,
-        next: `/smart-alerts`,
-      },
-    },
+    options: { redirectTo: redirectUrl },
   });
 
   if (error) {

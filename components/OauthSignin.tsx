@@ -3,9 +3,8 @@
 import { oAuthSignIn } from "@/app/[locale]/(auth)/login/actions";
 import { Provider } from "@supabase/supabase-js";
 import { JSX } from "react";
-import { FaGoogle } from "react-icons/fa";
+import { FaFacebook, FaGoogle } from "react-icons/fa";
 import { useTranslations } from "next-intl";
-import { useParams } from "next/navigation";
 
 type OAuthProvider = {
   name: Provider;
@@ -20,6 +19,10 @@ export function OAuthButtons({ locale }: { locale: string }) {
       name: "google",
       icon: <FaGoogle className="text-2xl" />,
     },
+    {
+      name: "facebook",
+      icon: <FaFacebook className="text-2xl" />,
+    }
   ];
 
   const handleOAuthSignIn = async (provider: Provider) => {

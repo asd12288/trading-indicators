@@ -787,7 +787,8 @@
   },
   "OAuth": {
     "providers": {
-      "google": "Login with Google"
+      "google": "Login with Google",
+      "facebook": "Login with Facebook"
     },
     "errors": {
       "auth_error": "Authentication failed. Please try again.",

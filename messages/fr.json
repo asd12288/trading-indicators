@@ -800,7 +800,8 @@
   },
   "OAuth": {
     "providers": {
-      "google": "Se connecter avec Google"
+      "google": "Se connecter avec Google",
+      "facebook": "Se connecter avec Facebook"
     },
     "errors": {
       "auth_error": "Échec de l’authentification. Veuillez réessayer.",

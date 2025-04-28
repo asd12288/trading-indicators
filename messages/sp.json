@@ -785,7 +785,8 @@
   },
   "OAuth": {
     "providers": {
-      "google": "Iniciar sesión con Google"
+      "google": "Iniciar sesión con Google",
+      "facebook": "Iniciar sesión con Facebook"
     },
     "errors": {
       "auth_error": "No se pudo autenticar. Por favor, inténtalo de nuevo.",

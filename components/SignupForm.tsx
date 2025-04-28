@@ -207,7 +207,7 @@ export function SignupForm() {
                     <FormLabel className="text-sm font-normal text-slate-300">
                       {t("labels.terms")}{" "}
                       <Link
-                        href="/terms"
+                        href="/terms-and-conditions"
                         className="font-medium text-green-400 underline decoration-green-400/30 underline-offset-2 hover:text-green-300 hover:decoration-green-300/50"
                       >
                         {t("labels.termsLink")}

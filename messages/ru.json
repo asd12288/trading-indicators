@@ -798,7 +798,8 @@
   },
   "OAuth": {
     "providers": {
-      "google": "Войти через Google"
+      "google": "Войти через Google",
+      "facebook": "Войти через Facebook"
     },
     "errors": {
       "auth_error": "Не удалось авторизоваться. Попробуйте еще раз.",
