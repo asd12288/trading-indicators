@@ -34,13 +34,13 @@ const instrumentData = {
     fullName: "Euro/US Dollar",
     basePrice: 1.07732, // Example current market price
     tickSize: 0.00001, // 0.1 pip per tick
-    tickValue: 1.0, // $1 per pip per 0.1 lot (10k units)
+    tickValue: 10.0, // $1 per pip per 0.1 lot (10k units)
     profitTarget: 50, // 50 pips is a realistic target for intraday or swing
     stopLoss: 25, // 25 pips common for tight risk management
     volatilityRange: 2, // Moderate intraday range factor (0.5 - 0.7 realistic)
     format: "forex",
     averageDailyRange: 75, // EUR/USD ranges from 60 to 100 pips daily on average
-    typicalMFE: 243, // Maximum Favorable Excursion - 80 pips before reversal
+    typicalMFE: 24, // Maximum Favorable Excursion - 80 pips before reversal
     typicalMAE: 5, // Maximum Adverse Excursion - 15-25 pips realistic
     priceHistory: [1.07732], // Starting price history
     decimalPlaces: 5, // Forex quotes are usually in 5 decimals (1.07732)
