@@ -75,9 +75,9 @@ export async function oAuthSignIn(provider: Provider, locale: string) {
 
   // e.g. `http://localhost:3000` in dev, no trailing slash
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.DEV_URL;
-  // Possibly include the locale and next page in the callback URL:
+  // Redirect back to our callback route under /[locale]/callback
   const nextParam = `/smart-alerts`;
-  const redirectUrl = `${baseUrl}/auth/callback?locale=${locale}&next=${encodeURIComponent(nextParam)}`;
+  const redirectUrl = `${baseUrl}/${locale}/callback?next=${encodeURIComponent(nextParam)}`;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
