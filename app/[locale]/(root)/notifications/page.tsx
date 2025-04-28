@@ -91,6 +91,13 @@ export default function NotificationsPage() {
     page * pageSize,
   );
 
+  // Ensure current page is valid when notifications change
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(1);
+    }
+  }, [totalPages]);
+
   // Format notification date
   const formatNotificationDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -168,8 +175,9 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+    <div className="container mx-auto px-24 py-12">
+      {/* Title and buttons section - slightly reduced vertical spacing */}
+      <div className="mb-4 flex flex-col items-start justify-between gap-3 md:flex-row md:items-center">
         <div>
           <h1 className="bg-gradient-to-r from-white to-slate-300 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl">
             Notifications
@@ -204,8 +212,8 @@ export default function NotificationsPage() {
         </div>
       </div>
 
-      {/* Search and filters row */}
-      <div className="mb-6 flex flex-col gap-4 rounded-lg border border-slate-700/50 bg-slate-800/30 p-4 backdrop-blur-sm md:flex-row md:items-center md:justify-between">
+      {/* Search and filters row - slightly reduced padding */}
+      <div className="mb-4 flex flex-col gap-3 rounded-lg border border-slate-700/50 bg-slate-800/30 p-3 backdrop-blur-sm md:flex-row md:items-center md:justify-between">
         <div className="relative w-full md:max-w-xs">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
@@ -274,16 +282,16 @@ export default function NotificationsPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className={cn(
-                    "group relative flex items-start gap-4 p-4 transition-colors md:p-6",
+                    "group relative flex items-start gap-3 p-2.5 transition-colors md:p-3",
                     notif.is_read
                       ? "bg-transparent hover:bg-slate-700/20"
                       : "bg-slate-700/10 hover:bg-slate-700/30",
                   )}
                 >
-                  {/* Type indicator */}
+                  {/* Type indicator - reduced size */}
                   <div
                     className={cn(
-                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
+                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
                       getNotificationTypeColor(notif.type),
                     )}
                   >
@@ -294,32 +302,32 @@ export default function NotificationsPage() {
 
                   {/* Content */}
                   <div className="flex-1">
-                    <div className="mb-1 flex items-center gap-2">
+                    <div className="mb-0.5 flex items-center gap-2">
                       <h3
                         className={cn(
-                          "font-medium",
+                          "text-sm font-medium",
                           notif.is_read ? "text-slate-300" : "text-white",
                         )}
                       >
                         {notif.title}
                       </h3>
                       {!notif.is_read && (
-                        <span className="inline-flex h-2 w-2 rounded-full bg-blue-500"></span>
+                        <span className="inline-flex h-1.5 w-1.5 rounded-full bg-blue-500"></span>
                       )}
                     </div>
 
                     {(notif.body || (notif as any).message) && (
-                      <p className="text-sm text-slate-400">
+                      <p className="text-xs text-slate-400">
                         {notif.body || (notif as any).message}
                       </p>
                     )}
 
-                    <div className="mt-2 flex items-center gap-4 text-xs text-slate-500">
+                    <div className="mt-1 flex items-center gap-3 text-xs text-slate-500">
                       <span className="flex items-center gap-1">
-                        <Clock className="h-3.5 w-3.5" />
+                        <Clock className="h-3 w-3" />
                         {formatNotificationDate(notif.created_at)}
                       </span>
-                      <span className="rounded-full bg-slate-700/40 px-2 py-0.5">
+                      <span className="rounded-full bg-slate-700/40 px-1.5 py-0.5 text-[10px]">
                         {getNotificationTypeLabel(notif.type)}
                       </span>
                     </div>
@@ -330,32 +338,32 @@ export default function NotificationsPage() {
                     {!notif.is_read && (
                       <button
                         onClick={() => handleMarkAsRead(notif.id)}
-                        className="rounded-md p-2 text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
+                        className="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
                         title="Mark as read"
                       >
-                        <CheckCircle className="h-4 w-4" />
+                        <CheckCircle className="h-3.5 w-3.5" />
                       </button>
                     )}
                   </div>
                 </motion.li>
               ))}
             </ul>
-            {/* pagination controls */}
-            <div className="flex items-center justify-between border-t border-slate-700 bg-slate-800 px-4 py-2">
+            {/* pagination controls - slightly smaller buttons */}
+            <div className="flex items-center justify-between border-t border-slate-700 bg-slate-800 px-3 py-1.5">
               <button
                 onClick={() => setPage((p) => Math.max(p - 1, 1))}
                 disabled={page === 1}
-                className="rounded bg-slate-700 px-3 py-1 text-slate-200 disabled:opacity-50"
+                className="rounded bg-slate-700 px-2 py-0.5 text-xs text-slate-200 disabled:opacity-50"
               >
                 Previous
               </button>
-              <span className="text-sm text-slate-300">
+              <span className="text-xs text-slate-300">
                 Page {page} of {totalPages}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
                 disabled={page === totalPages}
-                className="rounded bg-slate-700 px-3 py-1 text-slate-200 disabled:opacity-50"
+                className="rounded bg-slate-700 px-2 py-0.5 text-xs text-slate-200 disabled:opacity-50"
               >
                 Next
               </button>

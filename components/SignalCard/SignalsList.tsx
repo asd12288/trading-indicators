@@ -56,8 +56,8 @@ const SignalsList = () => {
   });
   const sortedSignals = useSignalSort(filteredSignals);
 
-  // Pagination: display 6 signals per page
-  const itemsPerPage = 6;
+  // Pagination: display signals per page based on plan (6 for pro, 5 for non-pro)
+  const itemsPerPage = isPro ? 6 : 5;
   const totalPages = Math.ceil(sortedSignals.length / itemsPerPage);
   const [currentPage, setCurrentPage] = useState(1);
   const paginatedSignals = sortedSignals.slice(
@@ -180,7 +180,7 @@ const SignalsList = () => {
         )}
 
         {/* Pagination controls above */}
-        {totalPages > 1 && (
+        {isPro && totalPages > 1 && (
           <div className="mb-4 flex items-center justify-center gap-2">
             <Button
               size="sm"
@@ -205,7 +205,7 @@ const SignalsList = () => {
         )}
         <SignalsGrid signals={displaySignals} />
         {/* Pagination controls below */}
-        {totalPages > 1 && (
+        {isPro && totalPages > 1 && (
           <div className="mt-4 flex items-center justify-center gap-2">
             <Button
               size="sm"

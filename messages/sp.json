@@ -1527,6 +1527,26 @@
     "nextActiveSession": "Próxima sesión activa",
     "noAlertHours": "No hay horas de alertas configuradas para este instrumento"
   },
+  "NotificationPreferences": {
+    "title": "Preferencias de señal",
+    "searchPlaceholder": "Buscar señales...",
+    "signal": "Señal",
+    "favorite": "Favorito",
+    "notifications": "Notificaciones",
+    "sound": "Sonido",
+    "actions": "Acciones",
+    "noSignals": "No hay señales con preferencias",
+    "noSearchResults": "No hay señales que coincidan con tu búsqueda",
+    "rowsPerPage": "Filas por página",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "pageXofY": "Página {current} de {total}",
+    "removePreferences": "Eliminar todas las preferencias para esta señal",
+    "legendFavorite": "Las señales favoritas aparecen en el panel",
+    "legendNotifications": "Habilitar notificaciones del navegador",
+    "legendSound": "Habilitar alertas de sonido"
+  },
+
   "DemoCard": {
     "expertTrade": "Expert Trade",
     "tradingDays": "Días de trading",
@@ -1536,5 +1556,9 @@
     "nextSession": "Próxima sesión",
     "session": "Sesión",
     "startsIn": "Empieza en"
+  },
+  "addons": {
+    "dashboard": "My Signal Dashboard",
+    "subtitle": "Your favorite signals in one place"
   }
 }

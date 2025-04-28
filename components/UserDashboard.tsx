@@ -1,13 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import {
-  FaBell,
-  FaCircleUser,
-  FaLock,
-  FaRegMoneyBill1,
-  FaGear,
-} from "react-icons/fa6";
+import { FaCircleUser, FaLock, FaRegMoneyBill1, FaGear } from "react-icons/fa6";
 import { FaTelegram } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 import ManageAccount from "./ManageAccount";
@@ -16,12 +10,32 @@ import ResetPasswordForm from "./ResetPasswordForm";
 import TelegramAuth from "./TelegramAuth";
 import UpgradeAccount from "./UpgradeAccount";
 import ProfileLoader from "./loaders/ProfileLoader";
+import NotificationPreferences from "./NotificationPreferences";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import supabaseClient from "@/database/supabase/supabase.js";
 
-const UserDashboard = ({ user }) => {
+interface UserDashboardProps {
+  user: {
+    id?: string;
+    email?: string;
+    [key: string]: any;
+  };
+}
+
+interface UserProfile {
+  plan?: string;
+  [key: string]: any;
+}
+
+interface TabItemProps {
+  id: string;
+  icon: React.ComponentType<any>;
+  label: string;
+}
+
+const UserDashboard = ({ user }: UserDashboardProps) => {
   const searchParams = useSearchParams();
   const [tab, setTab] = useState<string>("profile");
   const t = useTranslations("UserDashboard");
@@ -29,7 +43,7 @@ const UserDashboard = ({ user }) => {
   const [contentHeight, setContentHeight] = useState<string>("auto");
 
   // Handle profile loading directly since we get user from props
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch profile based on the provided user ID
@@ -102,7 +116,7 @@ const UserDashboard = ({ user }) => {
 
   const isPro = profile?.plan === "pro";
 
-  const TabItem = ({ id, icon: Icon, label }) => {
+  const TabItem = ({ id, icon: Icon, label }: TabItemProps) => {
     const isActive = tab === id;
     return (
       <li
@@ -159,16 +173,11 @@ const UserDashboard = ({ user }) => {
                       icon={FaTelegram}
                       label={t("tabs.telegram") || "Telegram"}
                     />
-                    {/* <TabItem
-                      id="notification"
-                      icon={FaBell}
-                      label={t("tabs.notification")}
-                    />
                     <TabItem
                       id="preferences"
                       icon={FaGear}
                       label={t("tabs.preferences") || "Preferences"}
-                    /> */}
+                    />
                   </>
                 ) : (
                   <TabItem
@@ -196,16 +205,20 @@ const UserDashboard = ({ user }) => {
                   transition={{ duration: 0.3 }}
                   className="w-full"
                 >
-                  {tab === "profile" && (
+                  {tab === "profile" && profile && (
                     <ProfileCard user={user} profile={profile} />
                   )}
                   {tab === "upgrade" && <UpgradeAccount user={user} />}
                   {tab === "password" && <ResetPasswordForm />}
-                  {tab === "manage" && <ManageAccount profile={profile} />}
-                  {tab === "telegram" && isPro && (
+                  {tab === "manage" && profile && (
+                    <ManageAccount profile={profile} />
+                  )}
+                  {tab === "telegram" && isPro && profile && (
                     <TelegramAuth profile={profile} userId={user?.id} />
                   )}
-                  {/* {tab === "notification" && <div className="space-y-8"></div>} */}
+                  {tab === "preferences" && isPro && (
+                    <NotificationPreferences userId={user?.id} />
+                  )}
                 </motion.div>
               </AnimatePresence>
             </div>

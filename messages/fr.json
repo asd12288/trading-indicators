@@ -1539,7 +1539,25 @@
     "session": "Session",
     "startsIn": "Commence dans"
   },
-
+  "NotificationPreferences": {
+    "title": "Préférences de signal",
+    "searchPlaceholder": "Rechercher des signaux...",
+    "signal": "Signal",
+    "favorite": "Favori",
+    "notifications": "Notifications",
+    "sound": "Son",
+    "actions": "Actions",
+    "noSignals": "Aucun signal avec des préférences",
+    "noSearchResults": "Aucun signal ne correspond à votre recherche",
+    "rowsPerPage": "Lignes par page",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "pageXofY": "Page {current} sur {total}",
+    "removePreferences": "Supprimer toutes les préférences pour ce signal",
+    "legendFavorite": "Les signaux favoris apparaissent sur le tableau de bord",
+    "legendNotifications": "Activer les notifications du navigateur",
+    "legendSound": "Activer les alertes sonores"
+  },
   "addons": {
     "dashboard": "Mes Signaux favoris",
     "subtitle": "Ajoutez des signaux à votre tableau de bord pour un accès rapide"

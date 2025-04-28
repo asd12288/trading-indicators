@@ -1537,7 +1537,25 @@
     "session": "Сессия",
     "startsIn": "Начнется через"
   },
-
+  "NotificationPreferences": {
+    "title": "Настройки сигналов",
+    "searchPlaceholder": "Поиск сигналов...",
+    "signal": "Сигнал",
+    "favorite": "Избранное",
+    "notifications": "Уведомления",
+    "sound": "Звук",
+    "actions": "Действия",
+    "noSignals": "Нет сигналов с настройками",
+    "noSearchResults": "Нет сигналов, соответствующих вашему запросу",
+    "rowsPerPage": "Строк на странице",
+    "previousPage": "Предыдущая страница",
+    "nextPage": "Следующая страница",
+    "pageXofY": "Страница {current} из {total}",
+    "removePreferences": "Удалить все настройки для этого сигнала",
+    "legendFavorite": "Избранные сигналы отображаются на панели управления",
+    "legendNotifications": "Включить уведомления в браузере",
+    "legendSound": "Включить звуковые оповещения"
+  },
   "addons": {
     "dashboard": "Dashboard",
     "subtitle": "Get real-time insights and alerts"
