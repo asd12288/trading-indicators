@@ -191,6 +191,14 @@ export default function useNotification(
             oldSig.take_profit_price !== newSig.take_profit_price;
           if (!stopChanged && !tpChanged) return;
 
+          // Format stop loss and take profit with fixed decimals
+          const slValue = Number(newSig.stop_loss_price);
+          const tpValue = Number(newSig.take_profit_price);
+          const slFormatted =
+            slValue < 1 ? slValue.toFixed(7) : slValue.toFixed(1);
+          const tpFormatted =
+            tpValue < 1 ? tpValue.toFixed(7) : tpValue.toFixed(1);
+
           // fetch user profiles with notifications enabled for this instrument
           const { data: users } = await supabase
             .from("profiles")
@@ -208,7 +216,7 @@ export default function useNotification(
                 user_id: u.id,
                 type: "signal",
                 title: `${newSig.instrument_name} Stop Loss Updated`,
-                body: `Stop Loss: ${newSig.stop_loss_price}`,
+                body: `Stop Loss: ${slFormatted}`,
                 is_read: false,
                 url: `/smart-alerts/${newSig.instrument_name}`,
               }));
@@ -219,7 +227,7 @@ export default function useNotification(
                 user_id: u.id,
                 type: "signal",
                 title: `${newSig.instrument_name} Take Profit Updated`,
-                body: `Take Profit: ${newSig.take_profit_price}`,
+                body: `Take Profit: ${tpFormatted}`,
                 is_read: false,
                 url: `/smart-alerts/${newSig.instrument_name}`,
               }));

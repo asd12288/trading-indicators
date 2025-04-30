@@ -61,16 +61,30 @@ export default function useSignalNotification() {
             );
             const detailUrl = `/smart-alerts/${signal.instrument_name}`;
 
+            // Format entry, take profit, and stop loss prices
+            const entry = parseFloat(signal.entry_price.toString());
+            const tpVal = signal.take_profit_price
+              ? parseFloat(signal.take_profit_price.toString())
+              : NaN;
+            const slVal = signal.stop_loss_price
+              ? parseFloat(signal.stop_loss_price.toString())
+              : NaN;
+            const tpFormatted = !isNaN(tpVal)
+              ? tpVal < 1
+                ? tpVal.toFixed(5)
+                : tpVal.toFixed(2)
+              : null;
+            const slFormatted = !isNaN(slVal)
+              ? slVal < 1
+                ? slVal.toFixed(5)
+                : slVal.toFixed(2)
+              : null;
+
             // Construct toast description with key signal details
             const description =
-              `${signal.trade_side}
-Entry: ${signal.entry_price}` +
-              (signal.take_profit_price
-                ? `\nTarget: ${signal.take_profit_price}`
-                : "") +
-              (signal.stop_loss_price
-                ? `\nStop: ${signal.stop_loss_price}`
-                : "");
+              `${signal.trade_side}\nEntry: ${entry.toFixed(2)}` +
+              (tpFormatted ? `\nTarget: ${tpFormatted}` : "") +
+              (slFormatted ? `\nStop: ${slFormatted}` : "");
 
             // Use green for long/buy trades and red for short/sell trades
             if (isBuyOrLong) {
@@ -162,7 +176,6 @@ Entry: ${signal.entry_price}` +
               isProfitable = profitLoss > 0;
             }
 
-      
             const description = `Trade closed\nEntry: ${sig.entry_price}\nExit: ${sig.exit_price}`;
 
             // All closed trades use info (blue) toast, regardless of Long/Short or profit/loss
@@ -192,6 +205,8 @@ Entry: ${signal.entry_price}` +
       )
       .subscribe();
 
-    return () => { void supabase.removeChannel(channel); };
+    return () => {
+      void supabase.removeChannel(channel);
+    };
   }, []);
 }
