@@ -78,9 +78,9 @@ export default function Hero() {
               <span className="inline-block rounded-full bg-gradient-to-r from-emerald-900/20 to-teal-900/20 px-5 py-1.5 text-sm font-semibold text-emerald-500">
                 {t("rating")}
               </span>
-              <p className="mt-3 text-sm font-light text-emerald-600/80">
+              {/* <p className="mt-3 text-sm font-light text-emerald-600/80">
                 {t("count")}
-              </p>
+              </p> */}
               <h1 className="mt-6 text-5xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl">
                 <span className="block bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
                   Smart Alert

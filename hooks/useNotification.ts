@@ -219,7 +219,7 @@ export default function useNotification(
                 user_id: u.id,
                 type: "signal",
                 title: `${newSig.instrument_name} Take Profit Updated`,
-                body: `Take Profit: $${newSig.take_profit_price}`,
+                body: `Take Profit: ${newSig.take_profit_price}`,
                 is_read: false,
                 url: `/smart-alerts/${newSig.instrument_name}`,
               }));

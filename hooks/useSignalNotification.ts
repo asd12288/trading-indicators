@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { createClient } from "@supabase/supabase-js";
-import type { Signal, Notification } from "@/lib/types";
+import type { Signal } from "@/lib/types";
 import SoundService from "@/lib/services/soundService";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/routing";
@@ -64,12 +64,12 @@ export default function useSignalNotification() {
             // Construct toast description with key signal details
             const description =
               `${signal.trade_side}
-Entry: $${signal.entry_price}` +
+Entry: ${signal.entry_price}` +
               (signal.take_profit_price
-                ? `\nTarget: $${signal.take_profit_price}`
+                ? `\nTarget: ${signal.take_profit_price}`
                 : "") +
               (signal.stop_loss_price
-                ? `\nStop: $${signal.stop_loss_price}`
+                ? `\nStop: ${signal.stop_loss_price}`
                 : "");
 
             // Use green for long/buy trades and red for short/sell trades
@@ -162,14 +162,8 @@ Entry: $${signal.entry_price}` +
               isProfitable = profitLoss > 0;
             }
 
-            // Format the description with clear trade details
-            const profitLossFormatted = Math.abs(profitLoss).toFixed(2);
-            const outcomeLabel = isProfitable ? "PROFIT" : "LOSS";
-            const description =
-              `Trade closed\nEntry: $${sig.entry_price}\nExit: $${sig.exit_price}` +
-              (!isNaN(profitLoss)
-                ? `\n${outcomeLabel}: ${isProfitable ? "+" : "-"}$${profitLossFormatted}`
-                : "");
+      
+            const description = `Trade closed\nEntry: ${sig.entry_price}\nExit: ${sig.exit_price}`;
 
             // All closed trades use info (blue) toast, regardless of Long/Short or profit/loss
             toast.info(`${sig.instrument_name} Closed`, {
@@ -198,6 +192,6 @@ Entry: $${signal.entry_price}` +
       )
       .subscribe();
 
-    return () => supabase.removeChannel(channel);
+    return () => { void supabase.removeChannel(channel); };
   }, []);
 }
