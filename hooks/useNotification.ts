@@ -95,22 +95,13 @@ export default function useNotification(
                     : null;
 
               // Extract price from body if available: "BUY – entry 12345.67" or "exit 12345.67"
-              const priceMatch = row.body?.match(
-                /entry\s*([\d,.]+)|exit\s*([\d,.]+)/i,
-              );
-              const price = priceMatch ? priceMatch[1] || priceMatch[2] : null;
 
               // Create enhanced description with formatted data
               const formattedBody = row.body
                 ?.replace(/–/g, ":\n")
-                .replace("entry", "Entry: $")
-                .replace("exit", "Exit: $");
-              const description =
-                formattedBody +
-                (price && !formattedBody?.includes("$")
-                  ? `\nPrice: $${price}`
-                  : "") +
-                "\n\nTap to view details";
+                .replace("entry", "Entry: ")
+                .replace("exit", "Exit: ");
+              const description = formattedBody;
 
               // Single toast with appropriate color based on signal type
               if (isClosedSignal) {
@@ -217,7 +208,7 @@ export default function useNotification(
                 user_id: u.id,
                 type: "signal",
                 title: `${newSig.instrument_name} Stop Loss Updated`,
-                body: `Stop Loss: $${newSig.stop_loss_price}`,
+                body: `Stop Loss: ${newSig.stop_loss_price}`,
                 is_read: false,
                 url: `/smart-alerts/${newSig.instrument_name}`,
               }));

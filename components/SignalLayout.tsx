@@ -13,16 +13,15 @@ import { EconomicCalendar } from "react-ts-tradingview-widgets";
 
 import {
   Activity,
+  AlertCircle,
   ArrowLeft,
   Eye,
   Info,
   Lock,
-  Newspaper,
-  AlertCircle,
-  RefreshCw,
+  Newspaper
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { notFound, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import BlurOverlay from "./BlurOverlay";
 import InstrumentStatusCard from "./InstrumentStatusCard";
@@ -31,9 +30,8 @@ import SignalCard from "./SignalCard/SignalCard";
 import SignalHoursInfo from "./SignalHoursInfo";
 import SignalInfo from "./SignalInfo";
 // Import our custom component and related services
-import EconomicCalendarComponent from "./EconomicCalendar/EconomicCalendarComponent";
 import { EconomicEvent } from "../services/finnhub";
-import { Button } from "@/components/ui/button";
+import EconomicCalendarComponent from "./EconomicCalendar/EconomicCalendarComponent";
 
 // Tab type definition
 interface Tab {

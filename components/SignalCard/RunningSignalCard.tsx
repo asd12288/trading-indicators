@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 import { FC, useState, useEffect } from "react";
 import { Badge } from "../ui/badge";
 import Script from "next/script";
+import { MiniChart } from "react-ts-tradingview-widgets";
 
 // Import the new components
 import KeyPricesGrid from "./components/KeyPricesGrid";
@@ -220,16 +221,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
             isBuy={isBuy}
           />
 
-          {/* MQL5 chart container and script embed */}
-          <div
-            id={`mql5-chart-${instrument_name}`}
-            style={{ width: "100%", height: "180px" }}
-          />
-          <Script
-            id={`mql5-chart-script-${instrument_name}`}
-            src={`https://static.mql5.com/quotes/widgets/chart/script.js?symbol=${instrument_name.toUpperCase()}&timeframe=M15&language=en&autosize=true&container_id=mql5-chart-${instrument_name}`}
-            strategy="afterInteractive"
-          />
+       
         </div>
       </div>
     </div>
