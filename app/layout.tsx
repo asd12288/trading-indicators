@@ -6,10 +6,9 @@ import { getMessages } from "next-intl/server";
 import { Poppins } from "next/font/google";
 
 import { UserProvider } from "@/providers/UserProvider";
+import { NotificationProvider } from "@/context/notification-context";
 import "./globals.css";
 import LazyLoadedComponents from "./LazyLoadedComponents";
-import Header from "@/components/Header";
-import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: {
@@ -64,9 +63,11 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider locale={params.locale} messages={messages}>
           <UserProvider>
-            {children}
-            <LazyLoadedComponents />
-            <Toaster />
+            <NotificationProvider>
+              {children}
+              <LazyLoadedComponents />
+              <Toaster />
+            </NotificationProvider>
           </UserProvider>
         </NextIntlClientProvider>
 

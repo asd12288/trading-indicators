@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
-import { useUser } from "@/providers/UserProvider";
-import useNotification from "@/hooks/useNotification";
+import { useNotifications } from "@/context/notification-context";
 import {
   CheckCircle,
   Trash2,
@@ -15,12 +13,6 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
 
 // Define filter types for notifications
 type FilterType =
@@ -34,16 +26,13 @@ type FilterType =
   | "signal";
 
 export default function NotificationsPage() {
-  const { user } = useUser();
-  const userId = user?.id || "";
-
   const {
-    notification: notifications,
+    notifications,
     loading,
     markAsRead,
     markAllAsRead,
     clearNotifications,
-  } = useNotification(userId);
+  } = useNotifications();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [showConfirmClear, setShowConfirmClear] = useState(false);

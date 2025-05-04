@@ -14,33 +14,29 @@ import {
   Info,
 } from "lucide-react";
 import useSignalNotification from "../../hooks/useSignalNotification";
-import useNotification from "../../hooks/useNotification";
+import { useNotifications } from "@/context/notification-context";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import SoundService from "@/lib/services/soundService";
 
-interface NotificationCenterProps {
-  userId: string;
-}
-
-const NotificationCenter = ({ userId }: NotificationCenterProps) => {
+const NotificationCenter = () => {
   // subscribe to realtime signal notifications (handles all users)
   useSignalNotification();
   const {
-    notification,
+    notifications,
     loading,
     markAsRead,
     markAllAsRead,
     clearNotifications,
-  } = useNotification(userId);
+  } = useNotifications();
   const [open, setOpen] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   // Count unread notifications
-  const unreadCount = notification.filter((n) => !n.is_read).length;
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   // Handle outside clicks
   useEffect(() => {
@@ -174,7 +170,7 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
                   Notifications
                 </h3>
                 <div className="flex space-x-1">
-                  {notification.length > 0 && (
+                  {notifications.length > 0 && (
                     <>
                       {unreadCount > 0 && (
                         <button
@@ -210,9 +206,9 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
                 <div className="flex items-center justify-center py-8">
                   <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-500 border-t-slate-200"></div>
                 </div>
-              ) : notification.length > 0 ? (
+              ) : notifications.length > 0 ? (
                 <ul className="divide-y divide-slate-700/30">
-                  {notification.slice(0, 5).map((notif) => (
+                  {notifications.slice(0, 5).map((notif) => (
                     <li
                       key={notif.id}
                       className={cn(
@@ -303,15 +299,15 @@ const NotificationCenter = ({ userId }: NotificationCenterProps) => {
             </div>
 
             {/* Footer */}
-            {notification.length > 0 && (
+            {notifications.length > 0 && (
               <div className="border-t border-slate-700/50 px-4 py-2">
                 <Link
                   href="/notifications"
                   className="block text-center text-xs text-slate-400 hover:text-slate-200"
                   onClick={() => setOpen(false)}
                 >
-                  {notification.length > 5
-                    ? `View all (${notification.length})`
+                  {notifications.length > 5
+                    ? `View all (${notifications.length})`
                     : "View all"}{" "}
                   notifications
                 </Link>
