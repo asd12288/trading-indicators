@@ -19,9 +19,6 @@ interface UsePreferencesReturn {
     updatedValues: Partial<PreferenceValues>,
   ) => Promise<void>;
 
-  // New method to update global sound preference
-  updateGlobalMute: (muted: boolean) => Promise<void>;
-
   // Global sound state
   globalMute: boolean;
 
@@ -131,57 +128,6 @@ function usePreferences(userId?: string): UsePreferencesReturn {
     }
   };
 
-  // New function to update global mute preference
-  const updateGlobalMute = async (muted: boolean): Promise<void> => {
-    if (!userId) {
-      console.error("Cannot update global mute: No user ID provided");
-      return Promise.reject(
-        new Error("User ID is required to update global mute setting"),
-      );
-    }
-
-    try {
-      // Update local state immediately for UI responsiveness
-      setGlobalMute(muted);
-
-      // Get current system preferences or create new ones
-      const systemPrefs = preferences[SYSTEM_PREFS_KEY] || {
-        notifications: false,
-        volume: false,
-        favorite: false,
-        globalMute: false,
-      };
-
-      // Create updated preferences object
-      const updatedPreferences = {
-        ...preferences,
-        [SYSTEM_PREFS_KEY]: {
-          ...systemPrefs,
-          globalMute: muted,
-        },
-      };
-
-      // Save to database
-      const { error } = await supabaseClient
-        .from("profiles")
-        .update({ preferences: updatedPreferences })
-        .eq("id", userId);
-
-      if (error) {
-        // Revert local state if failed
-        setGlobalMute(!muted);
-        throw error;
-      }
-
-      // Update local state with new preferences
-      setPreferences(updatedPreferences);
-      console.log("Global mute set to:", muted);
-    } catch (error: any) {
-      console.error("Error updating global mute setting:", error);
-      throw error;
-    }
-  };
-
   // --- Derived arrays ---
   // 1. favorites: instruments where "favorite" is true
   const favorites = useMemo(() => {
@@ -209,7 +155,6 @@ function usePreferences(userId?: string): UsePreferencesReturn {
     isLoading,
     error,
     updatePreference,
-    updateGlobalMute,
     globalMute,
     favorites,
     volumeOn,

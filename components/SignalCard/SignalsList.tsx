@@ -40,9 +40,10 @@ const SignalsList = () => {
     isLoading: isLoadingPrefs,
     error,
     favorites,
+
   } = usePreferences(user?.id);
 
-  const { signals } = useSignals();
+  const { signals } = useSignals("latest");
 
   // Handle favorite removal to update UI immediately
   const handleFavoriteRemoved = useCallback((instrumentName: string) => {

@@ -15,7 +15,6 @@ import { useEffect, useState } from "react";
 import { RxCross1, RxHamburgerMenu } from "react-icons/rx";
 import LanguageSwitcher from "./LanguageSwitcher";
 import LogoutBtn from "./LogoutBtn";
-import NotificationCenter from "./notif/NotificationCenter";
 import UpgradeButton from "./UpgradeButton";
 import MuteButton from "./MuteButton"; // Import the new MuteButton component
 
@@ -112,10 +111,8 @@ export default function Navbar({ user, profile }) {
 
             {user ? (
               <div className="flex items-center gap-3">
-                {user?.id && <NotificationCenter userId={user.id} />}
 
                 {/* Add MuteButton component here */}
-                {user?.id && <MuteButton userId={user.id} />}
 
                 <Link
                   href="/profile"
@@ -166,7 +163,6 @@ export default function Navbar({ user, profile }) {
 
         <div className="flex items-center gap-3">
           {/* Add NotificationBell to mobile view too */}
-          {user?.id && <NotificationCenter userId={user.id} />}
 
           {/* Add MuteButton component to mobile view */}
           {user?.id && <MuteButton userId={user.id} />}

@@ -10,7 +10,6 @@ import ResetPasswordForm from "./ResetPasswordForm";
 import TelegramAuth from "./TelegramAuth";
 import UpgradeAccount from "./UpgradeAccount";
 import ProfileLoader from "./loaders/ProfileLoader";
-import NotificationPreferences from "./NotificationPreferences";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
@@ -173,11 +172,6 @@ const UserDashboard = ({ user }: UserDashboardProps) => {
                       icon={FaTelegram}
                       label={t("tabs.telegram") || "Telegram"}
                     />
-                    <TabItem
-                      id="preferences"
-                      icon={FaGear}
-                      label={t("tabs.preferences") || "Preferences"}
-                    />
                   </>
                 ) : (
                   <TabItem
@@ -215,9 +209,6 @@ const UserDashboard = ({ user }: UserDashboardProps) => {
                   )}
                   {tab === "telegram" && isPro && profile && (
                     <TelegramAuth profile={profile} userId={user?.id} />
-                  )}
-                  {tab === "preferences" && isPro && (
-                    <NotificationPreferences userId={user?.id} />
                   )}
                 </motion.div>
               </AnimatePresence>

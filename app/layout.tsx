@@ -1,12 +1,10 @@
 import { Toaster } from "@/components/ui/sonner";
-import { Analytics } from "@vercel/analytics/react";
 import { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Poppins } from "next/font/google";
 
 import { UserProvider } from "@/providers/UserProvider";
-import { NotificationProvider } from "@/context/notification-context";
 import "./globals.css";
 import LazyLoadedComponents from "./LazyLoadedComponents";
 
@@ -63,16 +61,11 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider locale={params.locale} messages={messages}>
           <UserProvider>
-            <NotificationProvider>
-              {children}
-              <LazyLoadedComponents />
-              <Toaster />
-            </NotificationProvider>
+            {children}
+            <LazyLoadedComponents />
+            <Toaster />
           </UserProvider>
         </NextIntlClientProvider>
-
-        {/* Suspense fallback for lazy-loaded components */}
-        <Analytics />
 
         {/* Load non-critical scripts */}
       </body>

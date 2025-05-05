@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, startTransition } from "react";
 import { createClient } from "@supabase/supabase-js";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { Signal } from "@/lib/types";
+import { toast } from "sonner";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,6 +17,8 @@ export default function useSignals(mode: Mode = "latest") {
   const [signals, setSignals] = useState<Signal[]>([]);
   const [error, setError] = useState<string | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
+
+  // add preferences
 
   // 1. Initial fetch (SSR friendly)
   useEffect(() => {
@@ -53,6 +56,18 @@ export default function useSignals(mode: Mode = "latest") {
         { event: "*", schema: "public", table: "all_signals" },
         (payload) => {
           const row = payload.new as Signal;
+          const instrument = row.instrument_name;
+
+          // notify & sound
+          if (payload.eventType === "INSERT") {
+            toast.success(`${instrument} signal started`);
+            new Audio("/audio/newSignal.mp3").play();
+          } else if (payload.eventType === "UPDATE") {
+            toast.success(`${instrument} signal updated`);
+            new Audio("/audio/endSignal.mp3").play();
+          }
+
+          // existing startTransition for state update
           startTransition(() => {
             setSignals((prev) => {
               switch (payload.eventType) {
