@@ -29,7 +29,6 @@ import SignalDebugTab from "@/components/admin/SignalDebugTab";
 import SignalsMonitoring from "@/components/admin/SignalsMonitoring";
 import SignalsTable from "@/components/admin/SignalsTable";
 import UsersTable from "@/components/admin/UsersTable";
-import NotificationsManager from "@/components/admin/NotificationsManager";
 
 interface AdminLayoutProps {
   children?: React.ReactNode;
@@ -281,12 +280,7 @@ export default function AdminLayout({
               <BlogTable posts={posts} />
             </TabsContent>
 
-            <TabsContent
-              value="notifications"
-              className="rounded-lg bg-slate-800 p-6 shadow-lg"
-            >
-              <NotificationsManager />
-            </TabsContent>
+           
 
             <TabsContent
               value="instruments"
