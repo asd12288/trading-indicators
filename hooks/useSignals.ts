@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
 
 type Mode = "all" | "latest";
@@ -17,6 +17,14 @@ export default function useSignals(mode: Mode = "latest") {
   const [signals, setSignals] = useState<Signal[]>([]);
   const [error, setError] = useState<string | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
+  const notifiedRef = useRef<
+    Record<string, { opened: boolean; closed: boolean }>
+  >({});
+  // track last notification timestamps to debounce
+  const lastNotifTimeRef = useRef<{ opened: number; closed: number }>({
+    opened: 0,
+    closed: 0,
+  });
 
   // 1. Initial fetch (SSR-friendly)
   useEffect(() => {
@@ -24,7 +32,9 @@ export default function useSignals(mode: Mode = "latest") {
 
     (async () => {
       const { data, error } = await supabase
-        .from(mode === "latest" ? "latest_signals_per_instrument" : "all_signals")
+        .from(
+          mode === "latest" ? "latest_signals_per_instrument" : "all_signals",
+        )
         .select("*")
         .order("entry_time", { ascending: false });
 
@@ -51,21 +61,40 @@ export default function useSignals(mode: Mode = "latest") {
         "postgres_changes",
         { event: "*", schema: "public", table: "all_signals" },
         (payload) => {
-          const { eventType, new: newRow } = payload;
+          const eventType = payload.eventType;
+          const newRow = payload.new as Signal;
           const id = newRow.client_trade_id;
           const inst = newRow.instrument_name;
+          if (!notifiedRef.current[id]) {
+            notifiedRef.current[id] = { opened: false, closed: false };
+          }
 
           startTransition(() => {
             setSignals((prev) => {
               // find previous version (if any)
               const prevSignal = prev.find((s) => s.client_trade_id === id);
 
-              // Handle INSERT
+              // Handle INSERT - skip if already exists
               if (eventType === "INSERT" && newRow.exit_time == null) {
-                toast.success(`Signal started for ${inst}`);
-                new Audio("/audio/newSignal.mp3").play();
+                if (prev.find((s) => s.client_trade_id === id)) {
+                  return prev;
+                }
+                if (!notifiedRef.current[id].opened) {
+                  const now = Date.now();
+                  if (now - lastNotifTimeRef.current.opened > 1000) {
+                    toast.success(`Signal started for ${inst}`);
+                    new Audio("/audio/newSignal.mp3").play();
+                    fetch("/api/notifyNewSignal", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(newRow),
+                    }).catch(console.error);
+                    lastNotifTimeRef.current.opened = now;
+                  }
+                  notifiedRef.current[id].opened = true;
+                }
                 return mode === "latest"
-                  ? [newRow, ...prev.filter((s) => s.instrument_name !== inst)]
+                  ? [newRow, ...prev.filter((s) => s.client_trade_id !== id)]
                   : [newRow, ...prev];
               }
 
@@ -76,13 +105,23 @@ export default function useSignals(mode: Mode = "latest") {
 
                 // only fire on null → non-null
                 if (wasOpen && isClosedNow) {
-                  toast.success(`Signal closed for ${inst}`);
-                  new Audio("/audio/endSignal.mp3").play();
+                  if (!notifiedRef.current[id].closed) {
+                    const now = Date.now();
+                    if (now - lastNotifTimeRef.current.closed > 1000) {
+                      toast.success(`Signal closed for ${inst}`);
+                      new Audio("/audio/endSignal.mp3").play();
+                      fetch("/api/notifyNewSignal", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(newRow),
+                      }).catch(console.error);
+                      lastNotifTimeRef.current.closed = now;
+                    }
+                    notifiedRef.current[id].closed = true;
+                  }
                 }
 
-                return prev.map((s) =>
-                  s.client_trade_id === id ? newRow : s
-                );
+                return prev.map((s) => (s.client_trade_id === id ? newRow : s));
               }
 
               // Handle DELETE
@@ -93,7 +132,7 @@ export default function useSignals(mode: Mode = "latest") {
               return prev;
             });
           });
-        }
+        },
       )
       .subscribe();
 
@@ -102,6 +141,7 @@ export default function useSignals(mode: Mode = "latest") {
     return () => {
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
       }
     };
   }, [mode]);
