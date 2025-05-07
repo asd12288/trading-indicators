@@ -100,7 +100,7 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
     >
       {!isLoading && (
         <>
-          <SignalToolTooltip text={t("notifications.tooltip")}>
+          {/* <SignalToolTooltip text={t("notifications.tooltip")}>
             <button
               onClick={handleNotifications}
               disabled={!isPro}
@@ -146,7 +146,7 @@ function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
                 ></span>
               )}
             </button>
-          </SignalToolTooltip>
+          </SignalToolTooltip> */}
 
           <SignalToolTooltip text={t("favorite.tooltip")}>
             <button

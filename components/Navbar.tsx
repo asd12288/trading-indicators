@@ -165,7 +165,7 @@ export default function Navbar({ user, profile }) {
           {/* Add NotificationBell to mobile view too */}
 
           {/* Add MuteButton component to mobile view */}
-          {user?.id && <MuteButton userId={user.id} />}
+          {/* {user?.id && <MuteButton userId={user.id} />} */}
 
           <LanguageSwitcher />
 
