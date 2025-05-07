@@ -189,10 +189,6 @@ const LastPriceDisplay = ({
       lastPrice?.last !== undefined &&
       lastPrice.last !== prevPriceRef.current
     ) {
-      console.log(
-        `⚡ Price update: ${prevPriceRef.current} → ${lastPrice.last}`,
-      );
-
       setIsFlashing(true);
       const timer = setTimeout(() => setIsFlashing(false), 1000);
       prevPriceRef.current = lastPrice.last;

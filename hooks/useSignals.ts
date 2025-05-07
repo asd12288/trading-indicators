@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
 type Mode = "all" | "latest";
@@ -18,17 +18,13 @@ export default function useSignals(mode: Mode = "latest") {
   const [error, setError] = useState<string | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
 
-  // add preferences
-
-  // 1. Initial fetch (SSR friendly)
+  // 1. Initial fetch (SSR-friendly)
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
       const { data, error } = await supabase
-        .from(
-          mode === "latest" ? "latest_signals_per_instrument" : "all_signals",
-        )
+        .from(mode === "latest" ? "latest_signals_per_instrument" : "all_signals")
         .select("*")
         .order("entry_time", { ascending: false });
 
@@ -42,9 +38,9 @@ export default function useSignals(mode: Mode = "latest") {
     };
   }, [mode]);
 
-  // 2. Realtime
+  // 2. Realtime updates
   useEffect(() => {
-    // close any previous channel (React 18 strict-mode safe)
+    // tear down old channel if React re-renders/strict-mode doubles
     if (channelRef.current) {
       supabase.removeChannel(channelRef.current);
     }
@@ -55,50 +51,49 @@ export default function useSignals(mode: Mode = "latest") {
         "postgres_changes",
         { event: "*", schema: "public", table: "all_signals" },
         (payload) => {
-          const row = payload.new as Signal;
-          const instrument = row.instrument_name;
+          const { eventType, new: newRow } = payload;
+          const id = newRow.client_trade_id;
+          const inst = newRow.instrument_name;
 
-          // notify & sound
-          if (payload.eventType === "INSERT") {
-            toast.success(`${instrument} signal started`);
-            new Audio("/audio/newSignal.mp3").play();
-          } else if (payload.eventType === "UPDATE") {
-            toast.success(`${instrument} signal updated`);
-            new Audio("/audio/endSignal.mp3").play();
-          }
-
-          // existing startTransition for state update
           startTransition(() => {
             setSignals((prev) => {
-              switch (payload.eventType) {
-                case "INSERT":
-                  if (mode === "latest") {
-                    // keep only one row per instrument
-                    return [
-                      row,
-                      ...prev.filter(
-                        (s) => s.instrument_name !== row.instrument_name,
-                      ),
-                    ];
-                  }
-                  return [row, ...prev];
+              // find previous version (if any)
+              const prevSignal = prev.find((s) => s.client_trade_id === id);
 
-                case "UPDATE":
-                  return prev.map((s) =>
-                    s.client_trade_id === row.client_trade_id ? row : s,
-                  );
-
-                case "DELETE":
-                  return prev.filter(
-                    (s) => s.client_trade_id !== payload.old?.client_trade_id,
-                  );
-
-                default:
-                  return prev;
+              // Handle INSERT
+              if (eventType === "INSERT" && newRow.exit_time == null) {
+                toast.success(`Signal started for ${inst}`);
+                new Audio("/audio/newSignal.mp3").play();
+                return mode === "latest"
+                  ? [newRow, ...prev.filter((s) => s.instrument_name !== inst)]
+                  : [newRow, ...prev];
               }
+
+              // Handle UPDATE
+              if (eventType === "UPDATE") {
+                const wasOpen = prevSignal?.exit_time == null;
+                const isClosedNow = newRow.exit_time != null;
+
+                // only fire on null → non-null
+                if (wasOpen && isClosedNow) {
+                  toast.success(`Signal closed for ${inst}`);
+                  new Audio("/audio/endSignal.mp3").play();
+                }
+
+                return prev.map((s) =>
+                  s.client_trade_id === id ? newRow : s
+                );
+              }
+
+              // Handle DELETE
+              if (eventType === "DELETE") {
+                return prev.filter((s) => s.client_trade_id !== id);
+              }
+
+              return prev;
             });
           });
-        },
+        }
       )
       .subscribe();
 

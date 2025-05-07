@@ -116,8 +116,6 @@ function usePreferences(userId?: string): UsePreferencesReturn {
         throw error;
       }
 
-      // Debug toast to verify function is being called
-      console.log("Preference updated:", signalId, updatedValues);
 
       // Don't return anything (void)
     } catch (error: any) {
