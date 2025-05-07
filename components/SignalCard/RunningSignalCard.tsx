@@ -208,6 +208,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
             stopLossPrice={stop_loss_price}
             profitTargetPercent={profitTargetPercent}
             stopLossPercent={stopLossPercent}
+            instrumentName={instrument_name}
           />
 
           {/* Price Scale Visualization */}
@@ -220,8 +221,6 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
             isProfitable={isProfitable}
             isBuy={isBuy}
           />
-
-       
         </div>
       </div>
     </div>

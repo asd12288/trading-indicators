@@ -44,6 +44,7 @@ interface Tab {
 const SignalLayout = ({ id, userId, isPro }) => {
   const { theme } = useTheme();
   const { profileData, isLoading: profileLoading } = useProfile(userId);
+
   const {
     instrumentData,
     isLoading: dataLoading,

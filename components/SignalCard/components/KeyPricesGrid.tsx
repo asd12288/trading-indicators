@@ -1,10 +1,12 @@
 import { useTheme } from "@/context/theme-context";
 import { cn, formatNumber } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { FC } from "react";
+import { FC, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 interface KeyPricesGridProps {
+  instrumentName: string;
   entryPrice: number;
   takeProfitPrice: number;
   stopLossPrice: number;
@@ -13,6 +15,7 @@ interface KeyPricesGridProps {
 }
 
 const KeyPricesGrid: FC<KeyPricesGridProps> = ({
+  instrumentName,
   entryPrice,
   takeProfitPrice,
   stopLossPrice,
@@ -21,6 +24,32 @@ const KeyPricesGrid: FC<KeyPricesGridProps> = ({
 }) => {
   const { theme } = useTheme();
   const t = useTranslations("RunningSignalCard");
+
+  // refs to track previous prices
+  const prevEntryRef = useRef(entryPrice);
+  const prevTargetRef = useRef(takeProfitPrice);
+  const prevStopRef = useRef(stopLossPrice);
+
+  // toast on price updates
+  useEffect(() => {
+    if (prevEntryRef.current !== entryPrice) {
+      toast(`${instrumentName}: entry price updated to ${entryPrice}`);
+      new Audio("/audio/notification.mp3").play();
+      prevEntryRef.current = entryPrice;
+    }
+    if (prevTargetRef.current !== takeProfitPrice) {
+      toast(`${instrumentName}: target price updated to ${takeProfitPrice}`);
+      new Audio("/audio/notification.mp3").play();
+
+      prevTargetRef.current = takeProfitPrice;
+    }
+    if (prevStopRef.current !== stopLossPrice) {
+      toast(`${instrumentName}: stop loss price updated to ${stopLossPrice}`);
+      new Audio("/audio/notification.mp3").play();
+
+      prevStopRef.current = stopLossPrice;
+    }
+  }, [instrumentName, entryPrice, takeProfitPrice, stopLossPrice]);
 
   return (
     <div className="mb-5 grid grid-cols-3 gap-2">
