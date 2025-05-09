@@ -678,6 +678,7 @@
     "tabs": {
       "profile": "Mi perfil",
       "password": "Contraseña",
+      "notifications": "Notificaciones",
       "preferences": "Preferencias",
       "subscription": "Suscripción",
       "notification": "Notificaciones",
@@ -1560,5 +1561,15 @@
   "addons": {
     "dashboard": "My Signal Dashboard",
     "subtitle": "Your favorite signals in one place"
+  },
+  "NotificationSettings": {
+    "title": "Configuración de notificaciones",
+    "description": "Configura cómo y cuándo deseas recibir notificaciones sobre señales de trading y actualizaciones de cuenta.",
+    "emailNotifications": "Notificaciones por correo electrónico",
+    "emailDescription": "Recibe alertas de señales de trading por correo electrónico",
+    "saving": "Guardando...",
+    "saved": "¡Guardado!",
+    "saveSuccess": "Tus ajustes de notificación se han guardado correctamente.",
+    "saveButton": "Guardar configuración"
   }
 }

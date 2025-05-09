@@ -691,6 +691,8 @@
     "tabs": {
       "profile": "Мой профиль",
       "preferences": "Настройки",
+      "notifications": "Уведомления",
+
       "password": "Пароль",
       "subscription": "Подписка",
       "notification": "Уведомления",
@@ -1559,5 +1561,15 @@
   "addons": {
     "dashboard": "Dashboard",
     "subtitle": "Get real-time insights and alerts"
+  },
+  "NotificationSettings": {
+    "title": "Настройки уведомлений",
+    "description": "Настройте, как и когда вы хотите получать уведомления о торговых сигналах и обновлениях аккаунта.",
+    "emailNotifications": "Уведомления по электронной почте",
+    "emailDescription": "Получайте оповещения о торговых сигналах по e-mail",
+    "saving": "Сохраняется...",
+    "saved": "Сохранено!",
+    "saveSuccess": "Настройки уведомлений успешно сохранены.",
+    "saveButton": "Сохранить настройки"
   }
 }
