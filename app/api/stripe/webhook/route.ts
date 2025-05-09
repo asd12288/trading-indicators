@@ -71,6 +71,7 @@ export async function POST(req) {
           .from("profiles")
           .update({
             plan: "pro",
+            email_notification: true,
             payment_method: "Credit Card (Stripe)",
             subscription_status: "Active",
             is_lifetime: isLifetimePlan,

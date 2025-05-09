@@ -16,8 +16,10 @@ export default function useSignals(mode: Mode = "latest") {
   const [signals, setSignals] = useState<Signal[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const channelRef       = useRef<RealtimeChannel | null>(null);
-  const notifiedRef      = useRef<Record<string, { opened: boolean; closed: boolean }>>({});
+  const channelRef = useRef<RealtimeChannel | null>(null);
+  const notifiedRef = useRef<
+    Record<string, { opened: boolean; closed: boolean }>
+  >({});
   const lastNotifTimeRef = useRef<{ opened: number; closed: number }>({
     opened: 0,
     closed: 0,
@@ -31,17 +33,21 @@ export default function useSignals(mode: Mode = "latest") {
 
     (async () => {
       const { data, error } = await supabase
-        .from(mode === "latest" ? "latest_signals_per_instrument" : "all_signals")
+        .from(
+          mode === "latest" ? "latest_signals_per_instrument" : "all_signals",
+        )
         .select("*")
         .order("entry_time", { ascending: false });
 
       if (cancelled) return;
-      if (error)     return setError(error.message);
+      if (error) return setError(error.message);
 
       setSignals(data as Signal[]);
     })();
 
-    return () => { cancelled = true };
+    return () => {
+      cancelled = true;
+    };
   }, [mode]);
 
   /* ------------------------------------------------------------------ */
@@ -58,9 +64,10 @@ export default function useSignals(mode: Mode = "latest") {
         "postgres_changes",
         { event: "*", schema: "public", table: "all_signals" },
         (payload) => {
-          const eventType   = payload.eventType;
-          const newRow      = payload.new as Signal;
-          const key         = mode === "latest" ? newRow.instrument_name : newRow.client_trade_id;
+          const eventType = payload.eventType;
+          const newRow = payload.new as Signal;
+          const key =
+            mode === "latest" ? newRow.instrument_name : newRow.client_trade_id;
           const hasExitTime = newRow.exit_time != null;
 
           if (!notifiedRef.current[key]) {
@@ -76,20 +83,39 @@ export default function useSignals(mode: Mode = "latest") {
                   if (!notifiedRef.current[key].opened) {
                     const now = Date.now();
                     if (now - lastNotifTimeRef.current.opened > 1_000) {
-                      toast.success(`Signal started for ${newRow.instrument_name}`);
+                      toast.success(
+                        `Signal started for ${newRow.instrument_name}`,
+                      );
                       new Audio("/audio/newSignal.mp3").play();
+
+                      // Send notification to API
                       fetch("/api/notifyNewSignal", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(newRow),
                       }).catch(console.error);
+
+                      // 👇 Send email notifications to pro users via new API route
+                      fetch("/api/notify-pro-users", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(newRow),
+                      }).catch((error) => {
+                        console.error(
+                          "Failed to send email notifications:",
+                          error,
+                        );
+                      });
+
                       lastNotifTimeRef.current.opened = now;
                     }
                     notifiedRef.current[key].opened = true;
                   }
                   return [
                     newRow,
-                    ...prev.filter((s) => s.instrument_name !== newRow.instrument_name),
+                    ...prev.filter(
+                      (s) => s.instrument_name !== newRow.instrument_name,
+                    ),
                   ];
                 }
 
@@ -99,13 +125,30 @@ export default function useSignals(mode: Mode = "latest") {
                 if (!notifiedRef.current[key].opened) {
                   const now = Date.now();
                   if (now - lastNotifTimeRef.current.opened > 1_000) {
-                    toast.success(`Signal started for ${newRow.instrument_name}`);
+                    toast.success(
+                      `Signal started for ${newRow.instrument_name}`,
+                    );
                     new Audio("/audio/newSignal.mp3").play();
+
+                    // Send notification to API
                     fetch("/api/notifyNewSignal", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify(newRow),
                     }).catch(console.error);
+
+                    // 👇 Send email notifications to pro users via new API route
+                    fetch("/api/notify-pro-users", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(newRow),
+                    }).catch((error) => {
+                      console.error(
+                        "Failed to send email notifications:",
+                        error,
+                      );
+                    });
+
                     lastNotifTimeRef.current.opened = now;
                   }
                   notifiedRef.current[key].opened = true;
@@ -119,14 +162,17 @@ export default function useSignals(mode: Mode = "latest") {
                   hasExitTime &&
                   prev.some(
                     (s) =>
-                      (mode === "latest" ? s.instrument_name : s.client_trade_id) === key &&
-                      s.exit_time == null,
+                      (mode === "latest"
+                        ? s.instrument_name
+                        : s.client_trade_id) === key && s.exit_time == null,
                   );
 
                 if (isClosing && !notifiedRef.current[key].closed) {
                   const now = Date.now();
                   if (now - lastNotifTimeRef.current.closed > 1_000) {
-                    toast.success(`Signal closed for ${newRow.instrument_name}`);
+                    toast.success(
+                      `Signal closed for ${newRow.instrument_name}`,
+                    );
                     new Audio("/audio/endSignal.mp3").play();
                     fetch("/api/notifyNewSignal", {
                       method: "POST",
@@ -139,7 +185,9 @@ export default function useSignals(mode: Mode = "latest") {
                 }
 
                 return prev.map((s) =>
-                  (mode === "latest" ? s.instrument_name : s.client_trade_id) === key
+                  (mode === "latest"
+                    ? s.instrument_name
+                    : s.client_trade_id) === key
                     ? newRow
                     : s,
                 );
@@ -149,7 +197,9 @@ export default function useSignals(mode: Mode = "latest") {
               if (eventType === "DELETE") {
                 return prev.filter(
                   (s) =>
-                    (mode === "latest" ? s.instrument_name : s.client_trade_id) !== key,
+                    (mode === "latest"
+                      ? s.instrument_name
+                      : s.client_trade_id) !== key,
                 );
               }
 

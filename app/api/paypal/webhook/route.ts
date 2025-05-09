@@ -57,6 +57,7 @@ export async function POST(req) {
         .from("profiles")
         .update({
           plan: "pro",
+          email_notification: true,
           subscription_status: "Active",
           is_lifetime: isLifetimePlan,
           subscription_expires_at: expirationDate.toISOString(),

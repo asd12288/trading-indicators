@@ -26,11 +26,9 @@ export async function POST(request: Request) {
   try {
     // Get the raw body text
     const rawBody = await request.text();
-    console.log("📦 Raw webhook payload:", rawBody);
 
     // Extract the signature from headers
     const signature = request.headers.get("x-nowpayments-sig");
-    console.log("🔐 Received signature:", signature);
 
     if (!signature) {
       console.error("❌ Missing signature in webhook request");
@@ -162,6 +160,7 @@ export async function POST(request: Request) {
         .from("profiles")
         .update({
           subscription_status: "ACTIVE",
+          email_notification: true,
           plan: "pro",
           subscription_expires_at: expirationDate.toISOString(),
           is_lifetime: isLifetimePlan, // Important flag to mark lifetime subscriptions

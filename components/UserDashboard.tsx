@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { FaCircleUser, FaLock, FaRegMoneyBill1, FaGear } from "react-icons/fa6";
+import { FaCircleUser, FaLock, FaRegMoneyBill1, FaBell } from "react-icons/fa6";
 import { FaTelegram } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 import ManageAccount from "./ManageAccount";
@@ -9,6 +9,7 @@ import ProfileCard from "./ProfileCard";
 import ResetPasswordForm from "./ResetPasswordForm";
 import TelegramAuth from "./TelegramAuth";
 import UpgradeAccount from "./UpgradeAccount";
+import NotificationSettings from "./NotificationSettings";
 import ProfileLoader from "./loaders/ProfileLoader";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -159,6 +160,11 @@ const UserDashboard = ({ user }: UserDashboardProps) => {
                   icon={FaLock}
                   label={t("tabs.password")}
                 />
+                <TabItem
+                  id="notifications"
+                  icon={FaBell}
+                  label={t("tabs.notifications", { fallback: "Notifications" })}
+                />
 
                 {isPro ? (
                   <>
@@ -204,6 +210,12 @@ const UserDashboard = ({ user }: UserDashboardProps) => {
                   )}
                   {tab === "upgrade" && <UpgradeAccount user={user} />}
                   {tab === "password" && <ResetPasswordForm />}
+                  {tab === "notifications" && profile && (
+                    <NotificationSettings
+                      userId={user?.id || ""}
+                      initialSettings={profile}
+                    />
+                  )}
                   {tab === "manage" && profile && (
                     <ManageAccount profile={profile} />
                   )}

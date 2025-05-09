@@ -679,6 +679,7 @@
     "loading": "Loading...",
     "tabs": {
       "profile": "My Profile",
+      "notifications": "Notifications",
       "preferences": "My Preferences",
       "password": "Password",
       "subscription": "Subscription",
@@ -1565,5 +1566,16 @@
   "addons": {
     "dashboard": "My Signal Dashboard",
     "subtitle": "Your favorite signals in one place"
+  },
+
+  "NotificationSettings": {
+    "title": "Notification Settings",
+    "description": "Configure how and when you'd like to receive notifications about trading signals and account updates.",
+    "emailNotifications": "Email Notifications",
+    "emailDescription": "Receive trading signal alerts via email",
+    "saving": "Saving...",
+    "saved": "Saved!",
+    "saveSuccess": "Your notification settings have been saved successfully.",
+    "saveButton": "Save Settings"
   }
 }
