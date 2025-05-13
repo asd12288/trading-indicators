@@ -25,7 +25,7 @@ export const SignalNotificationEmail: React.FC<
   SignalNotificationEmailProps
 > = ({ signal, previewUrl, baseUrl }) => {
   const isBuy = ["BUY", "LONG", "Buy", "Long"].includes(signal.trade_side);
-  const signalUrl = `${baseUrl}/smart-alerts/${signal.instrument_name}`;
+  const signalUrl = `${baseUrl}/en/smart-alerts/${signal.instrument_name}`;
 
   return (
     <Html>
@@ -36,7 +36,7 @@ export const SignalNotificationEmail: React.FC<
       <Tailwind>
         <Body className="bg-slate-900 font-sans text-white">
           <Container className="mx-auto my-10 max-w-xl rounded-lg border border-slate-700 p-8">
-            <h1 className="text-2xl font-bold tracking-tight text-center text-white">
+            <h1 className="text-center text-2xl font-bold tracking-tight text-white">
               Trader<span className="text-blue-400">Map</span>
             </h1>
 
@@ -105,7 +105,7 @@ export const SignalNotificationEmail: React.FC<
               subscriber to Trader Map.
               <br />
               <Link
-                href={`${baseUrl}/profile/notifications`}
+                href={`${baseUrl}/en/profile/notifications`}
                 className="text-blue-400"
               >
                 Manage notification preferences

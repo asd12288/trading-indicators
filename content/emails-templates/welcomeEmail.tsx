@@ -9,7 +9,7 @@ interface NewSubscriptionEmailProps {
 
 const NewSubscriptionEmail: React.FC<NewSubscriptionEmailProps> = ({
   userName,
-  userEmail,
+  
   plan,
   subscriptionDate,
 }) => {
@@ -28,7 +28,7 @@ const NewSubscriptionEmail: React.FC<NewSubscriptionEmailProps> = ({
 
       <div style={{ textAlign: "center", marginTop: "20px" }}>
         <a
-          href="https://trader-map.com/smart-alerts"
+          href="https://trader-map.com/en/smart-alerts"
           style={{
             display: "inline-block",
             padding: "10px 20px",
@@ -43,7 +43,7 @@ const NewSubscriptionEmail: React.FC<NewSubscriptionEmailProps> = ({
       </div>
 
       <p style={{ fontSize: "12px", color: "#777", marginTop: "30px" }}>
-        If you didn't sign up for this subscription, please contact our support at{" "}
+        If you didn`&apos;`t sign up for this subscription, please contact our support at{" "}
         <a href="mailto:support@trader-map.com">support@trader-map.com</a>.
       </p>
 

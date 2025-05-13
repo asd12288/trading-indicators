@@ -13,10 +13,13 @@ interface NotificationSettingsProps {
   };
 }
 
-const NotificationSettings = ({ userId, initialSettings }: NotificationSettingsProps) => {
+const NotificationSettings = ({
+  userId,
+  initialSettings,
+}: NotificationSettingsProps) => {
   const t = useTranslations("NotificationSettings");
   const [emailNotifications, setEmailNotifications] = useState<boolean>(
-    initialSettings?.email_notification ?? false
+    initialSettings?.email_notification ?? false,
   );
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -38,11 +41,17 @@ const NotificationSettings = ({ userId, initialSettings }: NotificationSettingsP
 
       if (error) throw error;
 
-      toast.success(t("saveSuccess", { fallback: "Notification settings updated successfully!" }));
+      toast.success(
+        t("saveSuccess", {
+          fallback: "Notification settings updated successfully!",
+        }),
+      );
       setSaveSuccess(true);
     } catch (error) {
       console.error("Error saving notification settings:", error);
-      toast.error(t("saveError", { fallback: "Failed to update notification settings" }));
+      toast.error(
+        t("saveError", { fallback: "Failed to update notification settings" }),
+      );
     } finally {
       setIsSaving(false);
       // Reset success indicator after 2 seconds
@@ -58,10 +67,13 @@ const NotificationSettings = ({ userId, initialSettings }: NotificationSettingsP
         <h2 className="mb-6 text-center text-xl font-medium text-slate-100 sm:text-2xl">
           {t("title", { fallback: "Notification Settings" })}
         </h2>
-        
+
         <div className="mb-8 rounded-md border border-slate-700 bg-slate-900/50 p-4">
           <p className="mb-4 text-center text-sm text-slate-300">
-            {t("description", { fallback: "Configure how and when you'd like to receive notifications about trading signals and account updates." })}
+            {t("description", {
+              fallback:
+                "Configure how and when you'd like to receive notifications about trading signals and account updates.",
+            })}
           </p>
         </div>
 
@@ -76,7 +88,9 @@ const NotificationSettings = ({ userId, initialSettings }: NotificationSettingsP
                   {t("emailNotifications", { fallback: "Email Notifications" })}
                 </h3>
                 <p className="mt-1 text-sm text-slate-400">
-                  {t("emailDescription", { fallback: "Receive trading signal alerts via email" })}
+                  {t("emailDescription", {
+                    fallback: "Receive trading signal alerts via email",
+                  })}
                 </p>
               </div>
             </div>
@@ -88,8 +102,8 @@ const NotificationSettings = ({ userId, initialSettings }: NotificationSettingsP
           </div>
 
           <div className="mt-8 flex justify-center">
-            <Button 
-              onClick={handleSaveSettings} 
+            <Button
+              onClick={handleSaveSettings}
               disabled={isSaving}
               className="gap-2 px-8"
             >

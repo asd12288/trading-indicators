@@ -68,10 +68,7 @@ export class InstrumentPrefetcher {
       return;
     }
 
-    console.log(
-      `Prefetching ${instrumentsToFetch.length} instruments: ${instrumentsToFetch.join(", ")}`,
-    );
-
+   
     const supabase = await createClient();
 
     // Fetch multiple instruments in parallel with individual timeouts
