@@ -105,7 +105,7 @@ export const SignalNotificationEmail: React.FC<
               subscriber to Trader Map.
               <br />
               <Link
-                href={`${baseUrl}/en/profile`}
+                href={`${baseUrl}/en/profile?tab=notifications`}
                 className="text-blue-400"
               >
                 Manage notification preferences
