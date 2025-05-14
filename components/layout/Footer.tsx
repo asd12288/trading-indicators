@@ -85,6 +85,14 @@ const Footer = () => {
                   Blog
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/coming-soon"
+                  className="text-indigo-400 transition-colors hover:text-primary"
+                >
+                  {t("links.comingSoon")}
+                </Link>
+              </li>
             </ul>
           </div>
 

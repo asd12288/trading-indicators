@@ -563,13 +563,13 @@
       "medium": "Medium",
       "low": "Low"
     }
-  },
-  "Footer": {
+  },  "Footer": {
     "companyName": "Trader Map",
     "copyright": "© 2025 Trader-Map. All rights reserved.",
     "links": {
       "privacy": "Privacy Policy",
-      "terms": "Terms & Conditions"
+      "terms": "Terms & Conditions",
+      "comingSoon": "Coming Soon"
     }
   },
   "PrivacyPolicy": {
@@ -1567,7 +1567,6 @@
     "dashboard": "My Signal Dashboard",
     "subtitle": "Your favorite signals in one place"
   },
-
   "NotificationSettings": {
     "title": "Notification Settings",
     "description": "Configure how and when you'd like to receive notifications about trading signals and account updates.",
@@ -1577,5 +1576,32 @@
     "saved": "Saved!",
     "saveSuccess": "Your notification settings have been saved successfully.",
     "saveButton": "Save Settings"
+  },
+  "ComingSoon": {
+    "title": "Coming Soon",
+    "subtitle": "Exciting New Features on the Horizon",
+    "mobileApp": {
+      "title": "Mobile Trading Notifications",
+      "description": "Never miss a profitable trade opportunity again. Get instant alerts directly on your phone for optimal timing.",
+      "feature1": "Real-time trade notifications",
+      "feature2": "Customizable alert preferences",
+      "feature3": "One-tap trade execution",
+      "feature4": "Offline market monitoring"
+    },
+    "aiAnalysis": {
+      "title": "AI-Powered Chart Analysis",
+      "description": "Upload any trading chart image and get instant AI analysis revealing potential opportunities and patterns.",
+      "feature1": "Pattern recognition technology",
+      "feature2": "Support/resistance identification",
+      "feature3": "Trend strength evaluation",
+      "feature4": "Risk assessment insights"
+    },
+    "notificationForm": {
+      "title": "Be the First to Know",
+      "description": "Join our waitlist to get early access when these features launch.",
+      "placeholder": "Enter your email",
+      "button": "Notify Me",
+      "success": "Thanks! We'll notify you when we launch."
+    }
   }
 }

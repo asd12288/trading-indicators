@@ -45,9 +45,7 @@ const Footer = () => {
             >
               <FaDiscord size={18} />
             </a>
-          </div>
-
-          <div className="flex space-x-6">
+          </div>          <div className="flex flex-wrap space-x-6">
             <Link
               href={`/policy`}
               className="text-sm text-slate-400 underline-offset-4 hover:text-white hover:underline"
@@ -59,6 +57,11 @@ const Footer = () => {
               className="text-sm text-slate-400 underline-offset-4 hover:text-white hover:underline"
             >
               {t("links.terms")}
+            </Link>            <Link
+              href={`/coming-soon`}
+              className="text-sm text-indigo-400 underline-offset-4 hover:text-white hover:underline"
+            >
+              {t("links.comingSoon")}
             </Link>
           </div>
         </div>

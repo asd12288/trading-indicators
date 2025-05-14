@@ -195,7 +195,7 @@ const HowItWork = () => {
                 </li>
                 <li className="flex items-start">
                   <span className="mr-1.5 mt-1 text-amber-400 sm:mr-2">•</span>
-                  <span>Multi-channel delivery (app, email, SMS)</span>
+                  <span>Multi-channel delivery (app, email, Telegram)</span>
                 </li>
                 <li className="flex items-start">
                   <span className="mr-1.5 mt-1 text-amber-400 sm:mr-2">•</span>
