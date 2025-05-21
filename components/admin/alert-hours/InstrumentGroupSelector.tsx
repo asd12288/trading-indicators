@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/select";
 import { INSTRUMENT_GROUPS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
 
 interface InstrumentGroupSelectorProps {
   value?: string;
@@ -18,7 +17,7 @@ const InstrumentGroupSelector = ({
   value,
   onChange,
 }: InstrumentGroupSelectorProps) => {
-  const { theme } = useTheme();
+  const theme = "dark";
 
   return (
     <Select value={value} onValueChange={onChange}>

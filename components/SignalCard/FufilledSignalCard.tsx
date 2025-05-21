@@ -1,6 +1,5 @@
 "use client";
 
-import { useTheme } from "@/context/theme-context";
 import useInstrumentInfo from "@/hooks/useInstrumentInfo";
 import { getInstrumentCategory } from "@/lib/instrumentCategories"; // Import the function
 import { Signal } from "@/lib/types";
@@ -31,7 +30,7 @@ const FufilledSignalCard: React.FC<FufilledSignalCardProps> = ({
   isBuy,
   notifyUser = false,
 }) => {
-  const { theme } = useTheme();
+  const theme = "dark";
   const { instrument_name, trade_side, entry_price, entry_time, mae, mfe } =
     instrument;
   const { user } = useUser();

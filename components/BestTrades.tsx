@@ -1,6 +1,5 @@
 "use client";
 
-import { useTheme } from "@/context/theme-context";
 import useInstrumentInfo from "@/hooks/useInstrumentInfo";
 import useSignals from "@/hooks/useSignals";
 import { getInstrumentCategory } from "@/lib/instrumentCategories";
@@ -190,7 +189,6 @@ const TradeCard: FC<{
   rank: number;
   isDuplicate?: boolean;
 }> = ({ trade, rank }) => {
-  const { theme } = useTheme();
   const t = useTranslations("BestTrades");
   const isBuy = ["BUY", "LONG", "Buy", "Long"].includes(trade.trade_side);
 

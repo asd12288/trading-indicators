@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash2, Clock, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
 import supabaseClient from "@/database/supabase/supabase";
 import { useState, useEffect } from "react";
 import {
@@ -38,7 +37,7 @@ const AlertHoursList = ({
   onEdit,
   onDelete,
 }: AlertHoursListProps) => {
-  const { theme } = useTheme();
+  const theme = "dark";
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
   // Pagination state

@@ -2,11 +2,9 @@ import { useTranslations } from "next-intl";
 import SignalCard from "./SignalCard/SignalCard";
 import SignalHoursInfo from "./SignalHoursInfo";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
 
 const SignalOverview = ({ signalPassed, instrumentData }) => {
   const t = useTranslations("SignalOverviewSummary");
-  const { theme } = useTheme();
 
   if (!signalPassed || !instrumentData) {
     return (

@@ -9,14 +9,13 @@ import { AlertHours } from "@/hooks/useAlertHours";
 import supabaseClient from "@/database/supabase/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
 import { motion } from "framer-motion";
 
 import AlertHoursList from "./alert-hours/AlertHoursList";
 import AlertHourForm from "./alert-hours/AlertHourForm";
 
 const AlertHoursManager = () => {
-  const { theme } = useTheme();
+  const theme = "dark";
   const [alertHours, setAlertHours] = useState<AlertHours[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentItem, setCurrentItem] = useState<Partial<AlertHours> | null>(null);

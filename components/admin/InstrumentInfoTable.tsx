@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { Loader2, Plus, Search, X, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useTheme } from "@/context/theme-context";
 import { cn } from "@/lib/utils";
 import supabaseClient from "@/database/supabase/supabase";
 import { useToast } from "@/hooks/use-toast";
@@ -36,7 +35,7 @@ const defaultInstrument: InstrumentInfo = {
 };
 
 export default function InstrumentInfoTable() {
-  const { theme } = useTheme();
+  const theme = "dark";
   const [instruments, setInstruments] = useState<InstrumentInfo[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);

@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/table";
 import { Edit, Trash, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
 
 interface InstrumentTableProps {
   instruments: InstrumentInfo[];
@@ -25,7 +24,7 @@ export default function InstrumentTable({
   onDelete,
   loading = false,
 }: InstrumentTableProps) {
-  const { theme } = useTheme();
+  const theme = "dark";
 
   return (
     <div

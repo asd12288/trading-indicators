@@ -1,4 +1,3 @@
-import { useTheme } from "@/context/theme-context";
 import { cn, formatNumber } from "@/lib/utils";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -29,7 +28,7 @@ const PriceInfoSection: FC<PriceInfoSectionProps> = ({
   isForex,
   isDemo = false, // Default to false
 }) => {
-  const { theme } = useTheme();
+  const theme = "dark";
   const t = useTranslations("RunningSignalCard");
 
   // Define the unit based on instrument type

@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Save } from "lucide-react";
-import { useTheme } from "@/context/theme-context";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -55,7 +54,7 @@ export default function InstrumentForm({
   isSubmitting,
   submitLabel,
 }: InstrumentFormProps) {
-  const { theme } = useTheme();
+  const theme = "dark";
   // Initialize with string values to avoid controlled/uncontrolled switch
   const [formData, setFormData] = useState<InstrumentInfo>(
     ensureStringValues(initialData),

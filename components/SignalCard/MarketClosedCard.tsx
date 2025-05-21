@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import { Clock, Power, Calendar, Globe, MapPin, Timer } from "lucide-react";
 import { getNextMarketOpen, getMarketHoursDisplay } from "@/lib/market-hours";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
 import useInstrumentInfo from "@/hooks/useInstrumentInfo";
 import { useState, useEffect } from "react";
 
@@ -13,7 +12,7 @@ interface MarketClosedCardProps {
 }
 
 const MarketClosedCard = ({ instrumentName }: MarketClosedCardProps) => {
-  const { theme } = useTheme();
+  const theme = "dark";
   const t = useTranslations("MarketClosedCard");
   const { instrumentInfo } = useInstrumentInfo(instrumentName);
   const [countdown, setCountdown] = useState<string | null>(null);

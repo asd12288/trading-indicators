@@ -11,7 +11,6 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Save, Clock, Calendar, LayoutGrid, Tag, Hash } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
 import { useState, useEffect } from "react";
 
 import InstrumentSearch from "./InstrumentSearch";
@@ -24,7 +23,7 @@ interface AlertHourFormProps {
 }
 
 const AlertHourForm = ({ currentItem, onSubmit }: AlertHourFormProps) => {
-  const { theme } = useTheme();
+  const theme = "dark";
   const [formData, setFormData] = useState<Partial<AlertHours> | null>(
     currentItem,
   );

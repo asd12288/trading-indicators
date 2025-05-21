@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useMemo } from "react"; // React imported
-import { useTheme } from "@/context/theme-context";
 
 interface TradingViewWidgetProps {
   symbol: string;
@@ -27,7 +26,7 @@ const TradingViewWidget: React.FC<TradingViewWidgetProps> = ({
   demo = false, // Default to false
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { theme } = useTheme();
+  const theme = "dark";
 
   // Add states for loading and error handling
   const [, setIsLoading] = useState(true); // isLoading not used directly
