@@ -52,12 +52,20 @@ export function useAlertHours(instrumentName?: string) {
 
     fetchAlertHours();
 
-    // Set up periodic check (every minute)
-    const intervalId = setInterval(() => {
-      fetchAlertHours();
-    }, 60000);
+    const channel = supabaseClient
+      .channel("alert_hours")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "alert_hours" },
+        () => {
+          fetchAlertHours();
+        },
+      )
+      .subscribe();
 
-    return () => clearInterval(intervalId);
+    return () => {
+      supabaseClient.removeChannel(channel);
+    };
   }, [instrumentName]);
 
   /**
