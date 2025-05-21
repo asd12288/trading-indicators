@@ -2,7 +2,7 @@
 
 import { NextResponse } from "next/server";
 import { verifyWebhookSignature } from "@/lib/paypal";
-import supabaseClient from "@/database/supabase/supabase";
+import supabaseClient from "@/database/supabase/client";
 import { publishToQueue } from "@/lib/upstash";
 
 export async function POST(req) {

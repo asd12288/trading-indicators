@@ -1,6 +1,6 @@
 "use client";
 
-import supabaseClient from "@/database/supabase/supabase";
+import supabaseClient from "@/database/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";

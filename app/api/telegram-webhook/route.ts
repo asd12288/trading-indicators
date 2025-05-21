@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import supabaseClient from "@/database/supabase/supabase";
+import supabaseClient from "@/database/supabase/client";
 
 export async function POST(request: Request) {
   const TELEGRAM_BOT_TOKEN = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;

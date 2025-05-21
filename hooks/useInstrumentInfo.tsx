@@ -1,6 +1,6 @@
 "use client";
 
-import supabaseClient from "@/database/supabase/supabase";
+import supabaseClient from "@/database/supabase/client";
 import { InstrumentInfo } from "@/lib/types";
 import { useState, useEffect } from "react";
 

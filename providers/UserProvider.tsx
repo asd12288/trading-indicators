@@ -7,7 +7,7 @@ import {
   useCallback,
   ReactNode,
 } from "react";
-import supabaseClient from "@/database/supabase/supabase";
+import supabaseClient from "@/database/supabase/client";
 import { User, Session } from "@supabase/supabase-js";
 import { Profile } from "@/lib/types";
 

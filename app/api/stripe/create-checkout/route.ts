@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import supabaseClient from "@/database/supabase/supabase";
+import supabaseClient from "@/database/supabase/client";
 
 // Initialize Stripe with your secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {

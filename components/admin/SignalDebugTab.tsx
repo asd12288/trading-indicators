@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import supabaseClient from "@/database/supabase/supabase.js";
+import supabaseClient from "@/database/supabase/client";
 import { Button } from "../ui/button";
 import { Check, AlertTriangle, RefreshCw, Bug } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";

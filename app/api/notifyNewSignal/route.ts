@@ -1,4 +1,4 @@
-import supabaseClient from "@/database/supabase/supabase";
+import supabaseClient from "@/database/supabase/client";
 import { format } from "date-fns";
 import { NextResponse } from "next/server";
 // IMPORTANT: use a "server-side" Supabase client instance.

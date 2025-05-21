@@ -14,7 +14,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import supabaseClient from "@/database/supabase/supabase";
+import supabaseClient from "@/database/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";

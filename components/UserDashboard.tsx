@@ -14,7 +14,7 @@ import ProfileLoader from "./loaders/ProfileLoader";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
-import supabaseClient from "@/database/supabase/supabase.js";
+import supabaseClient from "@/database/supabase/client";
 
 interface UserDashboardProps {
   user: {

@@ -1,5 +1,5 @@
 "use client";
-import supabaseClient from "@/database/supabase/supabase";
+import supabaseClient from "@/database/supabase/client";
 import { useRouter } from "@/i18n/routing";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { useState, useEffect } from "react";

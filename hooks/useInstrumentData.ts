@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import supabaseClient from "@/database/supabase/supabase.js";
+import supabaseClient from "@/database/supabase/client";
 
 const useInstrumentData = (instrumentName) => {
   const [instrumentData, setInstrumentData] = useState([]);

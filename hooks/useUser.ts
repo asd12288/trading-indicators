@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, createContext, useContext, ReactNode, useCallback } from 'react';
-import supabaseClient from "@/database/supabase/supabase";
+import supabaseClient from "@/database/supabase/client";
 import { User } from '@supabase/supabase-js';
 
 // Define proper types for user profile

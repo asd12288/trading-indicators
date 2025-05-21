@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useRef } from "react";
-import supabaseClient from "@/database/supabase/supabase.js";
+import supabaseClient from "@/database/supabase/client";
 
 export interface InstrumentStatusRow {
   id: number;

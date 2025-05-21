@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import supabase from "@/database/supabase/supabase";
+import supabase from "@/database/supabase/client";
 import { motion } from "framer-motion";
 import { AlertTriangle, CheckCircle, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
