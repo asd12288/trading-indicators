@@ -2,14 +2,12 @@
 "use client";
 
 import { useEffect, useRef, useState, startTransition } from "react";
-import { createClient, type RealtimeChannel } from "@supabase/supabase-js";
+import type { RealtimeChannel } from "@supabase/supabase-js";
+import supabaseClient from "@/database/supabase/supabase.js";
 import { Signal } from "@/lib/types";
 import { toast } from "sonner";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+const supabase = supabaseClient;
 
 type Mode = "all" | "latest";
 
