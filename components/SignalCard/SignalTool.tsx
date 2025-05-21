@@ -1,6 +1,5 @@
 "use client";
 
-import { useTheme } from "@/context/theme-context";
 import usePreferences from "@/hooks/usePreferences";
 import { cn } from "@/lib/utils";
 import { BellIcon } from "lucide-react";
@@ -19,9 +18,9 @@ interface SignalToolProps {
 }
 
 function SignalTool({ signalId, userId, isPro = true }: SignalToolProps) {
-  const { theme } = useTheme();
   const { preferences, updatePreference, isLoading } = usePreferences(userId);
   const t = useTranslations("SignalTool");
+  const theme = "dark";
 
   const currentPrefs = preferences[signalId] || {
     notifications: false,

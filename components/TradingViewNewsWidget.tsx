@@ -1,6 +1,5 @@
 "use client";
 
-import { useTheme } from "@/context/theme-context";
 import { useEffect, useRef } from "react";
 
 interface TradingViewNewsWidgetProps {
@@ -19,7 +18,7 @@ const TradingViewNewsWidget: React.FC<TradingViewNewsWidgetProps> = ({
   newsCount = 20, // Show more news by default
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { theme } = useTheme();
+  const theme = "dark";
 
   // Format symbol for TradingView if provided
   const formatSymbol = (input?: string): string | undefined => {

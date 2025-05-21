@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useTheme } from "@/context/theme-context";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
@@ -29,7 +28,7 @@ export default function EconomicCalendarComponent({
   daysAhead = 7,
   showLoader = true,
 }: EconomicCalendarProps) {
-  const { theme } = useTheme();
+  const theme = "dark";
   const [events, setEvents] = useState<EconomicEvent[]>(initialEvents || []);
   const [isLoading, setIsLoading] = useState(initialLoading || !initialEvents);
   const [error, setError] = useState<string | null>(null);

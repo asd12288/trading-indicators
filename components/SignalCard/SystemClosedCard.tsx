@@ -2,7 +2,6 @@ import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { Clock, Calendar, AlertTriangle, Timer, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
 import useInstrumentInfo from "@/hooks/useInstrumentInfo";
 import { useState, useEffect } from "react";
 import { useAlertHours } from "@/hooks/useAlertHours";
@@ -12,7 +11,7 @@ interface SystemClosedCardProps {
 }
 
 const SystemClosedCard = ({ instrumentName }: SystemClosedCardProps) => {
-  const { theme } = useTheme();
+  const theme = "dark";
   const t = useTranslations("SystemClosedCard");
   const { instrumentInfo } = useInstrumentInfo(instrumentName);
   const { nextActiveTime, alertHours } = useAlertHours(instrumentName);

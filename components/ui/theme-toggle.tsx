@@ -1,6 +1,5 @@
 "use client";
 
-import { useTheme } from "@/context/theme-context";
 import { Moon, Sun } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -8,7 +7,8 @@ import { useEffect, useState } from "react";
 export function ThemeToggle({ className }: { className?: string }) {
   // Add state to track if component is mounted
   const [mounted, setMounted] = useState(false);
-  const { theme, toggleTheme } = useTheme();
+  const theme = "dark";
+  const toggleTheme = () => {};
 
   // Set mounted state to true after component mounts
   useEffect(() => {

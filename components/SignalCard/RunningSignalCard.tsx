@@ -1,4 +1,3 @@
-import { useTheme } from "@/context/theme-context";
 import useForexPrice from "@/hooks/useForexPrice";
 import useInstrumentInfo from "@/hooks/useInstrumentInfo";
 import { getInstrumentCategory } from "@/lib/instrumentCategories";
@@ -28,7 +27,7 @@ const RunningSignalCard: FC<RunningSignalCardProps> = ({
   isBuy,
   demo = false,
 }) => {
-  const { theme } = useTheme();
+  const theme = "dark";
   const {
     entry_time,
     instrument_name = "eurusd",

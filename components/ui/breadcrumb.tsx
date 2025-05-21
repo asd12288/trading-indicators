@@ -1,7 +1,6 @@
 import * as React from "react";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
 
 interface BreadcrumbProps {
   children: React.ReactNode;
@@ -72,10 +71,10 @@ const BreadcrumbSeparator = ({
 
 export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
   ({ children, className, ...props }, ref) => {
-    const themeContext = React.useContext(useTheme());
+    const theme = "dark";
 
     return (
-      <BreadcrumbContext.Provider value={{ theme: themeContext.theme }}>
+      <BreadcrumbContext.Provider value={{ theme }}>
         <nav ref={ref} aria-label="Breadcrumb" className={className} {...props}>
           <ol className="flex flex-wrap items-center text-sm">{children}</ol>
         </nav>

@@ -2,7 +2,6 @@
 
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
 import useInstrumentData from "@/hooks/useInstrumentData";
 import useProfile from "@/hooks/useProfile";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -30,7 +29,7 @@ import DetailsTab from "./DetailsTab";
 import NewsTab from "./NewsTab";
 
 const SignalLayout = ({ id, userId, isPro }: SignalLayoutProps) => {
-  const { theme } = useTheme();
+  const theme = "dark";
   const {
     instrumentData,
     isLoading: dataLoading,

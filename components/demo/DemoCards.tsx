@@ -1,6 +1,5 @@
 "use client";
 
-import { useTheme } from "@/context/theme-context";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import {
@@ -59,7 +58,8 @@ export default function DemoCard({
   const systemT = useTranslations("SystemClosedCard");
   const demoT = useTranslations("DemoCard");
 
-  const { theme } = useTheme();
+  const theme = "dark";
+
   const isBuy = tradeSide === "Long";
   const lastUpdateTime = new Date(); // Static time for demo
 

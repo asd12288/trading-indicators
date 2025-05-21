@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
 import supabaseClient from "@/database/supabase/supabase";
 import { Shuffle } from "lucide-react";
 
@@ -17,7 +16,7 @@ interface Instrument {
 }
 
 const InstrumentSearch = ({ value, onChange }: InstrumentSearchProps) => {
-  const { theme } = useTheme();
+  const theme = "dark";
   const [instrumentList, setInstrumentList] = useState<Instrument[]>([]);
   const [searchText, setSearchText] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);

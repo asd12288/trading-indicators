@@ -1,11 +1,10 @@
 "use client";
 
 import TradingViewWidget from "@/components/TradingViewWidget";
-import { useTheme } from "@/context/theme-context";
 import { cn } from "@/lib/utils";
 
 export default function EurusdChart() {
-  const { theme } = useTheme();
+  const theme = "dark";
 
   return (
     <div

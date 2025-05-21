@@ -1,6 +1,5 @@
 import { DAYS_OF_WEEK } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
 
 interface DaysSelectorProps {
   selectedDays: number[];
@@ -8,7 +7,7 @@ interface DaysSelectorProps {
 }
 
 const DaysSelector = ({ selectedDays, onChange }: DaysSelectorProps) => {
-  const { theme } = useTheme();
+  const theme = "dark";
 
   const handleDayToggle = (dayId: number, checked: boolean) => {
     const days = [...selectedDays];

@@ -1,5 +1,4 @@
 
-import { useTheme } from "@/context/theme-context";
 import { ReactNode, useEffect, useState } from "react";
 
 interface ClientThemeProviderProps {
@@ -8,7 +7,7 @@ interface ClientThemeProviderProps {
 }
 
 export function ClientThemeProvider({ children, fallback }: ClientThemeProviderProps) {
-  const { theme } = useTheme();
+  const theme = "dark";
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
@@ -25,7 +24,7 @@ export function ClientThemeProvider({ children, fallback }: ClientThemeProviderP
 
 // Custom hook to use in client components that need theme
 export function useClientTheme() {
-  const { theme } = useTheme();
+  const theme = "dark";
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {

@@ -1,4 +1,3 @@
-import { useTheme } from "@/context/theme-context";
 import { cn, formatNumber } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { FC, useEffect, useRef } from "react";
@@ -22,7 +21,7 @@ const KeyPricesGrid: FC<KeyPricesGridProps> = ({
   profitTargetPercent,
   stopLossPercent,
 }) => {
-  const { theme } = useTheme();
+  const theme = "dark";
   const t = useTranslations("RunningSignalCard");
 
   // refs to track previous prices

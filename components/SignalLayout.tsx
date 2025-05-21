@@ -3,7 +3,6 @@
 import CumulativePotentialTicksChart from "@/components/charts/CumulativePotentialTicksChart";
 import SignalTool from "@/components/SignalCard/SignalTool";
 import SignalTable from "@/components/SignalTable";
-import { useTheme } from "@/context/theme-context";
 import useInstrumentData from "@/hooks/useInstrumentData";
 import useProfile from "@/hooks/useProfile";
 import { Link } from "@/i18n/routing";
@@ -42,7 +41,7 @@ interface Tab {
 }
 
 const SignalLayout = ({ id, userId, isPro }) => {
-  const { theme } = useTheme();
+  const theme = "dark";
   const { profileData, isLoading: profileLoading } = useProfile(userId);
 
   const {

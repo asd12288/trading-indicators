@@ -1,4 +1,3 @@
-import { useTheme } from "@/context/theme-context";
 import { cn, formatNumber } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { FC } from "react";
@@ -22,6 +21,7 @@ const PriceScaleVisualization: FC<PriceScaleVisualizationProps> = ({
   isProfitable,
   isBuy,
 }) => {
+  const theme = "dark";
   const t = useTranslations("RunningSignalCard");
 
   // We'll reverse the visual representation for short trades

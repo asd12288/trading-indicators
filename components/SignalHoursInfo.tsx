@@ -4,7 +4,6 @@ import { useAlertHours } from "@/hooks/useAlertHours";
 import { getMarketHoursDisplay, isMarketOpen } from "@/lib/market-hours";
 import { DAYS_OF_WEEK } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/context/theme-context";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Clock, Calendar, Info, Bell, Clock3, AlertTriangle } from "lucide-react";
@@ -14,7 +13,7 @@ interface SignalHoursInfoProps {
 }
 
 const SignalHoursInfo = ({ instrumentName }: SignalHoursInfoProps) => {
-  const { theme } = useTheme();
+  const theme = "dark";
   const t = useTranslations("SignalHoursInfo");
   const { alertHours, isSystemActive, nextActiveTime } = useAlertHours(instrumentName);
   const [activeTab, setActiveTab] = useState<'market' | 'alert'>('market');
