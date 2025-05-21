@@ -80,7 +80,6 @@ function ProtectedPage() {
 
 The following hooks have been deprecated and redirect to the main `useUser` hook for backward compatibility:
 
-- `useAuth` from `context/auth-context.tsx`
 - `useSession` from `hooks/useSession.ts`
 - `useProfile` from `hooks/useProfile.ts`
 
