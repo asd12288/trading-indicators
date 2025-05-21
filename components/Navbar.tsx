@@ -17,6 +17,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import LogoutBtn from "./LogoutBtn";
 import UpgradeButton from "./UpgradeButton";
 import MuteButton from "./MuteButton"; // Import the new MuteButton component
+import { ThemeToggle } from "./ui/theme-toggle";
 
 export default function Navbar({ user, profile }) {
   // State to handle mobile menu toggle
@@ -106,6 +107,7 @@ export default function Navbar({ user, profile }) {
 
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
+            <ThemeToggle />
 
             <div className="mx-3 h-5 w-px bg-slate-700/50"></div>
 
@@ -161,13 +163,14 @@ export default function Navbar({ user, profile }) {
           </h1>
         </Link>
 
-        <div className="flex items-center gap-3">
-          {/* Add NotificationBell to mobile view too */}
+          <div className="flex items-center gap-3">
+            {/* Add NotificationBell to mobile view too */}
 
-          {/* Add MuteButton component to mobile view */}
-          {/* {user?.id && <MuteButton userId={user.id} />} */}
+            {/* Add MuteButton component to mobile view */}
+            {/* {user?.id && <MuteButton userId={user.id} />} */}
 
-          <LanguageSwitcher />
+            <LanguageSwitcher />
+            <ThemeToggle />
 
           {/* Mobile Menu Button */}
           <button

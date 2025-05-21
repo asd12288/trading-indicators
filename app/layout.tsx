@@ -5,6 +5,7 @@ import { getMessages } from "next-intl/server";
 import { Poppins } from "next/font/google";
 
 import { UserProvider } from "@/providers/UserProvider";
+import { ThemeProvider } from "@/context/theme-context";
 import "./globals.css";
 import LazyLoadedComponents from "./LazyLoadedComponents";
 
@@ -60,11 +61,13 @@ export default async function RootLayout({
       </head>
       <body>
         <NextIntlClientProvider locale={params.locale} messages={messages}>
-          <UserProvider>
-            {children}
-            <LazyLoadedComponents />
-            <Toaster />
-          </UserProvider>
+          <ThemeProvider>
+            <UserProvider>
+              {children}
+              <LazyLoadedComponents />
+              <Toaster />
+            </UserProvider>
+          </ThemeProvider>
         </NextIntlClientProvider>
 
         {/* Load non-critical scripts */}
