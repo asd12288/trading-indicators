@@ -15,7 +15,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Select, SelectContent, SelectItem, SelectValue } from "../ui/select";
 import { SelectTrigger } from "../ui/select";
-import supabaseClient from "@/database/supabase/supabase";
+import supabaseClient from "@/database/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 // Helper to convert "YYYY-MM-DD HH:mm:ss+00" to "YYYY-MM-DDTHH:mm:ss"

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import supabaseClient from "@/database/supabase/supabase";
+import supabaseClient from "@/database/supabase/client";
 import { PreferenceValues } from "@/lib/types";
 
 // The shape of your entire preferences object: { [instrumentId]: PreferenceValues }

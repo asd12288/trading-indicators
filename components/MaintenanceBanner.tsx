@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import supabase from "@/database/supabase/supabase";
+import supabase from "@/database/supabase/client";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle } from "lucide-react";

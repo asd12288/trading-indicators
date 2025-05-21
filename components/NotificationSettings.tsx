@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { Switch } from "./ui/switch";
 import { Button } from "./ui/button";
 import { Loader2, Mail, Bell, Check } from "lucide-react";
-import supabaseClient from "@/database/supabase/supabase";
+import supabaseClient from "@/database/supabase/client";
 import { toast } from "sonner";
 
 interface NotificationSettingsProps {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import useSWR from "swr";
-import supabaseClient from "@/database/supabase/supabase.js";
+import supabaseClient from "@/database/supabase/client";
 
 // Type for the API response
 interface LastPriceData {

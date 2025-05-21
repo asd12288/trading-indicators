@@ -1,4 +1,4 @@
-import supabaseClient from "@/database/supabase/supabase";
+import supabaseClient from "@/database/supabase/client";
 import { useEffect, useState } from "react";
 
 interface SignalData {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/database/supabase/client";
 import { format } from "date-fns";
-import supabaseClient from "@/database/supabase/supabase";
+import supabaseClient from "@/database/supabase/client";
 
 interface SignalStatus {
   id: string;

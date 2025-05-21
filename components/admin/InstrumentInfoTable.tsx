@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTheme } from "@/context/theme-context";
 import { cn } from "@/lib/utils";
-import supabaseClient from "@/database/supabase/supabase";
+import supabaseClient from "@/database/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import InstrumentTable from "./instruments/InstrumentTable";
 import InstrumentForm from "./instruments/InstrumentForm";

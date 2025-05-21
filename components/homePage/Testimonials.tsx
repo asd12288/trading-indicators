@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import TestimonialCard from "./TestimonialCard";
 import Carousel from "../Carousel";
-import supabase from "@/database/supabase/supabase";
+import supabase from "@/database/supabase/client";
 import { InfiniteMovingCards } from "../ui/infinite-moving-cards";
 
 interface Testimonial {
