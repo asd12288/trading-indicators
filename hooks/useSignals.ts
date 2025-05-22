@@ -3,7 +3,7 @@
 
 import { useEffect, useRef, useState, startTransition } from "react";
 import { createClient, type RealtimeChannel } from "@supabase/supabase-js";
-import { Signal } from "@/lib/types";
+import { Signal } from "@/types";
 import { toast } from "sonner";
 
 const supabase = createClient(

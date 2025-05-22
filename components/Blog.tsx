@@ -3,18 +3,7 @@ import React from "react";
 import { Calendar, Clock, ChevronLeft, Share2 } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { Button } from "./ui/button";
-
-interface BlogProps {
-  blog: {
-    title: string;
-    content: string;
-    id: string;
-    imageUrl: string;
-    subTitle: string;
-    date: string;
-    readingTime?: number;
-  };
-}
+import type { BlogProps } from "@/types";
 
 function Blog({ blog }: BlogProps) {
   // Extract headings for table of contents

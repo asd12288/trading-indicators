@@ -1,6 +1,6 @@
 // New hook to sort signals by status priority and entry time
 import { useMemo } from "react";
-import { Signal } from "@/lib/types";
+import { Signal } from "@/types";
 
 // Determine priority: running < fulfilled < others
 const getSignalStatusPriority = (signal: Signal): number => {

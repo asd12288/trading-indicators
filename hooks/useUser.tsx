@@ -3,23 +3,11 @@
 import { useState, useEffect, createContext, useContext, ReactNode, useCallback } from 'react';
 import supabaseClient from "@/database/supabase/supabase";
 import { User } from '@supabase/supabase-js';
-
-// Define proper types for user profile
-interface UserProfile {
-  id: string;
-  username?: string;
-  email?: string;
-  avatar_url?: string;
-  plan?: 'free' | 'pro' | 'premium';
-  role?: string;
-  created_at?: string;
-  preferences?: Record<string, any>;
-  [key: string]: any; // Allow for additional fields
-}
+import type { Profile } from "@/types";
 
 type UserContextType = {
   user: User | null;
-  profile: UserProfile | null;
+  profile: Profile | null;
   loading: boolean;
   error: Error | null;
   refreshUser: () => Promise<void>;
@@ -33,7 +21,7 @@ interface UserProviderProps {
 
 export const UserProvider = ({ children }: UserProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -72,7 +60,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
         } 
         
         if (data) {
-          setProfile(data as UserProfile);
+          setProfile(data as Profile);
         }
       }
     } catch (err) {
@@ -134,7 +122,7 @@ export function useUser() {
 export function useClientUser(initialUser = null, initialProfile = null) {
   // Apply proper typing
   const [user] = useState<User | null>(initialUser);
-  const [profile] = useState<UserProfile | null>(initialProfile);
+  const [profile] = useState<Profile | null>(initialProfile);
   const [loading] = useState<boolean>(false);
 
   return { user, profile, loading };

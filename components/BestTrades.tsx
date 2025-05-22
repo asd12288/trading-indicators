@@ -4,7 +4,7 @@ import { useTheme } from "@/context/theme-context";
 import useInstrumentInfo from "@/hooks/useInstrumentInfo";
 import useSignals from "@/hooks/useSignals";
 import { getInstrumentCategory } from "@/lib/instrumentCategories";
-import { Signal } from "@/lib/types";
+import { Signal } from "@/types";
 import { cn } from "@/lib/utils";
 import {
   ArrowDown,

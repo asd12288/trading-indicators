@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import InstrumentTable from "./instruments/InstrumentTable";
 import InstrumentForm from "./instruments/InstrumentForm";
 import DeleteInstrumentDialog from "./instruments/DeleteInstrumentDialog";
-import { InstrumentInfo } from "@/lib/types";
+import { InstrumentInfo } from "@/types";
 import Pagination from "./instruments/Pagination";
 import {
   Card,

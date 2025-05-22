@@ -11,7 +11,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Alert } from "@/lib/types";
+import { Alert } from "@/types";
+
+interface HistoricalPrice {
+  date: string;
+  price: number;
+}
 import { format } from "date-fns";
 import {
   BarChart3,
@@ -32,7 +37,7 @@ interface AlertDialogProps {
 
 const AlertDetailDialog = ({ alert, open, onOpenChange }: AlertDialogProps) => {
   const router = useRouter();
-  const [historicalData, setHistoricalData] = useState<any[]>([]);
+  const [historicalData, setHistoricalData] = useState<HistoricalPrice[]>([]);
   const [relatedAlerts, setRelatedAlerts] = useState<Alert[]>([]);
 
   useEffect(() => {
