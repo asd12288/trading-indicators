@@ -49,7 +49,30 @@ export default function useSignals(mode: Mode = "latest") {
   }, [mode]);
 
   /* ------------------------------------------------------------------ */
-  /* 2. Realtime subscription (for UI updates only)                     */
+  /* 2. Refetch when tab becomes active                                 */
+  /* ------------------------------------------------------------------ */
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        supabase
+          .from(mode === "latest" ? "latest_signals_per_instrument" : "all_signals")
+          .select("*")
+          .order("entry_time", { ascending: false })
+          .then(({ data, error }) => {
+            if (error) return setError(error.message);
+            setSignals(data as Signal[]);
+          });
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, [mode]);
+
+  /* ------------------------------------------------------------------ */
+  /* 3. Realtime subscription (for UI updates only)                     */
   /* ------------------------------------------------------------------ */
   useEffect(() => {
     if (channelRef.current) {
