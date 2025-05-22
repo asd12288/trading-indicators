@@ -2,7 +2,7 @@ import { useTheme } from "@/context/theme-context";
 import useForexPrice from "@/hooks/useForexPrice";
 import useInstrumentInfo from "@/hooks/useInstrumentInfo";
 import { getInstrumentCategory } from "@/lib/instrumentCategories";
-import { Signal } from "@/lib/types";
+import { Signal } from "@/types";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { ArrowDown, ArrowUp, Clock } from "lucide-react";

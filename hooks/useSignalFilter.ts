@@ -1,7 +1,7 @@
 // New hook to filter signals based on search and category
 import { useMemo } from "react";
 import { instrumentCategoryMap } from "@/lib/instrumentCategories";
-import { Signal } from "@/lib/types";
+import { Signal } from "@/types";
 
 type FilterOptions = {
   search: string;

@@ -2,7 +2,7 @@
 
 import { useAlertHours } from "@/hooks/useAlertHours";
 import { isMarketOpen } from "@/lib/market-hours";
-import { Signal } from "@/lib/types";
+import { Signal } from "@/types";
 import React, { useEffect, useState, memo } from "react";
 import LoaderCards from "../loaders/LoaderCards";
 import FufilledSignalCard from "./FufilledSignalCard";

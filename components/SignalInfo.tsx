@@ -3,7 +3,7 @@ import React from "react";
 import { ExternalLink } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { InstrumentInfo } from "@/lib/types";
+import { InstrumentInfo } from "@/types";
 
 interface InfoRowProps {
   label: string;

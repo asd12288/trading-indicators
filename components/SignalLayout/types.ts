@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { EconomicEvent } from "../../services/finnhub";
+import type { Signal } from "@/types";
 
 // Tab type definition
 export interface Tab {
@@ -20,11 +21,11 @@ export interface SignalLayoutProps {
 export interface TabContentProps {
   theme: string;
   instrumentName: string;
-  instrumentData: any[];
+  instrumentData: Signal[];
   tradeId?: string | null;
   isPro: boolean;
   handleUpgradeClick: () => void;
-  lastSignal: any;
+  lastSignal?: Signal | null;
 }
 
 // Props for the news tab

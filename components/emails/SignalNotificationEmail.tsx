@@ -13,7 +13,7 @@ import {
   Link,
   Tailwind,
 } from "@react-email/components";
-import { Signal } from "@/lib/types";
+import { Signal } from "@/types";
 
 interface SignalNotificationEmailProps {
   signal: Signal;

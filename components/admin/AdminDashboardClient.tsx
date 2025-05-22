@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import type { Profile, Signal, BlogPost } from "@/types";
 
 interface AdminDashboardClientProps {
-  users: any[];
-  signals: any[];
-  posts: any[];
+  users: Profile[];
+  signals: Signal[];
+  posts: BlogPost[];
 }
 
 export default function AdminDashboardClient({

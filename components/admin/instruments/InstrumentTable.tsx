@@ -1,4 +1,4 @@
-import { InstrumentInfo } from "@/lib/types";
+import { InstrumentInfo } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
   Table,

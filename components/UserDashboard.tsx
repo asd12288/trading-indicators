@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import supabaseClient from "@/database/supabase/supabase.js";
+import type { Profile } from "@/types";
 
 interface UserDashboardProps {
   user: {
@@ -24,10 +25,6 @@ interface UserDashboardProps {
   };
 }
 
-interface UserProfile {
-  plan?: string;
-  [key: string]: any;
-}
 
 interface TabItemProps {
   id: string;
@@ -43,7 +40,7 @@ const UserDashboard = ({ user }: UserDashboardProps) => {
   const [contentHeight, setContentHeight] = useState<string>("auto");
 
   // Handle profile loading directly since we get user from props
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch profile based on the provided user ID

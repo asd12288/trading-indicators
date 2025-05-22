@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
-import { Signal } from "@/lib/types";
+import { Signal } from "@/types";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { AlertCircle, ArrowDownWideNarrow, Grid2X2, List } from "lucide-react";

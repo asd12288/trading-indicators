@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import { Check, AlertTriangle, RefreshCw, Bug } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Signal } from "@/lib/types";
+import { Signal } from "@/types";
 import { motion } from "framer-motion";
 
 const SignalDebugTab = () => {

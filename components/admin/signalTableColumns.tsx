@@ -23,7 +23,7 @@ import { useState } from "react";
 import ConfirmDialog from "../ConfirmDialog";
 import { Button } from "../ui/button";
 import EditSignalFrom from "./EditSignalFrom";
-import { Signal } from "@/lib/types";
+import { Signal } from "@/types";
 
 
 

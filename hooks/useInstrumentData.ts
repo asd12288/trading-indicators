@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import supabaseClient from "@/database/supabase/supabase.js";
+import type { Signal } from "@/types";
 
-const useInstrumentData = (instrumentName) => {
-  const [instrumentData, setInstrumentData] = useState([]);
+const useInstrumentData = (instrumentName: string) => {
+  const [instrumentData, setInstrumentData] = useState<Signal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchInstrumentData = async () => {
     // Early exit with error if instrumentName is missing
@@ -32,7 +33,9 @@ const useInstrumentData = (instrumentName) => {
       setInstrumentData(data || []);
     } catch (err) {
       console.error("Error fetching instrument data:", err);
-      setError(err.message || "Failed to fetch instrument data");
+      const message =
+        err instanceof Error ? err.message : "Failed to fetch instrument data";
+      setError(message);
     } finally {
       setIsLoading(false);
     }

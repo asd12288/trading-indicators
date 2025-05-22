@@ -9,7 +9,7 @@ import {
 } from "react";
 import supabaseClient from "@/database/supabase/supabase";
 import { User, Session } from "@supabase/supabase-js";
-import { Profile } from "@/lib/types";
+import { Profile } from "@/types";
 
 interface UserContextType {
   user: User | null;

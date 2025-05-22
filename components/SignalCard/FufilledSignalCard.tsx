@@ -3,7 +3,7 @@
 import { useTheme } from "@/context/theme-context";
 import useInstrumentInfo from "@/hooks/useInstrumentInfo";
 import { getInstrumentCategory } from "@/lib/instrumentCategories"; // Import the function
-import { Signal } from "@/lib/types";
+import { Signal } from "@/types";
 import { cn } from "@/lib/utils";
 import { format, parseISO } from "date-fns";
 import {

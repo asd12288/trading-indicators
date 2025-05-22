@@ -1,7 +1,7 @@
 "use client";
 
 import supabaseClient from "@/database/supabase/supabase";
-import { InstrumentInfo } from "@/lib/types";
+import { InstrumentInfo } from "@/types";
 import { useState, useEffect } from "react";
 
 const useInstrumentInfo = (instrumentName: string) => {

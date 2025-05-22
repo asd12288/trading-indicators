@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { renderAsync } from "@react-email/components";
 import SignalNotificationEmail from "@/components/emails/SignalNotificationEmail";
-import { Signal } from "@/lib/types";
+import { Signal } from "@/types";
 
 // Initialize Resend with API key
 const resend = new Resend(process.env.RESEND_API_KEY);

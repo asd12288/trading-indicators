@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Signal } from "@/lib/types";
+import { Signal } from "@/types";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";

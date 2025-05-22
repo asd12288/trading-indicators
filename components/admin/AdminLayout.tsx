@@ -30,13 +30,15 @@ import SignalsMonitoring from "@/components/admin/SignalsMonitoring";
 import SignalsTable from "@/components/admin/SignalsTable";
 import UsersTable from "@/components/admin/UsersTable";
 
+import type { Profile, Signal, BlogPost } from "@/types";
+
 interface AdminLayoutProps {
   children?: React.ReactNode;
   activeTab: string;
   onTabChange: (tabId: string) => void;
-  users?: any[];
-  signals?: any[];
-  posts?: any[];
+  users?: Profile[];
+  signals?: Signal[];
+  posts?: BlogPost[];
 }
 
 // Define tab groups with a unified structure

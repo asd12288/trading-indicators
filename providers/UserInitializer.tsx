@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
-import { Profile } from "@/lib/types";
+import { Profile } from "@/types";
 import { useUser } from "./UserProvider";
 
 interface UserInitializerProps {

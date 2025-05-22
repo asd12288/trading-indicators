@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import supabaseClient from "@/database/supabase/supabase";
-import { PreferenceValues } from "@/lib/types";
+import { PreferenceValues } from "@/types";
 
 // The shape of your entire preferences object: { [instrumentId]: PreferenceValues }
 type PreferencesMap = Record<string, PreferenceValues>;

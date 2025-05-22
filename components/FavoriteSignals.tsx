@@ -1,5 +1,5 @@
 import React, { useState, useMemo, memo, useCallback } from "react";
-import { Signal } from "@/lib/types";
+import { Signal } from "@/types";
 import { useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import usePreferences from "@/hooks/usePreferences";
